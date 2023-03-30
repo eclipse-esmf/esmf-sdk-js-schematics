@@ -1,0 +1,34 @@
+////
+Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH
+
+See the AUTHORS file(s) distributed with this work for additional information regarding authorship.
+
+This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
+If a copy of the MPL was not distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
+SPDX-License-Identifier: MPL-2.0
+////
+
+= Adding internationalization to the project
+
+=== What does internationalization mean?
+Internationalization is the process of supporting multiple languages in your applications.
+This can be accomplished in an Angular application through third party libraries, such as ngx-translate, or you
+can use the built-in i18n functionality.
+
+The command explained below does all the necessary work to prepare the Angular application to support this feature
+without any other requirements.
+
+=== Adding internationalization to an Angular app using schematics
+
+In the example, a brand-new application was generated using the command:
+
+[source]
+ng new app demo-schematics
+
+NOTE: Before running any schematic command make sure you are in the Angular project folder with an `angular.json` configuration file.
+
+In the demo-schematics project folder run:
+[source]
+ng generate @esmf/semantic-ui-schematics:i18n
+
+Afterwards the project is ready to offer translated a UI using https://github.com/ngx-translate[ngx-translate].

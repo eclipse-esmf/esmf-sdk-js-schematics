@@ -1,0 +1,77 @@
+{
+  "name": "@esmf/semantic-ui-schematics",
+  "version": "",
+  "description": "Official ESMF schematic for the Angular CLI to leverage Aspect models for generating Angular components.",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "build-watch": "tsc -p tsconfig.json --watch",
+    "prettier": "prettier --config .prettierrc --write './src/**/*{.ts,.js,.json}'",
+    "test": "jest --reporters default jest-stare",
+    "test:prettier": "prettier --config .prettierrc --list-different './src/**/*{.ts,.js,.json}'",
+    "test:coverage": "jest --coverage --reporters default jest-stare",
+    "lint": "eslint . --ext .ts",
+    "lint:fix": "eslint . --ext .ts --fix"
+  },
+  "keywords": [
+    "schematic"
+  ],
+  "files": [
+    "src/**",
+    ".prettierrc"
+  ],
+  "author": "",
+  "license": "mpl-2.0",
+  "schematics": "./src/collection.json",
+  "dependencies": {
+    "@angular-devkit/core": "^14.2.7",
+    "@angular-devkit/schematics": "^14.2.7",
+    "@esmf/aspect-model-loader": "https://github.com/eclipse-esmf/esmf-sdk-js-aspect-model-loader/releases/download/v2.1.0/esmf-aspect-model-loader-2.1.0.tgz",
+    "@schematics/angular": "14.2.6",
+    "fs": "0.0.1-security",
+    "inquirer": "8.2.4",
+    "inquirer-fuzzy-path": "2.3.0",
+    "inquirer-prompt-suggest": "0.1.0",
+    "inquirer-search-list": "1.2.6",
+    "ora": "5.4.1",
+    "prettier": "2.7.1",
+    "rxjs": "7.5.7",
+    "serialize-javascript": "6.0.0",
+    "typescript": "4.8.4"
+  },
+  "devDependencies": {
+    "@angular/cdk": "14.2.7",
+    "@babel/core": "7.18.10",
+    "@babel/preset-env": "7.18.10",
+    "@babel/preset-typescript": "7.18.6",
+    "@types/inquirer": "9.0.0",
+    "@types/inquirer-fuzzy-path": "2.3.6",
+    "@types/jest": "28.1.6",
+    "@types/node": "^18.6.4",
+    "@types/serialize-javascript": "5.0.2",
+    "@typescript-eslint/eslint-plugin": "5.28.0",
+    "@typescript-eslint/parser": "5.44.0",
+    "babel-jest": "28.1.3",
+    "eslint": "8.28.0",
+    "jest": "28.1.3",
+    "jest-stare": "2.4.1",
+    "npm-snapshot": "1.1.1",
+    "rimraf": "3.0.2",
+    "ts-jest": "28.0.5",
+    "ts-node": "10.8.1"
+  },
+  "peerDependencies": {
+    "@angular/animations": "14.x",
+    "@angular/common": "14.x",
+    "@angular/forms": "14.x",
+    "@angular/material": "14.x",
+    "@angular/platform-browser": "14.x",
+    "@angular/platform-browser-dynamic": "14.x",
+    "@ngx-translate/core": "14.x",
+    "@ngx-translate/http-loader": "7.x",
+    "ngx-i18n-combine": "1.x",
+    "rxjs": "7.x"
+  },
+  "ng-add": {
+    "save": "devDependencies"
+  }
+}
