@@ -1,3 +1,16 @@
+/*
+ * Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH
+ *
+ * See the AUTHORS file(s) distributed with this work for
+ * additional information regarding authorship.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ *
+ * SPDX-License-Identifier: MPL-2.0
+ */
+
 import {Schema} from '../schema';
 import {camelize, classify, dasherize} from '@angular-devkit/core/src/utils/strings';
 import {DefaultSingleEntity, Property} from '@esmf/aspect-model-loader';
@@ -68,11 +81,11 @@ export class TsComponentGenerator {
             pageChange(): void {
                 this.applyFilters();
                 ${
-                    !isRemote && this.options.addRowCheckboxes
-                        ? `this.selection.clear();
+            !isRemote && this.options.addRowCheckboxes
+                ? `this.selection.clear();
                            this.rowSelectionEvent.emit(this.selection.selected);`
-                        : ''
-                }
+                : ''
+        }
             }
             
             sortData(): void {
@@ -112,24 +125,24 @@ export class TsComponentGenerator {
             ${this.processRowCheckboxes(isRemote)}
             
             ${
-                this.options.customRowActions.length > 0
-                    ? ` executeCustomAction($event: MouseEvent, action: string, row:any): void{
+            this.options.customRowActions.length > 0
+                ? ` executeCustomAction($event: MouseEvent, action: string, row:any): void{
                         if(this.customRowActionsLength <= this.visibleRowActionsIcons) {
                             $event.stopPropagation();
                         }
                         this.customActionEvent.emit({action: action, data: row})
                    }`
-                    : ''
-            }
+                : ''
+        }
             
             ${
-                this.options.customCommandBarActions.length > 0
-                    ? ` executeCustomCommandBarAction($event: MouseEvent, action: string){
+            this.options.customCommandBarActions.length > 0
+                ? ` executeCustomCommandBarAction($event: MouseEvent, action: string){
                             $event.stopPropagation()
                             this.customCommandBarActionEvent.emit({action: action})
                       }`
-                    : ``
-            }
+                : ``
+        }
             
             ${TsComponentGenerator.getReloadFilters()}
             ${this.getApplyFilters(isRemote)}
@@ -141,15 +154,15 @@ export class TsComponentGenerator {
                 this.columMenuComponent.columnsDefault = [
                     ...Object.values(${classify(this.options.name)}Column)
                       ${
-                          this.options.addRowCheckboxes
-                              ? `.filter(columnName => columnName !== ${classify(this.options.name)}Column['CHECKBOX'])`
-                              : ''
-                      }
+            this.options.addRowCheckboxes
+                ? `.filter(columnName => columnName !== ${classify(this.options.name)}Column['CHECKBOX'])`
+                : ''
+        }
                       ${
-                          this.options.customRowActions.length > 0
-                              ? `.filter(columnName => columnName !== ${classify(this.options.name)}Column['CUSTOM_ROW_ACTIONS'])`
-                              : ''
-                      }
+            this.options.customRowActions.length > 0
+                ? `.filter(columnName => columnName !== ${classify(this.options.name)}Column['CUSTOM_ROW_ACTIONS'])`
+                : ''
+        }
                       .filter(columnName => columnName !== ${classify(this.options.name)}Column['COLUMNS_MENU'])
                       .map(columnName => {
                         return {name: columnName, selected: true};
@@ -163,27 +176,27 @@ export class TsComponentGenerator {
                 let displayedColumnsTmp: Array<Column> = [];
         
                 ${
-                    this.options.addRowCheckboxes
-                        ? `if (columns[0].name !== ${classify(this.options.name)}Column['CHECKBOX']) {
+            this.options.addRowCheckboxes
+                ? `if (columns[0].name !== ${classify(this.options.name)}Column['CHECKBOX']) {
                         displayedColumnsTmp.push({name: ${classify(this.options.name)}Column['CHECKBOX'], selected: true});
                     }`
-                        : ''
-                }
+                : ''
+        }
                 
         
                 displayedColumnsTmp.push(...columns);
         
                 ${
-                    this.options.customRowActions.length > 0
-                        ? `if (${classify(
-                              this.options.name
-                          )}Column['CUSTOM_ROW_ACTIONS'] && columns[columns.length - 1].name !== ${classify(
-                              this.options.name
-                          )}Column['CUSTOM_ROW_ACTIONS']) {
+            this.options.customRowActions.length > 0
+                ? `if (${classify(
+                    this.options.name
+                )}Column['CUSTOM_ROW_ACTIONS'] && columns[columns.length - 1].name !== ${classify(
+                    this.options.name
+                )}Column['CUSTOM_ROW_ACTIONS']) {
                         displayedColumnsTmp.push({name: ${classify(this.options.name)}Column['CUSTOM_ROW_ACTIONS'], selected: true});
                     }`
-                        : ''
-                }
+                : ''
+        }
                 
                 if (${classify(this.options.name)}Column['COLUMNS_MENU'] && columns[columns.length - 1].name !== ${classify(
             this.options.name
@@ -196,14 +209,14 @@ export class TsComponentGenerator {
             }
     
             ${
-                !isRemote
-                    ? `checkIfOnValidPage(): void {
+            !isRemote
+                ? `checkIfOnValidPage(): void {
                             if(this.paginator.length  > this.filteredData.length){
                                 this.paginator.firstPage();
                             }
                       }`
-                    : ``
-            }
+                : ``
+        }
         }`;
     }
 
@@ -211,44 +224,44 @@ export class TsComponentGenerator {
         return `
             ${this.hasSearchBar ? ` @Input() initialSearchString = '';` : ''}
             ${this.options.customRowActions
-                .map(cra => {
-                    const formattedAction = cra.replace(/\.[^/.]+$/, '');
-                    const classifiedFormattedAction = classify(formattedAction);
-                    return `@Input() is${classifiedFormattedAction}Visible = true;`;
-                })
-                .join('')}
+            .map(cra => {
+                const formattedAction = cra.replace(/\.[^/.]+$/, '');
+                const classifiedFormattedAction = classify(formattedAction);
+                return `@Input() is${classifiedFormattedAction}Visible = true;`;
+            })
+            .join('')}
             
             ${
-                this.options.templateHelper.getDateProperties(this.options).find(prop => this.options.templateHelper.isDateProperty(prop))
-                    ? "@Input() tableDateFormat = 'short';"
-                    : ''
-            }
+            this.options.templateHelper.getDateProperties(this.options).find(prop => this.options.templateHelper.isDateProperty(prop))
+                ? "@Input() tableDateFormat = 'short';"
+                : ''
+        }
             ${
-                this.options.templateHelper
-                    .getDateProperties(this.options)
-                    .find(prop => this.options.templateHelper.isDateTimestampProperty(prop))
-                    ? "@Input() tableDateTimeFormat = 'short';"
-                    : ''
-            }
+            this.options.templateHelper
+                .getDateProperties(this.options)
+                .find(prop => this.options.templateHelper.isDateTimestampProperty(prop))
+                ? "@Input() tableDateTimeFormat = 'short';"
+                : ''
+        }
             ${
-                this.options.templateHelper.getDateProperties(this.options).find(prop => this.options.templateHelper.isTimeProperty(prop))
-                    ? "@Input() tableTimeFormat = 'shortTime';"
-                    : ''
-            }
+            this.options.templateHelper.getDateProperties(this.options).find(prop => this.options.templateHelper.isTimeProperty(prop))
+                ? "@Input() tableTimeFormat = 'shortTime';"
+                : ''
+        }
                         
             @Input() data: Array<(${classify(this.options.templateHelper.resolveType(this.options.aspectModel).name)})> = [];
             @Input() customTemplate?: TemplateRef<any>;
             @Input() searchHint?: string;
             @Input() showFirstLastButtons: boolean = true;
             ${
-                this.options.customColumns && this.options.customColumns.length > 0
-                    ? `${this.options.customColumns
-                          .map(cc => {
-                              return `@Input("${camelize(cc)}Column") ${camelize(cc)}Template!: TemplateRef<any>;`;
-                          })
-                          .join('')}`
-                    : ''
-            }
+            this.options.customColumns && this.options.customColumns.length > 0
+                ? `${this.options.customColumns
+                    .map(cc => {
+                        return `@Input("${camelize(cc)}Column") ${camelize(cc)}Template!: TemplateRef<any>;`;
+                    })
+                    .join('')}`
+                : ''
+        }
             
             @Input() pageSize: number = 20;
             @Input() pageSizeOptions: Array<number> = [5, 20, 50, 100];
@@ -266,15 +279,15 @@ export class TsComponentGenerator {
             @Input() allowedCharacters: string = '';
             @Input() regexValidator:string = '';
             ${
-                isRemote
-                    ? ` 
+            isRemote
+                ? ` 
                         @Input() maxExportPages: number = 5000;
                         @Input() customFilterExtension: CustomRQLFilterExtension | undefined;
                         @Input() customOptionsExtension: CustomRQLOptionExtension | undefined;
                         @Input() extendedCsvExporter: ExtendedCsvExporter | undefined;
                         @Input() remoteAPI: string = '';`
-                    : '@Input() maxExportPages: number = 0'
-            }
+                : '@Input() maxExportPages: number = 0'
+        }
 
             @Output() rowClickEvent = new EventEmitter<any>();
             @Output() rowDblClickEvent = new EventEmitter<any>();
@@ -290,8 +303,8 @@ export class TsComponentGenerator {
             @ViewChild(MatSort) private sort!: MatSort;
             @ViewChild(MatPaginator) private paginator!: MatPaginator
             @ViewChild(MatTable) private table!: MatTable<${classify(
-                this.options.templateHelper.resolveType(this.options.aspectModel).name
-            )}>;
+            this.options.templateHelper.resolveType(this.options.aspectModel).name
+        )}>;
             @ViewChild(${classify(this.options.name)}ColumnMenuComponent) private columMenuComponent!: ${classify(
             this.options.name
         )}ColumnMenuComponent;
@@ -316,8 +329,8 @@ export class TsComponentGenerator {
             selection = new SelectionModel<any>(this.isMultipleSelectionEnabled, []);
             dataSource: ${classify(this.options.name)}DataSource;
             columnToSort:{sortColumnName: string, sortDirection: SortDirection} = {sortColumnName:'${
-                this.options.defaultSortingCol
-            }', sortDirection : 'asc'};
+            this.options.defaultSortingCol
+        }', sortDirection : 'asc'};
             displayedColumns: Array<string> = Object.values(${classify(this.options.name)}Column);
             columns: Array<Column> = [];
             currentLanguage: string;
@@ -338,14 +351,14 @@ export class TsComponentGenerator {
                 templateUrl: './${dasherize(this.options.name)}.component.html',
                 styleUrls: ['./${dasherize(this.options.name)}.component.${this.options.style}']
                 ${
-                    this.options.viewEncapsulation
-                        ? `,encapsulation: ViewEncapsulation.${this.options.viewEncapsulation}${
-                              this.options.changeDetection !== 'Default'
-                                  ? `, changeDetection: ChangeDetectionStrategy.${this.options.changeDetection},`
-                                  : ''
-                          }`
-                        : ``
-                }
+            this.options.viewEncapsulation
+                ? `,encapsulation: ViewEncapsulation.${this.options.viewEncapsulation}${
+                    this.options.changeDetection !== 'Default'
+                        ? `, changeDetection: ChangeDetectionStrategy.${this.options.changeDetection},`
+                        : ''
+                }`
+                : ``
+        }
               })`;
     }
 
@@ -355,21 +368,21 @@ export class TsComponentGenerator {
         const getSharedCustomRows = `
                 this.currentLanguage = this.translateService.currentLang;
                 ${[...this.options.customRowActions, ...this.options.customCommandBarActions]
-                    .map(
-                        cra =>
-                            `${
-                                cra.lastIndexOf('.') > -1
-                                    ? `iconRegistry.addSvgIcon('${cra.replace(
-                                          /\.[^/.]+$/,
-                                          ''
-                                      )}', sanitizer.bypassSecurityTrustResourceUrl('./assets/icons/${cra}'));`
-                                    : ``
-                            }`
-                    )
-                    .join('')}
+            .map(
+                cra =>
+                    `${
+                        cra.lastIndexOf('.') > -1
+                            ? `iconRegistry.addSvgIcon('${cra.replace(
+                                /\.[^/.]+$/,
+                                ''
+                            )}', sanitizer.bypassSecurityTrustResourceUrl('./assets/icons/${cra}'));`
+                            : ``
+                    }`
+            )
+            .join('')}
                 ${
-                    this.hasSearchBar
-                        ? ` this.subscription = this.filterService.searchStringChanged
+            this.hasSearchBar
+                ? ` this.subscription = this.filterService.searchStringChanged
                                 .pipe(
                                     debounceTime(this.debounceTime),
                                     map((event: any) => (event?.target?.value ? event.target.value.trim() : '')),
@@ -378,8 +391,8 @@ export class TsComponentGenerator {
                                 )
                                 .subscribe(() => this.applyFilters());
                           `
-                        : ''
-                }`;
+                : ''
+        }`;
 
         const commonImports = `
             ${hasCustomActions ? `iconRegistry: MatIconRegistry,` : ``}
@@ -390,10 +403,10 @@ export class TsComponentGenerator {
             private storageService: JSSdkLocalStorageService,
             ${this.hasFilters ? `public filterService: ${this.filterServiceName},` : ''}
             ${
-                this.hasDateQuickFilter
-                    ? 'private dateAdapter: DateAdapter<any>,@Inject(MAT_DATE_FORMATS) private dateFormats: MatDateFormats,'
-                    : ''
-            }`;
+            this.hasDateQuickFilter
+                ? 'private dateAdapter: DateAdapter<any>,@Inject(MAT_DATE_FORMATS) private dateFormats: MatDateFormats,'
+                : ''
+        }`;
         if (isRemote) {
             return `constructor(
                     ${commonImports} private ${camelize((this.options.customRemoteService ? 'custom' : '') + this.options.name)}Service: ${
@@ -421,32 +434,32 @@ export class TsComponentGenerator {
             export enum ${classify(this.options.name)}Column {
             ${this.options.addRowCheckboxes ? `CHECKBOX = 'checkboxes',` : ''}
             ${this.allProps
-                .map((prop: Property, index: number, arr: Property[]) => {
-                    let complexEnumProperties = ``;
-                    if (prop.effectiveDataType?.isComplex && prop.characteristic instanceof DefaultSingleEntity) {
-                        const complexProps = templateHelper.getComplexProperties(prop, this.options);
-                        complexProps.properties.map((complexProp: Property, i: number, complexPropsArr: Property[]) => {
-                            complexEnumProperties = `${complexEnumProperties}${dasherize(`${complexProps.complexProp}_${complexProp.name}`)
-                                .replace(/-/g, '_')
-                                .toUpperCase()} = '${complexProps.complexProp}.${complexProp.name}',`;
-                            return complexProp;
-                        });
-                    }
+            .map((prop: Property, index: number, arr: Property[]) => {
+                let complexEnumProperties = ``;
+                if (prop.effectiveDataType?.isComplex && prop.characteristic instanceof DefaultSingleEntity) {
+                    const complexProps = templateHelper.getComplexProperties(prop, this.options);
+                    complexProps.properties.map((complexProp: Property, i: number, complexPropsArr: Property[]) => {
+                        complexEnumProperties = `${complexEnumProperties}${dasherize(`${complexProps.complexProp}_${complexProp.name}`)
+                            .replace(/-/g, '_')
+                            .toUpperCase()} = '${complexProps.complexProp}.${complexProp.name}',`;
+                        return complexProp;
+                    });
+                }
 
-                    return `${
-                        !(prop.effectiveDataType?.isComplex && prop.characteristic instanceof DefaultSingleEntity)
-                            ? `${dasherize(prop.name).replace(/-/g, '_').toUpperCase()} = '${
-                                  this.options.jsonAccessPath
-                              }${prop.name.trim()}'${index <= arr.length - 1 ? `,` : ``}`
-                            : `${complexEnumProperties}`
-                    }`;
-                })
-                .join('')}
+                return `${
+                    !(prop.effectiveDataType?.isComplex && prop.characteristic instanceof DefaultSingleEntity)
+                        ? `${dasherize(prop.name).replace(/-/g, '_').toUpperCase()} = '${
+                            this.options.jsonAccessPath
+                        }${prop.name.trim()}'${index <= arr.length - 1 ? `,` : ``}`
+                        : `${complexEnumProperties}`
+                }`;
+            })
+            .join('')}
             ${this.options.customColumns
-                .map(prop => {
-                    return `${dasherize(prop.trim()).replace(/-/g, '_').toUpperCase()} = '${prop.trim()}',`;
-                })
-                .join('')}
+            .map(prop => {
+                return `${dasherize(prop.trim()).replace(/-/g, '_').toUpperCase()} = '${prop.trim()}',`;
+            })
+            .join('')}
             ${this.options.customRowActions.length > 0 ? `CUSTOM_ROW_ACTIONS = 'customRowActions',` : ''}
             COLUMNS_MENU = 'columnsMenu'
         }`;
@@ -484,11 +497,11 @@ export class TsComponentGenerator {
                     }
                     
                     ${
-                        this.options.enableRemoteDataHandling
-                            ? `const columns = exportAllColumns ? this.columns.map(c => c.name) : this.displayedColumns;
+            this.options.enableRemoteDataHandling
+                ? `const columns = exportAllColumns ? this.columns.map(c => c.name) : this.displayedColumns;
                                 this.extendedCsvExporter?.export(columns, this.rqlString)`
-                            : `this.prepareCsv(this.${serviceName}.flatten(this.data), exportAllColumns)`
-                    }
+                : `this.prepareCsv(this.${serviceName}.flatten(this.data), exportAllColumns)`
+        }
                 });
             }
 
@@ -499,8 +512,8 @@ export class TsComponentGenerator {
     private generatePrepareCsvFn(): string {
         const columnTransKeyPrefix = this.options.enableVersionSupport
             ? `${this.options.selectedModelElement.name.toLowerCase()}.v${this.options.templateHelper.formatAspectModelVersion(
-                  this.options.aspectModelVersion
-              )}.`
+                this.options.aspectModelVersion
+            )}.`
             : ``;
 
         return `prepareCsv(data: any, exportAllColumns: boolean): void {
@@ -529,10 +542,10 @@ export class TsComponentGenerator {
         return `
             isCustomColumn(columnName: string): boolean {
                 const customColumns = [${this.options.customColumns
-                    .map(prop => {
-                        return `'${prop.trim()}'`;
-                    })
-                    .join(', ')}];
+            .map(prop => {
+                return `'${prop.trim()}'`;
+            })
+            .join(', ')}];
 
                 return customColumns.includes(columnName);
             }
@@ -565,8 +578,8 @@ export class TsComponentGenerator {
             this.downloadEvent.emit({error: false, success: false, inProgress: true});
             try {
                 this.${camelize(
-                    (this.options.enableRemoteDataHandling && this.options.customRemoteService ? 'custom' : '') + this.options.name
-                )}Service.downloadCsv(csvArray);
+            (this.options.enableRemoteDataHandling && this.options.customRemoteService ? 'custom' : '') + this.options.name
+        )}Service.downloadCsv(csvArray);
                 this.downloadEvent.emit({error: false, success: true, inProgress: false});
             } catch(error: any) {
                 this.downloadEvent.emit({error: true, success: false, inProgress: false});
@@ -681,23 +694,23 @@ export class TsComponentGenerator {
             return `
                 applyFilters(): void {
                 ${
-                    this.hasSearchBar
-                        ? `
+                this.hasSearchBar
+                    ? `
                     if(this.searchString.errors || this.filterService.isSearchStringColumnsEmpty()){
                         return;
                     }
                 `
-                        : ``
-                }
+                    : ``
+            }
                     
                     this.tableUpdateStartEvent.emit();
                     this.autocomplete.closePanel();
                     ${
-                        this.options.addRowCheckboxes
-                            ? `this.selection.clear();
+                this.options.addRowCheckboxes
+                    ? `this.selection.clear();
                                 this.rowSelectionEvent.emit(this.selection.selected);`
-                            : ``
-                    }
+                    : ``
+            }
                     const query = new And();
                     ${this.hasEnumQuickFilter ? `this.filterService.applyEnumFilter(query);` : ``}
                     ${this.hasSearchBar ? `this.filterService.applyStringSearchFilter(query);` : ``}
@@ -764,8 +777,8 @@ export class TsComponentGenerator {
 
                     try{
                       this.${camelize(
-                          (this.options.customRemoteService ? 'custom' : '') + this.options.name
-                      )}Service.requestData(this.remoteAPI, {query: rqlStringTemp}).subscribe((response: ${classify(
+                (this.options.customRemoteService ? 'custom' : '') + this.options.name
+            )}Service.requestData(this.remoteAPI, {query: rqlStringTemp}).subscribe((response: ${classify(
                 this.options.aspectModel.name
             )}Response): void => {
                           this.dataSource.setData(response.items);
@@ -786,13 +799,13 @@ export class TsComponentGenerator {
             return `
                       applyFilters(): void {
                           ${
-                              this.hasSearchBar
-                                  ? `
+                this.hasSearchBar
+                    ? `
                           if(this.filterService.isSearchStringColumnsEmpty()){
                               return;
                           }`
-                                  : ``
-                          }
+                    : ``
+            }
                           this.tableUpdateStartEvent.emit();
                           this.autocomplete.closePanel();
                           let dataTemp = [...this.data];
@@ -835,8 +848,8 @@ export class TsComponentGenerator {
                     }
 
                     ${
-                        !isRemote
-                            ? `  trimSelectionToCurrentPage(): void {
+                !isRemote
+                    ? `  trimSelectionToCurrentPage(): void {
                                       const indexOfLastItemOnPreviousPage = this.paginator.pageSize * this.paginator.pageIndex - 1;
                                       const indexOfFirstItemOnNextPage = this.paginator.pageSize * (this.paginator.pageIndex + 1);
                                       this.selection.selected.forEach((u): void => {
@@ -851,8 +864,8 @@ export class TsComponentGenerator {
                                       });
                                       this.rowSelectionEvent.emit(this.selection.selected);
                                 }`
-                            : ``
-                    }
+                    : ``
+            }
             `;
         }
         return defaultFunctions;
@@ -882,71 +895,71 @@ export class TsComponentGenerator {
             import { MatSort, SortDirection } from '@angular/material/sort';
             import { MatTable } from '@angular/material/table';
             ${
-                this.hasFilters
-                    ? `import { ${this.filterServiceName} ${this.hasSearchBar ? `, SearchField` : ``}} from './${dasherize(
-                          this.options.name
-                      )}.filter.service'`
-                    : ''
-            }
+            this.hasFilters
+                ? `import { ${this.filterServiceName} ${this.hasSearchBar ? `, SearchField` : ``}} from './${dasherize(
+                    this.options.name
+                )}.filter.service'`
+                : ''
+        }
             import {Clipboard} from '@angular/cdk/clipboard';
             import {unparse} from 'papaparse';
             import {ExportConfirmationDialog} from '${
-                this.options.enableVersionSupport ? `../` : ``
-            }../export-confirmation-dialog/export-confirmation-dialog.component';
+            this.options.enableVersionSupport ? `../` : ``
+        }../export-confirmation-dialog/export-confirmation-dialog.component';
             import {MatDialog} from '@angular/material/dialog';
             import {FormControl} from '@angular/forms';
             import {
             ${classify(this.options.templateHelper.resolveType(this.options.selectedModelElement).name)}
             ${
-                this.options.selectedModelElement.aspectModelUrn !== this.options.aspectModel.aspectModelUrn &&
-                !this.options.aspectModel.isCollectionAspect
-                    ? `, ${classify(this.options.templateHelper.resolveType(this.options.aspectModel).name)}`
-                    : ''
-            }
+            this.options.selectedModelElement.aspectModelUrn !== this.options.aspectModel.aspectModelUrn &&
+            !this.options.aspectModel.isCollectionAspect
+                ? `, ${classify(this.options.templateHelper.resolveType(this.options.aspectModel).name)}`
+                : ''
+        }
             ${
-                this.hasEnumQuickFilter
-                    ? `, ${this.options.templateHelper
-                          .getEnumProperties(this.options)
-                          .map(prop => {
-                              return classify(prop.characteristic.name);
-                          })
-                          .join(',')}`
-                    : ''
-            }
+            this.hasEnumQuickFilter
+                ? `, ${this.options.templateHelper
+                    .getEnumProperties(this.options)
+                    .map(prop => {
+                        return classify(prop.characteristic.name);
+                    })
+                    .join(',')}`
+                : ''
+        }
             } from '${this.options.templateHelper.getTypesPath(
-                this.options.enableVersionSupport,
-                this.options.aspectModelVersion,
-                this.options.aspectModel
-            )}';
+            this.options.enableVersionSupport,
+            this.options.aspectModelVersion,
+            this.options.aspectModel
+        )}';
             import {${classify(this.options.name)}DataSource} from './${dasherize(this.options.name)}-datasource';
             ${
-                this.hasDateQuickFilter
-                    ? `
+            this.hasDateQuickFilter
+                ? `
                        import {DateAdapter,MatDateFormats,MAT_DATE_FORMATS} from '@angular/material/core';`
-                    : ''
-            }
+                : ''
+        }
             ${
-                [...this.options.customRowActions, ...this.options.customCommandBarActions].findIndex(element => element.includes('.')) !==
-                -1
-                    ? `import { MatIconRegistry } from '@angular/material/icon';`
-                    : ''
-            }
+            [...this.options.customRowActions, ...this.options.customCommandBarActions].findIndex(element => element.includes('.')) !==
+            -1
+                ? `import { MatIconRegistry } from '@angular/material/icon';`
+                : ''
+        }
             import {DomSanitizer} from '@angular/platform-browser';
             import {SelectionModel} from '@angular/cdk/collections';
             import {TranslateService} from '@ngx-translate/core';
             import {JSSdkLocalStorageService} from "${this.options.enableVersionSupport ? `../` : ``}../../services/storage.service";
             import {${classify(this.options.name)}ColumnMenuComponent} from './${dasherize(this.options.name)}-column-menu.component';
             ${
-                this.hasFilters
-                    ? `import {debounceTime, distinctUntilChanged, filter, map} from 'rxjs/operators';
+            this.hasFilters
+                ? `import {debounceTime, distinctUntilChanged, filter, map} from 'rxjs/operators';
                        import {Subscription} from 'rxjs';`
-                    : `import {filter} from 'rxjs/operators';`
-            }
+                : `import {filter} from 'rxjs/operators';`
+        }
             ${
-                isRemote
-                    ? `import {${this.options.customRemoteService ? 'Custom' : ''}${classify(this.options.name)}Service} from './${
-                          this.options.customRemoteService ? 'custom-' : ''
-                      }${dasherize(this.options.name)}.service';
+            isRemote
+                ? `import {${this.options.customRemoteService ? 'Custom' : ''}${classify(this.options.name)}Service} from './${
+                    this.options.customRemoteService ? 'custom-' : ''
+                }${dasherize(this.options.name)}.service';
                        import {${classify(this.options.aspectModel.name)}Response} from './${dasherize(this.options.name)}.service'; 
                        import {AbstractArrayNode,
                                AbstractLogicalNode,
@@ -997,10 +1010,10 @@ export class TsComponentGenerator {
                              */
                             export(displayedColumns: string[], rqlQuery: string): void;
                        }`
-                    : `import {${classify(this.options.name)}Service, ${classify(
-                          this.options.aspectModel.name
-                      )}Response} from './${dasherize(this.options.name)}.service';`
-            }
+                : `import {${classify(this.options.name)}Service, ${classify(
+                    this.options.aspectModel.name
+                )}Response} from './${dasherize(this.options.name)}.service';`
+        }
             import {MatAutocompleteTrigger} from '@angular/material/autocomplete';
             
             export interface Column {
@@ -1072,10 +1085,10 @@ export class TsComponentGenerator {
                 if (
                     ${options.addRowCheckboxes ? `displayedColumn === ${classify(options.name)}Column['CHECKBOX'] ||` : ''}
                     ${
-                        options.customRowActions.length > 0
-                            ? `displayedColumn === ${classify(options.name)}Column['CUSTOM_ROW_ACTIONS'] ||`
-                            : ''
-                    }
+            options.customRowActions.length > 0
+                ? `displayedColumn === ${classify(options.name)}Column['CUSTOM_ROW_ACTIONS'] ||`
+                : ''
+        }
                     displayedColumn === ${classify(options.name)}Column['COLUMNS_MENU'] ||                 
                     this.columns.find(column => column.name === displayedColumn)
                 ) {

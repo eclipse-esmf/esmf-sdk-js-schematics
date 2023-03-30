@@ -1,0 +1,58 @@
+#
+# Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH
+#
+# See the AUTHORS file(s) distributed with this work for
+# additional information regarding authorship.
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at https://mozilla.org/MPL/2.0/.
+#
+# SPDX-License-Identifier: MPL-2.0
+#
+
+@prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#> .
+@prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.0.0#> .
+@prefix samm-e: <urn:samm:org.eclipse.esmf.samm:entity:2.0.0#> .
+@prefix unit: <urn:samm:org.eclipse.esmf.samm:unit:2.0.0#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix : <urn:samm:org.eclipse.esmf.test:1.0.0#> .
+
+:TestXSDTimeAndDateTypes a samm:Aspect ;
+   samm:properties ( :a :b :c :d ) ;
+   samm:operations ( ) ;
+   samm:name "TestXSDTimeAndDateTypes" .
+
+:a a samm:Property ;
+   samm:characteristic :DateCharacteristic ;
+   samm:name "a" .
+
+:b a samm:Property ;
+   samm:characteristic :TimeCharacteristic ;
+   samm:name "b" .
+
+:c a samm:Property ;
+   samm:characteristic :DateTimeCharacteristic ;
+   samm:name "c" .
+
+:d a samm:Property ;
+   samm:characteristic :DateTimeStampCharacteristic ;
+   samm:name "d" .
+
+:DateCharacteristic a samm:Characteristic ;
+   samm:dataType xsd:date ;
+   samm:name "DateCharacteristic" .
+
+:TimeCharacteristic a samm:Characteristic ;
+   samm:dataType xsd:time ;
+   samm:name "TimeCharacteristic" .
+
+:DateTimeCharacteristic a samm:Characteristic ;
+   samm:dataType xsd:dateTime ;
+   samm:name "DateTimeCharacteristic" .
+
+:DateTimeStampCharacteristic a samm:Characteristic ;
+   samm:dataType xsd:dateTimeStamp ;
+   samm:name "DateTimeStampCharacteristic" .

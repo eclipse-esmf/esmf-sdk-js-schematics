@@ -1,3 +1,16 @@
+/*
+ * Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH
+ *
+ * See the AUTHORS file(s) distributed with this work for
+ * additional information regarding authorship.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ *
+ * SPDX-License-Identifier: MPL-2.0
+ */
+
 import {
     Aspect,
     DefaultAspect,
@@ -177,7 +190,7 @@ export class TemplateHelper {
     /**
      * Gets the resolved properties of the complex object.
      */
-    getComplexProperties(complexProp: Property, options: Schema): {complexProp: string; properties: Property[]} {
+    getComplexProperties(complexProp: Property, options: Schema): { complexProp: string; properties: Property[] } {
         const propsToShow = options.complexProps.find(cp => cp.prop === complexProp.name)?.propsToShow;
         const properties = this.getProperties({
             selectedModelElement: complexProp.effectiveDataType as DefaultEntity,

@@ -1,0 +1,62 @@
+#
+# Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH
+#
+# See the AUTHORS file(s) distributed with this work for
+# additional information regarding authorship.
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at https://mozilla.org/MPL/2.0/.
+#
+# SPDX-License-Identifier: MPL-2.0
+#
+
+@prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#> .
+@prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.0.0#> .
+@prefix samm-e: <urn:samm:org.eclipse.esmf.samm:entity:2.0.0#> .
+@prefix unit: <urn:samm:org.eclipse.esmf.samm:unit:2.0.0#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix : <urn:samm:org.eclipse.esmf.test:1.0.0#> .
+
+:TestEntityTypes a samm:Aspect ;
+   samm:properties ( :a ) ;
+   samm:operations ( ) ;
+   samm:name "TestEntityTypes" .
+
+:a a samm:Property ;
+   samm:characteristic :SingleEntityCharacteristic ;
+   samm:name "a" .
+
+:SingleEntityCharacteristic a samm-c:SingleEntity ;
+   samm:dataType :EntityCharacteristic ;
+   samm:name "SingleEntityCharacteristic" .
+
+:EntityCharacteristic a samm:Entity ;
+   samm:properties ( :x :y :z ) ;
+   samm:name "EntityCharacteristic" .
+
+:x a samm:Property ;
+   samm:characteristic :StringCharacteristic ;
+   samm:name "x" .
+
+:y a samm:Property ;
+   samm:characteristic :BooleanCharacteristic ;
+   samm:name "y" .
+
+:z a samm:Property ;
+   samm:characteristic :IntegerCharacteristic ;
+   samm:name "z" .
+
+:StringCharacteristic a samm:Characteristic ;
+   samm:dataType xsd:string ;
+   samm:name "StringCharacteristic" .
+
+:BooleanCharacteristic a samm:Characteristic ;
+   samm:dataType xsd:boolean ;
+   samm:name "BooleanCharacteristic" .
+
+:IntegerCharacteristic a samm:Characteristic ;
+   samm:dataType xsd:integer ;
+   samm:name "IntegerCharacteristic" .

@@ -15,7 +15,6 @@ node_modules/
 npm-debug.log*
 yarn-error.log*
 wizard-config.json
-*.ttl
 
 # Mac OSX Finder files.
 **/.DS_Store

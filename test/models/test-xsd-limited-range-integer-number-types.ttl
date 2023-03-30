@@ -1,0 +1,122 @@
+#
+# Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH
+#
+# See the AUTHORS file(s) distributed with this work for
+# additional information regarding authorship.
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at https://mozilla.org/MPL/2.0/.
+#
+# SPDX-License-Identifier: MPL-2.0
+#
+
+@prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#> .
+@prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.0.0#> .
+@prefix samm-e: <urn:samm:org.eclipse.esmf.samm:entity:2.0.0#> .
+@prefix unit: <urn:samm:org.eclipse.esmf.samm:unit:2.0.0#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix : <urn:samm:org.eclipse.esmf.test:1.0.0#> .
+
+:TestXSDLimitedIntegerNumberTypes a samm:Aspect ;
+   samm:properties ( :a :b :c :d :ua :ub :uc :ud :pi :nni :ni :npi ) ;
+   samm:operations ( ) ;
+   samm:name "TestXSDLimitedIntegerNumberTypes" .
+
+:a a samm:Property ;
+   samm:characteristic :ByteCharacteristic ;
+   samm:name "a" .
+
+:b a samm:Property ;
+   samm:characteristic :ShortCharacteristic ;
+   samm:name "b" .
+
+:c a samm:Property ;
+   samm:characteristic :IntCharacteristic ;
+   samm:name "c" .
+
+:d a samm:Property ;
+   samm:characteristic :LongCharacteristic ;
+   samm:name "d" .
+
+:ua a samm:Property ;
+   samm:characteristic :UnsignedByteCharacteristic ;
+   samm:name "ua" .
+
+:ub a samm:Property ;
+   samm:characteristic :UnsignedShortCharacteristic ;
+   samm:name "ub" .
+
+:uc a samm:Property ;
+   samm:characteristic :UnsignedIntCharacteristic ;
+   samm:name "uc" .
+
+:ud a samm:Property ;
+   samm:characteristic :UnsignedLongCharacteristic ;
+   samm:name "ud" .
+
+:pi a samm:Property ;
+   samm:characteristic :PositiveIntegerCharacteristic ;
+   samm:name "pi" .
+
+:nni a samm:Property ;
+   samm:characteristic :NonNegativeIntegerCharacteristic ;
+   samm:name "nni" .
+
+:ni a samm:Property ;
+   samm:characteristic :NegativeIntegerCharacteristic ;
+   samm:name "ni" .
+
+:npi a samm:Property ;
+   samm:characteristic :NonPositiveIntegerCharacteristic ;
+   samm:name "npi" .
+
+:ByteCharacteristic a samm:Characteristic ;
+   samm:dataType xsd:byte ;
+   samm:name "ByteCharacteristic" .
+
+:ShortCharacteristic a samm:Characteristic ;
+   samm:dataType xsd:short ;
+   samm:name "ShortCharacteristic" .
+
+:IntCharacteristic a samm:Characteristic ;
+   samm:dataType xsd:int ;
+   samm:name "IntCharacteristic" .
+
+:LongCharacteristic a samm:Characteristic ;
+   samm:dataType xsd:long ;
+   samm:name "LongCharacteristic" .
+
+:UnsignedByteCharacteristic a samm:Characteristic ;
+   samm:dataType xsd:unsignedByte ;
+   samm:name "UnsignedByteCharacteristic" .
+
+:UnsignedShortCharacteristic a samm:Characteristic ;
+   samm:dataType xsd:unsignedShort ;
+   samm:name "UnsignedShortCharacteristic" .
+
+:UnsignedIntCharacteristic a samm:Characteristic ;
+   samm:dataType xsd:unsignedInt ;
+   samm:name "UnsignedIntCharacteristic" .
+
+:UnsignedLongCharacteristic a samm:Characteristic ;
+   samm:dataType xsd:unsignedLong ;
+   samm:name "UnsignedLongCharacteristic" .
+
+:PositiveIntegerCharacteristic a samm:Characteristic ;
+   samm:dataType xsd:positiveInteger ;
+   samm:name "PositiveIntegerCharacteristic" .
+
+:NonNegativeIntegerCharacteristic a samm:Characteristic ;
+   samm:dataType xsd:nonNegativeInteger ;
+   samm:name "NonNegativeIntegerCharacteristic" .
+
+:NegativeIntegerCharacteristic a samm:Characteristic ;
+   samm:dataType xsd:negativeInteger ;
+   samm:name "NegativeIntegerCharacteristic" .
+
+:NonPositiveIntegerCharacteristic a samm:Characteristic ;
+   samm:dataType xsd:nonPositiveInteger ;
+   samm:name "NonPositiveIntegerCharacteristic" .

@@ -1,3 +1,16 @@
+/*
+ * Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH
+ *
+ * See the AUTHORS file(s) distributed with this work for
+ * additional information regarding authorship.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ *
+ * SPDX-License-Identifier: MPL-2.0
+ */
+
 import {DefaultEntityInstance, DefaultEnumeration, Property} from '@esmf/aspect-model-loader';
 import {Schema} from '../schema';
 import {TemplateHelper} from '../../../utils/template-helper';
@@ -22,20 +35,20 @@ export class LanguageGenerator {
         return `{
                 ${!this.options.templateHelper.isAspectSelected(this.options) ? this.getBlockFullAspectVersion(lang) : ``}                  
                 ${
-                    this.options.enableVersionSupport
-                        ? ` "${this.options.selectedModelElement.name.toLowerCase()}.v${this.options.templateHelper.formatAspectModelVersion(
-                              this.options.aspectModelVersion
-                          )}": {`
-                        : ``
-                }
+            this.options.enableVersionSupport
+                ? ` "${this.options.selectedModelElement.name.toLowerCase()}.v${this.options.templateHelper.formatAspectModelVersion(
+                    this.options.aspectModelVersion
+                )}": {`
+                : ``
+        }
                 ${new TemplateHelper()
-                    .getProperties(this.options)
-                    .map((prop: Property, i) => {
-                        return `${i > 0 ? ', ' : ''} 
+            .getProperties(this.options)
+            .map((prop: Property, i) => {
+                return `${i > 0 ? ', ' : ''} 
                                 ${this.getBlockTransProperty(prop, lang)}
                                 ${this.getBlockTransEntity(prop, lang)}`;
-                    })
-                    .join('')}
+            })
+            .join('')}
                
                
                 ${this.getBlockTransCustomColumns()}
@@ -69,12 +82,12 @@ export class LanguageGenerator {
     private getBlockFullAspectVersion(lang: string): string {
         return `
             ${
-                this.options.enableVersionSupport
-                    ? ` "${this.options.aspectModel.name.toLowerCase()}.v${this.options.templateHelper.formatAspectModelVersion(
-                          this.options.aspectModelVersion
-                      )}": {`
-                    : ``
-            }
+            this.options.enableVersionSupport
+                ? ` "${this.options.aspectModel.name.toLowerCase()}.v${this.options.templateHelper.formatAspectModelVersion(
+                    this.options.aspectModelVersion
+                )}": {`
+                : ``
+        }
             ${this.getBlockAspectDetails(lang)}
             ${this.options.enableVersionSupport ? `},` : ``}
         `;
