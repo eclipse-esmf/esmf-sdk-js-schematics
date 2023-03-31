@@ -21,21 +21,21 @@ Install https://nodejs.org/en/download/[node] LTS (long term support) version.
 Run the following command in the desired Angular project folder to add the dependency
 
 [source]
-npm install https://github.com/eclipse-esmf/esmf-sdk-js-schematics/releases/download/vX.X.X/esmf-semantic-ui-schematics-X.X.X.tgz --save-dev
+npm install https://github.com/eclipse-esmf/esmf-sdk-js-schematics/releases/download/v{{version}}/esmf-semantic-ui-schematics-{{version}}/.tgz --save-dev
 
 or
 
 [source]
-yarn add https://github.com/eclipse-esmf/esmf-sdk-js-schematics/releases/download/vX.X.X/esmf-semantic-ui-schematics-X.X.X.tgz --dev
+yarn add https://github.com/eclipse-esmf/esmf-sdk-js-schematics/releases/download/v{{version}}//esmf-semantic-ui-schematics-{{version}}/.tgz --dev
 
 === Install Aspect Model Loader
 
 Run the following command in the desired Angular project folder to add the dependency
 
 [source]
-npm install https://github.com/eclipse-esmf/esmf-sdk-js-aspect-model-loader/releases/download/vX.X.X/esmf-aspect-model-loader-X.X.X.tgz --save-dev
+npm install https://github.com/eclipse-esmf/esmf-sdk-js-aspect-model-loader/releases/download/v{{version}}//esmf-aspect-model-loader-{{version}}/.tgz --save-dev
 
 or
 
 [source]
-yarn add https://github.com/eclipse-esmf/esmf-sdk-js-aspect-model-loader/releases/download/vX.X.X/esmf-aspect-model-loader-X.X.X.tgz --dev
+yarn add https://github.com/eclipse-esmf/esmf-sdk-js-aspect-model-loader/releases/download/v{{version}}//esmf-aspect-model-loader-{{version}}/.tgz --dev
