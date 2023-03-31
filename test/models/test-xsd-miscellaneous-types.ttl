@@ -22,29 +22,22 @@
 
 :TestXSDMiscellaneousTypes a samm:Aspect ;
    samm:properties ( :a :b :c ) ;
-   samm:operations ( ) ;
-   samm:name "TestXSDMiscellaneousTypes" .
+   samm:operations ( ) .
 
 :a a samm:Property ;
-   samm:characteristic :AnyUriCharacteristic ;
-   samm:name "a" .
+   samm:characteristic :AnyUriCharacteristic .
 
 :b a samm:Property ;
-   samm:characteristic :CurieCharacteristic ;
-   samm:name "b" .
+   samm:characteristic :CurieCharacteristic .
 
 :c a samm:Property ;
-   samm:characteristic :RDFLangStringCharacteristic ;
-   samm:name "c" .
+   samm:characteristic :RDFLangStringCharacteristic .
 
 :AnyUriCharacteristic a samm:Characteristic ;
-   samm:dataType xsd:anyUri ;
-   samm:name "AnyUriCharacteristic" .
+   samm:dataType xsd:anyUri .
 
 :CurieCharacteristic a samm:Characteristic ;
-   samm:dataType samm:curie ;
-   samm:name "CurieCharacteristic" .
+   samm:dataType samm:curie .
 
 :RDFLangStringCharacteristic a samm:Characteristic ;
-   samm:dataType rdf:langString ;
-   samm:name "RDFLangStringCharacteristic" .
+   samm:dataType rdf:langString .

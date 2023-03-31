@@ -22,37 +22,28 @@
 
 :TestXSDTimeAndDateTypes a samm:Aspect ;
    samm:properties ( :a :b :c :d ) ;
-   samm:operations ( ) ;
-   samm:name "TestXSDTimeAndDateTypes" .
+   samm:operations ( ).
 
 :a a samm:Property ;
-   samm:characteristic :DateCharacteristic ;
-   samm:name "a" .
+   samm:characteristic :DateCharacteristic .
 
 :b a samm:Property ;
-   samm:characteristic :TimeCharacteristic ;
-   samm:name "b" .
+   samm:characteristic :TimeCharacteristic .
 
 :c a samm:Property ;
-   samm:characteristic :DateTimeCharacteristic ;
-   samm:name "c" .
+   samm:characteristic :DateTimeCharacteristic .
 
 :d a samm:Property ;
-   samm:characteristic :DateTimeStampCharacteristic ;
-   samm:name "d" .
+   samm:characteristic :DateTimeStampCharacteristic .
 
 :DateCharacteristic a samm:Characteristic ;
-   samm:dataType xsd:date ;
-   samm:name "DateCharacteristic" .
+   samm:dataType xsd:date .
 
 :TimeCharacteristic a samm:Characteristic ;
-   samm:dataType xsd:time ;
-   samm:name "TimeCharacteristic" .
+   samm:dataType xsd:time .
 
 :DateTimeCharacteristic a samm:Characteristic ;
-   samm:dataType xsd:dateTime ;
-   samm:name "DateTimeCharacteristic" .
+   samm:dataType xsd:dateTime .
 
 :DateTimeStampCharacteristic a samm:Characteristic ;
-   samm:dataType xsd:dateTimeStamp ;
-   samm:name "DateTimeStampCharacteristic" .
+   samm:dataType xsd:dateTimeStamp .

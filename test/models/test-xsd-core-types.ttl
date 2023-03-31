@@ -22,37 +22,28 @@
 
 :TestXSDCoreTypes a samm:Aspect ;
    samm:properties ( :a :b :c :d ) ;
-   samm:operations ( ) ;
-   samm:name "TestXSDCoreTypes" .
+   samm:operations ( ).
 
 :a a samm:Property ;
-   samm:characteristic :StringCharacteristic ;
-   samm:name "a" .
+   samm:characteristic :StringCharacteristic .
 
 :b a samm:Property ;
-   samm:characteristic :BooleanCharacteristic ;
-   samm:name "b" .
+   samm:characteristic :BooleanCharacteristic .
 
 :c a samm:Property ;
-   samm:characteristic :DecimalCharacteristic ;
-   samm:name "c" .
+   samm:characteristic :DecimalCharacteristic .
 
 :d a samm:Property ;
-   samm:characteristic :IntegerCharacteristic ;
-   samm:name "d" .
+   samm:characteristic :IntegerCharacteristic .
 
 :StringCharacteristic a samm:Characteristic ;
-   samm:dataType xsd:string ;
-   samm:name "StringCharacteristic" .
+   samm:dataType xsd:string .
 
 :BooleanCharacteristic a samm:Characteristic ;
-   samm:dataType xsd:boolean ;
-   samm:name "BooleanCharacteristic" .
+   samm:dataType xsd:boolean .
 
 :DecimalCharacteristic a samm:Characteristic ;
-   samm:dataType xsd:decimal ;
-   samm:name "DecimalCharacteristic" .
+   samm:dataType xsd:decimal .
 
 :IntegerCharacteristic a samm:Characteristic ;
-   samm:dataType xsd:integer ;
-   samm:name "IntegerCharacteristic" .
+   samm:dataType xsd:integer .

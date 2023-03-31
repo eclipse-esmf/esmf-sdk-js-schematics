@@ -22,101 +22,76 @@
 
 :TestXSDLimitedIntegerNumberTypes a samm:Aspect ;
    samm:properties ( :a :b :c :d :ua :ub :uc :ud :pi :nni :ni :npi ) ;
-   samm:operations ( ) ;
-   samm:name "TestXSDLimitedIntegerNumberTypes" .
+   samm:operations ( ) .
 
 :a a samm:Property ;
-   samm:characteristic :ByteCharacteristic ;
-   samm:name "a" .
+   samm:characteristic :ByteCharacteristic .
 
 :b a samm:Property ;
-   samm:characteristic :ShortCharacteristic ;
-   samm:name "b" .
+   samm:characteristic :ShortCharacteristic .
 
 :c a samm:Property ;
-   samm:characteristic :IntCharacteristic ;
-   samm:name "c" .
+   samm:characteristic :IntCharacteristic .
 
 :d a samm:Property ;
-   samm:characteristic :LongCharacteristic ;
-   samm:name "d" .
+   samm:characteristic :LongCharacteristic .
 
 :ua a samm:Property ;
-   samm:characteristic :UnsignedByteCharacteristic ;
-   samm:name "ua" .
+   samm:characteristic :UnsignedByteCharacteristic .
 
 :ub a samm:Property ;
-   samm:characteristic :UnsignedShortCharacteristic ;
-   samm:name "ub" .
+   samm:characteristic :UnsignedShortCharacteristic .
 
 :uc a samm:Property ;
-   samm:characteristic :UnsignedIntCharacteristic ;
-   samm:name "uc" .
+   samm:characteristic :UnsignedIntCharacteristic .
 
 :ud a samm:Property ;
-   samm:characteristic :UnsignedLongCharacteristic ;
-   samm:name "ud" .
+   samm:characteristic :UnsignedLongCharacteristic .
 
 :pi a samm:Property ;
-   samm:characteristic :PositiveIntegerCharacteristic ;
-   samm:name "pi" .
+   samm:characteristic :PositiveIntegerCharacteristic .
 
 :nni a samm:Property ;
-   samm:characteristic :NonNegativeIntegerCharacteristic ;
-   samm:name "nni" .
+   samm:characteristic :NonNegativeIntegerCharacteristic .
 
 :ni a samm:Property ;
-   samm:characteristic :NegativeIntegerCharacteristic ;
-   samm:name "ni" .
+   samm:characteristic :NegativeIntegerCharacteristic .
 
 :npi a samm:Property ;
-   samm:characteristic :NonPositiveIntegerCharacteristic ;
-   samm:name "npi" .
+   samm:characteristic :NonPositiveIntegerCharacteristic .
 
 :ByteCharacteristic a samm:Characteristic ;
-   samm:dataType xsd:byte ;
-   samm:name "ByteCharacteristic" .
+   samm:dataType xsd:byte .
 
 :ShortCharacteristic a samm:Characteristic ;
-   samm:dataType xsd:short ;
-   samm:name "ShortCharacteristic" .
+   samm:dataType xsd:short .
 
 :IntCharacteristic a samm:Characteristic ;
-   samm:dataType xsd:int ;
-   samm:name "IntCharacteristic" .
+   samm:dataType xsd:int .
 
 :LongCharacteristic a samm:Characteristic ;
-   samm:dataType xsd:long ;
-   samm:name "LongCharacteristic" .
+   samm:dataType xsd:long .
 
 :UnsignedByteCharacteristic a samm:Characteristic ;
-   samm:dataType xsd:unsignedByte ;
-   samm:name "UnsignedByteCharacteristic" .
+   samm:dataType xsd:unsignedByte .
 
 :UnsignedShortCharacteristic a samm:Characteristic ;
-   samm:dataType xsd:unsignedShort ;
-   samm:name "UnsignedShortCharacteristic" .
+   samm:dataType xsd:unsignedShort .
 
 :UnsignedIntCharacteristic a samm:Characteristic ;
-   samm:dataType xsd:unsignedInt ;
-   samm:name "UnsignedIntCharacteristic" .
+   samm:dataType xsd:unsignedInt .
 
 :UnsignedLongCharacteristic a samm:Characteristic ;
-   samm:dataType xsd:unsignedLong ;
-   samm:name "UnsignedLongCharacteristic" .
+   samm:dataType xsd:unsignedLong .
 
 :PositiveIntegerCharacteristic a samm:Characteristic ;
-   samm:dataType xsd:positiveInteger ;
-   samm:name "PositiveIntegerCharacteristic" .
+   samm:dataType xsd:positiveInteger .
 
 :NonNegativeIntegerCharacteristic a samm:Characteristic ;
-   samm:dataType xsd:nonNegativeInteger ;
-   samm:name "NonNegativeIntegerCharacteristic" .
+   samm:dataType xsd:nonNegativeInteger .
 
 :NegativeIntegerCharacteristic a samm:Characteristic ;
-   samm:dataType xsd:negativeInteger ;
-   samm:name "NegativeIntegerCharacteristic" .
+   samm:dataType xsd:negativeInteger .
 
 :NonPositiveIntegerCharacteristic a samm:Characteristic ;
-   samm:dataType xsd:nonPositiveInteger ;
-   samm:name "NonPositiveIntegerCharacteristic" .
+   samm:dataType xsd:nonPositiveInteger .

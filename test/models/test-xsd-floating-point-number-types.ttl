@@ -22,21 +22,16 @@
 
 :TestXSDFloatingPointNumberTypes a samm:Aspect ;
    samm:properties ( :a :b ) ;
-   samm:operations ( ) ;
-   samm:name "TestXSDFloatingPointNumberTypes" .
+   samm:operations ( ) .
 
 :a a samm:Property ;
-   samm:characteristic :DoubleCharacteristic ;
-   samm:name "a" .
+   samm:characteristic :DoubleCharacteristic .
 
 :b a samm:Property ;
-   samm:characteristic :FloatCharacteristic ;
-   samm:name "b" .
+   samm:characteristic :FloatCharacteristic .
 
 :DoubleCharacteristic a samm:Characteristic ;
-   samm:dataType xsd:double ;
-   samm:name "DoubleCharacteristic" .
+   samm:dataType xsd:double .
 
 :FloatCharacteristic a samm:Characteristic ;
-   samm:dataType xsd:float ;
-   samm:name "FloatCharacteristic" .
+   samm:dataType xsd:float .

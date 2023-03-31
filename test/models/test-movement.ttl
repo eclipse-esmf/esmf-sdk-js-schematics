@@ -24,67 +24,56 @@
    samm:preferredName "Movement"@en ;
    samm:description "Aspect for movement information"@en ;
    samm:properties ( :moving :speedLimitWarning :position ) ;
-   samm:operations ( ) ;
-   samm:name "Movement" .
+   samm:operations ( ) .
 
 :moving a samm:Property ;
    samm:preferredName "Moving"@en ;
    samm:description "Flag indicating if the position is changing"@en ;
-   samm:characteristic samm-c:Boolean ;
-   samm:name "moving" .
+   samm:characteristic samm-c:Boolean .
 
 :speedLimitWarning a samm:Property ;
    samm:preferredName "Speed Limit Warning"@en ;
    samm:description "Indicates if speed limit is adhered to."@en ;
-   samm:characteristic :WarningLevel ;
-   samm:name "speedLimitWarning" .
+   samm:characteristic :WarningLevel .
 
 :position a samm:Property ;
    samm:preferredName "Position"@en ;
    samm:description "Indicates a position"@en ;
-   samm:characteristic :SpatialPositionCharacteristic ;
-   samm:name "position" .
+   samm:characteristic :SpatialPositionCharacteristic .
 
 :WarningLevel a samm-c:Enumeration ;
    samm:preferredName "Warning Level"@en ;
    samm:description "Represents if speed of position change is within specification (green), within tolerance (yellow), or outside specification (red)."@en ;
    samm:dataType xsd:string ;
-   samm-c:values ( "green" "yellow" "red" ) ;
-   samm:name "WarningLevel" .
+   samm-c:values ( "green" "yellow" "red" ) .
 
 :SpatialPositionCharacteristic a samm-c:SingleEntity ;
    samm:preferredName "Spatial Position Characteristic"@en ;
    samm:description "Represents a single location in space."@en ;
-   samm:dataType :SpatialPosition ;
-   samm:name "SpatialPositionCharacteristic" .
+   samm:dataType :SpatialPosition .
 
 :SpatialPosition a samm:Entity ;
    samm:preferredName "Spatial Position"@en ;
    samm:description "Position in space, described along three axis, with the third axis optional, if all positions are in a plane."@en ;
-   samm:properties ( :x :y :z ) ;
-   samm:name "SpatialPosition" .
+   samm:properties ( :x :y :z ) .
 
 :x a samm:Property ;
    samm:preferredName "x"@en ;
    samm:description "x coordinate in space"@en ;
-   samm:characteristic :Coordinate ;
-   samm:name "x" .
+   samm:characteristic :Coordinate .
 
 :y a samm:Property ;
    samm:preferredName "y"@en ;
    samm:description "y coordinate in space"@en ;
-   samm:characteristic :Coordinate ;
-   samm:name "y" .
+   samm:characteristic :Coordinate .
 
 :z a samm:Property ;
    samm:preferredName "z"@en ;
    samm:description "z coordinate in space"@en ;
-   samm:characteristic :Coordinate ;
-   samm:name "z" .
+   samm:characteristic :Coordinate .
 
 :Coordinate a samm-c:Measurement ;
    samm:preferredName "Coordinate"@en ;
    samm:description "Represents a coordinate along an axis in space."@en ;
    samm:dataType xsd:float ;
-   samm-c:unit unit:metre ;
-   samm:name "Coordinate" .
+   samm-c:unit unit:metre .

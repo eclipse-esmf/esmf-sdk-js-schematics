@@ -26,45 +26,34 @@
 
 :TestCollectionTypes a samm:Aspect ;
    samm:properties ( :productTypesList :productTypesSet :productTypesSortedSet :measurements ) ;
-   samm:operations ( ) ;
-   samm:name "TestCollectionTypes" .
+   samm:operations ( ) .
 
 :productTypesList a samm:Property ;
-   samm:characteristic :ProductTypesAsList ;
-   samm:name "productTypesList" .
+   samm:characteristic :ProductTypesAsList .
 
 :productTypesSet a samm:Property ;
-   samm:characteristic :ProductTypesAsSet ;
-   samm:name "productTypesSet" .
+   samm:characteristic :ProductTypesAsSet .
 
 :productTypesSortedSet a samm:Property ;
-   samm:characteristic :ProductTypesAsSortedSet ;
-   samm:name "productTypesSortedSet" .
+   samm:characteristic :ProductTypesAsSortedSet .
 
 :measurements a samm:Property ;
-   samm:characteristic :MeasurementCollection ;
-   samm:name "measurements" .
+   samm:characteristic :MeasurementCollection .
 
 :ProductTypesAsList a samm-c:List ;
-   samm:dataType :ProductType ;
-   samm:name "ProductTypesAsList" .
+   samm:dataType :ProductType .
 
 :ProductTypesAsSet a samm-c:Set ;
-   samm:dataType :ProductType ;
-   samm:name "ProductTypesAsSet" .
+   samm:dataType :ProductType .
 
 :ProductTypesAsSortedSet a samm-c:SortedSet ;
-   samm:dataType :ProductType ;
-   samm:name "ProductTypesAsSortedSet" .
+   samm:dataType :ProductType .
 
 :MeasurementCollection a samm-c:SortedSet ;
-   samm:dataType xsd:integer ;
-   samm:name "MeasurementCollection" .
+   samm:dataType xsd:integer .
 
 :ProductType a samm:Entity ;
-   samm:properties ( :productClass ) ;
-   samm:name "ProductType" .
+   samm:properties ( :productClass ) .
 
 :productClass a samm:Property ;
-   samm:characteristic samm-c:Text ;
-   samm:name "productClass" .
+   samm:characteristic samm-c:Text .

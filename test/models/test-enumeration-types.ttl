@@ -21,43 +21,35 @@
 
 :TestEnumerationTypes a samm:Aspect ;
    samm:properties ( :a :b :c ) ;
-   samm:operations ( ) ;
-   samm:name "TestEnumerationTypes" .
+   samm:operations ( ) .
 
 :a a samm:Property ;
-   samm:characteristic :EnumerationOfStrings ;
-   samm:name "a" .
+   samm:characteristic :EnumerationOfStrings .
 
 :b a samm:Property ;
-   samm:characteristic :EnumerationOfIntegers ;
-   samm:name "b" .
+   samm:characteristic :EnumerationOfIntegers .
 
 :c a samm:Property ;
-   samm:characteristic :PartStatus ;
-   samm:name "c" .
+   samm:characteristic :PartStatus .
 
 :EnumerationOfStrings a samm-c:Enumeration ;
    samm:dataType xsd:string ;
-   samm-c:values ( "Complete" "In Progress" "Created" ) ;
-   samm:name "EnumerationOfStrings" .
+   samm-c:values ( "Complete" "In Progress" "Created" ) .
 
 :EnumerationOfIntegers a samm-c:Enumeration ;
    samm:dataType xsd:integer ;
-   samm-c:values ( 2 3 5 7 11 13 17 19 ) ;
-   samm:name "EnumerationOfIntegers" .
+   samm-c:values ( 2 3 5 7 11 13 17 19 ) .
 
 :PartStatus a samm-c:Enumeration ;
    samm:preferredName "Part Status"@en ;
    samm:description "Status of part in SAP"@en ;
    samm:dataType :Status ;
-   samm-c:values ( :StatusInProgress :StatusCancelled :StatusReleaseForPlan :StatusReleaseForProduction :StatusReleaseForSeries :StatusLimitedRelease :StatusValid :StatusInvalid :StatusInactive ) ;
-   samm:name "PartStatus" .
+   samm-c:values ( :StatusInProgress :StatusCancelled :StatusReleaseForPlan :StatusReleaseForProduction :StatusReleaseForSeries :StatusLimitedRelease :StatusValid :StatusInvalid :StatusInactive ) .
 
 :Status a samm:Entity ;
    samm:preferredName "Status Entity"@en ;
    samm:description "Entity that describes a part state."@en ;
-   samm:properties ( :partStatusAttributeValue :partStatusAttributeId [ samm:property :partStatusAttributeDescription; samm:notInPayload true ] ) ;
-   samm:name "Status" .
+   samm:properties ( :partStatusAttributeValue :partStatusAttributeId [ samm:property :partStatusAttributeDescription; samm:notInPayload true ] ) .
 
 :StatusInProgress a :Status ;
    :partStatusAttributeDescription "Minimalstatus PDM (obligatorisch): Neuanlage durch Entwicklung / Werk. Das Objekt wird durch die für die Erstellung verantwortliche Stelle bearbeitet."@de ;
@@ -118,23 +110,18 @@
    samm:description "The value representing a specific state of part."@en ;
    samm:characteristic [
       a samm-c:Code ;
-      samm:dataType xsd:string ;
-      samm:name "StatusAttributeValue"
-   ] ;
-   samm:name "partStatusAttributeValue" .
+      samm:dataType xsd:string
+   ] .
 
 :partStatusAttributeId a samm:Property ;
    samm:preferredName "Part Status Attribute ID"@en ;
    samm:description "The value representing a specific state of part as a number."@en ;
    samm:characteristic [
       a samm-c:Code ;
-      samm:dataType xsd:positiveInteger ;
-      samm:name "StatusAttributeId"
-   ] ;
-   samm:name "partStatusAttributeId" .
+      samm:dataType xsd:positiveInteger
+   ] .
 
 :partStatusAttributeDescription a samm:Property ;
    samm:preferredName "Part Status Attribute Description"@en ;
    samm:description "The description for a specific state of part."@en ;
-   samm:characteristic samm-c:MultiLanguageText ;
-   samm:name "partStatusAttributeDescription" .
+   samm:characteristic samm-c:MultiLanguageText .

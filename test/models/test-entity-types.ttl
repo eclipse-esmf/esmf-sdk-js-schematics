@@ -22,41 +22,31 @@
 
 :TestEntityTypes a samm:Aspect ;
    samm:properties ( :a ) ;
-   samm:operations ( ) ;
-   samm:name "TestEntityTypes" .
+   samm:operations ( ) .
 
 :a a samm:Property ;
-   samm:characteristic :SingleEntityCharacteristic ;
-   samm:name "a" .
+   samm:characteristic :SingleEntityCharacteristic .
 
 :SingleEntityCharacteristic a samm-c:SingleEntity ;
-   samm:dataType :EntityCharacteristic ;
-   samm:name "SingleEntityCharacteristic" .
+   samm:dataType :EntityCharacteristic .
 
 :EntityCharacteristic a samm:Entity ;
-   samm:properties ( :x :y :z ) ;
-   samm:name "EntityCharacteristic" .
+   samm:properties ( :x :y :z ) .
 
 :x a samm:Property ;
-   samm:characteristic :StringCharacteristic ;
-   samm:name "x" .
+   samm:characteristic :StringCharacteristic .
 
 :y a samm:Property ;
-   samm:characteristic :BooleanCharacteristic ;
-   samm:name "y" .
+   samm:characteristic :BooleanCharacteristic .
 
 :z a samm:Property ;
-   samm:characteristic :IntegerCharacteristic ;
-   samm:name "z" .
+   samm:characteristic :IntegerCharacteristic .
 
 :StringCharacteristic a samm:Characteristic ;
-   samm:dataType xsd:string ;
-   samm:name "StringCharacteristic" .
+   samm:dataType xsd:string .
 
 :BooleanCharacteristic a samm:Characteristic ;
-   samm:dataType xsd:boolean ;
-   samm:name "BooleanCharacteristic" .
+   samm:dataType xsd:boolean .
 
 :IntegerCharacteristic a samm:Characteristic ;
-   samm:dataType xsd:integer ;
-   samm:name "IntegerCharacteristic" .
+   samm:dataType xsd:integer .
