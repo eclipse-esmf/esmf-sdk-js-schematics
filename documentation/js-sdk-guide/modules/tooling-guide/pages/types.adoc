@@ -1,0 +1,47 @@
+////
+Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH
+
+See the AUTHORS file(s) distributed with this work for additional information regarding authorship.
+
+This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
+If a copy of the MPL was not distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
+SPDX-License-Identifier: MPL-2.0
+////
+
+= Generation interfaces derived from an Aspect Model
+
+Dealing with an Aspect Model and generating components or other elements based on it, the type safety and definition
+must be ensured for a smooth development process. Generating interfaces is included for each element derived from an
+Aspect Model.
+
+The type generation functionality is provided through a schematics and can be used as follows:
+
+[source]
+ng generate @esmf/semantic-ui-schematics:types --aspectModelTFilesString=<relative-path-model-ttl>
+
+or
+
+[source]
+ng g @esmf/semantic-ui-schematics:types --aspectModelTFilesString=<relative-path-model-ttl-1>,<relative-path-model-ttl-2>
+
+Afterwards you can choose the Aspect Model and all referenced .ttl files to generate the desired interfaces.
+The interfaces will be generated under `src/app/shared/types/<aspect-model-name>/<aspect-model-version>/<aspect-model-name>.types.ts`.
+
+== Example using the Movement.ttl:
+
+.Show stacktrace
+[source,turtle]
+----
+include::example$Movement.ttl[]
+----
+
+Running the following CLI command. Movement.ttl is stored in the root folder of the Angular project:
+[source]
+ng g @esmf/semantic-ui-schematics:types --aspectModelTFilesString=Movement.ttl
+
+
+The following interfaces will be generated:
+[source,typescript]
+----
+include::example$movement.types.ts[]
+----

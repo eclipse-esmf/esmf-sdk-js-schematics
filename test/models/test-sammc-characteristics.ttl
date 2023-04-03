@@ -1,0 +1,66 @@
+#
+# Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH
+#
+# See the AUTHORS file(s) distributed with this work for
+# additional information regarding authorship.
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at https://mozilla.org/MPL/2.0/.
+#
+# SPDX-License-Identifier: MPL-2.0
+#
+
+@prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0#> .
+@prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:1.0.0#> .
+@prefix samm-e: <urn:samm:org.eclipse.esmf.samm:entity:1.0.0#> .
+@prefix unit: <urn:samm:org.eclipse.esmf.samm:unit:1.0.0#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix : <urn:samm:org.eclipse.esmf.test:1.0.0#> .
+
+:TestSAMMCCharacteristics a samm:Aspect ;
+   samm:properties ( :a :b :c :d :either1 :either2 ) ;
+   samm:operations ( ) .
+
+:a a samm:Property ;
+   samm:characteristic samm-c:Boolean .
+
+:b a samm:Property ;
+   samm:characteristic samm-c:Text .
+
+:c a samm:Property ;
+   samm:characteristic samm-c:Timestamp .
+
+:d a samm:Property ;
+   samm:characteristic samm-c:MultiLanguageText .
+
+:either1 a samm:Property ;
+   samm:characteristic [
+      a samm-c:Either ;
+      samm-c:left [
+         a samm-c:Text
+      ] ;
+      samm-c:right [
+         a samm-c:List ;
+         samm:dataType xsd:float
+      ]
+   ] .
+
+:either2 a samm:Property ;
+   samm:characteristic [
+      a samm-c:Either ;
+      samm-c:left [
+         a samm-c:List ;
+         samm:dataType xsd:float
+      ] ;
+      samm-c:right [
+         a samm-c:SingleEntity ;
+         samm:dataType :Right
+      ]
+   ] .
+
+:Right a samm:Entity ;
+   samm:properties ( :a ) .
+

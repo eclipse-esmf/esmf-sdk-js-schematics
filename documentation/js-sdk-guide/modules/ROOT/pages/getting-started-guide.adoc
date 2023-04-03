@@ -1,0 +1,41 @@
+////
+Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH
+
+See the AUTHORS file(s) distributed with this work for additional information regarding authorship.
+
+This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
+If a copy of the MPL was not distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
+SPDX-License-Identifier: MPL-2.0
+////
+
+= Getting Started Guide
+
+== Set up local environment
+
+=== Prerequisites
+
+Install https://nodejs.org/en/download/[node] LTS (long term support) version.
+
+=== Install SAMM Schematic
+
+Run the following command in the desired Angular project folder to add the dependency
+
+[source]
+npm install https://github.com/eclipse-esmf/esmf-sdk-js-schematics/releases/download/v{{version}}/esmf-semantic-ui-schematics-{{version}}/.tgz --save-dev
+
+or
+
+[source]
+yarn add https://github.com/eclipse-esmf/esmf-sdk-js-schematics/releases/download/v{{version}}//esmf-semantic-ui-schematics-{{version}}/.tgz --dev
+
+=== Install Aspect Model Loader
+
+Run the following command in the desired Angular project folder to add the dependency
+
+[source]
+npm install https://github.com/eclipse-esmf/esmf-sdk-js-aspect-model-loader/releases/download/v{{version}}//esmf-aspect-model-loader-{{version}}/.tgz --save-dev
+
+or
+
+[source]
+yarn add https://github.com/eclipse-esmf/esmf-sdk-js-aspect-model-loader/releases/download/v{{version}}//esmf-aspect-model-loader-{{version}}/.tgz --dev

@@ -1,0 +1,68 @@
+name: "Create Tagged Release"
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  gh_tagged_release:
+    name: Create tagged release
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout project
+        uses: actions/checkout@v3
+
+      - name: Cache node modules
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-node-modules
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-${{ env.cache-name }}-
+            ${{ runner.os }}-
+
+      - name: Setup NodeJs
+        uses: actions/setup-node@v3
+        with:
+          node-version: '17'
+          cache: 'npm'
+          cache-dependency-path: '**/package-lock.json'
+
+      - name: Set tag version
+        run: |
+          echo "tagVersion=${GITHUB_REF/refs\/tags\/v/}" >> $GITHUB_ENV
+          yq eval -i '.version = "${{ env.tagVersion }}"' documentation/js-sdk-guide/antora.yml
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Build Project
+        run: npm run build
+
+      # This should be removed as soon as we go towards nodejs package repository
+      - name: Pack Project as tgz
+        run: npm pack
+
+      - name: Create GitHub release
+        if: ${{ (!contains( github.ref, '-rc' )) }}
+        uses: svenstaro/upload-release-action@latest
+        with:
+          overwrite: true
+          prerelease: false
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: esmf-semantic-ui-schematics-${{ env.tagVersion }}.tgz
+          tag: ${{ github.ref }}
+
+      - name: Create GitHub pre-release
+        if: ${{ (contains( github.ref, '-rc' )) }}
+        uses: svenstaro/upload-release-action@latest
+        with:
+          overwrite: true
+          prerelease: true
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: esmf-semantic-ui-schematics-${{ env.tagVersion }}.tgz
+          tag: ${{ github.ref }}

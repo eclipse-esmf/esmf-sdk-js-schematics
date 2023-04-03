@@ -1,0 +1,31 @@
+////
+Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH
+
+See the AUTHORS file(s) distributed with this work for additional information regarding authorship.
+
+This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
+If a copy of the MPL was not distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
+SPDX-License-Identifier: MPL-2.0
+////
+
+= Introduction
+
+The Javascript SDK (JS-SDK) offers libraries which help in the process of automated generation of Angular
+components using an Aspect Model as input or to process an Aspect Model in frontend at runtime.
+
+== SAMM Schematic
+For generating UI components it uses schematics under the hood. A schematic is a template-based code generator that
+supports complex logic. It is a set of instructions for transforming a software project by generating or modifying code.
+Schematics are packaged into collections and can be installed with npm or yarn. Afterwards new components can be
+by easily created by running a command in the CLI and focusing on linking everything easily afterwards. For example parent-child
+communication, event emitters for customizing actions, passing data back and forth.
+
+The SAMM schematic collection is a powerful tool for creating, modifying, and maintaining any software project, is
+particularly useful for customizing Angular projects or components to suit custom needs of any organization.
+
+
+== Aspect Model Loader
+The Aspect Model loader can be used to load an Aspect Model to traverse and access the different information a
+model provides (units, descriptions, constraints, etc.) to implement generic frontends capable to automatically
+adapt to the underling Aspect Model. For example a new added property and the related value could be shown in the
+UI including all information (name, description and unit) without changing any line of code.
