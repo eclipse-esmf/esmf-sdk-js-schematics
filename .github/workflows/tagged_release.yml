@@ -33,7 +33,9 @@ jobs:
           cache-dependency-path: '**/package-lock.json'
 
       - name: Set tag version
-        run: echo "tagVersion=${GITHUB_REF/refs\/tags\/v/}" >> $GITHUB_ENV
+        run: |
+          echo "tagVersion=${GITHUB_REF/refs\/tags\/v/}" >> $GITHUB_ENV
+          yq eval -i '.version = "${{ env.tagVersion }}"' documentation/js-sdk-guide/antora.yml
 
       - name: Install Dependencies
         run: npm install
