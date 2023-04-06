@@ -37,6 +37,9 @@ jobs:
           echo "tagVersion=${GITHUB_REF/refs\/tags\/v/}" >> $GITHUB_ENV
           yq eval -i '.version = "${{ env.tagVersion }}"' documentation/js-sdk-guide/antora.yml
 
+      - name: Set antora version
+        run: yq eval -i '.version = env.TAGVERSION' documentation/js-sdk-guide/antora.yml
+
       - name: Install Dependencies
         run: npm install
 
