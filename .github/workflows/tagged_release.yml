@@ -1,9 +1,11 @@
 name: "Create Tagged Release"
 
 on:
-  push:
-    tags:
-      - "v*"
+  workflow_dispatch:
+    inputs:
+      release_version:
+        description: 'Version number of the release'
+        required: true
 
 jobs:
   gh_tagged_release:
@@ -13,6 +15,11 @@ jobs:
     steps:
       - name: Checkout project
         uses: actions/checkout@v3
+
+      - name: Setup Git
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
 
       - name: Cache node modules
         uses: actions/cache@v3
@@ -32,13 +39,23 @@ jobs:
           cache: 'npm'
           cache-dependency-path: '**/package-lock.json'
 
-      - name: Set tag version
+      - name: Set versions
         run: |
-          echo "tagVersion=${GITHUB_REF/refs\/tags\/v/}" >> $GITHUB_ENV
-          yq eval -i '.version = "${{ env.tagVersion }}"' documentation/js-sdk-guide/antora.yml
+          release_version=${{ github.event.inputs.release_version }}
+          release_branch_name=${release_version%.*}.x
+          echo "release_branch_name=$release_branch_name" >> $GITHUB_ENV
 
       - name: Set antora version
-        run: yq eval -i '.version = env.TAGVERSION' documentation/js-sdk-guide/antora.yml
+        run: yq eval -i '.version = "${{ github.event.inputs.release_version }}"' documentation/js-sdk-guide/antora.yml
+
+      - name: Commit version changes and push to upstream repository
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          branch: ${{ env.release_branch_name }}
+          commit_user_name: github-actions
+          commit_user_email: github-actions@github.com
+          commit_author: Author <actions@github.com>
+          file_pattern: 'documentation/js-sdk-guide/antora.yml'
 
       - name: Install Dependencies
         run: npm install
@@ -60,8 +77,8 @@ jobs:
           overwrite: true
           prerelease: false
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: esmf-semantic-ui-schematics-${{ env.tagVersion }}.tgz
-          tag: ${{ github.ref }}
+          file: esmf-semantic-ui-schematics-${{ github.event.inputs.release_version }}.tgz
+          tag: v${{ github.event.inputs.release_version }}
 
       - name: Create GitHub pre-release
         if: ${{ (contains( github.ref, '-rc' )) }}
@@ -70,5 +87,5 @@ jobs:
           overwrite: true
           prerelease: true
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: esmf-semantic-ui-schematics-${{ env.tagVersion }}.tgz
-          tag: ${{ github.ref }}
+          file: esmf-semantic-ui-schematics-${{ github.event.inputs.release_version }}.tgz
+          tag: v${{ github.event.inputs.release_version }}
