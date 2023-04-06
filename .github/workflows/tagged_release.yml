@@ -61,7 +61,7 @@ jobs:
         run: npm install
 
       - name: Set app version
-        run: npm version $tagVersion --no-git-tag-version
+        run: npm version ${{ github.event.inputs.release_version }} --no-git-tag-version
 
       - name: Build Project
         run: npm run build
