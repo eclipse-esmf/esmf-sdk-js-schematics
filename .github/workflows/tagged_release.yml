@@ -70,22 +70,30 @@ jobs:
       - name: Pack Project as tgz
         run: npm pack
 
-      - name: Create GitHub release
-        if: ${{ (!contains( github.ref, '-rc' )) }}
-        uses: svenstaro/upload-release-action@latest
+      - name: "Create Github release (full)"
+        if: ${{ !contains( github.event.inputs.release_version, '-rc' ) }}
+        uses: softprops/action-gh-release@v1
+        id: esmf_sdk_js_release
         with:
-          overwrite: true
+          body: "Release version ${{ github.event.inputs.release_version }}."
+          tag_name: v${{ github.event.inputs.release_version }}
+          target_commitish: ${{ env.release_branch_name }}
+          draft: false
           prerelease: false
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: esmf-semantic-ui-schematics-${{ github.event.inputs.release_version }}.tgz
-          tag: v${{ github.event.inputs.release_version }}
+          files: esmf-semantic-ui-schematics-${{ github.event.inputs.release_version }}.tgz
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN  }}
 
-      - name: Create GitHub pre-release
-        if: ${{ (contains( github.ref, '-rc' )) }}
-        uses: svenstaro/upload-release-action@latest
+      - name: "Create Github release (milestone)"
+        if: contains( github.event.inputs.release_version, '-rc' )
+        uses: softprops/action-gh-release@v1
+        id: sds_sdk_js_release
         with:
-          overwrite: true
+          body: "Release version ${{ github.event.inputs.release_version }}."
+          tag_name: v${{ github.event.inputs.release_version }}
+          target_commitish: ${{ env.release_branch_name }}
+          draft: false
           prerelease: true
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: esmf-semantic-ui-schematics-${{ github.event.inputs.release_version }}.tgz
-          tag: v${{ github.event.inputs.release_version }}
+          files: esmf-semantic-ui-schematics-${{ github.event.inputs.release_version }}.tgz
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN  }}
