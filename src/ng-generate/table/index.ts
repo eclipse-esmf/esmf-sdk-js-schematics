@@ -99,25 +99,25 @@ export function generateTable(options: Schema): Rule {
             options.spinner,
             options.enableRemoteDataHandling
                 ? [
-                      ...DEFAULT_DEPENDENCIES,
-                      {
-                          type: NodeDependencyType.Default,
-                          version: '~0.9.4',
-                          name: 'rollun-ts-rql',
-                          overwrite: false,
-                      },
-                      {
-                          type: NodeDependencyType.Default,
-                          version: '~4.1.1',
-                          name: 'crypto-js',
-                          overwrite: false,
-                      },
-                  ]
+                    ...DEFAULT_DEPENDENCIES,
+                    {
+                        type: NodeDependencyType.Default,
+                        version: '~0.9.4',
+                        name: 'rollun-ts-rql',
+                        overwrite: false,
+                    },
+                    {
+                        type: NodeDependencyType.Default,
+                        version: '~4.1.1',
+                        name: 'crypto-js',
+                        overwrite: false,
+                    },
+                ]
                 : DEFAULT_DEPENDENCIES
         ),
         addPackageJsonDependencies(
             !options.enabledCommandBarFunctions?.includes('addDateQuickFilters') ||
-                (options.skipImport !== undefined && options.skipImport),
+            (options.skipImport !== undefined && options.skipImport),
             options.spinner,
             [
                 {
@@ -222,9 +222,11 @@ export function generateTable(options: Schema): Rule {
         generateAPIService(options),
         generateCustomAPIService(options),
         generateColumnMenu(options),
+        generateConfigMenu(options),
         generateResizeDirective(options),
         generateValidateInputDirective(options),
         generateShowDescriptionPipe(options),
+        generateSearchStringPipe(options),
         generateHorizontalOverflowDirective(options),
         generateStorageService(options),
         formatGeneratedFiles(
@@ -423,11 +425,29 @@ function generateColumnMenu(options: Schema): Rule {
     };
 }
 
+function generateConfigMenu(options: Schema): Rule {
+    return (tree: Tree, context: SchematicContext) => {
+        if (options.enabledCommandBarFunctions.includes('addSearchBar')) {
+            const componentContent = options.tsGenerator.generateConfigMenu();
+            const componentPath = `${options.path}/${dasherize(options.name)}-config-menu.component.ts`;
+            createOrOverwrite(tree, `${componentPath}`, options.overwrite, componentContent);
+            addToDeclarationsArray(options, tree, `${classify(options.name)}ConfigMenuComponent`, `${componentPath.replace('.ts', '')}`).then();
+            return tree;
+        }
+    };
+}
+
 function generateStyles(options: Schema): Rule {
     return (tree: Tree, _context: SchematicContext): Tree => {
         const styleContent = StyleGenerator.getStyle(options);
         const stylePath = `src/assets/scss/table.component.${options.style || 'css'}`;
         createOrOverwrite(tree, stylePath, options.overwrite, styleContent);
+
+        const contentForGlobalStyles =
+            "@font-face { font-family: 'Material Icons'; font-style: normal;font-weight: 400; src: url(https://fonts.gstatic.com/s/materialicons/v48/flUhRq6tzZclQEJ-Vdg-IuiaDsNcIhQ8tQ.woff2) format('woff2');} .material-icons {font-family: 'Material Icons', serif;font-weight: normal;font-style: normal;font-size: 24px; line-height: 1; letter-spacing: normal; text-transform: none;display: inline-block;white-space: nowrap;word-wrap: normal;direction: ltr; -webkit-font-feature-settings: 'liga';-webkit-font-smoothing: antialiased; };";
+
+        createOrOverwrite(tree, 'src/styles.css', options.overwrite, contentForGlobalStyles);
+
         return tree;
     };
 }
@@ -493,6 +513,20 @@ function generateShowDescriptionPipe(options: Schema): Rule {
     };
 }
 
+function generateSearchStringPipe(options: Schema): Rule {
+    return (tree: Tree, context: SchematicContext) => {
+        if (options.enabledCommandBarFunctions.includes('addSearchBar')) {
+            const pipeName = 'SearchStringPipe';
+            const pipeContent = options.tsGenerator.generateSearchStringPipe();
+            const pipePath = 'src/app/shared/pipes/search-string.pipe';
+            createOrOverwrite(tree, `${pipePath}.ts`, options.overwrite, pipeContent);
+            addToDeclarationsArray(options, tree, pipeName, pipePath, options.templateHelper.getSharedModulePath()).then();
+            addToExportsArray(options, tree, pipeName, pipePath, options.templateHelper.getSharedModulePath()).then();
+            return tree;
+        }
+    };
+}
+
 function generateHorizontalOverflowDirective(options: Schema): Rule {
     return (tree: Tree, _context: SchematicContext): Tree => {
         const directiveName = 'HorizontalOverflowDirective';
@@ -553,8 +587,10 @@ function updateConfigFiles(options: any): Rule {
 
         addStylePreprocessorOptions(angularBuildOptions);
 
-        if (!angularBuildOptions['styles'].includes('node_modules/@angular/material/prebuilt-themes/indigo-pink.css')) {
-            angularBuildOptions['styles'].push('node_modules/@angular/material/prebuilt-themes/indigo-pink.css');
+        const defaultMaterialtheme = 'node_modules/@angular/material/prebuilt-themes/indigo-pink.css';
+
+        if (!angularBuildOptions['styles'].includes(defaultMaterialtheme)) {
+            angularBuildOptions['styles'].push(defaultMaterialtheme);
         }
 
         tree.overwrite('/angular.json', JSON.stringify(angularJson, null, 2));

@@ -208,12 +208,12 @@ export class StyleGenerator {
             flex: 1 1 auto;
         }
         
-        .column-selection-title {
+        .selection-title {
             padding: 8px 0 16px 16px;
             margin: 0;
         }
         
-        .column-menu-actions-container {
+        .menu-actions-container {
             display: flex;
             align-items: center;
             align-content: space-around;
@@ -230,9 +230,16 @@ export class StyleGenerator {
                     margin: 0 8px;
                 }
             }
+            
+            .config-menu {
+                &-cancel-btn {
+                    cursor: pointer;
+                    margin: 0 8px;
+                }
+            }
         }
         
-        .column-list-content {
+        .list-content {
             display:flex; align-items: center;
             justify-content: space-between;
             padding-left:8px;

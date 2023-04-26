@@ -26,6 +26,7 @@ type PropValue = {
 
 export class HtmlGenerator {
     private readonly options: Schema;
+    private readonly hasSearchBar: boolean;
     private readonly hasFilters: boolean;
     private allProps: Property[];
     private versionedAccessPrefix: string;
@@ -34,8 +35,9 @@ export class HtmlGenerator {
     constructor(options: Schema) {
         this.options = options;
         this.templateHelper = this.options.templateHelper;
+        this.hasSearchBar = this.options.templateHelper.isAddCommandBarFunctionSearch(this.options.enabledCommandBarFunctions);
         this.hasFilters =
-            this.options.templateHelper.isAddCommandBarFunctionSearch(this.options.enabledCommandBarFunctions) ||
+            this.hasSearchBar ||
             this.options.templateHelper.isAddDateQuickFilters(this.options.enabledCommandBarFunctions) ||
             this.options.templateHelper.isAddEnumQuickFilters(this.options.enabledCommandBarFunctions);
     }
@@ -50,8 +52,8 @@ export class HtmlGenerator {
             ${this.options.addCommandBar ? this.getCommandBar() : ''}
             ${this.getCustomTemplate()}
             ${
-                this.hasFilters
-                    ? `<div class="scrollable-chips-container" *ngIf="filterService.activeFilters.length">
+            this.hasFilters
+                ? `<div class="scrollable-chips-container" *ngIf="filterService.activeFilters.length">
                           <button data-test="scroll-left-button" mat-mini-fab class="mat-elevation-z0"
                                   [disabled]="chipsScrollEl.disableLeftBtn" (click)="chipsScrollEl.scrollChipList('left')"
                                   *ngIf="chipsScrollEl.scrollable">
@@ -83,8 +85,8 @@ export class HtmlGenerator {
                               </mat-icon>
                           </button>
                       </div>`
-                    : ''
-            }
+                : ''
+        }
             <div [hidden]="!!customTemplate && !dataSource.data.length">
                 <div data-test="table-container" class="mat-table-container">
                     <table data-test="table" mat-table class="full-width-table" matSortDisableClear="true" matSort (matSortChange)="sortData()"
@@ -122,12 +124,15 @@ export class HtmlGenerator {
                     </table>
                 
                     <mat-menu data-test="column-menu" #columnMenu="matMenu" class="column-menu">
-                        <${dasherize(
-                            this.options.name
-                        )}-column-menu #columMenuComponent (columnsChangedEvent)="setDisplayedColumns($event)"></${dasherize(
-            this.options.name
-        )}-column-menu>
+                        <${dasherize(this.options.name)}-column-menu #columMenuComponent (columnsChangedEvent)="setDisplayedColumns($event)"></${dasherize(this.options.name)}-column-menu>
                     </mat-menu>
+                    
+                    ${this.hasSearchBar ? `
+                      <mat-menu data-test="column-menu" #configurationMenu="matMenu" class="column-menu">
+                        <${dasherize(this.options.name)}-config-menu #configurationMenuComponent (configChangedEvent)="setConfiguration($event)"></${dasherize(this.options.name)}-config-menu>
+                      </mat-menu>
+                    ` : ''}
+                    
                 </div>
                 <mat-paginator data-test="paginator" #paginator
                     [length]="${!this.options.enableRemoteDataHandling ? ` dataSource.length` : `totalItems`}"
@@ -139,6 +144,20 @@ export class HtmlGenerator {
                 </mat-paginator>
             </div>
         </div>
+        
+        ${this.hasSearchBar ? `
+            <!-- Highlighting search values -->
+            <ng-template #normal let-value="value">{{ value === null ? '-' : value }}</ng-template>
+            <ng-template #searchedWordExists let-value="value">
+              <ng-container *ngFor="let letter of value.toString().split(''); let i = index">
+                <ng-container [ngTemplateOutlet]="shouldHighlight(value, letter) ? highlight : notHighlighted"
+                              [ngTemplateOutletContext]="{ $implicit: letter }"></ng-container>
+              </ng-container>
+            </ng-template>
+            <ng-template #highlight let-letter>
+              <mark [style.background-color]="highlightConfig?.color">{{ letter }}</mark>
+            </ng-template>
+            <ng-template #notHighlighted let-letter>{{ letter }}</ng-template>` : ''}
         `;
     }
 
@@ -155,7 +174,7 @@ export class HtmlGenerator {
               <section>
                 <div class="export-dialog-checkbox-wrapper">
                   <mat-checkbox data-test="exportAllPages" #exportAllPages (change)="setDialogDescription()">
-                    {{ 'exportData.exportAllPages' | translate: {maxExportPages: data.maxExportPages} }}
+                    {{ 'exportData.exportAllPages' | translate: {maxExportRows: data.maxExportRows} }}
                   </mat-checkbox>
                 </div>
                 <div class="export-dialog-checkbox-wrapper">
@@ -169,7 +188,7 @@ export class HtmlGenerator {
               <button mat-button data-test="closeDialog"
                       (click)="closeDialog()">{{ 'cancel' | translate }}</button>
               <button mat-button data-test="exportData" mat-raised-button class="mat-primary"
-                      (click)="exportData()">{{ 'export' | translate }}</button>
+                      (click)="exportData()"><span>{{ 'export' | translate }}</span></button>
             </div>
         `;
     }
@@ -186,22 +205,22 @@ export class HtmlGenerator {
       <td data-test="custom-actions-row" mat-cell *matCellDef="let row">
       <ng-container data-test="custom-actions-container" *ngIf="customRowActionsLength <= visibleRowActionsIcons; else customActionsButton">
       ${this.options.customRowActions
-          .map((action: string) => {
-              const formattedAction = action.replace(/\.[^/.]+$/, '');
-              const formattedActionKebab = formattedAction.replace(/\s+/g, '-').toLowerCase();
-              const commonParts = `data-test="custom-action-icon" *ngIf="is${classify(
-                  formattedActionKebab
-              )}Visible" (click)="executeCustomAction($event, '${formattedActionKebab}', row)" style="cursor: pointer;" matTooltip="{{ '${
-                  this.versionedAccessPrefix
-              }${formattedActionKebab}.customRowAction' | translate }}" aria-hidden="false" attr.aria-label="{{ '${
-                  this.versionedAccessPrefix
-              }${formattedActionKebab}.customRowAction' | translate }}"`;
-              return `${action.lastIndexOf('.') > -1 ? `<mat-icon svgIcon="${formattedAction}" ${commonParts}></mat-icon>` : ''}${
-                  action.lastIndexOf('.') === -1 ? `<mat-icon ${commonParts} class="material-icons">${action}</mat-icon>` : ''
-              }
+                .map((action: string) => {
+                    const formattedAction = action.replace(/\.[^/.]+$/, '');
+                    const formattedActionKebab = formattedAction.replace(/\s+/g, '-').toLowerCase();
+                    const commonParts = `data-test="custom-action-icon" *ngIf="is${classify(
+                        formattedActionKebab
+                    )}Visible" (click)="executeCustomAction($event, '${formattedActionKebab}', row)" style="cursor: pointer;" matTooltip="{{ '${
+                        this.versionedAccessPrefix
+                    }${formattedActionKebab}.customRowAction' | translate }}" aria-hidden="false" attr.aria-label="{{ '${
+                        this.versionedAccessPrefix
+                    }${formattedActionKebab}.customRowAction' | translate }}"`;
+                    return `${action.lastIndexOf('.') > -1 ? `<mat-icon svgIcon="${formattedAction}" ${commonParts}></mat-icon>` : ''}${
+                        action.lastIndexOf('.') === -1 ? `<mat-icon ${commonParts} class="material-icons">${action}</mat-icon>` : ''
+                    }
             `;
-          })
-          .join('')}
+                })
+                .join('')}
       </ng-container>
       <ng-template #customActionsButton data-test="custom-actions-button-container">
         <button data-test="custom-actions-button" 
@@ -213,23 +232,23 @@ export class HtmlGenerator {
       </ng-template>
       <mat-menu #customActionsMenu data-test="custom-actions-menu">
               ${this.options.customRowActions
-                  .map((action: string): string => {
-                      const formattedAction = action.replace(/\.[^/.]+$/, '');
-                      const formattedActionKebab = formattedAction.replace(/\s+/g, '-').toLowerCase();
-                      const classifiedAction = classify(formattedActionKebab);
-                      const commonParts = `style="cursor: pointer;" matTooltip="{{ '${this.versionedAccessPrefix}${formattedActionKebab}.customRowAction' | translate }}" aria-hidden="false" attr.aria-label="{{ '${this.versionedAccessPrefix}${formattedActionKebab}.customRowAction' | translate }}"`;
-                      const iconTemplate =
-                          action.lastIndexOf('.') === -1
-                              ? `<mat-icon data-test="custom-action-icon" ${commonParts} class="material-icons">${formattedAction}</mat-icon>`
-                              : `<mat-icon data-test="custom-action-icon" svgIcon="${formattedAction}" ${commonParts}></mat-icon>`;
-                      return `
+                .map((action: string): string => {
+                    const formattedAction = action.replace(/\.[^/.]+$/, '');
+                    const formattedActionKebab = formattedAction.replace(/\s+/g, '-').toLowerCase();
+                    const classifiedAction = classify(formattedActionKebab);
+                    const commonParts = `style="cursor: pointer;" matTooltip="{{ '${this.versionedAccessPrefix}${formattedActionKebab}.customRowAction' | translate }}" aria-hidden="false" attr.aria-label="{{ '${this.versionedAccessPrefix}${formattedActionKebab}.customRowAction' | translate }}"`;
+                    const iconTemplate =
+                        action.lastIndexOf('.') === -1
+                            ? `<mat-icon data-test="custom-action-icon" ${commonParts} class="material-icons">${formattedAction}</mat-icon>`
+                            : `<mat-icon data-test="custom-action-icon" svgIcon="${formattedAction}" ${commonParts}></mat-icon>`;
+                    return `
                       <button mat-menu-item *ngIf="is${classifiedAction}Visible" data-test="custom-action-button" (click)="executeCustomAction($event, '${formattedActionKebab}', row)">
                           ${iconTemplate}
                           <span data-test="custom-action-text" style="vertical-align: middle">{{ '${this.versionedAccessPrefix}${formattedActionKebab}.customRowAction' | translate}}</span>
                       </button>
                      `;
-                  })
-                  .join('')}
+                })
+                .join('')}
       </mat-menu>
       </td>
     </ng-container>`
@@ -239,24 +258,24 @@ export class HtmlGenerator {
     private getCustomColumns() {
         return this.options.customColumns && this.options.customColumns.length > 0
             ? ` ${this.options.customColumns
-                  .map((columnName: string) => {
-                      return `<!-- ${columnName} Column -->
+                .map((columnName: string) => {
+                    return `<!-- ${columnName} Column -->
                           <ng-container data-test="custom-column-container" matColumnDef="${columnName}">
                           ${
-                              this.options.enableVersionSupport
-                                  ? `<th data-test="custom-column-header" mat-header-cell *matHeaderCellDef mat-sort-header>{{ '${this.options.selectedModelElement.name.toLowerCase()}.v${this.templateHelper.formatAspectModelVersion(
-                                        this.options.aspectModelVersion
-                                    )}.customColumn.${columnName}' | translate }}</th>`
-                                  : `<th data-test="custom-column-header" mat-header-cell *matHeaderCellDef mat-sort-header>{{ '${this.options.selectedModelElement.name.toLowerCase()}.customColumn.${columnName}' | translate }}</th>`
-                          }
+                        this.options.enableVersionSupport
+                            ? `<th data-test="custom-column-header" mat-header-cell *matHeaderCellDef mat-sort-header>{{ '${this.options.selectedModelElement.name.toLowerCase()}.v${this.templateHelper.formatAspectModelVersion(
+                                this.options.aspectModelVersion
+                            )}.customColumn.${columnName}' | translate }}</th>`
+                            : `<th data-test="custom-column-header" mat-header-cell *matHeaderCellDef mat-sort-header>{{ '${this.options.selectedModelElement.name.toLowerCase()}.customColumn.${columnName}' | translate }}</th>`
+                    }
                                 <td data-test="custom-column-cell" mat-cell *matCellDef="let row" >
                                   <ng-container data-test="custom-column-container" *ngTemplateOutlet="${camelize(
-                                      columnName
-                                  )}Template; context:{aspect:row}"></ng-container>
+                        columnName
+                    )}Template; context:{aspect:row}"></ng-container>
                                 </td>
                               </ng-container>`;
-                  })
-                  .join('')}`
+                })
+                .join('')}`
             : '';
     }
 
@@ -298,10 +317,10 @@ export class HtmlGenerator {
         }"
                             ${this.templateHelper.isNumberProperty(property) ? `class="table-header-number"` : ''}
                             ${
-                                this.allProps.length - 1 > index
-                                    ? `[resizeColumn]="true" [index]="${index}" (dragging)='dragging = $event'`
-                                    : ''
-                            }>
+            this.allProps.length - 1 > index
+                ? `[resizeColumn]="true" [index]="${index}" (dragging)='dragging = $event'`
+                : ''
+        }>
                             <span [matTooltip]="'${this.versionedAccessPrefix}${
             this.templateHelper.isAspectSelected(this.options) ? this.options.jsonAccessPath : ''
         }${complexPrefix}${property.name}.description' | translate"
@@ -315,55 +334,45 @@ export class HtmlGenerator {
                         </th>
 
                         <td data-test="table-cell" ${
-                            this.templateHelper.isEnumPropertyWithEntityValues(property)
-                                ? `[matTooltip]="row.${this.options.jsonAccessPath}${complexPrefix}${
-                                      property.name +
-                                      '?.' +
-                                      this.templateHelper.getEnumEntityInstancePayloadKey(property) +
-                                      ' | showDescription:get' +
-                                      classify(property.name) +
-                                      'Value' +
-                                      ':true'
-                                  }${languageLabel}"`
-                                : ''
-                        } ${
+            this.templateHelper.isEnumPropertyWithEntityValues(property)
+                ? `[matTooltip]="row.${this.options.jsonAccessPath}${complexPrefix}${
+                    property.name +
+                    '?.' +
+                    this.templateHelper.getEnumEntityInstancePayloadKey(property) +
+                    ' | showDescription:get' +
+                    classify(property.name) +
+                    'Value' +
+                    ':true'
+                }${languageLabel}"`
+                : ''
+        } ${
             this.templateHelper.isEnumPropertyWithEntityValues(property)
                 ? `[matTooltipDisabled]="row.${this.options.jsonAccessPath}${complexPrefix}${
-                      this.templateHelper.isEnumPropertyWithEntityValues(property)
-                          ? property.name + '?.' + this.templateHelper.getEnumEntityInstancePayloadKey(property)
-                          : property.name
-                  } === null "`
+                    this.templateHelper.isEnumPropertyWithEntityValues(property)
+                        ? property.name + '?.' + this.templateHelper.getEnumEntityInstancePayloadKey(property)
+                        : property.name
+                } === null "`
                 : ''
         } mat-cell *matCellDef="let row" ${this.templateHelper.isNumberProperty(property) ? `class="table-cell-number"` : ''}>
-                        {{ row.${this.options.jsonAccessPath}${complexPrefix}${
+            ${this.hasSearchBar ? `
+                 <ng-container
+                  [ngTemplateOutlet]="(highlightConfig?.selected && ((${this.resolveTableValue(property, index, complexPrefix, languageLabel)}) | searchString: highlightString)) ? searchedWordExists : normal"
+                  [ngTemplateOutletContext]="{ value: (${this.resolveTableValue(property, index, complexPrefix, languageLabel)}) }"></ng-container>` : `{{${this.resolveTableValue(property, index, complexPrefix, languageLabel)}}}`}
+            
+              <button data-test="copy-to-clipboard-button" mat-icon-button class="copy-to-clipboard" (click)="copyToClipboard(row.${this.options.jsonAccessPath}${complexPrefix}${
             this.templateHelper.isEnumPropertyWithEntityValues(property)
                 ? property.name + '?.' + this.templateHelper.getEnumEntityInstancePayloadKey(property)
-                : property.name
-        } === null 
-                            ? '-' 
-                            : row.${this.options.jsonAccessPath}${complexPrefix}${
-            this.templateHelper.isEnumPropertyWithEntityValues(property)
-                ? property.name +
-                  '?.' +
-                  this.templateHelper.getEnumEntityInstancePayloadKey(property) +
-                  ' | showDescription:get' +
-                  classify(property.name) +
-                  'Value'
-                : property.name
-        }${languageLabel}${
-            this.options.templateHelper.isDateTimeProperty(property) ? `| date: ${this.resolveDateTimeFormat(property)}` : ''
-        } 
-                        }}
-                            <button data-test="copy-to-clipboard-button" mat-icon-button class="copy-to-clipboard" (click)="copyToClipboard(
-                                row.${this.options.jsonAccessPath}${complexPrefix}${
-            this.templateHelper.isEnumPropertyWithEntityValues(property)
-                ? property.name + '?.' + this.templateHelper.getEnumEntityInstancePayloadKey(property)
-                : property.name
-        }, $event)">
-                                <mat-icon data-test="copy-to-clipboard-icon" class="material-icons">content_copy</mat-icon>
-                            </button>
-                        </td>
-                    </ng-container>`;
+                : property.name}, $event)">
+              <mat-icon data-test="copy-to-clipboard-icon" class="material-icons">content_copy</mat-icon>
+              </button>
+              </td>
+           </ng-container>`;
+    }
+
+    private resolveTableValue(property: Property, index: number, complexPrefix: string, languageLabel: string): string {
+        return `row.${this.options.jsonAccessPath}${complexPrefix}${
+            this.templateHelper.isEnumPropertyWithEntityValues(property) ? property.name + '?.' + this.templateHelper.getEnumEntityInstancePayloadKey(property) : property.name} === null? '-': row.${this.options.jsonAccessPath}${complexPrefix}${
+            this.templateHelper.isEnumPropertyWithEntityValues(property) ? property.name + '?.' + this.templateHelper.getEnumEntityInstancePayloadKey(property) + ' | showDescription:get' + classify(property.name) + 'Value' : property.name}${languageLabel}${this.options.templateHelper.isDateTimeProperty(property) ? `| date: ${this.resolveDateTimeFormat(property)}` : ''}`
     }
 
     private resolveDateTimeFormat(property: Property): string {
@@ -384,8 +393,8 @@ export class HtmlGenerator {
             <mat-toolbar data-test="toolbar" class="toolbar">
             <div data-test="toolbar-number-of-items" class="command-bar-number-of-items">{{ selection.selected.length > 0 ? (selection.selected.length + ' / ') : '' }}{{ totalItems }}</div>
             ${
-                this.options.templateHelper.isAddCommandBarFunctionSearch(this.options.enabledCommandBarFunctions)
-                    ? `<mat-form-field data-test="search-form-field" appearance="fill" floatLabel="never" class="search-input">
+            this.options.templateHelper.isAddCommandBarFunctionSearch(this.options.enabledCommandBarFunctions)
+                ? `<mat-form-field data-test="search-form-field" appearance="fill" floatLabel="never" class="search-input">
                           <mat-label data-test="search-label">{{ 'search' | translate }}</mat-label>
                           <input
                                   data-test="search-input"
@@ -443,15 +452,15 @@ export class HtmlGenerator {
                               <mat-icon data-test="search-icon" class="material-icons">search</mat-icon>
                           </button>
                     </mat-form-field>`
-                    : ''
-            }
+                : ''
+        }
             ${this.getPropertiesToCreateFilters()
-                .map(property => {
-                    const propValue = property.propertyValue;
-                    const propName = property.propertyName;
-                    return ` ${
-                        this.templateHelper.isAddDateQuickFilters(this.options.enabledCommandBarFunctions) && property.isDate
-                            ? `<mat-form-field data-test="form-field-date-time" appearance="fill" floatLabel="never">
+            .map(property => {
+                const propValue = property.propertyValue;
+                const propName = property.propertyName;
+                return ` ${
+                    this.templateHelper.isAddDateQuickFilters(this.options.enabledCommandBarFunctions) && property.isDate
+                        ? `<mat-form-field data-test="form-field-date-time" appearance="fill" floatLabel="never">
                                   <mat-label data-test="date-time-label">{{ '${this.versionedAccessPrefix}${propValue}.preferredName' | translate }}</mat-label>
                                     <mat-date-range-input data-test="date-range-input" [rangePicker]="${propName}Picker" [formGroup]="filterService.${propName}Group">
                                       <input data-test="start-date-input" matStartDate [placeholder]="'date.start' | translate" formControlName="start">
@@ -465,26 +474,26 @@ export class HtmlGenerator {
                                     </mat-date-range-picker-actions>
                                   </mat-date-range-picker>
                             </mat-form-field>`
-                            : ''
-                    }${
-                        this.templateHelper.isAddEnumQuickFilters(this.options.enabledCommandBarFunctions) && property.isEnum
-                            ? `<mat-form-field data-test="form-field-select" appearance="fill" floatLabel="never">
+                        : ''
+                }${
+                    this.templateHelper.isAddEnumQuickFilters(this.options.enabledCommandBarFunctions) && property.isEnum
+                        ? `<mat-form-field data-test="form-field-select" appearance="fill" floatLabel="never">
                              <mat-label data-test="select-label">{{ '${
-                                 this.versionedAccessPrefix
-                             }${propValue}.preferredName' | translate }}</mat-label>
+                            this.versionedAccessPrefix
+                        }${propValue}.preferredName' | translate }}</mat-label>
                                 <mat-select data-test="select" [(value)]="filterService.${propName}Selected" #${propName}Select multiple>
                                     <div class="filter-options-container">
                                     ${
-                                        property.enumWithEntities
-                                            ? ` <mat-option data-test="select-option" *ngFor="let ${propName}Option of filterService.${propName}Options" [value]="${propName}Option.value">
+                            property.enumWithEntities
+                                ? ` <mat-option data-test="select-option" *ngFor="let ${propName}Option of filterService.${propName}Options" [value]="${propName}Option.value">
                                                 {{ ${propName}Option.value }} - {{ ${propName}Option.translationKey | translate }}
                                            </mat-option>
                                         `
-                                            : ` <mat-option data-test="select-option" *ngFor="let ${propName}Option of filterService.${propName}Options" [value]="${propName}Option">
+                                : ` <mat-option data-test="select-option" *ngFor="let ${propName}Option of filterService.${propName}Options" [value]="${propName}Option">
                                                 {{${propName}Option}}
                                            </mat-option>
                                        `
-                                    }
+                        }
                                     </div>
                                      <div data-test="filter-actions-container" class="filter-actions-container">
 
@@ -503,19 +512,19 @@ export class HtmlGenerator {
                                      </div>
                                 </mat-select>
                              </mat-form-field>`
-                            : ''
-                    }
+                        : ''
+                }
                  `;
-                })
-                .join('')}
+            })
+            .join('')}
             <span data-test="spacer" class="spacer"></span>
             ${
-                // prettier-ignore
-                this.options.customCommandBarActions.length > 0
-        ? `${this.options.customCommandBarActions
-          .map(action => {
-            const commonParts = `data-test="toolbar-custom-action-icon" matTooltip="{{'${this.versionedAccessPrefix}${this.templateHelper.spinalCase(action)}.customCommandBarAction' | translate }}" aria-hidden="false"`;
-            return `
+            // prettier-ignore
+            this.options.customCommandBarActions.length > 0
+                ? `${this.options.customCommandBarActions
+                    .map(action => {
+                        const commonParts = `data-test="toolbar-custom-action-icon" matTooltip="{{'${this.versionedAccessPrefix}${this.templateHelper.spinalCase(action)}.customCommandBarAction' | translate }}" aria-hidden="false"`;
+                        return `
                                     <button data-test="toolbar-custom-action-button" mat-icon-button (click)="executeCustomCommandBarAction($event, '${this.templateHelper.spinalCase(action)}')"
                                             attr.aria-label="{{ '${this.versionedAccessPrefix}${this.templateHelper.spinalCase(action)}.customCommandBarAction' | translate }}">
                                         <mat-icon ${commonParts}
@@ -524,10 +533,10 @@ export class HtmlGenerator {
                                             ${action.lastIndexOf(".") === -1 ? `${action}` : ``}
                                         </mat-icon>
                                     </button>`;
-          }).join("")
-        }`
-        : ""
-            }
+                    }).join("")
+                }`
+                : ""
+        }
 
             <button data-test="refresh-data-button" mat-icon-button aria-label="Refresh table" (click)="applyFilters()">
                 <mat-icon data-test="refresh-data-icon" class="material-icons" [matTooltip]="'tableActions.refreshData' | translate">autorenew</mat-icon>
@@ -535,6 +544,10 @@ export class HtmlGenerator {
             <button data-test="export-data-button" mat-icon-button aria-label="Download data as CSV" (click)="exportToCsv()">
                 <mat-icon data-test="export-data-icon" class="material-icons" [matTooltip]="'tableActions.exportData' | translate">file_download</mat-icon>
             </button>
+            ${this.hasSearchBar ? `
+            <button data-test="open-configuration" mat-icon-button aria-label="Open configuration" [matMenuTriggerFor]="configurationMenu" (menuOpened)="initOpenedConfigurationDialog()">
+              <mat-icon data-test="open-configuration-icon" class="material-icons"[matTooltip]="'tableActions.openConfig' | translate">settings </mat-icon>
+            </button>` : ''}
         </mat-toolbar>
       `;
     }

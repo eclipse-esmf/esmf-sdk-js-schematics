@@ -178,19 +178,22 @@ export class TemplateHelper {
     /**
      * Gets a list of properties for the selected model element.
      */
-    getProperties(options: Schema | any): Array<Property> {
-        return this.resolveType(options.selectedModelElement).properties.filter(
-            (prop: Property) =>
-                !options.excludedProperties.find(
-                    (excludedProp: ExcludedProperty) => excludedProp.propToExcludeAspectModelUrn === prop.aspectModelUrn
-                )
-        );
+    getProperties(options: Schema | any, generateLabelsForExcludedProps = false): Array<Property> {
+        if (!generateLabelsForExcludedProps) {
+            return this.resolveType(options.selectedModelElement).properties.filter(
+                (prop: Property) =>
+                    !options.excludedProperties.find(
+                        (excludedProp: ExcludedProperty) => excludedProp.propToExcludeAspectModelUrn === prop.aspectModelUrn
+                    )
+            );
+        }
+        return this.resolveType(options.selectedModelElement).properties;
     }
 
     /**
      * Gets the resolved properties of the complex object.
      */
-    getComplexProperties(complexProp: Property, options: Schema): { complexProp: string; properties: Property[] } {
+    getComplexProperties(complexProp: Property, options: Schema): {complexProp: string; properties: Property[]} {
         const propsToShow = options.complexProps.find(cp => cp.prop === complexProp.name)?.propsToShow;
         const properties = this.getProperties({
             selectedModelElement: complexProp.effectiveDataType as DefaultEntity,
@@ -249,6 +252,12 @@ export class TemplateHelper {
         return `${this.getLocalStoragePrefix()}${underscore(options.name)}${
             options.enableVersionSupport ? `_${'v' + options.aspectModelVersion.replace(/\./g, '')}` : ''
         }_columns`.toUpperCase();
+    }
+
+    getLocalStorageKeyConfig(options: Schema): string {
+        return `${this.getLocalStoragePrefix()}${underscore(options.name)}${
+            options.enableVersionSupport ? `_${'v' + options.aspectModelVersion.replace(/\./g, '')}` : ''
+        }_config`.toUpperCase();
     }
 
     getSharedModulePath(): string {

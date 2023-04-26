@@ -21,9 +21,11 @@ import {TsStorageServiceGenerator} from './ts-storage-service.generator';
 import {TsModuleGenerator} from './ts-module.generator';
 import {TsColumnMenuGenerator} from './ts-column-menu.generator';
 import {TsPipeGenerator} from './ts-pipe.generator';
+import {TsConfigMenuGenerator} from "./ts-config-menu.generator";
 
 export class TsGenerator {
-    constructor(private options: Schema) {}
+    constructor(private options: Schema) {
+    }
 
     generateDataSource() {
         return new TsDatasourceGenerator(this.options).generate();
@@ -57,6 +59,10 @@ export class TsGenerator {
         return TsPipeGenerator.generateShowDescriptionPipe(this.options);
     }
 
+    generateSearchStringPipe(): string {
+        return TsPipeGenerator.generateSearchStringPipe(this.options);
+    }
+
     generateHorizontalOverflowDirective(): string {
         return TsDirectiveGenerator.generateHorizontalOverflowDirective(this.options);
     }
@@ -71,6 +77,10 @@ export class TsGenerator {
 
     generateColumnMenu(): string {
         return new TsColumnMenuGenerator(this.options).generate();
+    }
+
+    generateConfigMenu(): string {
+        return new TsConfigMenuGenerator(this.options).generate();
     }
 
     static generateAppSharedModule(options: Schema): string {

@@ -172,6 +172,23 @@ export class TsComponentGenerator {
                 this.columMenuComponent.columns.push(...this.columns);
             }
             
+            ${this.hasSearchBar ? `
+            initOpenedConfigurationDialog(): void {
+              this.configurationComponent.keyLocalStorage = this.${this.options.templateHelper.getLocalStorageKeyConfig(this.options)};;
+              this.configurationComponent.configs.splice(0, this.configurationComponent.configs.length);
+              this.configurationComponent.configs.push(...this.configs.map(config => ({...config})));
+            }
+            
+            setConfiguration(configs: Array<Config>): void {
+              this.configs = [...configs];
+            }
+            
+            shouldHighlight(name: string, letter: string): boolean {
+              const highlightLetters = this.highlightString.split('');
+              const index = name.toString().indexOf(letter);
+              return index !== -1 && highlightLetters.includes(name.toString()[index]);
+            }` : ''}
+            
             setDisplayedColumns(columns: Array<Column>): void {
                 let displayedColumnsTmp: Array<Column> = [];
         
@@ -281,12 +298,12 @@ export class TsComponentGenerator {
             ${
             isRemote
                 ? ` 
-                        @Input() maxExportPages: number = 5000;
+                        @Input() maxExportRows: number = 5000;
                         @Input() customFilterExtension: CustomRQLFilterExtension | undefined;
                         @Input() customOptionsExtension: CustomRQLOptionExtension | undefined;
                         @Input() extendedCsvExporter: ExtendedCsvExporter | undefined;
                         @Input() remoteAPI: string = '';`
-                : '@Input() maxExportPages: number = 0'
+                : '@Input() maxExportRows: number = 0'
         }
 
             @Output() rowClickEvent = new EventEmitter<any>();
@@ -305,9 +322,8 @@ export class TsComponentGenerator {
             @ViewChild(MatTable) private table!: MatTable<${classify(
             this.options.templateHelper.resolveType(this.options.aspectModel).name
         )}>;
-            @ViewChild(${classify(this.options.name)}ColumnMenuComponent) private columMenuComponent!: ${classify(
-            this.options.name
-        )}ColumnMenuComponent;
+            @ViewChild(${classify(this.options.name)}ColumnMenuComponent) private columMenuComponent!: ${classify(this.options.name)}ColumnMenuComponent;
+            ${this.hasSearchBar ? `@ViewChild(${classify(this.options.name)}ConfigMenuComponent) private configurationComponent!: ${classify(this.options.name)}ConfigMenuComponent;` : ''}
             @ViewChild(MatAutocompleteTrigger) autocomplete!: MatAutocompleteTrigger;
 
             @HostBinding("attr.style")
@@ -323,6 +339,13 @@ export class TsComponentGenerator {
             .replace(this.options.templateHelper.getLocalStoragePrefix(), '')
             .toLowerCase()}'; 
             
+            ${this.hasSearchBar ? `
+            readonly ${this.options.templateHelper.getLocalStorageKeyConfig(this.options)} = '${this.options.templateHelper
+            .getLocalStorageKeyConfig(this.options)
+            .replace(this.options.templateHelper.getLocalStoragePrefix(), '')
+            .toLowerCase()}';
+            ` : ''}
+            
             ${this.hasSearchBar ? 'subscription: Subscription | undefined;' : ''}
             
             totalItems: number = 0;
@@ -333,6 +356,7 @@ export class TsComponentGenerator {
         }', sortDirection : 'asc'};
             displayedColumns: Array<string> = Object.values(${classify(this.options.name)}Column);
             columns: Array<Column> = [];
+            ${this.hasSearchBar ? `configs: Array<Config> = [];` : ''}
             currentLanguage: string;
             filteredData: Array<${classify(this.options.templateHelper.resolveType(this.options.aspectModel).name)}> = [];
             dragging: boolean = false;
@@ -341,6 +365,12 @@ export class TsComponentGenerator {
             rqlString: string = '';
             searchString = new FormControl();
             searchFocused: boolean = false;
+            ${this.hasSearchBar ? `
+            highlightString: string = '';
+            
+            get highlightConfig(): Config | undefined {
+              return this.configs.find((config: Config) => config.name.includes('highlight'));
+            }` : ''}
             ${this.getByValueFunction()}
             `;
     }
@@ -482,7 +512,7 @@ export class TsComponentGenerator {
                         ${this.options.enableRemoteDataHandling ? `extendedCsvExporter: this.extendedCsvExporter,` : ``}
                         allColumns: this.columns.length,
                         displayedColumns: this.displayedColumns.length - reduce,
-                        maxExportPages: this.maxExportPages,
+                        maxExportRows: this.maxExportRows,
                     },
                     maxWidth: 478,
                 });
@@ -490,17 +520,14 @@ export class TsComponentGenerator {
                 dialogRef.afterClosed().pipe(filter(e => !!e)).subscribe((exportEvent: {exportAllPages: boolean, exportAllColumns: boolean}): void => {
                     const { exportAllPages, exportAllColumns } = exportEvent;
 
-                    if (exportAllPages && this.data.length > this.maxExportPages) {
-                        this.data.length = this.maxExportPages;
-                    } else if (this.data.length > this.paginator.pageSize) {
-                        this.data.length = this.paginator.pageSize;
-                    }
-                    
+                    if (exportAllPages && this.data.length > this.maxExportRows) {
+                        this.data.length = this.maxExportRows;
+                    } 
                     ${
             this.options.enableRemoteDataHandling
                 ? `const columns = exportAllColumns ? this.columns.map(c => c.name) : this.displayedColumns;
                                 this.extendedCsvExporter?.export(columns, this.rqlString)`
-                : `this.prepareCsv(this.${serviceName}.flatten(this.data), exportAllColumns)`
+                : `this.prepareCsv(this.${serviceName}.flatten(this.data), exportAllColumns,exportAllPages,this.paginator.pageSize)`
         }
                 });
             }
@@ -516,7 +543,11 @@ export class TsComponentGenerator {
             )}.`
             : ``;
 
-        return `prepareCsv(data: any, exportAllColumns: boolean): void {
+        return `prepareCsv(data: any, exportAllColumns: boolean, exportAllPages: boolean, currentPageSize: number): void {
+            
+            if (!exportAllPages && data.length > currentPageSize) {
+                data.length = currentPageSize;
+            }
 
             const columns = exportAllColumns ? this.columns.map(c => c.name) : this.displayedColumns;
             ${this.getBlockHeaderToExport()}
@@ -595,6 +626,7 @@ export class TsComponentGenerator {
         import { AfterViewInit, Component, Inject, ViewChild } from '@angular/core';
         import { TranslateService } from '@ngx-translate/core';
         import { MatCheckbox } from '@angular/material/checkbox';
+        import { ChangeDetectorRef } from '@angular/core';
         
         @Component({
             selector: 'export-confirmation-dialog',
@@ -613,10 +645,11 @@ export class TsComponentGenerator {
                     ${options.enableRemoteDataHandling ? `extendedCsvExporter: boolean, ` : ``}
                     allColumns: number;
                     displayedColumns: number;
-                    maxExportPages: number;                    
+                    maxExportRows: number;                    
                 },
                 public dialogRef: MatDialogRef<ExportConfirmationDialog>,
                 private translateService: TranslateService,
+                private cdRef:ChangeDetectorRef,
             ) {}
             
             ngAfterViewInit() {
@@ -624,24 +657,25 @@ export class TsComponentGenerator {
                 this.data.displayedColumns === this.data.allColumns;
                     
               this.setDialogDescription();
+              this.cdRef.detectChanges();
             }
             
             setDialogDescription() {
-              const {maxExportPages, allColumns, displayedColumns} = this.data;
+              const {maxExportRows, allColumns, displayedColumns} = this.data;
       
               const isExportAllPagesChecked = this.exportAllPages.checked;
               const isExportAllColumnsChecked = this.exportAllColumns?.checked;
               
               if (isExportAllPagesChecked && isExportAllColumnsChecked) {
                   this.dialogDescription = this.translateService.instant('exportData.description.caseOne', {
-                      maxExportPages,
+                      maxExportRows,
                       allColumns,
                   });
               } else if (isExportAllPagesChecked && !isExportAllColumnsChecked) {
                   this.dialogDescription = this.translateService.instant(
                       displayedColumns > 1 ? 'exportData.description.caseTwo.plural' : 'exportData.description.caseTwo.singular',
                       {
-                          maxExportPages,
+                          maxExportRows,
                           displayedColumns,
                       }
                   );
@@ -687,6 +721,7 @@ export class TsComponentGenerator {
         const removeFilterFn = `removeFilter(filterData:any):void {
                                     ${this.hasFilters ? `this.filterService.removeFilter(filterData)` : ''};
                                     this.paginator.firstPage();
+                                    ${this.hasSearchBar ? `this.searchString.reset();` : ''}
                                     this.applyFilters();
                                 }`;
 
@@ -704,7 +739,9 @@ export class TsComponentGenerator {
             }
                     
                     this.tableUpdateStartEvent.emit();
-                    this.autocomplete.closePanel();
+                    if (this.autocomplete) {
+                        this.autocomplete.closePanel();
+                      }
                     ${
                 this.options.addRowCheckboxes
                     ? `this.selection.clear();
@@ -807,7 +844,9 @@ export class TsComponentGenerator {
                     : ``
             }
                           this.tableUpdateStartEvent.emit();
-                          this.autocomplete.closePanel();
+                          if (this.autocomplete) {
+                            this.autocomplete.closePanel();
+                          }
                           let dataTemp = [...this.data];
                           ${this.hasEnumQuickFilter ? `dataTemp = this.filterService.applyEnumFilter(dataTemp);` : ``}
                           ${this.hasSearchBar ? `dataTemp = this.filterService.applyStringSearchFilter(dataTemp);` : ``}
@@ -815,6 +854,7 @@ export class TsComponentGenerator {
                           this.dataSource.setData(dataTemp);
                           this.filteredData = dataTemp;
                           this.checkIfOnValidPage();
+                          ${this.hasSearchBar ? `this.highlightString = this.searchString.value` : ''};
                           ${this.options.addRowCheckboxes ? `this.trimSelectionToCurrentPage();` : ``}
                           this.tableUpdateFinishedEvent.emit();
                        }
@@ -949,6 +989,7 @@ export class TsComponentGenerator {
             import {TranslateService} from '@ngx-translate/core';
             import {JSSdkLocalStorageService} from "${this.options.enableVersionSupport ? `../` : ``}../../services/storage.service";
             import {${classify(this.options.name)}ColumnMenuComponent} from './${dasherize(this.options.name)}-column-menu.component';
+            ${this.hasSearchBar ? `import {${classify(this.options.name)}ConfigMenuComponent} from './${dasherize(this.options.name)}-config-menu.component';` : ''}
             ${
             this.hasFilters
                 ? `import {debounceTime, distinctUntilChanged, filter, map} from 'rxjs/operators';
@@ -1022,7 +1063,18 @@ export class TsComponentGenerator {
                 /** State if the column is selected **/
                 selected: boolean;
             }
-        
+            
+            ${this.hasSearchBar ?
+            `export interface Config {
+               /** Column name **/
+               name: string;
+               /** Desc of the config **/
+               desc: string;
+               /** State if the column is selected **/
+               selected: boolean;
+               /** Color for the highlighted configuration **/
+               color?: string;
+             }` : ``}
         `;
     }
 
@@ -1030,7 +1082,7 @@ export class TsComponentGenerator {
         return `ngOnInit(): void {
                     ${this.hasSearchBar ? ` this.filterService.searchString = this.initialSearchString;` : ''}
                     this.initializeColumns();
-                    ${!isRemote ? 'this.maxExportPages = this.data.length;' : ''}
+                    ${!isRemote ? 'this.maxExportRows = this.data.length;' : ''}
                }`;
     }
 
@@ -1065,7 +1117,7 @@ export class TsComponentGenerator {
                         if (this.table) {
                             this.dataSource.setData(this.data);
                             this.totalItems = this.data.length;
-                            this.maxExportPages = this.totalItems;
+                            this.maxExportRows = this.totalItems;
                             this.applyFilters();
                     }}`
             : '';
@@ -1074,21 +1126,27 @@ export class TsComponentGenerator {
     private getOnInitializeColumns(options: Schema): string {
         return `
         initializeColumns(): void {
-            if (this.storageService.getItem(this.${options.templateHelper.getLocalStorageKeyColumns(options)})) {
-                this.storageService
-                    .getItem(this.${options.templateHelper.getLocalStorageKeyColumns(options)})
+            ${this.hasSearchBar ? `const configStorage = this.storageService.getItem(this.${options.templateHelper.getLocalStorageKeyConfig(options)});` : ''}
+            const columnStorage = this.storageService.getItem(this.${options.templateHelper.getLocalStorageKeyColumns(options)});
+        
+            ${this.hasSearchBar ? `
+            if (configStorage?.length > 0) {
+              configStorage
+                .forEach((config: Config) => this.configs.push(config));
+            } else {
+              this.configs.push({name: 'settings.highlight.name', desc: 'settings.highlight.desc', selected: false, color: '#FFFF00'});
+            }` : ''}
+
+            if (columnStorage?.length > 0) {
+                columnStorage
                     .filter((column: Column) => this.displayedColumns.find(columnName => columnName === column.name))
-                    .map((column: Column) => this.columns.push({name: column.name, selected: column.selected}));
+                    .forEach((column: Column) => this.columns.push({name: column.name, selected: column.selected}));
             }
     
             this.displayedColumns.forEach((displayedColumn: string): void => {
                 if (
                     ${options.addRowCheckboxes ? `displayedColumn === ${classify(options.name)}Column['CHECKBOX'] ||` : ''}
-                    ${
-            options.customRowActions.length > 0
-                ? `displayedColumn === ${classify(options.name)}Column['CUSTOM_ROW_ACTIONS'] ||`
-                : ''
-        }
+                    ${options.customRowActions.length > 0 ? `displayedColumn === ${classify(options.name)}Column['CUSTOM_ROW_ACTIONS'] ||` : ''}
                     displayedColumn === ${classify(options.name)}Column['COLUMNS_MENU'] ||                 
                     this.columns.find(column => column.name === displayedColumn)
                 ) {

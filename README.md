@@ -2,33 +2,33 @@
 
 ## Table of Contents
 
-- [Introduction](#introduction)
-- [Getting help](#getting-help)
-- [Features](#features)
-- [Getting started](#getting-started)
-    - [Prerequisites](#prerequisites)
-    - [Using the schematic commands in external projects for testing purpose](#using-the-schematic-commands-in-external-projects-for-testing-purpose)
-- [Overview of the schematics commands](#overview-of-the-schematics-commands)
-    - [The _types_ schematics](#the-_types_-schematics)
-        - [Usage](#usage)
-        - [Example type definition file](#example-type-definition-file)
-    - [The _table_ schematics](#the-_table_-schematics)
-        - [Features provided by the schematics table](#features-provided-by-the-schematics-table)
-    - [Generate a component with the schematics command](#generate-a-component-with-the-schematics-command)
-    - [Flags and options that can be used in the generation process](#flags-and-options-that-can-be-used-in-the-generation-process)
-        - [Generate a component with a custom name](#generate-a-component-with-a-custom-name)
-        - [Exclude one or more properties from the generation](#exclude-one-or-more-properties-from-the-generation)
-        - [Multi-version support for Aspect Models](#multi-version-support-for-aspect-models)
-        - [Manual adaptions in _app.module.ts_](#manual-adaptions-in-_appmodulets_)
-        - [Show customized information in the table](#show-customized-information-in-the-table)
-        - [Export functionality](#export-functionality)
-    - [Custom icons for the command bar](#custom-icons-for-the-command-bar)
-    - [Add translations](#add-translations)
-    - [Pre-load config file](#pre-load-config-file)
-    - [Skip Installation](#skip-install)
-    - [Overwrite](#overwrite)
-- [Documentation](#documentation)
-- [License](#license)
+-   [Introduction](#introduction)
+-   [Getting help](#getting-help)
+-   [Features](#features)
+-   [Getting started](#getting-started)
+    -   [Prerequisites](#prerequisites)
+    -   [Using the schematic commands in external projects for testing purpose](#using-the-schematic-commands-in-external-projects-for-testing-purpose)
+-   [Overview of the schematics commands](#overview-of-the-schematics-commands)
+    -   [The _types_ schematics](#the-_types_-schematics)
+        -   [Usage](#usage)
+        -   [Example type definition file](#example-type-definition-file)
+    -   [The _table_ schematics](#the-_table_-schematics)
+        -   [Features provided by the schematics table](#features-provided-by-the-schematics-table)
+    -   [Generate a component with the schematics command](#generate-a-component-with-the-schematics-command)
+    -   [Flags and options that can be used in the generation process](#flags-and-options-that-can-be-used-in-the-generation-process)
+        -   [Generate a component with a custom name](#generate-a-component-with-a-custom-name)
+        -   [Exclude one or more properties from the generation](#exclude-one-or-more-properties-from-the-generation)
+        -   [Multi-version support for Aspect Models](#multi-version-support-for-aspect-models)
+        -   [Manual adaptions in _app.module.ts_](#manual-adaptions-in-_appmodulets_)
+        -   [Show customized information in the table](#show-customized-information-in-the-table)
+        -   [Export functionality](#export-functionality)
+    -   [Custom icons for the command bar](#custom-icons-for-the-command-bar)
+    -   [Add translations](#add-translations)
+    -   [Pre-load config file](#pre-load-config-file)
+    -   [Skip Installation](#skip-install)
+    -   [Overwrite](#overwrite)
+-   [Documentation](#documentation)
+-   [License](#license)
 
 ## Introduction
 
@@ -40,23 +40,23 @@ on [RDF aspect module object](https://www.w3.org/TR/turtle/).
 
 Are you having trouble with SDK JS? We want to help!
 
-- Check the [developer documentation](https://eclipse-esmf.github.io)
-- Having issues with the ESMF SDK JS schematics? Open
-  a [GitHub issue](https://github.com/eclipse-esmf/esmf-sdk-js-schematics/issues).
+-   Check the [developer documentation](https://eclipse-esmf.github.io)
+-   Having issues with the ESMF SDK JS schematics? Open
+    a [GitHub issue](https://github.com/eclipse-esmf/esmf-sdk-js-schematics/issues).
 
 ## Features
 
 The schematics' collection for this package includes dynamic generation of:
 
-- internationalization, using [i18n](https://angular.io/guide/i18n).
-- custom table components based on any aspect model loaded.
-- proper types of properties and entities used.
+-   internationalization, using [i18n](https://angular.io/guide/i18n).
+-   custom table components based on any aspect model loaded.
+-   proper types of properties and entities used.
 
 ## SDK schematics uses ESMF Aspect Model Loader library
 
-- This library is also an open source project and can be found
-  at: https://github.com/eclipse-esmf/esmf-sdk-js-aspect-model-loader (no action required, this library is already
-  included in SDK schematics)
+-   This library is also an open source project and can be found
+    at: https://github.com/eclipse-esmf/esmf-sdk-js-aspect-model-loader (no action required, this library is already
+    included in SDK schematics)
 
 ## SDK schematics generates components based on ttl files
 
@@ -109,9 +109,9 @@ npm install @angular-devkit/schematics-cli -g
 
 ```json
 {
-  "resolveJsonModule": true,
-  "esModuleInterop": true,
-  "allowSyntheticDefaultImports": true
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true
 }
 ```
 
@@ -142,9 +142,9 @@ schematics @esmf/semantic-ui-schematics:<schematics-name> --help
 
 where `<schematics-name>` can be replaced by:
 
-- table
-- i18n
-- types
+-   table
+-   i18n
+-   types
 
 7. add translations
 
@@ -169,21 +169,6 @@ npm run combine-i18n
 
 And in assets folder an i18n folder should be generated. And i18n folder should contain the translations json files:
 en.movement-table.translation.json, en.json.
-
-8. in index.html add a link to material icons:
-
-```html
-
-<head>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons"/>
-</head>
-```
-
-9. in styles.css import the material theme:
-
-```styles.css
-@import '~@angular/material/prebuilt-themes/indigo-pink.css';
-```
 
 ## Overview of the schematics commands
 
@@ -263,13 +248,14 @@ the [angular material package](https://v12.material.angular.io/components/table/
 8. Column ordering
 9. Default sorting column selection
 10. Removing properties from tables header
-11. Column pop-up selection for showing/hiding the columns header after table generation
-12. Wizard output to regenerate the same table without going through the wizard again
-13. JSON access path
-14. Custom actions for a row in the table
-15. Pagination
-16. Client or remote data handling
-17. Possibility to add a custom service which can or cannot be overridden when generating the same component again
+11. Select if translations should be generated for removed properties.
+12. Column pop-up selection for showing/hiding the columns header after table generation
+13. Wizard output to regenerate the same table without going through the wizard again
+14. JSON access path
+15. Custom actions for a row in the table
+16. Pagination
+17. Client or remote data handling
+18. Possibility to add a custom service which can or cannot be overridden when generating the same component again
 
 ## Generate a component with the schematics command
 
@@ -314,8 +300,7 @@ this will be the result in the generated component .ts file
     templateUrl: './movement-table.component.html',
     styleUrls: ['./movement-table.component.scss'],
 })
-export class MovementTableComponent {
-}
+export class MovementTableComponent {}
 ```
 
 By running the command with the '--name' flag
@@ -333,8 +318,7 @@ selector.
     templateUrl: './custom-table.component.html', // <- provided name reflected in the component path
     styleUrls: ['./custom-table.component.scss'], // <- provided name reflected in the component files
 })
-export class CustomTableComponent {
-} // <- provided name reflected in the component class name
+export class CustomTableComponent {} // <- provided name reflected in the component class name
 ```
 
 ---
@@ -510,9 +494,9 @@ By pressing it, a modal dialog window will appear with multiple options.
     <esmf-sdk-ui-movement-table-v321 [extendedCsvExporter]="csvExporter"></esmf-sdk-ui-movement-table-v321>
     ```
 
-   The `csvExporter` function will have a type `ExtendedCsvExporter` exported in the component's service file, and it
-   will need to implement a function with 2 arguments, the displayed columns and the RQL query which will query the data
-   from the backend.
+    The `csvExporter` function will have a type `ExtendedCsvExporter` exported in the component's service file, and it
+    will need to implement a function with 2 arguments, the displayed columns and the RQL query which will query the data
+    from the backend.
 
     ```typescript
     export interface ExtendedCsvExporter {
@@ -520,7 +504,7 @@ By pressing it, a modal dialog window will appear with multiple options.
     }
     ```
 
-   If this function is not exposed to the component, this option will not appear in the export dialog window.
+    If this function is not exposed to the component, this option will not appear in the export dialog window.
 
 #### Custom icons for the command bar
 
@@ -579,41 +563,27 @@ Example of configuration file:
 
 ```json
 {
-  "aspectModelTFiles": [
-    "FOLDER\\Movement.ttl"
-  ],
-  "excludedProperties": [],
-  "configFile": "wizard-config.json",
-  "complexProps": [
-    {
-      "prop": "position",
-      "propsToShow": [
-        "x",
-        "y",
-        "z"
-      ]
-    }
-  ],
-  "selectedModelElementUrn": "urn:samm:org.eclipse.esmf.test:1.0.0#Movement",
-  "jsonAccessPath": "",
-  "defaultSortingCol": "moving",
-  "customColumns": [],
-  "addRowCheckboxes": false,
-  "customRowActions": [
-    "schedule"
-  ],
-  "addCommandBar": true,
-  "enabledCommandBarFunctions": [
-    "addCustomCommandBarActions",
-    "addSearchBar",
-    "addEnumQuickFilters"
-  ],
-  "customCommandBarActions": [
-    "edit.svg"
-  ],
-  "enableRemoteDataHandling": true,
-  "enableVersionSupport": true,
-  "overwrite": true
+    "aspectModelTFiles": ["FOLDER\\Movement.ttl"],
+    "excludedProperties": [],
+    "configFile": "wizard-config.json",
+    "complexProps": [
+        {
+            "prop": "position",
+            "propsToShow": ["x", "y", "z"]
+        }
+    ],
+    "selectedModelElementUrn": "urn:samm:org.eclipse.esmf.test:1.0.0#Movement",
+    "jsonAccessPath": "",
+    "defaultSortingCol": "moving",
+    "customColumns": [],
+    "addRowCheckboxes": false,
+    "customRowActions": ["schedule"],
+    "addCommandBar": true,
+    "enabledCommandBarFunctions": ["addCustomCommandBarActions", "addSearchBar", "addEnumQuickFilters"],
+    "customCommandBarActions": ["edit.svg"],
+    "enableRemoteDataHandling": true,
+    "enableVersionSupport": true,
+    "overwrite": true
 }
 ```
 

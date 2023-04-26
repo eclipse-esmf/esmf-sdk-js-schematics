@@ -57,6 +57,7 @@ export interface Schema extends ComponentSchema, DefaultSchema {
     customCommandBarActions: string[];
     enableVersionSupport: boolean;
     excludedProperties: ExcludedProperty[];
+    getExcludedPropLabels: boolean;
     jsonAccessPath: string;
     customColumns: Array<string>;
     htmlGenerator: HtmlGenerator;
