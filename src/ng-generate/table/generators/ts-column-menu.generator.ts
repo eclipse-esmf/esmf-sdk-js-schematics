@@ -98,19 +98,19 @@ export class TsColumnMenuGenerator {
             ? `${this.options.templateHelper.getVersionedAccessPrefix(this.options)}.`
             : ``;
         return `
-            <div class="mat-h3 column-selection-title" (click)="$event.stopPropagation();">{{ 'columns' | translate }}</div>
+            <div class="mat-h3 selection-title" (click)="$event.stopPropagation();">{{ 'columns' | translate }}</div>
             
             <mat-divider></mat-divider>        
-            <mat-selection-list cdkDropList (cdkDropListDropped)="columnDrop($event)" data-test="column-selection-list" class="column-selection-list">
+            <mat-selection-list cdkDropList (cdkDropListDropped)="columnDrop($event)" data-test="column-selection-list" class="selection-list">
                 <mat-list-option cdkDrag data-test="column-list-option" *ngFor="let column of columns" [selected]="column.selected" (click)="columnClick($event, column)">
-                <div class="column-list-content">   
-                <div class="column-list-text">
+                <div class="list-content">   
+                <div class="list-text">
                         <div data-test="column-option-preferred-name">{{ ${
-                            versionedAccessPrefix ? `'${versionedAccessPrefix}' +` : ''
-                        } column.name + '.preferredName' | translate }}</div>                            
+            versionedAccessPrefix ? `'${versionedAccessPrefix}' +` : ''
+        } column.name + '.preferredName' | translate }}</div>                            
                         <div class="mat-small" data-test="column-option-description">{{ ${
-                            versionedAccessPrefix ? `'${versionedAccessPrefix}' +` : ''
-                        } column.name + '.description' | translate }}</div>
+            versionedAccessPrefix ? `'${versionedAccessPrefix}' +` : ''
+        } column.name + '.description' | translate }}</div>
                     </div>
                     <mat-icon data-test="drag-indicator-icon" matTooltip="Draggable row" class="material-icons" style="color:rgba(0,0,0,.54);">drag_indicator</mat-icon>
                    </div>
@@ -119,7 +119,7 @@ export class TsColumnMenuGenerator {
             
             <mat-divider></mat-divider>
 
-            <div data-test="column-menu-actions-container" class="column-menu-actions-container" (click)="stopMenuClosing($event)">
+            <div data-test="column-menu-actions-container" class="menu-actions-container" (click)="stopMenuClosing($event)">
                 <button
                         data-test="restore-to-defaults-button"
                         class="column-menu-restore-btn"

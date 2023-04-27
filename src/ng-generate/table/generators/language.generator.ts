@@ -35,20 +35,20 @@ export class LanguageGenerator {
         return `{
                 ${!this.options.templateHelper.isAspectSelected(this.options) ? this.getBlockFullAspectVersion(lang) : ``}                  
                 ${
-            this.options.enableVersionSupport
-                ? ` "${this.options.selectedModelElement.name.toLowerCase()}.v${this.options.templateHelper.formatAspectModelVersion(
-                    this.options.aspectModelVersion
-                )}": {`
-                : ``
-        }
+                    this.options.enableVersionSupport
+                        ? ` "${this.options.selectedModelElement.name.toLowerCase()}.v${this.options.templateHelper.formatAspectModelVersion(
+                              this.options.aspectModelVersion
+                          )}": {`
+                        : ``
+                }
                 ${new TemplateHelper()
-            .getProperties(this.options)
-            .map((prop: Property, i) => {
-                return `${i > 0 ? ', ' : ''} 
+                    .getProperties(this.options, this.options.getExcludedPropLabels)
+                    .map((prop: Property, i) => {
+                        return `${i > 0 ? ', ' : ''} 
                                 ${this.getBlockTransProperty(prop, lang)}
                                 ${this.getBlockTransEntity(prop, lang)}`;
-            })
-            .join('')}
+                    })
+                    .join('')}
                
                
                 ${this.getBlockTransCustomColumns()}
@@ -65,6 +65,7 @@ export class LanguageGenerator {
             ${LanguageGenerator.getValidationMessage()}
             ${LanguageGenerator.getTableTransActions()}
             ${LanguageGenerator.getScrollActions()}
+            ${this.hasSearchBar ? LanguageGenerator.getConfiguration() : ''}
              ,
             "cancel": "Cancel",
             "apply": "Apply",
@@ -82,12 +83,12 @@ export class LanguageGenerator {
     private getBlockFullAspectVersion(lang: string): string {
         return `
             ${
-            this.options.enableVersionSupport
-                ? ` "${this.options.aspectModel.name.toLowerCase()}.v${this.options.templateHelper.formatAspectModelVersion(
-                    this.options.aspectModelVersion
-                )}": {`
-                : ``
-        }
+                this.options.enableVersionSupport
+                    ? ` "${this.options.aspectModel.name.toLowerCase()}.v${this.options.templateHelper.formatAspectModelVersion(
+                          this.options.aspectModelVersion
+                      )}": {`
+                    : ``
+            }
             ${this.getBlockAspectDetails(lang)}
             ${this.options.enableVersionSupport ? `},` : ``}
         `;
@@ -191,10 +192,10 @@ export class LanguageGenerator {
                 "exportData": {
                     "title": "Export data",
                     "description": {
-                        "caseOne": "Export the maximum of {{maxExportPages}} pages from all {{allColumns}} columns.",
+                        "caseOne": "Export the maximum of {{maxExportRows}} rows from all {{allColumns}} columns.",
                         "caseTwo": {
-                            "singular": "Export the maximum of {{maxExportPages}} pages from the displayed {{displayedColumns}} column.",
-                            "plural": "Export the maximum of {{maxExportPages}} pages from the displayed {{displayedColumns}} columns.",
+                            "singular": "Export the maximum of {{maxExportRows}} rows from the displayed {{displayedColumns}} column.",
+                            "plural": "Export the maximum of {{maxExportRows}} rows from the displayed {{displayedColumns}} columns.",
                         },
                         "caseThree": {
                             "singular": "Export all data from the selected {{displayedColumns}} column of the current page.",
@@ -203,7 +204,7 @@ export class LanguageGenerator {
                         "caseFour": "Export all data from all {{allColumns}} columns of the current page.",
                         "default": "Export data.",
                     },
-                    "exportAllPages": "export the maximum of {{maxExportPages}} pages",
+                    "exportAllPages": "export the maximum of {{maxExportRows}} rows",
                     "exportAllColumns": "export all data from all {{allColumns}} columns",
                 }`;
     }
@@ -233,7 +234,8 @@ export class LanguageGenerator {
                 "tableActions": {
                     "openColumnsMenu": "Open columns menu",
                     "refreshData": "Refresh data",
-                    "exportData": "Export data"
+                    "exportData": "Export data",
+                    "openConfig": "Open configuration"
                 }`;
     }
 
@@ -242,6 +244,15 @@ export class LanguageGenerator {
                   "scroll": {
                     "left": "Scroll left",
                     "right": "Scroll right"
+                }`;
+    }
+
+    private static getConfiguration() {
+        return `,
+             "settings": {
+                "title": "Settings",
+                "highlight.name": "Highlight",
+                "highlight.desc": "The search term will be highlighted"
                 }`;
     }
 }

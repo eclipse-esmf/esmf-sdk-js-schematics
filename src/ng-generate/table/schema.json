@@ -27,13 +27,19 @@
         },
         "viewEncapsulation": {
             "description": "Specifies the view encapsulation strategy.",
-            "enum": ["Emulated", "None"],
+            "enum": [
+                "Emulated",
+                "None"
+            ],
             "type": "string",
             "alias": "v"
         },
         "changeDetection": {
             "description": "Specifies the change detection strategy.",
-            "enum": ["Default", "OnPush"],
+            "enum": [
+                "Default",
+                "OnPush"
+            ],
             "type": "string",
             "default": "OnPush",
             "alias": "c"
@@ -106,6 +112,10 @@
         "excludedProperties": {
             "type": "array",
             "default": []
+        },
+        "getExcludedPropLabels": {
+            "type": "boolean",
+            "default": false
         },
         "customRowActions": {
             "type": "array",

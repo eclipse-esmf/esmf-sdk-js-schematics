@@ -496,6 +496,14 @@ function getUserConfigQuestions(allAnswers: any, tree: Tree, options: Schema): Q
         },
     };
 
+    const requestGenerateLabelsForExcludedProps = {
+        type: 'confirm',
+        name: 'getExcludedPropLabels',
+        message: 'Do you want to generate translation labels for excluded properties?',
+        when: (answers: any) => answers.excludedProperties.length > 0,
+        default: false,
+    };
+
     const requestCustomRowActions = {
         type: 'suggest',
         name: 'customRowActions',
@@ -680,6 +688,7 @@ function getUserConfigQuestions(allAnswers: any, tree: Tree, options: Schema): Q
     return [
         requestJSONPathSelectedModelElement,
         requestExcludedProperties,
+        requestGenerateLabelsForExcludedProps,
         requestDefaultSortingCol,
         requestCustomColumnNames,
         requestRowCheckboxes,
