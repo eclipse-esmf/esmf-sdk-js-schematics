@@ -119,7 +119,7 @@ npm install -g @angular-devkit/schematics-cli@14
    terminal, (Windows) command promt or other (Linux/Mac) terminal)
 
 ```bash
-npm install https://github.com/eclipse-esmf/esmf-sdk-js-schematics/releases/download/v2.1.0/esmf-semantic-ui-schematics-2.1.0.tgz
+npm install --save-dev https://github.com/eclipse-esmf/esmf-sdk-js-schematics/releases/download/v2.1.0/esmf-semantic-ui-schematics-2.1.0.tgz
 ng generate @esmf/semantic-ui-schematics:table
 ```
 
