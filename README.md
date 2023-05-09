@@ -9,17 +9,17 @@
     -   [Prerequisites](#prerequisites)
     -   [Using the schematic commands in external projects for testing purpose](#using-the-schematic-commands-in-external-projects-for-testing-purpose)
 -   [Overview of the schematics commands](#overview-of-the-schematics-commands)
-    -   [The _types_ schematics](#the-_types_-schematics)
+    -   [The _types_ schematics](#the-types-schematics)
         -   [Usage](#usage)
         -   [Example type definition file](#example-type-definition-file)
-    -   [The _table_ schematics](#the-_table_-schematics)
+    -   [The _table_ schematics](#the-table-schematics)
         -   [Features provided by the schematics table](#features-provided-by-the-schematics-table)
     -   [Generate a component with the schematics command](#generate-a-component-with-the-schematics-command)
     -   [Flags and options that can be used in the generation process](#flags-and-options-that-can-be-used-in-the-generation-process)
         -   [Generate a component with a custom name](#generate-a-component-with-a-custom-name)
         -   [Exclude one or more properties from the generation](#exclude-one-or-more-properties-from-the-generation)
         -   [Multi-version support for Aspect Models](#multi-version-support-for-aspect-models)
-        -   [Manual adaptions in _app.module.ts_](#manual-adaptions-in-_appmodulets_)
+        -   [Manual adaptions in _app.module.ts_](#manual-adaptions-in-appmodulets)
         -   [Show customized information in the table](#show-customized-information-in-the-table)
         -   [Export functionality](#export-functionality)
     -   [Custom icons for the command bar](#custom-icons-for-the-command-bar)
@@ -73,9 +73,9 @@ In order to generate code based on the available schematics, the following steps
 1. Install [node](https://nodejs.org/en/) (LTS version).
 
 2. Schematics are part of the Angular ecosystem so angular-cli must be installed by running this command in a terminal:
-   `npm install -g @angular/cli`
+   `npm install -g @angular/cli@14`
 
-3. Run `npm install @angular-devkit/schematics-cli -g` in a terminal.
+3. Run `npm install -g @angular-devkit/schematics-cli@14` in a terminal.
 
 For more info on schematics, use the following command:
 
@@ -99,7 +99,7 @@ cd demo-schematic
 3. run (if not already installed):
 
 ```bash
-npm install @angular-devkit/schematics-cli -g
+npm install -g @angular-devkit/schematics-cli@14
 ```
 
 4. Optionally add some .ttl files in the same folder in order to use in the schema generation process. The schematic
@@ -116,10 +116,10 @@ npm install @angular-devkit/schematics-cli -g
 ```
 
 6. Install and run the command to generate the component, table in this case (do not use Git Bash, preferably use idea
-   terminal, windows terminal or other terminal)
+   terminal, (Windows) command promt or other (Linux/Mac) terminal)
 
 ```bash
-npm install @esmf/semantic-ui-schematics
+npm install https://github.com/eclipse-esmf/esmf-sdk-js-schematics/releases/download/v2.1.0/esmf-semantic-ui-schematics-2.1.0.tgz
 ng generate @esmf/semantic-ui-schematics:table
 ```
 
@@ -612,7 +612,7 @@ ng generate @esmf/semantic-ui-schematics:table --overwrite
 ## Documentation
 
 Further documentation and howto's are provided in the
-official [JS SDK User Documentation](https://eclipse-esmf.github.io/esmf-developer-guide/js-sdk-guide/1.0.0/index.html)
+official [JS SDK User Documentation](https://eclipse-esmf.github.io/js-sdk-guide/index.html)
 
 ## License
 
