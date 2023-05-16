@@ -181,7 +181,9 @@ export class LanguageGenerator {
     private getBlockTransSearchBar(): string {
         if (this.hasSearchBar) {
             return `,
-                    "search": "Search"
+                    "search": "Search",
+                    "advancedSearch": "Advanced Search",
+                    "allTextFields": "All Text Fields"
                     `;
         }
         return '';
@@ -225,7 +227,9 @@ export class LanguageGenerator {
                 "validation": {
                     "invalidInput": "Input can only contain",
                     "blankSpace": "Input can only contain blank space between characters",
-                    "empty_string_columns_array": "You have to select at least one column to search in"
+                    "empty_string_columns_array": "You have to select at least one column to search in",
+                    "min_char_no": "Minimum number of characters is",
+                    "max_char_no": "Maximum number of characters is"
                 }`;
     }
 

@@ -163,6 +163,15 @@ export class StyleGenerator {
         }
         
         ::ng-deep {
+            .advanced-search-option-description {
+                position: relative;
+                float: left;
+                font-size: 10px;
+                line-height: 1;
+                top: -12px;
+                white-space: break-spaces;
+            }
+  
             & .resizing {
                 -moz-user-select: none;
                 -ms-user-select: none;

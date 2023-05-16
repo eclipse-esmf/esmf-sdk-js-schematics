@@ -47,7 +47,7 @@ export class TsComponentGenerator {
         ${this.getComponentDeclaration()}
         export class ${classify(this.options.name)}Component implements OnInit, AfterViewInit, AfterViewChecked${
             !isRemote ? `, OnChanges` : ``
-        }${this.hasSearchBar ? `, OnDestroy` : ``}
+        }${this.hasSearchBar || isRemote ? `, OnDestroy` : ``}
         {
 
             ${this.getVariables(isRemote)}
@@ -55,12 +55,11 @@ export class TsComponentGenerator {
             
             ${this.getOnInit(isRemote)}
             ${this.getOnChange(isRemote)}
-            ${this.hasSearchBar ? this.getOnDestroy() : ''}
+            ${this.hasSearchBar || isRemote ? this.getOnDestroy() : ''}
             ${this.getAfterViewInit(isRemote)}
             ${this.getAfterViewChecked()}
             
             ${this.getOnInitializeColumns(this.options)}
-            ${this.hasSearchBar ? this.getToggleSelection() : ''}
 
             hideColumn(column: ${classify(this.options.name)}Column): void {
                 this.displayedColumns = this.displayedColumns.filter(columnName => columnName !== column);
@@ -184,7 +183,7 @@ export class TsComponentGenerator {
             }
             
             shouldHighlight(name: string, letter: string): boolean {
-              const highlightLetters = this.highlightString.split('');
+              const highlightLetters = [...new Set(this.highlightString.join().split(''))].join();
               const index = name.toString().indexOf(letter);
               return index !== -1 && highlightLetters.includes(name.toString()[index]);
             }` : ''}
@@ -293,8 +292,12 @@ export class TsComponentGenerator {
             @Input() customTableClass: string = '';
             @Input() debounceTime: number = 500;
             @Input() minNumberCharacters: number = 2;
+            @Input() maxNumberCharacters: number = 50;
             @Input() allowedCharacters: string = '';
             @Input() regexValidator:string = '';
+            ${
+                this.hasSearchBar ? `@Input() hasAdvancedSearch: boolean = this.filterService.stringColumns.length > 1;` : ''
+            }   
             ${
             isRemote
                 ? ` 
@@ -324,7 +327,7 @@ export class TsComponentGenerator {
         )}>;
             @ViewChild(${classify(this.options.name)}ColumnMenuComponent) private columMenuComponent!: ${classify(this.options.name)}ColumnMenuComponent;
             ${this.hasSearchBar ? `@ViewChild(${classify(this.options.name)}ConfigMenuComponent) private configurationComponent!: ${classify(this.options.name)}ConfigMenuComponent;` : ''}
-            @ViewChild(MatAutocompleteTrigger) autocomplete!: MatAutocompleteTrigger;
+            @ViewChild('searchInput') searchInput!: ElementRef;
 
             @HostBinding("attr.style")
             public get valueAsStyle(): any {
@@ -346,8 +349,6 @@ export class TsComponentGenerator {
             .toLowerCase()}';
             ` : ''}
             
-            ${this.hasSearchBar ? 'subscription: Subscription | undefined;' : ''}
-            
             totalItems: number = 0;
             selection = new SelectionModel<any>(this.isMultipleSelectionEnabled, []);
             dataSource: ${classify(this.options.name)}DataSource;
@@ -363,15 +364,16 @@ export class TsComponentGenerator {
             customRowActionsLength: number = ${this.options.customRowActions.length};
             closeColumnMenu: boolean = false;
             rqlString: string = '';
-            searchString = new FormControl();
             searchFocused: boolean = false;
             ${this.hasSearchBar ? `
-            highlightString: string = '';
+            highlightString: string[] = [];
             
             get highlightConfig(): Config | undefined {
               return this.configs.find((config: Config) => config.name.includes('highlight'));
             }` : ''}
             ${this.getByValueFunction()}
+            
+            ${this.hasSearchBar || isRemote? `private readonly ngUnsubscribe = new Subject<void>();` : ``}
             `;
     }
 
@@ -409,20 +411,7 @@ export class TsComponentGenerator {
                             : ``
                     }`
             )
-            .join('')}
-                ${
-            this.hasSearchBar
-                ? ` this.subscription = this.filterService.searchStringChanged
-                                .pipe(
-                                    debounceTime(this.debounceTime),
-                                    map((event: any) => (event?.target?.value ? event.target.value.trim() : '')),
-                                    distinctUntilChanged(),
-                                    filter((searchText: string) => searchText.length >= this.minNumberCharacters && this.minNumberCharacters !== 0)
-                                )
-                                .subscribe(() => this.applyFilters());
-                          `
-                : ''
-        }`;
+            .join('')}`;
 
         const commonImports = `
             ${hasCustomActions ? `iconRegistry: MatIconRegistry,` : ``}
@@ -721,7 +710,7 @@ export class TsComponentGenerator {
         const removeFilterFn = `removeFilter(filterData:any):void {
                                     ${this.hasFilters ? `this.filterService.removeFilter(filterData)` : ''};
                                     this.paginator.firstPage();
-                                    ${this.hasSearchBar ? `this.searchString.reset();` : ''}
+                                    ${this.hasSearchBar ? `this.filterService.searchString.reset();` : ''}
                                     this.applyFilters();
                                 }`;
 
@@ -731,7 +720,7 @@ export class TsComponentGenerator {
                 ${
                 this.hasSearchBar
                     ? `
-                    if(this.searchString.errors || this.filterService.isSearchStringColumnsEmpty()){
+                    if(this.filterService.searchString.errors){
                         return;
                     }
                 `
@@ -739,9 +728,6 @@ export class TsComponentGenerator {
             }
                     
                     this.tableUpdateStartEvent.emit();
-                    if (this.autocomplete) {
-                        this.autocomplete.closePanel();
-                      }
                     ${
                 this.options.addRowCheckboxes
                     ? `this.selection.clear();
@@ -750,7 +736,10 @@ export class TsComponentGenerator {
             }
                     const query = new And();
                     ${this.hasEnumQuickFilter ? `this.filterService.applyEnumFilter(query);` : ``}
-                    ${this.hasSearchBar ? `this.filterService.applyStringSearchFilter(query);` : ``}
+                    ${this.hasSearchBar ? `this.filterService.applyStringSearchFilter(query);
+                        this.highlightString = this.filterService.activeFilters
+                            .filter(elem => elem.type === FilterEnums.Search && elem.filterValue !== undefined)
+                            .map(elem => elem.filterValue as string);` : ``}
                     ${this.hasDateQuickFilter ? `this.filterService.applyDateFilter(query);` : ``}
 
                     if (this.customFilterExtension) {
@@ -820,6 +809,8 @@ export class TsComponentGenerator {
             )}Response): void => {
                           this.dataSource.setData(response.items);
                           this.filteredData = response.items;
+                          this.totalItems = this.data.length;
+                          this.maxExportRows = this.totalItems;
                           this.cd.detectChanges();
                           this.totalItems = (response.totalItems !== null && response.totalItems !== undefined) ? response.totalItems : response.items.length;
                           this.tableUpdateFinishedEvent.emit();
@@ -838,23 +829,24 @@ export class TsComponentGenerator {
                           ${
                 this.hasSearchBar
                     ? `
-                          if(this.filterService.isSearchStringColumnsEmpty()){
+                          if(this.filterService.searchString.errors){
                               return;
                           }`
                     : ``
             }
                           this.tableUpdateStartEvent.emit();
-                          if (this.autocomplete) {
-                            this.autocomplete.closePanel();
-                          }
                           let dataTemp = [...this.data];
                           ${this.hasEnumQuickFilter ? `dataTemp = this.filterService.applyEnumFilter(dataTemp);` : ``}
-                          ${this.hasSearchBar ? `dataTemp = this.filterService.applyStringSearchFilter(dataTemp);` : ``}
+                          ${this.hasSearchBar ? `dataTemp = this.filterService.applyStringSearchFilter(dataTemp);
+                          this.highlightString = this.filterService.activeFilters
+                                .filter(elem => elem.type === FilterEnums.Search && elem.filterValue !== undefined)
+                                .map(elem => elem.filterValue as string);` : ``}
                           ${this.hasDateQuickFilter ? `dataTemp = this.filterService.applyDateFilter(dataTemp); ` : ``}
                           this.dataSource.setData(dataTemp);
                           this.filteredData = dataTemp;
+                          this.totalItems = this.data.length;
+                          this.maxExportRows = this.totalItems;
                           this.checkIfOnValidPage();
-                          ${this.hasSearchBar ? `this.highlightString = this.searchString.value` : ''};
                           ${this.options.addRowCheckboxes ? `this.trimSelectionToCurrentPage();` : ``}
                           this.tableUpdateFinishedEvent.emit();
                        }
@@ -925,7 +917,8 @@ export class TsComponentGenerator {
             OnInit,
             AfterViewChecked,
             TemplateRef,
-           ${this.hasSearchBar ? 'OnDestroy,' : ''} 
+            ElementRef,
+           ${isRemote || this.hasSearchBar ? `OnDestroy,` : ``}
            ${!isRemote ? `OnChanges,` : ``}
            ${this.options.viewEncapsulation ? `ViewEncapsulation,` : ``}
            ${this.options.changeDetection !== 'Default' ? `ChangeDetectionStrategy,` : ``}
@@ -935,8 +928,8 @@ export class TsComponentGenerator {
             import { MatSort, SortDirection } from '@angular/material/sort';
             import { MatTable } from '@angular/material/table';
             ${
-            this.hasFilters
-                ? `import { ${this.filterServiceName} ${this.hasSearchBar ? `, SearchField` : ``}} from './${dasherize(
+            this.hasFilters || this.hasSearchBar
+                ? `import { FilterEnums, ${this.filterServiceName}} from './${dasherize(
                     this.options.name
                 )}.filter.service'`
                 : ''
@@ -947,7 +940,6 @@ export class TsComponentGenerator {
             this.options.enableVersionSupport ? `../` : ``
         }../export-confirmation-dialog/export-confirmation-dialog.component';
             import {MatDialog} from '@angular/material/dialog';
-            import {FormControl} from '@angular/forms';
             import {
             ${classify(this.options.templateHelper.resolveType(this.options.selectedModelElement).name)}
             ${
@@ -992,10 +984,11 @@ export class TsComponentGenerator {
             ${this.hasSearchBar ? `import {${classify(this.options.name)}ConfigMenuComponent} from './${dasherize(this.options.name)}-config-menu.component';` : ''}
             ${
             this.hasFilters
-                ? `import {debounceTime, distinctUntilChanged, filter, map} from 'rxjs/operators';
-                       import {Subscription} from 'rxjs';`
-                : `import {filter} from 'rxjs/operators';`
-        }
+                ? `import {debounceTime, filter, map, takeUntil} from 'rxjs/operators';`
+                : (this.hasSearchBar ? `import {debounceTime, filter, takeUntil} from 'rxjs/operators';` :
+                    `import {filter, takeUntil} from 'rxjs/operators';`)
+            }
+            import {Subject} from 'rxjs';
             ${
             isRemote
                 ? `import {${this.options.customRemoteService ? 'Custom' : ''}${classify(this.options.name)}Service} from './${
@@ -1055,7 +1048,6 @@ export class TsComponentGenerator {
                     this.options.aspectModel.name
                 )}Response} from './${dasherize(this.options.name)}.service';`
         }
-            import {MatAutocompleteTrigger} from '@angular/material/autocomplete';
             
             export interface Column {
                 /** Column name **/
@@ -1080,7 +1072,14 @@ export class TsComponentGenerator {
 
     private getOnInit(isRemote: boolean): string {
         return `ngOnInit(): void {
-                    ${this.hasSearchBar ? ` this.filterService.searchString = this.initialSearchString;` : ''}
+                    ${this.hasSearchBar ? `
+                    this.filterService.searchStringInit(this.initialSearchString, this.regexValidator, this.minNumberCharacters, this.maxNumberCharacters);
+                    this.filterService.selectedStringColumn.valueChanges.pipe(takeUntil(this.ngUnsubscribe), debounceTime(100)).subscribe(() => {
+                        if(this.searchInput) {
+                            this.searchInput.nativeElement.focus();
+                        }
+                     });
+                    ` : ''}
                     this.initializeColumns();
                     ${!isRemote ? 'this.maxExportRows = this.data.length;' : ''}
                }`;
@@ -1088,9 +1087,9 @@ export class TsComponentGenerator {
 
     private getOnDestroy(): string {
         return `ngOnDestroy(): void {
-                    if(this.subscription) {
-                        this.subscription.unsubscribe();
-                    }
+                    ${this.hasSearchBar ? `this.filterService.searchString.setValue('');` : ''}
+                    this.ngUnsubscribe.next();
+                    this.ngUnsubscribe.complete();
                 }`;
     }
 
@@ -1115,9 +1114,6 @@ export class TsComponentGenerator {
         return !isRemote
             ? ` ngOnChanges(changes: SimpleChanges): void {
                         if (this.table) {
-                            this.dataSource.setData(this.data);
-                            this.totalItems = this.data.length;
-                            this.maxExportRows = this.totalItems;
                             this.applyFilters();
                     }}`
             : '';
@@ -1164,18 +1160,6 @@ export class TsComponentGenerator {
             this.setDisplayedColumns(this.columns);
         }
         `;
-    }
-
-    private getToggleSelection() {
-        return `
-          toggleSelection(searchField: SearchField): void {
-              searchField.selected = !searchField.selected;
-              this.searchString.updateValueAndValidity();
-              if (this.searchString.value && !this.filterService.isSearchStringColumnsEmpty()) {
-                  this.applyFilters();
-              }
-          }
-      `;
     }
 
     private getByValueFunction(): string {

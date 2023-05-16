@@ -37,17 +37,20 @@ export class TsPipeGenerator {
         import {FormControl} from "@angular/forms";
         @Pipe({
           name: 'searchString',
-          pure: false
+          pure: true
         })
         export class SearchStringPipe implements PipeTransform {
-          transform(value: any, searchString: string): boolean {
+          transform(value: any, searchString: string[]): boolean {
             if (typeof value === 'boolean') {
               value = value.toString();
             }
             if (value.constructor.name === 'Date') {
               value = value.toLocaleString();
             }
-            return searchString !== '' && value?.includes(searchString);
+            if (typeof value !== 'string') {
+              return false;
+            }
+            return searchString.length !== 0 && searchString.some(term => value?.includes(term));
           }
         }
         `;

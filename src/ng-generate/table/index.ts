@@ -162,13 +162,14 @@ export function generateTable(options: Schema): Rule {
             options,
             [
                 {name: 'MatToolbarModule', fromLib: '@angular/material/toolbar'},
+                {name: 'MatFormFieldModule', fromLib: '@angular/material/form-field'},
                 {name: 'FormsModule', fromLib: '@angular/forms'},
                 {name: 'MatInputModule', fromLib: '@angular/material/input'},
                 {name: 'ReactiveFormsModule', fromLib: '@angular/forms'},
                 {name: 'MatIconModule', fromLib: '@angular/material/icon'},
                 {name: 'MatChipsModule', fromLib: '@angular/material/chips'},
-                {name: 'MatAutocompleteModule', fromLib: '@angular/material/autocomplete'},
                 {name: 'MatCheckboxModule', fromLib: '@angular/material/checkbox'},
+                {name: 'MatSelectModule', fromLib: '@angular/material/select'},
             ]
         ),
         addToComponentModule(

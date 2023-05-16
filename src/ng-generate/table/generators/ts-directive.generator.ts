@@ -12,7 +12,6 @@
  */
 
 import {Schema} from '../schema';
-import {dasherize} from '@angular-devkit/core/src/utils/strings';
 
 export class TsDirectiveGenerator {
     static generateResizeDirective(options: Schema): string {
@@ -137,7 +136,6 @@ export class TsDirectiveGenerator {
     }
 
     static generateValidateInputDirective(options: Schema): string {
-        const hasSearchFilter = options.templateHelper.isAddCommandBarFunctionSearch(options.enabledCommandBarFunctions);
         return `
         /** ${options.templateHelper.getGenerationDisclaimerText()} **/ 
         import {Directive, Input} from '@angular/core';
@@ -151,13 +149,6 @@ export class TsDirectiveGenerator {
             ValidatorFn
         } from '@angular/forms';
         import {ErrorStateMatcher} from '@angular/material/core';
-        ${
-            hasSearchFilter
-                ? `import {SearchField} from '../components/${dasherize(options.name)}/v${options.templateHelper.formatAspectModelVersion(
-                      options.aspectModelVersion
-                  )}/${dasherize(options.name)}.filter.service';`
-                : ``
-        }
         
         @Directive({
             selector: '[validateInput]',
@@ -172,18 +163,9 @@ export class TsDirectiveGenerator {
         export class ValidateInputDirective {
             /** Pass here the regex pattern as string, e.g. '^[a-zA-Z0-9-_.,+ ]+$' */
             @Input() validateInput: string = '';
-            ${
-                hasSearchFilter
-                    ? `
-            @Input() stringColumns: SearchField[] = [];
-            @Input() selectedStringColumns: string[] = [];
-            `
-                    : ``
-            }
         
             validate(control: AbstractControl): ValidationErrors | null {
-                return validateInputsValidator(new RegExp(this.validateInput))(control) 
-                ${hasSearchFilter ? `|| validateStringColumns(this.selectedStringColumns, this.stringColumns)(control)` : `;`}
+                return validateInputsValidator(new RegExp(this.validateInput))(control)
             }
         }
         
@@ -215,23 +197,6 @@ export class TsDirectiveGenerator {
         
                 return null;
             };
-        }
-        
-        ${
-            hasSearchFilter
-                ? `
-        function validateStringColumns(selectedStringColumns: string[] | undefined, stringColumns: SearchField[]): ValidatorFn {
-            return (): ValidationErrors | null => {
-                selectedStringColumns = stringColumns
-                    .filter((col: SearchField): boolean => col.selected)
-                    .map((col: SearchField): string => col.columnName)
-                    .filter((columnName: string) => !!columnName);
-        
-                return selectedStringColumns.length ? null : {emptyStringColumnsArray: true};
-            };
-        } 
-        `
-                : ``
         }
     `;
     }
