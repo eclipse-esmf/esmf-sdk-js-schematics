@@ -70,7 +70,8 @@ export class HtmlGenerator {
                                           (removed)="removeFilter(filter)"
                                   >
                                       <div data-test="chip-text" class="chip-text"
-                                           matTooltip="{{ filter.label }}">{{ filter.label }}</div>
+                                           matTooltip="{{ filter.filterValue + filter.label }}">
+                                           <b>{{filter.filterValue}}</b>{{ filter.label }}</div>
                                       <button *ngIf="filter.removable" matChipRemove data-test="mat-chip-remove">
                                           <mat-icon class="material-icons" data-test="remove-chip">cancel</mat-icon>
                                       </button>
@@ -391,67 +392,55 @@ export class HtmlGenerator {
     private getCommandBar(): string {
         return `
             <mat-toolbar data-test="toolbar" class="toolbar">
-            <div data-test="toolbar-number-of-items" class="command-bar-number-of-items">{{ selection.selected.length > 0 ? (selection.selected.length + ' / ') : '' }}{{ totalItems }}</div>
+            <div *ngIf="isMultipleSelectionEnabled" data-test="toolbar-number-of-items" class="command-bar-number-of-items">{{ selection.selected.length > 0 ? (selection.selected.length + ' / ') : '' }}{{ totalItems }}</div>
             ${
             this.options.templateHelper.isAddCommandBarFunctionSearch(this.options.enabledCommandBarFunctions)
                 ? `<mat-form-field data-test="search-form-field" appearance="fill" floatLabel="never" class="search-input">
                           <mat-label data-test="search-label">{{ 'search' | translate }}</mat-label>
                           <input
-                                  data-test="search-input"
-                                  *ngIf="allowedCharacters && regexValidator"
-                                  matInput
-                                  [validateInput]="regexValidator"
-                                  [stringColumns]="filterService.stringColumns"
-                                  [selectedStringColumns]="filterService.selectedStringColumns"
-                                  [formControl]="searchString"
-                                  type="text"
-                                  [(ngModel)]="filterService.searchString"
-                                  [matAutocomplete]="auto"
-                                  (keyup.enter)="reloadFilter()"
-                                  (keyup)="filterService.searchStringChange($event)"
-                                  (focus)="searchFocused = true"
-                                  (blur)="searchFocused = false"
+                                #searchInput
+                                data-test="search-input"
+                                matInput
+                                [formControl]="filterService.searchString"
+                                type="text"
+                                (keyup.enter)="reloadFilter()"
+                                (focus)="searchFocused = true"
+                                (blur)="searchFocused = false"
                           />
-                          <input
-                                  data-test="search-input"
-                                  *ngIf="!allowedCharacters || !regexValidator"
-                                  matInput
-                                  type="text"
-                                  validateInput=""
-                                  [stringColumns]="filterService.stringColumns"
-                                  [selectedStringColumns]="filterService.selectedStringColumns"
-                                  [formControl]="searchString"
-                                  [(ngModel)]="filterService.searchString"
-                                  [matAutocomplete]="auto"
-                                  (keyup.enter)="reloadFilter()"
-                                  (keyup)="filterService.searchStringChange($event)"
-                                  (focus)="searchFocused = true"
-                                  (blur)="searchFocused = false"
-                          />
-                          <mat-autocomplete #auto="matAutocomplete">
-                              <mat-option *ngFor="let searchField of filterService.stringColumns">
-                                  <mat-checkbox [checked]="searchField.selected" (change)="toggleSelection(searchField)"
-                                                (click)="$event.stopPropagation()">
-                                      {{ searchField.columnName }}
-                                  </mat-checkbox>
-                              </mat-option>
-                          </mat-autocomplete>
-              
-                          <mat-error
-                                  *ngIf="allowedCharacters && regexValidator && searchString.errors && searchString.errors['blankSpace']">
+                          <mat-error *ngIf="filterService.searchString.errors && filterService.searchString.errors['blankSpace']">
                               {{ 'validation.blankSpace' | translate }}
                           </mat-error>
-                          <mat-error *ngIf="searchString.errors && searchString.errors['invalidInput']">
+                          <mat-error *ngIf="filterService.searchString.errors && filterService.searchString.errors['invalidInput']">
                               {{ 'validation.invalidInput' | translate }} {{ allowedCharacters }}
                           </mat-error>
-                          <mat-error *ngIf="searchString.errors && searchString.errors['emptyStringColumnsArray']">
+                          <mat-error *ngIf="!filterService.stringColumns || !filterService.stringColumns.length">
                               {{'validation.empty_string_columns_array' | translate }}
+                          </mat-error>
+                          <mat-error *ngIf="filterService.searchString.errors && filterService.searchString.errors['minCharNo']">
+                              {{'validation.min_char_no' | translate }} {{ minNumberCharacters }}
+                          </mat-error>
+                          <mat-error *ngIf="filterService.searchString.errors && filterService.searchString.errors['maxCharNo']">
+                              {{'validation.max_char_no' | translate }} {{ maxNumberCharacters }}
                           </mat-error>
                           <mat-hint *ngIf="!searchFocused && !!searchHint">{{ searchHint }}</mat-hint>
                           <button data-test="search-button" mat-icon-button matSuffix aria-label="search" (click)="reloadFilter()">
                               <mat-icon data-test="search-icon" class="material-icons">search</mat-icon>
                           </button>
-                    </mat-form-field>`
+                    </mat-form-field>
+                    <ng-container *ngIf="hasAdvancedSearch">
+                        <mat-form-field data-test="form-field-select" appearance="fill" floatLabel="never">
+                            <mat-label data-test="select-label">{{ 'advancedSearch' | translate }}</mat-label>
+                            <mat-select data-test="select" [formControl]="filterService.selectedStringColumn">
+                                <mat-option [value]="filterService.advancedSearchAllValue">{{ 'allTextFields' | translate }}</mat-option>
+                                <mat-option *ngFor="let searchField of filterService.stringColumns" [value]="searchField">
+                                    <span>{{ '${this.templateHelper.getTranslationPath(this.options)}' + searchField + '.preferredName' | translate }}</span>
+                                    <span class="advanced-search-option-description">
+                                        {{ '${this.templateHelper.getTranslationPath(this.options)}' + searchField + '.description' | translate }}</span>
+                                </mat-option>
+                            </mat-select>
+                      </mat-form-field>
+                  </ng-container>
+                `
                 : ''
         }
             ${this.getPropertiesToCreateFilters()

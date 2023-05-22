@@ -73,11 +73,12 @@ export class TsFilterServiceGenerator {
                 : ''
         }
         
-        ${this.hasSearchBar || this.hasDateQuickFilter ? `import {TranslateService} from '@ngx-translate/core';` : ``}
+        ${this.hasSearchBar || this.hasDateQuickFilter ? `import {TranslateService} from '@ngx-translate/core';
+        import {AbstractControl, FormControl, ValidationErrors, ValidatorFn} from '@angular/forms';` : ``}
         import {Injectable, ${this.hasDateQuickFilter ? `Inject` : ``}} from '@angular/core';
         ${
             this.hasDateQuickFilter
-                ? `import { FormControl, FormGroup } from '@angular/forms';import {
+                ? `import { FormGroup } from '@angular/forms';import {
             DateAdapter,
             MatDateFormats,
             MAT_DATE_FORMATS,
@@ -100,16 +101,65 @@ export class TsFilterServiceGenerator {
             filterValue?:string;
             removable?: boolean;
         };
-        ${
-            this.hasSearchBar
-                ? `export interface SearchField {
-            columnName: string;
-            selected: boolean;
-        }`
-                : ``
+        
+        ${this.hasSearchBar ? 
+        `export const validateInputsValidator = (pattern: string): ValidatorFn => {
+            return (control: AbstractControl): ValidationErrors | null => {
+                const value = control.value;
+                const allowedCharacters = new RegExp(pattern);
+                
+                //allow input to be empty
+                if (value?.length === 0) {
+                    return null;
+                }
+      
+                //trigger error if input has blank space
+                if (value?.indexOf(' ') === 0 || value?.endsWith(' ')) {
+                    return {blankSpace: true};
+                }
+      
+                // no validation pattern
+                if (!pattern || !pattern.length) {
+                    return null;
+                }
+                
+                //trigger error if input does not meet the pattern criteria
+                if (value?.length > 0 && !value?.match(allowedCharacters)) {
+                  return {invalidInput: true};
+                }
+            
+                return null;
+            };
         }
         
-        
+        export const validateInputLength = (minNoCharacters: number, maxNoCharacters: number): ValidatorFn => {
+            return (control: AbstractControl): ValidationErrors | null => {
+                const value = control.value;
+                
+                // no validation required
+                if (!minNoCharacters && !maxNoCharacters) {
+                  return null;
+                }
+            
+                //allow input to be empty
+                if (value?.length === 0) {
+                  return null;
+                }
+            
+                //trigger error if input has less characters than minNoCharacters
+                if (minNoCharacters && value?.length < minNoCharacters) {
+                  return {minCharNo: true};
+                }
+            
+                //trigger error if input has more characters than maxNoCharacters
+                if (maxNoCharacters && value?.length > maxNoCharacters) {
+                  return {maxCharNo: true};
+                }
+            
+                return null;
+            };
+        }` : ''}
+
         /**
          * Custom service used for table filtering logic
          */
@@ -118,17 +168,14 @@ export class TsFilterServiceGenerator {
         })
         export class ${this.filterServiceName}  {
    
-            ${
-                this.hasSearchBar
-                    ? `searchStringChanged = new Subject<string>();
-                       searchString: string = '';
-                      `
-                    : ''
-            }
+            /** Array of active filters */
+            activeFilters: FilterType[]=[];
+            
+            ${this.hasSearchBar? `searchString = new FormControl<string | null>('');` : ``}
+            ${this.hasSearchBar ? this.setStringColumns() : ``}
 
             ${this.setQuickFilters(true)}
-            ${this.hasSearchBar ? this.setStringColumns() : ``}            
-            
+                        
             constructor(
             ${
                 this.hasDateQuickFilter
@@ -143,34 +190,32 @@ export class TsFilterServiceGenerator {
             ${
                 this.hasSearchBar
                     ? `
-                    searchStringChange(event: any) {
-                        this.searchStringChanged.next(event);
+                    searchStringInit(initialValue: string, regexValidator: string, minCharNo: number, maxCharNo: number) {
+                        this.searchString = new FormControl<string | null>(initialValue, [validateInputsValidator(regexValidator), validateInputLength(minCharNo, maxCharNo)]);
                     }`
                     : ''
             }
 
-            /** Array of active filters */
-            activeFilters: FilterType[]=[];
 
             /** Removes a specific filter. */ 
             removeFilter(filter:FilterType){
                 switch(filter.type){
                     ${
                         this.hasSearchBar
-                            ? `case FilterEnums.Search : this.searchString = '';
-                               break;`
+                            ? `case FilterEnums.Search:
+                                const removedFilter = this.activeFilters.findIndex(elem => elem.filterValue === filter.filterValue && elem.prop === filter.prop);
+                                this.activeFilters.splice(removedFilter, 1);
+                                this.searchString.setValue('');
+                                break;`
                             : ''
                     }
-                  
                     ${this.setQuickFilters(false)}
                 }
-
-                this.activeFilters = this.activeFilters.filter(af=> af.filterValue !== filter.filterValue && af.label!== filter.label );
             }
             ${this.hasSearchBar ? this.getValueByAccessPathFn() : ``}     
             ${this.getSearchFn(isRemote)}
+            ${this.getAddSelectedColumnsQuery(isRemote)}
             ${this.getEnumFilterFn(isRemote)}
-            ${this.hasSearchBar ? this.getIsSearchStringColumnsEmptyFn() : ``}
             ${this.getDateFn(isRemote)}
         }
     `;
@@ -202,11 +247,12 @@ export class TsFilterServiceGenerator {
     }
 
     private setStringColumns() {
-        const stringColumnsArr = `stringColumns: SearchField[] = [`;
+        const stringColumnsArr = `stringColumns: string[] = [`;
         return `${stringColumnsArr}${this.getAllStringProps().map((stringColumn: string) => {
-            return `{columnName: ${stringColumn}, selected: true}`;
+            return stringColumn;
         })}];
-        selectedStringColumns: Array<string> = this.stringColumns.filter((col: SearchField): boolean => col.selected).map((col: SearchField): string => col.columnName);`;
+        readonly advancedSearchAllValue = 'allTextFields';
+        selectedStringColumn: FormControl<string | null> = new FormControl(this.advancedSearchAllValue);`;
     }
 
     private setQuickFilters(isInit: boolean) {
@@ -237,7 +283,7 @@ export class TsFilterServiceGenerator {
                     .map(prop => {
                         return `if(filter.prop === '${prop.propertyValue}') {this.${prop.propertyName}Selected = this.${prop.propertyName}Selected.filter(sel=> sel !==filter.filterValue);}`;
                     })
-                    .join('')}` + 'break;';
+                    .join('')}` + 'this.activeFilters = this.activeFilters.filter(af=> af.filterValue !== filter.filterValue && af.label!== filter.label );' + 'break;';
             }
         }
 
@@ -260,7 +306,7 @@ export class TsFilterServiceGenerator {
                 .map(prop => {
                     return `if(filter.prop === '${prop.propertyValue}') {this.${prop.propertyName}Group.reset();  this.${prop.propertyName}Group.reset();}`;
                 })
-                .join('')}` + 'break;';
+                .join('')}` + 'this.activeFilters = this.activeFilters.filter(af=> af.filterValue !== filter.filterValue && af.label!== filter.label );' + 'break;';
             }
         }
 
@@ -409,28 +455,32 @@ export class TsFilterServiceGenerator {
             return `applyStringSearchFilter(data: Array<${classify(
                 this.options.templateHelper.resolveType(this.options.aspectModel).name
             )}>): Array<${classify(this.options.templateHelper.resolveType(this.options.aspectModel).name)}> {
-                    if (!this.searchString) {
-                        this.activeFilters = this.activeFilters.filter(af=> af.type !== FilterEnums.Search);
-                        return data;
-                    }
-                    const searchFilterObj = this.activeFilters.find(af=> af.type === FilterEnums.Search);
-                    if(searchFilterObj) {
-                        searchFilterObj.filterValue = this.searchString;
-                        searchFilterObj.label = \`\${ this.translateService.instant('search')} : \${this.searchString} in \${this.selectedStringColumns.join(', ')}\`;
-                    } else  {
-                        this.activeFilters.push(<FilterType>{
+                    if (this.searchString.value && this.searchString.value !== '' && !this.activeFilters.find(elem => elem.prop === this.selectedStringColumn.value && elem.filterValue === this.searchString.value)) {
+                            const label = \` in \${ this.selectedStringColumn.value === this.advancedSearchAllValue ?
+                                this.translateService.instant('allTextFields') :
+                                this.translateService.instant(\`${this.options.templateHelper.getTranslationPath(this.options)}\` + this.selectedStringColumn.value + '.preferredName')}\`;
+                            this.activeFilters.push(<FilterType>{
                             removable: true,
                             type:FilterEnums.Search,
-                            label: \`\${ this.translateService.instant('search')} : \${this.searchString} in \${this.selectedStringColumns.join(', ')}\`, 
-                            prop:null, 
-                            filterValue:this.searchString
-                         });
+                            label, 
+                            prop: this.selectedStringColumn.value, 
+                            filterValue:this.searchString.value
+                        });
                     }
-                    return (this.searchString === '') ? data : data.filter((item: any): boolean => {                       
+                    const searchFilters = this.activeFilters.filter(elem => elem.type === FilterEnums.Search);
+                    return (searchFilters.length === 0) ? data : data.filter((item: any): boolean => {                       
                         let foundSearchStringInProperty = false;
-                        this.selectedStringColumns.forEach((keyId: any): void => {
-                            if (this.getValueByAccessPath(keyId, ${itemKey}).toLocaleLowerCase().includes(this.searchString.toLocaleLowerCase())) {
-                                foundSearchStringInProperty = true;
+                        searchFilters.forEach((filter: any): void => {
+                            if (filter.prop === this.advancedSearchAllValue) {
+                                this.stringColumns.forEach(elem => {
+                                    if (this.getValueByAccessPath(elem, item).toLocaleLowerCase().includes(filter.filterValue.toLocaleLowerCase())) {
+                                      foundSearchStringInProperty = true;
+                                    }
+                                });
+                            } else {
+                                if (this.getValueByAccessPath(filter.prop, ${itemKey}).toLocaleLowerCase().includes(filter.filterValue.toLocaleLowerCase())) {
+                                    foundSearchStringInProperty = true;
+                                }
                             }
                         });
                         return foundSearchStringInProperty;
@@ -438,30 +488,41 @@ export class TsFilterServiceGenerator {
                 }`;
         } else {
             return `applyStringSearchFilter(query: AbstractLogicalNode): void {
-                        if (!this.searchString) {
-                            this.activeFilters = this.activeFilters.filter(af=> af.type !== FilterEnums.Search);
-                            return;
-                        }
-                        const searchFilterObj = this.activeFilters.find(af=> af.type === FilterEnums.Search);
-                        if(searchFilterObj) {
-                            searchFilterObj.filterValue = this.searchString;
-                            searchFilterObj.label = \`\${ this.translateService.instant('search')} : \${this.searchString} in \${this.selectedStringColumns.join(', ')}\`;
-                        } else  {
+                        if (this.searchString.value && this.searchString.value !== '' && !this.activeFilters.find(elem => elem.prop === this.selectedStringColumn.value && elem.filterValue === this.searchString.value)) {
+                            const label = \` in \${ this.selectedStringColumn.value === this.advancedSearchAllValue ?
+                                this.translateService.instant('allTextFields') :
+                                this.translateService.instant(\`${this.options.templateHelper.getTranslationPath(this.options)}\` + this.selectedStringColumn.value + '.preferredName')}\`;
                             this.activeFilters.push(<FilterType>{
-                                removable: true,type:FilterEnums.Search,
-                                label:\`\${ this.translateService.instant('search')} : \${this.searchString} in \${this.selectedStringColumns.join(', ')}\`, 
-                                prop:null, 
-                                filterValue:this.searchString
+                                removable: true,
+                                type:FilterEnums.Search,
+                                label, 
+                                prop: this.selectedStringColumn.value, 
+                                filterValue:this.searchString.value
                              });
                         }
                         ${
                             this.allStringProps.length > 0
-                                ? `if(this.searchString !== '') {
-                                        query.addNode(new Or([
-                                        ${this.allStringProps.map(prop => ` new Like(${prop}, \`\${this.searchString}\`),`).join('')}])); }`
+                                ? `this.activeFilters.filter(af => af.type === FilterEnums.Search).forEach(af => {
+                                        query.addNode(new Or(this.addSelectedColumnsQuery(af.prop, af.filterValue))); })`
                                 : ``
                         }
-                        }`;
+                   }`;
+        }
+    }
+
+    private getAddSelectedColumnsQuery(isRemote: boolean): string {
+        if (isRemote) {
+            return `addSelectedColumnsQuery(selectedStringColumn: string, searchString: string): Like[] {
+                if (selectedStringColumn !== this.advancedSearchAllValue) {
+                    return [new Like(selectedStringColumn, \`*\${searchString}*\`)];
+                } else {
+                    return this.stringColumns.map((column: string) => {
+                        return new Like(column, \`*\${searchString}*\`);
+                    });
+                }
+            }`
+        } else {
+            return '';
         }
     }
 
@@ -499,7 +560,7 @@ export class TsFilterServiceGenerator {
                                             this.${prop.propertyName}Selected.forEach(selected=> {
                                                 const filterProp = '${this.options.jsonAccessPath}${prop.propertyValue}';
                                                 const filterVal = selected;
-                                                if(!this.activeFilters.filter(af => af.prop === filterProp).map(af=> af.filterValue).includes(filterVal)) {
+                                                if(!this.activeFilters.filter(af => af.type === FilterEnums.Enum && af.prop === filterProp).map(af=> af.filterValue).includes(filterVal)) {
                                                 this.activeFilters.push(<FilterType>{
                                                     removable: true,
                                                     type:FilterEnums.Enum,
@@ -510,7 +571,7 @@ export class TsFilterServiceGenerator {
                                             }});
 
                                             this.activeFilters
-                                            .filter((af) => af.prop === '${this.options.jsonAccessPath}${prop.propertyValue}')
+                                            .filter((af) => af.type === FilterEnums.Enum && af.prop === '${this.options.jsonAccessPath}${prop.propertyValue}')
                                             .forEach((filter) => {
                                               if (
                                                 !this.${prop.propertyName}Selected.includes(filter.filterValue as any)
@@ -555,14 +616,6 @@ export class TsFilterServiceGenerator {
                                  )
                                  .join('')}}`;
         }
-    }
-
-    private getIsSearchStringColumnsEmptyFn() {
-        return `
-          isSearchStringColumnsEmpty(): boolean {
-              return !this.stringColumns.some(col => col.selected && col.columnName);
-          }
-          `;
     }
 
     private getDateFn(isRemote: boolean): string {

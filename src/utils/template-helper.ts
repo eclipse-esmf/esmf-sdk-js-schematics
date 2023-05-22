@@ -263,4 +263,9 @@ export class TemplateHelper {
     getSharedModulePath(): string {
         return 'src/app/shared/app-shared.module.ts';
     }
+
+    getTranslationPath(options: Schema): string {
+        const translationPath = `${this.getVersionedAccessPrefix(options)}${this.isAspectSelected(options) ? options.jsonAccessPath : ''}`;
+        return `${translationPath.length ? translationPath + '.' : ''}`;
+    }
 }
