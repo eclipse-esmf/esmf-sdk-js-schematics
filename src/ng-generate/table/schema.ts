@@ -54,6 +54,7 @@ export interface Schema extends ComponentSchema, DefaultSchema {
     enableRemoteDataHandling: boolean;
     customRemoteService: boolean;
     enabledCommandBarFunctions: string[];
+    chooseLanguageForSearch: string;
     customCommandBarActions: string[];
     enableVersionSupport: boolean;
     excludedProperties: ExcludedProperty[];
