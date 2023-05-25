@@ -117,6 +117,10 @@ The search input is present allowing you to filter the existing data in the tabl
 
 NOTE:  _The search input will filter the data `*ONLY*` by the existing `*STRING*` properties in the chosen Aspect Model._
 
+Once the search functionality has been enabled, the next step is to choose the default language for remote access. This language selection determines the language used in the statement when accessing the system remotely.
+
+image::choose-language.png[width=100%]
+
 === _Data handling_
 
 After generating a component, you can pass the data from the parent to the child components and also the other way around. There is a prompt present which determines if the data should be handled on the client side or remote via an API call.

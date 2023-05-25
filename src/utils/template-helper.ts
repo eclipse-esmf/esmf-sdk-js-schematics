@@ -13,11 +13,14 @@
 
 import {
     Aspect,
+    Characteristic,
     DefaultAspect,
+    DefaultCharacteristic,
     DefaultCollection,
     DefaultEntity,
     DefaultEntityInstance,
     DefaultEnumeration,
+    DefaultPropertyInstanceDefinition,
     DefaultScalar,
     DefaultSingleEntity,
     Entity,
@@ -25,6 +28,7 @@ import {
 } from '@esmf/aspect-model-loader';
 import {dasherize, underscore} from '@angular-devkit/core/src/utils/strings';
 import {ExcludedProperty, Schema} from '../ng-generate/table/schema';
+import * as locale from 'locale-codes';
 
 export class TemplateHelper {
     isAspectSelected(options: Schema | any) {
@@ -193,7 +197,7 @@ export class TemplateHelper {
     /**
      * Gets the resolved properties of the complex object.
      */
-    getComplexProperties(complexProp: Property, options: Schema): {complexProp: string; properties: Property[]} {
+    getComplexProperties(complexProp: Property, options: Schema): { complexProp: string; properties: Property[] } {
         const propsToShow = options.complexProps.find(cp => cp.prop === complexProp.name)?.propsToShow;
         const properties = this.getProperties({
             selectedModelElement: complexProp.effectiveDataType as DefaultEntity,
@@ -201,6 +205,48 @@ export class TemplateHelper {
         }).filter((property: Property) => propsToShow?.find((prop: any) => prop.aspectModelUrn === property.aspectModelUrn));
 
         return {complexProp: complexProp.name, properties: properties};
+    }
+
+    resolveAllLanguageCodes(modelElement: Aspect | Entity): Set<string> {
+        const allLanguageCodes: Set<string> = new Set();
+
+        const processElement = (element: Aspect | Entity | Property | Characteristic) => {
+            const { localesPreferredNames, localesDescriptions } = element;
+
+            localesPreferredNames.forEach(code => allLanguageCodes.add(code));
+            localesDescriptions.forEach(code => allLanguageCodes.add(code));
+
+            this.addLocalized(allLanguageCodes);
+
+            if (element instanceof DefaultAspect && element.properties.length >= 1) {
+                element.properties.forEach(processElement);
+            }
+
+            if (element instanceof DefaultPropertyInstanceDefinition) {
+                const characteristic = element.characteristic;
+                if (characteristic) {
+                    processElement(characteristic);
+                }
+            }
+
+            if (element instanceof DefaultCharacteristic && element.dataType && element.dataType.isComplex) {
+                processElement(<Entity>element.dataType);
+            }
+
+            if (element instanceof DefaultEntity && element.isComplex && element.properties) {
+                element.properties.forEach(processElement);
+            }
+        };
+
+        processElement(modelElement);
+
+        return allLanguageCodes;
+    }
+
+    addLocalized(languages: Set<string>): string[] {
+        return Array.from(languages)
+            .map(languageCode => locale.getByTag(languageCode).tag)
+            .filter(e => !!e);
     }
 
     resolveType(modelElement: Aspect | Entity): Aspect | Entity {

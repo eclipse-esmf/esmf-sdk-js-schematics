@@ -32,6 +32,7 @@ import {Observable, Subject, Subscriber} from 'rxjs';
 import {WIZARD_CONFIG_FILE} from '../../utils/file';
 import {TemplateHelper} from '../../utils/template-helper';
 import {Schema} from '../table/schema';
+import * as locale from 'locale-codes';
 
 inquirer.registerPrompt('fuzzypath', require('inquirer-fuzzy-path'));
 inquirer.registerPrompt('suggest', require('inquirer-prompt-suggest'));
@@ -176,7 +177,7 @@ function getTtlPaths(promptSubj: Subject<any>, allAnswers: Schema, subscriber: S
     // listener
     const process = inquirer.prompt(promptSubj as any).ui.process;
     process.subscribe(
-        (singleAnswer: {name: string; answer: any}) => {
+        (singleAnswer: { name: string; answer: any }) => {
             switch (true) {
                 case singleAnswer.name === createOrImport.name: {
                     if (singleAnswer.answer) {
@@ -233,7 +234,8 @@ function getTtlPaths(promptSubj: Subject<any>, allAnswers: Schema, subscriber: S
         err => {
             console.log('Error: ', err);
         },
-        () => {}
+        () => {
+        }
     );
 
     promptSubj.next(createOrImport);
@@ -335,7 +337,7 @@ function loadSourceProcessResult(allAnswers: any, tree: Tree, options: Schema, p
                     .then(aspect => {
                         resolve(
                             !aspect.isCollectionAspect &&
-                                loader.filterElements((entry: DefaultEntity) => entry instanceof DefaultEntity).length >= 1
+                            loader.filterElements((entry: DefaultEntity) => entry instanceof DefaultEntity).length >= 1
                         );
                     })
                     .catch(error => reject(error));
@@ -637,6 +639,36 @@ function getUserConfigQuestions(allAnswers: any, tree: Tree, options: Schema): Q
         default: [],
     };
 
+    const requestChooseLanguageForSearchAction = {
+        type: 'list',
+        name: 'chooseLanguageForSearch',
+        message: 'Which language should be used for the search functionality?',
+        when: (answers: any) =>
+            answers.addCommandBar && new TemplateHelper().isAddCommandBarFunctionSearch(answers.enabledCommandBarFunctions),
+        choices: () => {
+            loadAspect(allAnswers, tree).then(aspect => {
+                const templateHelper = new TemplateHelper();
+                let selectedElement: Aspect | Entity = aspect;
+                if (allAnswers.selectedModelElementUrn && allAnswers.selectedModelElementUrn.length > 0) {
+                    selectedElement = loader.findByUrn(allAnswers.selectedModelElementUrn) as Aspect | Entity;
+                }
+
+                const languageCodes = templateHelper.resolveAllLanguageCodes(selectedElement);
+                const choices = [{name: 'English', value: 'en'}];
+
+
+                languageCodes.forEach(code => {
+                    if (code !== 'en') {
+                        choices.push({name: locale.getByTag(code).name, value: code});
+                    }
+                });
+
+                return choices
+            })
+        },
+        default: 'en',
+    };
+
     const requestCustomCommandBarActions = {
         type: 'suggest',
         name: 'customCommandBarActions',
@@ -695,6 +727,7 @@ function getUserConfigQuestions(allAnswers: any, tree: Tree, options: Schema): Q
         requestCustomRowActions,
         requestAddCommandBar,
         requestEnableCommandBarFunctions,
+        requestChooseLanguageForSearchAction,
         requestCustomCommandBarActions,
         requestEnableRemoteDataHandling,
         requestCustomService,

@@ -746,7 +746,7 @@ export class TsComponentGenerator {
                         this.customFilterExtension.apply(query);
                     }
 
-                    const queryFilter = query.subNodes.length === 0 ? null : new Query({query: query});
+                    const queryFilter = new Query({query: query});
 
                     const queryOption = new Query();
                     if (this.sort.active) {
@@ -770,6 +770,9 @@ export class TsComponentGenerator {
                     QueryStringifier['encodeRql'] = (value: any) => {
                         return value;
                     };
+                    
+                    const additionalCondition = new Eq('local', '${this.options.chooseLanguageForSearch ? this.options.chooseLanguageForSearch.toUpperCase() : 'EN'}');
+                    queryFilter?.queryNode.subNodes.push(additionalCondition);
 
                     const filterRQLQuery = queryFilter ? QueryStringifier.stringify(queryFilter) : '';
                     const optionsRQLQuery = QueryStringifier.stringify(queryOption).replace('&', ',');
@@ -999,6 +1002,7 @@ export class TsComponentGenerator {
                                AbstractLogicalNode,
                                AbstractNode,
                                And,
+                               Eq,
                                Ge,
                                In,
                                Le,
