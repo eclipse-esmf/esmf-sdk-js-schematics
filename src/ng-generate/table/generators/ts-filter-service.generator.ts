@@ -411,14 +411,14 @@ export class TsFilterServiceGenerator {
             if (property.effectiveDataType?.isComplex && property.characteristic instanceof DefaultSingleEntity) {
                 const complexProps = this.options.templateHelper.getComplexProperties(property, this.options);
                 complexProps.properties.forEach((complexProp: Property) => {
-                    if (!this.options.templateHelper.isStringProperty(complexProp)) {
+                    if (!this.options.templateHelper.isStringProperty(complexProp) && !this.options.templateHelper.isMultiStringProperty(complexProp)) {
                         return;
                     }
                     stringProps.push(`'${complexProps.complexProp}.${complexProp.name}'`);
                     return;
                 });
             }
-            if (this.options.templateHelper.isStringProperty(property)) {
+            if (this.options.templateHelper.isStringProperty(property) || this.options.templateHelper.isMultiStringProperty(property)) {
                 stringProps.push(`'${property.name}'`);
             }
         });
