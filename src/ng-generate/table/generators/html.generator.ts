@@ -307,73 +307,58 @@ export class HtmlGenerator {
     }
 
     private getColumnTemplate(property: Property, index: number, complexPrefix: string): string {
-        const languageLabel = this.options.templateHelper.isMultiStringProperty(property) ? '[currentLanguage]' : '';
-        return `<!-- ${complexPrefix}${property.name} Column -->
+        const language = this.options.templateHelper.isMultiStringProperty(property) ? '[currentLanguage]' : '';
+        const propertyName = this.templateHelper.isEnumPropertyWithEntityValues(property)
+                             ? property.name + '?.' + this.templateHelper.getEnumEntityInstancePayloadKey(property)
+                             : property.name
+        const cellPropertyPath = `${this.options.jsonAccessPath}${complexPrefix}${propertyName}`;
+        const isEmptyValue = `row.${cellPropertyPath} === null || row.${cellPropertyPath} === undefined`;
+        const propertyLocaleKeyPath = `${this.versionedAccessPrefix}${this.templateHelper.isAspectSelected(this.options) ? this.options.jsonAccessPath : ''}${complexPrefix}${property.name}`;
+
+        const datePipe = this.options.templateHelper.isDateTimeProperty(property) ? `| date: ${this.resolveDateTimeFormat(property)}` : '';
+        const descriptionPipe = this.templateHelper.isEnumPropertyWithEntityValues(property) ? ` | showDescription:get${classify(property.name)}Value` : '';
+        const cellContent = `!(${isEmptyValue}) ? (row.${cellPropertyPath}${descriptionPipe}${language}${datePipe})  : '-'`;
+
+        return ` <!-- ${complexPrefix}${property.name} Column -->
                     <ng-container data-test="table-column" matColumnDef="${this.options.jsonAccessPath}${complexPrefix}${property.name}">
                         <th data-test="table-header" mat-header-cell *matHeaderCellDef 
-                            mat-sort-header="${this.options.jsonAccessPath}${complexPrefix}${
-            this.templateHelper.isEnumPropertyWithEntityValues(property)
-                ? property.name + '.' + this.templateHelper.getEnumEntityInstancePayloadKey(property)
-                : property.name
-        }"
+                            mat-sort-header="${cellPropertyPath}"
                             ${this.templateHelper.isNumberProperty(property) ? `class="table-header-number"` : ''}
                             ${
             this.allProps.length - 1 > index
                 ? `[resizeColumn]="true" [index]="${index}" (dragging)='dragging = $event'`
                 : ''
         }>
-                            <span [matTooltip]="'${this.versionedAccessPrefix}${
-            this.templateHelper.isAspectSelected(this.options) ? this.options.jsonAccessPath : ''
-        }${complexPrefix}${property.name}.description' | translate"
+                            <span [matTooltip]="'${propertyLocaleKeyPath}.description' | translate"
                                   [matTooltipDisabled]="headerTooltipsOff"
                                   matTooltipPosition="above"
                                   data-test="table-header-text">
-                                {{ '${this.versionedAccessPrefix}${
-            this.templateHelper.isAspectSelected(this.options) ? this.options.jsonAccessPath : ''
-        }${complexPrefix}${property.name}.preferredName' | translate }}
+                                {{ '${propertyLocaleKeyPath}.preferredName' | translate }}
                             </span>
                         </th>
 
                         <td data-test="table-cell" ${
             this.templateHelper.isEnumPropertyWithEntityValues(property)
-                ? `[matTooltip]="row.${this.options.jsonAccessPath}${complexPrefix}${
-                    property.name +
-                    '?.' +
-                    this.templateHelper.getEnumEntityInstancePayloadKey(property) +
-                    ' | showDescription:get' +
-                    classify(property.name) +
-                    'Value' +
-                    ':true'
-                }${languageLabel}"`
-                : ''
-        } ${
-            this.templateHelper.isEnumPropertyWithEntityValues(property)
-                ? `[matTooltipDisabled]="row.${this.options.jsonAccessPath}${complexPrefix}${
-                    this.templateHelper.isEnumPropertyWithEntityValues(property)
-                        ? property.name + '?.' + this.templateHelper.getEnumEntityInstancePayloadKey(property)
-                        : property.name
-                } === null "`
-                : ''
-        } mat-cell *matCellDef="let row" ${this.templateHelper.isNumberProperty(property) ? `class="table-cell-number"` : ''}>
+                ?
+                `
+                [matTooltip]="!(${isEmptyValue}) ? (row.${cellPropertyPath}${descriptionPipe}:true${language}) : ''"
+                [matTooltipDisabled]="${isEmptyValue}"
+                `
+                : ''} 
+            mat-cell *matCellDef="let row" ${this.templateHelper.isNumberProperty(property) ? `class="table-cell-number"` : ''}>
             ${this.hasSearchBar ? `
                  <ng-container
-                  [ngTemplateOutlet]="(highlightConfig?.selected && ((${this.resolveTableValue(property, index, complexPrefix, languageLabel)}) | searchString: highlightString)) ? searchedWordExists : normal"
-                  [ngTemplateOutletContext]="{ value: (${this.resolveTableValue(property, index, complexPrefix, languageLabel)}) }"></ng-container>` : `{{${this.resolveTableValue(property, index, complexPrefix, languageLabel)}}}`}
+                  [ngTemplateOutlet]="highlightConfig?.selected && ((${cellContent}) | searchString: highlightString) ? searchedWordExists : normal"
+                  [ngTemplateOutletContext]="{ value: ${cellContent} }"></ng-container>` : `{{${cellContent}}}`}
             
-              <button data-test="copy-to-clipboard-button" mat-icon-button class="copy-to-clipboard" (click)="copyToClipboard(row.${this.options.jsonAccessPath}${complexPrefix}${
-            this.templateHelper.isEnumPropertyWithEntityValues(property)
-                ? property.name + '?.' + this.templateHelper.getEnumEntityInstancePayloadKey(property)
-                : property.name}, $event)">
-              <mat-icon data-test="copy-to-clipboard-icon" class="material-icons">content_copy</mat-icon>
+              <button data-test="copy-to-clipboard-button"
+                    *ngIf="!(${isEmptyValue})"
+                    mat-icon-button class="copy-to-clipboard"
+                    (click)="copyToClipboard(row.${cellPropertyPath}${language}, $event)">
+                    <mat-icon data-test="copy-to-clipboard-icon" class="material-icons">content_copy</mat-icon>
               </button>
               </td>
            </ng-container>`;
-    }
-
-    private resolveTableValue(property: Property, index: number, complexPrefix: string, languageLabel: string): string {
-        return `row.${this.options.jsonAccessPath}${complexPrefix}${
-            this.templateHelper.isEnumPropertyWithEntityValues(property) ? property.name + '?.' + this.templateHelper.getEnumEntityInstancePayloadKey(property) : property.name} === null? '-': row.${this.options.jsonAccessPath}${complexPrefix}${
-            this.templateHelper.isEnumPropertyWithEntityValues(property) ? property.name + '?.' + this.templateHelper.getEnumEntityInstancePayloadKey(property) + ' | showDescription:get' + classify(property.name) + 'Value' : property.name}${languageLabel}${this.options.templateHelper.isDateTimeProperty(property) ? `| date: ${this.resolveDateTimeFormat(property)}` : ''}`
     }
 
     private resolveDateTimeFormat(property: Property): string {
