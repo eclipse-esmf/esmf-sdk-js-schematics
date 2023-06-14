@@ -22,9 +22,12 @@ export class TsPipeGenerator {
         @Pipe({name: 'showDescription'})
         export class ShowDescriptionPipe implements PipeTransform {
             transform(value: any, getByValueFn: any, onlyDesc?: boolean): any {
-                return onlyDesc
-                    ? \`\${getByValueFn(value.toString())?.description}\` || ''
-                    : \`\${value} - \${getByValueFn(value.toString())?.description}\` || '';
+                value = value?.toString();
+
+                const resultParts: string[] = value && !onlyDesc ? [value] : [];
+                resultParts.push(getByValueFn(value)?.description);
+
+                return resultParts.join(' - ');
             }
         }
         `;
