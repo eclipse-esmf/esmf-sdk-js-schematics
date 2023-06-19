@@ -83,7 +83,7 @@ export class AspectModelTypeGeneratorVisitor extends DefaultAspectModelVisitor<B
     visitAspect(aspect: Aspect, context: void): BaseMetaModelElement {
         const lines = [];
 
-        lines.push('/** Generated form RBS JS SDK Angular Schematics - PLEASE DO NOT CHANGE IT **/\n\n');
+        lines.push('/** Generated form ESMF JS SDK Angular Schematics - PLEASE DO NOT CHANGE IT **/\n\n');
         lines.push(`export interface MultiLanguageText {
                         /** key defines the locale. Value is the translated text for that locale. */
                         [key: string]: string;

@@ -287,7 +287,7 @@ export class TemplateHelper {
     }
 
     getGenerationDisclaimerText(): string {
-        return 'Generated from RBS JS SDK Angular Schematics - PLEASE DO NOT CHANGE IT';
+        return 'Generated from ESMF JS SDK Angular Schematics - PLEASE DO NOT CHANGE IT';
     }
 
     getLocalStoragePrefix(): string {
