@@ -503,7 +503,10 @@ export class TsFilterServiceGenerator {
                         ${
                             this.allStringProps.length > 0
                                 ? `this.activeFilters.filter(af => af.type === FilterEnums.Search).forEach(af => {
-                                        query.addNode(new Or(this.addSelectedColumnsQuery(af.prop, af.filterValue))); })`
+                                       if (af.prop !== null && af.filterValue !== undefined) {
+                                         query.addNode(new Or(this.addSelectedColumnsQuery(af.prop, af.filterValue)));
+                                       }
+                                     });`
                                 : ``
                         }
                    }`;
