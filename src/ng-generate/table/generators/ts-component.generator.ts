@@ -775,7 +775,7 @@ export class TsComponentGenerator {
                     queryFilter?.queryNode.subNodes.push(additionalCondition);
 
                     const filterRQLQuery = queryFilter ? QueryStringifier.stringify(queryFilter) : '';
-                    const optionsRQLQuery = QueryStringifier.stringify(queryOption).replace('&', ',');
+                    const optionsRQLQuery = QueryStringifier.stringify(queryOption).replace(/&/g, ',');
 
                     let rqlStringTemp = '';
                     if(filterRQLQuery.length > 0) {
