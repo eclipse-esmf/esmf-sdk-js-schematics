@@ -29,7 +29,6 @@ import {
 import * as fs from 'fs';
 import inquirer, {Answers, Question, QuestionAnswer} from 'inquirer';
 import {Observable, Subject, Subscriber} from 'rxjs';
-import {WIZARD_CONFIG_FILE} from '../../utils/file';
 import {TemplateHelper} from '../../utils/template-helper';
 import {Schema} from '../table/schema';
 import * as locale from 'locale-codes';
@@ -37,6 +36,8 @@ import * as locale from 'locale-codes';
 inquirer.registerPrompt('fuzzypath', require('inquirer-fuzzy-path'));
 inquirer.registerPrompt('suggest', require('inquirer-prompt-suggest'));
 inquirer.registerPrompt('search-list', require('inquirer-search-list'));
+
+export let WIZARD_CONFIG_FILE = 'wizard.config.json';
 
 const loader = new AspectModelLoader();
 
@@ -144,14 +145,23 @@ function getTtlPaths(promptSubj: Subject<any>, allAnswers: Schema, subscriber: S
         default: false,
     };
 
+    const nameOfConfigFile = {
+        type: 'input',
+        name: 'nameOfConfigFile',
+        message: 'Please enter a name for your config file. It will be automatically appended to (<config-file-name>-wizard.config.json):',
+        validate: function (input: string) {
+            return input.length === 0 ? 'The config file name cannot be empty. Please provide a valid name.' : true;
+        }
+    };
+
     const importConfigFile = {
         type: 'fuzzypath',
         name: 'importConfigFile',
-        excludeFilter: (nodePath: any) => !nodePath.endsWith('.json'),
+        excludeFilter: (nodePath: any) => !nodePath.endsWith('wizard.config.json'),
         excludePath: (nodePath: any) => nodePath.startsWith('node_modules'),
         itemType: 'file',
-        message: 'Choose the path to an existing wizard config file(.json). Start writing file name for suggestions:',
-        default: './',
+        message: 'Choose the path to an existing wizard config file which includes (wizard.config.json). Start writing file name for suggestions:',
+        rootPath: './',
         suggestOnly: false,
         depthLimit: 5,
     };
@@ -163,7 +173,7 @@ function getTtlPaths(promptSubj: Subject<any>, allAnswers: Schema, subscriber: S
         excludePath: (nodePath: any) => nodePath.startsWith('node_modules'),
         itemType: 'file',
         message: 'Choose the path to a .ttl file. Start writing file name for suggestions:',
-        default: './',
+        rootPath: './',
         suggestOnly: false,
         depthLimit: 5,
     };
@@ -181,10 +191,17 @@ function getTtlPaths(promptSubj: Subject<any>, allAnswers: Schema, subscriber: S
             switch (true) {
                 case singleAnswer.name === createOrImport.name: {
                     if (singleAnswer.answer) {
-                        promptSubj.next(pathDecision);
+                        promptSubj.next(nameOfConfigFile);
                     } else {
                         promptSubj.next(importConfigFile);
                     }
+                    break;
+                }
+                case singleAnswer.name === nameOfConfigFile.name: {
+                    if (singleAnswer.answer !== WIZARD_CONFIG_FILE) {
+                        WIZARD_CONFIG_FILE = `${singleAnswer.answer}-${WIZARD_CONFIG_FILE}`;
+                    }
+                    promptSubj.next(pathDecision);
                     break;
                 }
                 case singleAnswer.name === importConfigFile.name: {
@@ -212,7 +229,6 @@ function getTtlPaths(promptSubj: Subject<any>, allAnswers: Schema, subscriber: S
                         promptSubj.next(pathDecision);
                     }
                     break;
-
                 case singleAnswer.name === pathDecision.name: {
                     const ttlFileName = singleAnswer.answer;
                     if (!ttlFileName) {

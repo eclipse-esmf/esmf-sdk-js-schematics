@@ -558,7 +558,7 @@ If you want to use a pre-existing config file, without going through the generat
 .json config using the 'configFile' flag by running the command like this:
 
 ```bash
-ng generate @esmf/semantic-ui-schematics:table --configFile=wizard-configs/<config-file-name>.json
+ng generate @esmf/semantic-ui-schematics:table --configFile=<config-file-name>-wizard.configs.json
 ```
 
 Example of configuration file:
@@ -567,7 +567,7 @@ Example of configuration file:
 {
     "aspectModelTFiles": ["FOLDER\\Movement.ttl"],
     "excludedProperties": [],
-    "configFile": "wizard-config.json",
+    "configFile": "wizard.config.json",
     "complexProps": [
         {
             "prop": "position",
