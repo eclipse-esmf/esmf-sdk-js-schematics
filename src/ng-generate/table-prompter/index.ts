@@ -147,7 +147,7 @@ function getTtlPaths(promptSubj: Subject<any>, allAnswers: Schema, subscriber: S
 
     const configFileName = {
         type: 'input',
-        name: 'nameOfConfigFile',
+        name: 'configFileName',
         message: 'Please enter a name for your config file. It will be automatically appended to (<config-file-name>-wizard.config.json):',
         validate: function (input: string) {
             return input.length === 0 ? 'The config file name cannot be empty. Please provide a valid name.' : true;
@@ -205,13 +205,13 @@ function getTtlPaths(promptSubj: Subject<any>, allAnswers: Schema, subscriber: S
                     break;
                 }
                 case singleAnswer.name === importConfigFile.name: {
-                    const configFileName = singleAnswer.answer;
-                    if (!configFileName) {
+                    const fileName = singleAnswer.answer;
+                    if (!fileName) {
                         console.log('Error loading config file. Try again with a different file ! ');
                         promptSubj.complete();
                     }
                     try {
-                        const data = fs.readFileSync(configFileName, 'utf8');
+                        const data = fs.readFileSync(fileName, 'utf8');
                         fromImport = true;
                         promptSubj.complete();
                         writeConfigAndExit(subscriber, tree, JSON.parse(data), true);
