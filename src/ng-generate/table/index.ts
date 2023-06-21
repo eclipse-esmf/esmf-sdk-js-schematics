@@ -99,25 +99,25 @@ export function generateTable(options: Schema): Rule {
             options.spinner,
             options.enableRemoteDataHandling
                 ? [
-                    ...DEFAULT_DEPENDENCIES,
-                    {
-                        type: NodeDependencyType.Default,
-                        version: '~0.9.4',
-                        name: 'rollun-ts-rql',
-                        overwrite: false,
-                    },
-                    {
-                        type: NodeDependencyType.Default,
-                        version: '~4.1.1',
-                        name: 'crypto-js',
-                        overwrite: false,
-                    },
-                ]
+                      ...DEFAULT_DEPENDENCIES,
+                      {
+                          type: NodeDependencyType.Default,
+                          version: '~0.9.4',
+                          name: 'rollun-ts-rql',
+                          overwrite: false,
+                      },
+                      {
+                          type: NodeDependencyType.Default,
+                          version: '~4.1.1',
+                          name: 'crypto-js',
+                          overwrite: false,
+                      },
+                  ]
                 : DEFAULT_DEPENDENCIES
         ),
         addPackageJsonDependencies(
             !options.enabledCommandBarFunctions?.includes('addDateQuickFilters') ||
-            (options.skipImport !== undefined && options.skipImport),
+                (options.skipImport !== undefined && options.skipImport),
             options.spinner,
             [
                 {
@@ -432,7 +432,12 @@ function generateConfigMenu(options: Schema): Rule {
             const componentContent = options.tsGenerator.generateConfigMenu();
             const componentPath = `${options.path}/${dasherize(options.name)}-config-menu.component.ts`;
             createOrOverwrite(tree, `${componentPath}`, options.overwrite, componentContent);
-            addToDeclarationsArray(options, tree, `${classify(options.name)}ConfigMenuComponent`, `${componentPath.replace('.ts', '')}`).then();
+            addToDeclarationsArray(
+                options,
+                tree,
+                `${classify(options.name)}ConfigMenuComponent`,
+                `${componentPath.replace('.ts', '')}`
+            ).then();
             return tree;
         }
     };
@@ -589,9 +594,13 @@ function updateConfigFiles(options: any): Rule {
         addStylePreprocessorOptions(angularBuildOptions);
 
         const defaultMaterialtheme = 'node_modules/@angular/material/prebuilt-themes/indigo-pink.css';
-
-        if (!angularBuildOptions['styles'].includes(defaultMaterialtheme)) {
-            angularBuildOptions['styles'].push(defaultMaterialtheme);
+        if (options.getOptionalMaterialTheme) {
+            if (!angularBuildOptions['styles'].includes(defaultMaterialtheme)) {
+                angularBuildOptions['styles'].push(defaultMaterialtheme);
+            }
+        } else if (!options.getOptionalMaterialTheme && angularBuildOptions['styles'].includes(defaultMaterialtheme)) {
+            const index = angularBuildOptions['styles'].indexOf(defaultMaterialtheme);
+            angularBuildOptions['styles'].splice(index, 1);
         }
 
         tree.overwrite('/angular.json', JSON.stringify(angularJson, null, 2));
