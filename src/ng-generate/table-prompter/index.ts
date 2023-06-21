@@ -160,7 +160,7 @@ function getTtlPaths(promptSubj: Subject<any>, allAnswers: Schema, subscriber: S
         excludeFilter: (nodePath: any) => !nodePath.endsWith('wizard.config.json'),
         excludePath: (nodePath: any) => nodePath.startsWith('node_modules'),
         itemType: 'file',
-        message: 'Choose the path to an existing wizard config file which includes (wizard.config.json). Start writing file name for suggestions:',
+        message: 'Choose the path to an existing wizard config file which ends with "wizard.config.json". Start writing file name for suggestions:',
         rootPath: './',
         suggestOnly: false,
         depthLimit: 5,
