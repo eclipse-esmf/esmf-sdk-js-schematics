@@ -145,7 +145,7 @@ function getTtlPaths(promptSubj: Subject<any>, allAnswers: Schema, subscriber: S
         default: false,
     };
 
-    const nameOfConfigFile = {
+    const configFileName = {
         type: 'input',
         name: 'nameOfConfigFile',
         message: 'Please enter a name for your config file. It will be automatically appended to (<config-file-name>-wizard.config.json):',
@@ -191,13 +191,13 @@ function getTtlPaths(promptSubj: Subject<any>, allAnswers: Schema, subscriber: S
             switch (true) {
                 case singleAnswer.name === createOrImport.name: {
                     if (singleAnswer.answer) {
-                        promptSubj.next(nameOfConfigFile);
+                        promptSubj.next(configFileName);
                     } else {
                         promptSubj.next(importConfigFile);
                     }
                     break;
                 }
-                case singleAnswer.name === nameOfConfigFile.name: {
+                case singleAnswer.name === configFileName.name: {
                     if (singleAnswer.answer !== WIZARD_CONFIG_FILE) {
                         WIZARD_CONFIG_FILE = `${singleAnswer.answer}-${WIZARD_CONFIG_FILE}`;
                     }
