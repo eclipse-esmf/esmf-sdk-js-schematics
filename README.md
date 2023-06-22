@@ -612,12 +612,25 @@ ng generate @esmf/semantic-ui-schematics:table --overwrite
 
 ---
 
-### Add indigo pink material theme
+### Add material css theme
 
 If you want to add the indigo pink material theme, you may use the '--getOptionalMaterialTheme' flag
 
 ```bash
 ng generate @esmf/semantic-ui-schematics:table --getOptionalMaterialTheme
+```
+
+if user did not set --getOptionalMaterialTheme to true but wants to add a material theme to the project,
+in angular.json in styles section the following code can be added:
+
+```bash
+{
+  "styles": [
+    "src/styles.scss",
+    "node_modules/@angular/material/prebuilt-themes/indigo-pink.css"
+  ]
+}
+
 ```
 
 ---
