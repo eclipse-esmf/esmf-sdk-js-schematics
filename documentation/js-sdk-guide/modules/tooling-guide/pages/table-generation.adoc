@@ -46,11 +46,19 @@ auto-generated. The first prompt allows you to load a config file or start from 
 
 image::config-file-loading.png[width=100%]
 
-Loading pre-existing config file will result into this:
+When you decide to create a new configuration file, you will be prompted to specify a name for your config file. This provided name will be integrated into the default naming structure for the config file.
+
+The naming structure is <config-file-name>-wizard.config.json. Here, <config-file-name> is the name that you provide when prompted.
+
+For example, if you enter myConfig when prompted for the config file name, your new config file will be named myConfig-wizard.config.json.
+
+image::schema.enter-name-for-config-file.png[width=100%]
+
+When you decide to load a pre-existing config file, the system will display the result as follows:
 
 image::schema.load-config-file.yes.png[width=100%]
 
-This will give access to the folder structure and by using a FUZZY search mechanism can provide the possibility to input the pre-existing config file. By default, the config file is called _wizard-config.json_ and can be found in the root folder of the project.
+This will give access to the folder structure and by using a FUZZY search mechanism can provide the possibility to input the pre-existing config file. The config file will now be named based on your input _<config-file-name>_-wizard.config.json, and can be found in the root folder of the project.
 
 === _Aspect Model selection_
 If no pre-existing config file is loaded, then there is an option to choose for one or multiple Aspect Model files from the folder structure, using the same FUZZY search mechanism.

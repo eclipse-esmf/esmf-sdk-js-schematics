@@ -21,8 +21,6 @@ const prettier = require('prettier');
 // this resolves the config provided by the schematics lib
 const defaultPrettierConfigPath = require.resolve('../../.prettierrc');
 
-export const WIZARD_CONFIG_FILE = 'wizard-config.json';
-
 export function loadAndApplyConfigFile(configFile: string, options: any): void {
     try {
         if (options.configFile && options.configFile !== '') {

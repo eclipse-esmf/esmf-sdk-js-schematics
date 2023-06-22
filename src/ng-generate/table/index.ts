@@ -24,7 +24,7 @@ import {
     wrapBuildComponentExecution,
 } from '../../utils/angular';
 import {generateTranslationFiles, generateTranslationModule, loadAspectModel, loadRDF} from '../../utils/aspect-model';
-import {createOrOverwrite, formatGeneratedFiles, loadAndApplyConfigFile, WIZARD_CONFIG_FILE} from '../../utils/file';
+import {createOrOverwrite, formatGeneratedFiles, loadAndApplyConfigFile} from '../../utils/file';
 import {addPackageJsonDependencies, DEFAULT_DEPENDENCIES} from '../../utils/package-json';
 import {TemplateHelper} from '../../utils/template-helper';
 import {HtmlGenerator} from './generators/html.generator';
@@ -35,6 +35,7 @@ import {Schema} from './schema';
 import {TsComponentGenerator} from './generators/ts-component.generator';
 import {addModuleImportToModule} from '@angular/cdk/schematics';
 import ora from 'ora';
+import {WIZARD_CONFIG_FILE} from "../table-prompter/index";
 
 export default function (options: Schema): Rule {
     return (tree: Tree, context: SchematicContext): void => {
