@@ -585,7 +585,8 @@ Example of configuration file:
     "customCommandBarActions": ["edit.svg"],
     "enableRemoteDataHandling": true,
     "enableVersionSupport": true,
-    "overwrite": true
+    "overwrite": true,
+    "getOptionalMaterialTheme": false
 }
 ```
 
@@ -607,6 +608,16 @@ If you want to overwrite the already existing generated files, you may use the '
 
 ```bash
 ng generate @esmf/semantic-ui-schematics:table --overwrite
+```
+
+---
+
+### Add indigo pink material theme
+
+If you want to add the indigo pink material theme, you may use the '--getOptionalMaterialTheme' flag
+
+```bash
+ng generate @esmf/semantic-ui-schematics:table --getOptionalMaterialTheme
 ```
 
 ---
