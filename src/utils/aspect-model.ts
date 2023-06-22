@@ -121,7 +121,7 @@ export function generateTranslationModule(options: tableSchema | typeSchema): Ru
 
         if (!tree.exists('src/app/shared/app-shared.module.ts')) {
             tree.create('src/app/shared/app-shared.module.ts', translationModuleContent);
-            addToAppSharedModule([{name: 'AppSharedModule', fromLib: './app/shared/app-shared.module'}], false);
+            addToAppSharedModule(false, [{name: 'AppSharedModule', fromLib: './app/shared/app-shared.module'}]);
         }
     };
 }

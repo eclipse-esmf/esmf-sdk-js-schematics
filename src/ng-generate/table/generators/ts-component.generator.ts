@@ -223,6 +223,10 @@ export class TsComponentGenerator {
                 this.columns = [...columns];
                 this.displayedColumns = displayedColumnsTmp.filter(column => column.selected).map(column => column.name);
             }
+            
+            loadCustomTemplate(): TemplateRef<any> | null{
+                return this.customTemplate? this.customTemplate as TemplateRef<any>: null;
+            }
     
             ${
             !isRemote

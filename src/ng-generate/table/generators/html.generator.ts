@@ -70,8 +70,8 @@ export class HtmlGenerator {
                                           (removed)="removeFilter(filter)"
                                   >
                                       <div data-test="chip-text" class="chip-text"
-                                           matTooltip="{{ filter.filterValue + filter.label }}">
-                                           <b>{{filter.filterValue}}</b>{{ filter.label }}</div>
+                                           matTooltip="{{ filter.prop }}: {{ filter.label }}">
+                                           <b>{{filter.prop}}</b>: {{ filter.label }}</div>
                                       <button *ngIf="filter.removable" matChipRemove data-test="mat-chip-remove">
                                           <mat-icon class="material-icons" data-test="remove-chip">cancel</mat-icon>
                                       </button>
@@ -270,9 +270,7 @@ export class HtmlGenerator {
                             : `<th data-test="custom-column-header" mat-header-cell *matHeaderCellDef mat-sort-header>{{ '${this.options.selectedModelElement.name.toLowerCase()}.customColumn.${columnName}' | translate }}</th>`
                     }
                                 <td data-test="custom-column-cell" mat-cell *matCellDef="let row" >
-                                  <ng-container data-test="custom-column-container" *ngTemplateOutlet="${camelize(
-                        columnName
-                    )}Template; context:{aspect:row}"></ng-container>
+                                  <ng-container data-test="custom-column-container" *ngTemplateOutlet="${camelize(columnName)}Template; context:{aspect:row}"></ng-container>
                                 </td>
                               </ng-container>`;
                 })
@@ -529,7 +527,7 @@ export class HtmlGenerator {
     private getCustomTemplate(): string {
         return `
             <ng-container *ngIf="!!customTemplate && !dataSource.data.length">
-                <ng-container *ngTemplateOutlet="customTemplate"></ng-container>
+                <ng-container *ngTemplateOutlet="loadCustomTemplate()"></ng-container>
             </ng-container>
         `;
     }
