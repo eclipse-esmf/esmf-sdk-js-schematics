@@ -17,6 +17,7 @@ import {NodePackageInstallTask, RunSchematicTask} from '@angular-devkit/schemati
 import {NodeDependencyType} from '@schematics/angular/utility/dependencies';
 import {JSONFile} from '@schematics/angular/utility/json-file';
 import {
+    addToAppModule,
     addToAppSharedModule,
     addToComponentModule,
     addToDeclarationsArray,
@@ -63,6 +64,10 @@ export default function (options: Schema): Rule {
 export function generateTable(options: Schema): Rule {
     options.spinner = ora().start();
 
+    if (!options.skipImport) {
+        options.skipImport = false;
+    }
+
     loadAndApplyConfigFile(options.configFile, options);
 
     if (options.aspectModelTFilesString) {
@@ -96,7 +101,7 @@ export function generateTable(options: Schema): Rule {
         generateModule(options),
         generateTranslationModule(options),
         addPackageJsonDependencies(
-            options.skipImport || false,
+            options.skipImport,
             options.spinner,
             options.enableRemoteDataHandling
                 ? [
@@ -136,8 +141,10 @@ export function generateTable(options: Schema): Rule {
             ]
         ),
         updateConfigFiles(options),
-        addToComponentModule(options.skipImport || false, options, [
-            {name: 'BrowserAnimationsModule', fromLib: '@angular/platform-browser/animations'},
+        addToAppModule(options.skipImport, [
+            {name: 'BrowserAnimationsModule', fromLib: '@angular/platform-browser/animations'}
+        ]),
+        addToComponentModule(options.skipImport, options, [
             {name: 'MatTableModule', fromLib: '@angular/material/table'},
             {name: 'MatPaginatorModule', fromLib: '@angular/material/paginator'},
             {name: 'MatSortModule', fromLib: '@angular/material/sort'},
@@ -149,15 +156,20 @@ export function generateTable(options: Schema): Rule {
             {name: 'MatTooltipModule', fromLib: '@angular/material/tooltip'},
             {name: 'MatListModule', fromLib: '@angular/material/list'},
             {name: 'DragDropModule', fromLib: '@angular/cdk/drag-drop'},
+            {name: 'NgTemplateOutlet', fromLib: '@angular/common'},
+            {name: 'DatePipe', fromLib: '@angular/common'},
+            {name: 'NgIf', fromLib: '@angular/common'},
+            {name: 'NgFor', fromLib: '@angular/common'},
+            {name: 'NgClass', fromLib: '@angular/common'},
         ]),
-        addToComponentModule(!options.addRowCheckboxes || options.skipImport || false, options, [
+        addToComponentModule(!options.addRowCheckboxes || options.skipImport, options, [
             {name: 'MatCheckboxModule', fromLib: '@angular/material/checkbox'},
             {name: 'MatDialogModule', fromLib: '@angular/material/dialog'},
         ]),
         addToComponentModule(
             {
                 skip() {
-                    return !options.addCommandBar || options.skipImport || false;
+                    return !options.addCommandBar || options.skipImport as boolean;
                 },
             },
             options,
@@ -176,7 +188,7 @@ export function generateTable(options: Schema): Rule {
         addToComponentModule(
             {
                 skip() {
-                    return options.templateHelper.getDateProperties(options).length < 1 || options.skipImport || false;
+                    return options.templateHelper.getDateProperties(options).length < 1 || options.skipImport as boolean;
                 },
             },
             options,
@@ -185,7 +197,7 @@ export function generateTable(options: Schema): Rule {
         addToComponentModule(
             {
                 skip() {
-                    return !options.enabledCommandBarFunctions?.includes('addDateQuickFilters') || options.skipImport || false;
+                    return !options.enabledCommandBarFunctions?.includes('addDateQuickFilters') || options.skipImport as boolean;
                 },
             },
             options,
@@ -197,7 +209,7 @@ export function generateTable(options: Schema): Rule {
         addToComponentModule(
             {
                 skip() {
-                    return !options.enabledCommandBarFunctions?.includes('addEnumQuickFilters') || options.skipImport || false;
+                    return !options.enabledCommandBarFunctions?.includes('addEnumQuickFilters') || options.skipImport as boolean;
                 },
             },
             options,
@@ -207,6 +219,7 @@ export function generateTable(options: Schema): Rule {
             ]
         ),
         addToAppSharedModule(
+            false,
             [
                 {name: 'MatButtonModule', fromLib: '@angular/material/button'},
                 {name: 'MatDialogModule', fromLib: '@angular/material/dialog'},
@@ -214,8 +227,7 @@ export function generateTable(options: Schema): Rule {
                 {name: 'MatIconModule', fromLib: '@angular/material/icon'},
                 {name: 'FormsModule', fromLib: '@angular/forms'},
                 {name: 'NgIf', fromLib: '@angular/common'},
-            ],
-            false
+            ]
         ),
         generateComponentFiles(options),
         generateStyles(options),

@@ -27,6 +27,7 @@ import {
     Property,
 } from '@esmf/aspect-model-loader';
 import * as fs from 'fs';
+import path from 'path';
 import inquirer, {Answers, Question, QuestionAnswer} from 'inquirer';
 import {Observable, Subject, Subscriber} from 'rxjs';
 import {TemplateHelper} from '../../utils/template-helper';
@@ -212,6 +213,7 @@ function getTtlPaths(promptSubj: Subject<any>, allAnswers: Schema, subscriber: S
                     }
                     try {
                         const data = fs.readFileSync(fileName, 'utf8');
+                        WIZARD_CONFIG_FILE = path.basename(fileName);
                         fromImport = true;
                         promptSubj.complete();
                         writeConfigAndExit(subscriber, tree, JSON.parse(data), true);
