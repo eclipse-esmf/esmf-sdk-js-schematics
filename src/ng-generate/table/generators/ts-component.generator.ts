@@ -225,7 +225,7 @@ export class TsComponentGenerator {
             }
             
             loadCustomTemplate(): TemplateRef<any> | null{
-                return this.customTemplate? this.customTemplate as TemplateRef<any>: null;
+                return this.customTemplate ? this.customTemplate as TemplateRef<any> : null;
             }
     
             ${
