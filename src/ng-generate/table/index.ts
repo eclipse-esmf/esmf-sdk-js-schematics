@@ -68,6 +68,10 @@ export function generateTable(options: Schema): Rule {
         options.skipImport = false;
     }
 
+    if(options.configFile !== WIZARD_CONFIG_FILE) {
+        options.configFile = WIZARD_CONFIG_FILE;
+    }
+
     loadAndApplyConfigFile(options.configFile, options);
 
     if (options.aspectModelTFilesString) {
