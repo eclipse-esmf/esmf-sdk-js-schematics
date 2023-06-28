@@ -52,17 +52,17 @@ export function addToComponentModule(skipImport: SkipHandler | boolean, options:
     };
 }
 
-export function addToAppModule(modules: Array<ModuleDefinition> = [], skipImport: SkipHandler | boolean): Rule {
+export function addToAppModule(skipImport: SkipHandler | boolean, modules: Array<ModuleDefinition> = []): Rule {
     const appModule: ModuleOptions = {name: 'AppModule', module: 'app.module.ts', path: '/src/app'};
-    return addToModule(appModule, modules, skipImport);
+    return addToModule(appModule, skipImport, modules);
 }
 
-export function addToAppSharedModule(modules: Array<ModuleDefinition> = [], skipImport: SkipHandler | boolean): Rule {
+export function addToAppSharedModule(skipImport: SkipHandler | boolean, modules: Array<ModuleDefinition> = []): Rule {
     const appModule: ModuleOptions = {name: 'AppSharedModule', module: 'app-shared.module.ts', path: '/src/app/shared'};
-    return addToModule(appModule, modules, skipImport);
+    return addToModule(appModule, skipImport, modules);
 }
 
-function addToModule(appModule: ModuleOptions, modules: Array<ModuleDefinition> = [], skipImport: SkipHandler | boolean): Rule {
+function addToModule(appModule: ModuleOptions, skipImport: SkipHandler | boolean, modules: Array<ModuleDefinition> = []): Rule {
     return async (tree: Tree) => {
         if (skipImport !== undefined && (skipImport === true || (skipImport !== false && (skipImport as SkipHandler).skip()))) {
             return;

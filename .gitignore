@@ -14,7 +14,7 @@ jest-stare/
 node_modules/
 npm-debug.log*
 yarn-error.log*
-wizard-config.json
+*wizard.config.json
 
 # Mac OSX Finder files.
 **/.DS_Store
