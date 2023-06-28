@@ -152,7 +152,7 @@ function getTtlPaths(promptSubj: Subject<any>, allAnswers: Schema, subscriber: S
         message: 'Please enter a name for your config file. It will be automatically appended to (<config-file-name>-wizard.config.json):',
         validate: function (input: string) {
             return input.length === 0 ? 'The config file name cannot be empty. Please provide a valid name.' : true;
-        }
+        },
     };
 
     const importConfigFile = {
@@ -161,7 +161,8 @@ function getTtlPaths(promptSubj: Subject<any>, allAnswers: Schema, subscriber: S
         excludeFilter: (nodePath: any) => !nodePath.endsWith('wizard.config.json'),
         excludePath: (nodePath: any) => nodePath.startsWith('node_modules'),
         itemType: 'file',
-        message: 'Choose the path to an existing wizard config file which ends with "wizard.config.json". Start writing file name for suggestions:',
+        message:
+            'Choose the path to an existing wizard config file which ends with "wizard.config.json". Start writing file name for suggestions:',
         rootPath: './',
         suggestOnly: false,
         depthLimit: 5,
@@ -526,7 +527,7 @@ function getUserConfigQuestions(allAnswers: any, tree: Tree, options: Schema): Q
     const requestOptionalMaterialTheme = {
         type: 'confirm',
         name: 'getOptionalMaterialTheme',
-        message: 'Do you want to add indigo.pink material theme?',
+        message: 'Do you want to add the Angular Material theme? (Indigo Pink Theme)',
         when: () => !options.getOptionalMaterialTheme,
         default: false,
     };
@@ -756,8 +757,8 @@ function getUserConfigQuestions(allAnswers: any, tree: Tree, options: Schema): Q
         requestEnableRemoteDataHandling,
         requestCustomService,
         requestAspectModelVersionSupport,
+        requestOptionalMaterialTheme,
         requestCustomStyleImports,
         requestOverwriteFiles,
-        requestOptionalMaterialTheme,
     ];
 }
