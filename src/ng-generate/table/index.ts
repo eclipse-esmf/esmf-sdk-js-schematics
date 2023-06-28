@@ -36,7 +36,7 @@ import {Schema} from './schema';
 import {TsComponentGenerator} from './generators/ts-component.generator';
 import {addModuleImportToModule} from '@angular/cdk/schematics';
 import ora from 'ora';
-import {WIZARD_CONFIG_FILE} from "../table-prompter/index";
+import {WIZARD_CONFIG_FILE} from '../table-prompter/index';
 
 export default function (options: Schema): Rule {
     return (tree: Tree, context: SchematicContext): void => {
@@ -141,9 +141,7 @@ export function generateTable(options: Schema): Rule {
             ]
         ),
         updateConfigFiles(options),
-        addToAppModule(options.skipImport, [
-            {name: 'BrowserAnimationsModule', fromLib: '@angular/platform-browser/animations'}
-        ]),
+        addToAppModule(options.skipImport, [{name: 'BrowserAnimationsModule', fromLib: '@angular/platform-browser/animations'}]),
         addToComponentModule(options.skipImport, options, [
             {name: 'MatTableModule', fromLib: '@angular/material/table'},
             {name: 'MatPaginatorModule', fromLib: '@angular/material/paginator'},
@@ -169,7 +167,7 @@ export function generateTable(options: Schema): Rule {
         addToComponentModule(
             {
                 skip() {
-                    return !options.addCommandBar || options.skipImport as boolean;
+                    return !options.addCommandBar || (options.skipImport as boolean);
                 },
             },
             options,
@@ -188,7 +186,7 @@ export function generateTable(options: Schema): Rule {
         addToComponentModule(
             {
                 skip() {
-                    return options.templateHelper.getDateProperties(options).length < 1 || options.skipImport as boolean;
+                    return options.templateHelper.getDateProperties(options).length < 1 || (options.skipImport as boolean);
                 },
             },
             options,
@@ -197,7 +195,7 @@ export function generateTable(options: Schema): Rule {
         addToComponentModule(
             {
                 skip() {
-                    return !options.enabledCommandBarFunctions?.includes('addDateQuickFilters') || options.skipImport as boolean;
+                    return !options.enabledCommandBarFunctions?.includes('addDateQuickFilters') || (options.skipImport as boolean);
                 },
             },
             options,
@@ -209,7 +207,7 @@ export function generateTable(options: Schema): Rule {
         addToComponentModule(
             {
                 skip() {
-                    return !options.enabledCommandBarFunctions?.includes('addEnumQuickFilters') || options.skipImport as boolean;
+                    return !options.enabledCommandBarFunctions?.includes('addEnumQuickFilters') || (options.skipImport as boolean);
                 },
             },
             options,
@@ -218,17 +216,14 @@ export function generateTable(options: Schema): Rule {
                 {name: 'MatOptionModule', fromLib: '@angular/material/core'},
             ]
         ),
-        addToAppSharedModule(
-            false,
-            [
-                {name: 'MatButtonModule', fromLib: '@angular/material/button'},
-                {name: 'MatDialogModule', fromLib: '@angular/material/dialog'},
-                {name: 'MatCheckboxModule', fromLib: '@angular/material/checkbox'},
-                {name: 'MatIconModule', fromLib: '@angular/material/icon'},
-                {name: 'FormsModule', fromLib: '@angular/forms'},
-                {name: 'NgIf', fromLib: '@angular/common'},
-            ]
-        ),
+        addToAppSharedModule(false, [
+            {name: 'MatButtonModule', fromLib: '@angular/material/button'},
+            {name: 'MatDialogModule', fromLib: '@angular/material/dialog'},
+            {name: 'MatCheckboxModule', fromLib: '@angular/material/checkbox'},
+            {name: 'MatIconModule', fromLib: '@angular/material/icon'},
+            {name: 'FormsModule', fromLib: '@angular/forms'},
+            {name: 'NgIf', fromLib: '@angular/common'},
+        ]),
         generateComponentFiles(options),
         generateStyles(options),
         generateTranslationFiles(options),
@@ -611,9 +606,6 @@ function updateConfigFiles(options: any): Rule {
             if (!angularBuildOptions['styles'].includes(defaultMaterialtheme)) {
                 angularBuildOptions['styles'].push(defaultMaterialtheme);
             }
-        } else if (!options.getOptionalMaterialTheme && angularBuildOptions['styles'].includes(defaultMaterialtheme)) {
-            const index = angularBuildOptions['styles'].indexOf(defaultMaterialtheme);
-            angularBuildOptions['styles'].splice(index, 1);
         }
 
         tree.overwrite('/angular.json', JSON.stringify(angularJson, null, 2));
