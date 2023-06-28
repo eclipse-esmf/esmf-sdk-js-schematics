@@ -36,7 +36,7 @@ import {Schema} from './schema';
 import {TsComponentGenerator} from './generators/ts-component.generator';
 import {addModuleImportToModule} from '@angular/cdk/schematics';
 import ora from 'ora';
-import {WIZARD_CONFIG_FILE} from "../table-prompter/index";
+import {WIZARD_CONFIG_FILE} from '../table-prompter/index';
 
 export default function (options: Schema): Rule {
     return (tree: Tree, context: SchematicContext): void => {
@@ -64,13 +64,15 @@ export default function (options: Schema): Rule {
 export function generateTable(options: Schema): Rule {
     options.spinner = ora().start();
 
-    if (!options.skipImport) {
-        options.skipImport = false;
-    }
+    const defaultOptions = {
+        skipImport: false,
+        configFile: WIZARD_CONFIG_FILE,
+    };
 
-    if(options.configFile !== WIZARD_CONFIG_FILE) {
-        options.configFile = WIZARD_CONFIG_FILE;
-    }
+    options = {
+        ...defaultOptions,
+        ...options,
+    };
 
     loadAndApplyConfigFile(options.configFile, options);
 
@@ -109,25 +111,25 @@ export function generateTable(options: Schema): Rule {
             options.spinner,
             options.enableRemoteDataHandling
                 ? [
-                    ...DEFAULT_DEPENDENCIES,
-                    {
-                        type: NodeDependencyType.Default,
-                        version: '~0.9.4',
-                        name: 'rollun-ts-rql',
-                        overwrite: false,
-                    },
-                    {
-                        type: NodeDependencyType.Default,
-                        version: '~4.1.1',
-                        name: 'crypto-js',
-                        overwrite: false,
-                    },
-                ]
+                      ...DEFAULT_DEPENDENCIES,
+                      {
+                          type: NodeDependencyType.Default,
+                          version: '~0.9.4',
+                          name: 'rollun-ts-rql',
+                          overwrite: false,
+                      },
+                      {
+                          type: NodeDependencyType.Default,
+                          version: '~4.1.1',
+                          name: 'crypto-js',
+                          overwrite: false,
+                      },
+                  ]
                 : DEFAULT_DEPENDENCIES
         ),
         addPackageJsonDependencies(
             !options.enabledCommandBarFunctions?.includes('addDateQuickFilters') ||
-            (options.skipImport !== undefined && options.skipImport),
+                (options.skipImport !== undefined && options.skipImport),
             options.spinner,
             [
                 {
@@ -145,9 +147,7 @@ export function generateTable(options: Schema): Rule {
             ]
         ),
         updateConfigFiles(options),
-        addToAppModule(options.skipImport, [
-            {name: 'BrowserAnimationsModule', fromLib: '@angular/platform-browser/animations'}
-        ]),
+        addToAppModule(options.skipImport, [{name: 'BrowserAnimationsModule', fromLib: '@angular/platform-browser/animations'}]),
         addToComponentModule(options.skipImport, options, [
             {name: 'MatTableModule', fromLib: '@angular/material/table'},
             {name: 'MatPaginatorModule', fromLib: '@angular/material/paginator'},
@@ -173,7 +173,7 @@ export function generateTable(options: Schema): Rule {
         addToComponentModule(
             {
                 skip() {
-                    return !options.addCommandBar || options.skipImport as boolean;
+                    return !options.addCommandBar || (options.skipImport as boolean);
                 },
             },
             options,
@@ -192,7 +192,7 @@ export function generateTable(options: Schema): Rule {
         addToComponentModule(
             {
                 skip() {
-                    return options.templateHelper.getDateProperties(options).length < 1 || options.skipImport as boolean;
+                    return options.templateHelper.getDateProperties(options).length < 1 || (options.skipImport as boolean);
                 },
             },
             options,
@@ -201,7 +201,7 @@ export function generateTable(options: Schema): Rule {
         addToComponentModule(
             {
                 skip() {
-                    return !options.enabledCommandBarFunctions?.includes('addDateQuickFilters') || options.skipImport as boolean;
+                    return !options.enabledCommandBarFunctions?.includes('addDateQuickFilters') || (options.skipImport as boolean);
                 },
             },
             options,
@@ -213,7 +213,7 @@ export function generateTable(options: Schema): Rule {
         addToComponentModule(
             {
                 skip() {
-                    return !options.enabledCommandBarFunctions?.includes('addEnumQuickFilters') || options.skipImport as boolean;
+                    return !options.enabledCommandBarFunctions?.includes('addEnumQuickFilters') || (options.skipImport as boolean);
                 },
             },
             options,
@@ -222,17 +222,14 @@ export function generateTable(options: Schema): Rule {
                 {name: 'MatOptionModule', fromLib: '@angular/material/core'},
             ]
         ),
-        addToAppSharedModule(
-            false,
-            [
-                {name: 'MatButtonModule', fromLib: '@angular/material/button'},
-                {name: 'MatDialogModule', fromLib: '@angular/material/dialog'},
-                {name: 'MatCheckboxModule', fromLib: '@angular/material/checkbox'},
-                {name: 'MatIconModule', fromLib: '@angular/material/icon'},
-                {name: 'FormsModule', fromLib: '@angular/forms'},
-                {name: 'NgIf', fromLib: '@angular/common'},
-            ]
-        ),
+        addToAppSharedModule(false, [
+            {name: 'MatButtonModule', fromLib: '@angular/material/button'},
+            {name: 'MatDialogModule', fromLib: '@angular/material/dialog'},
+            {name: 'MatCheckboxModule', fromLib: '@angular/material/checkbox'},
+            {name: 'MatIconModule', fromLib: '@angular/material/icon'},
+            {name: 'FormsModule', fromLib: '@angular/forms'},
+            {name: 'NgIf', fromLib: '@angular/common'},
+        ]),
         generateComponentFiles(options),
         generateStyles(options),
         generateTranslationFiles(options),
@@ -449,7 +446,12 @@ function generateConfigMenu(options: Schema): Rule {
             const componentContent = options.tsGenerator.generateConfigMenu();
             const componentPath = `${options.path}/${dasherize(options.name)}-config-menu.component.ts`;
             createOrOverwrite(tree, `${componentPath}`, options.overwrite, componentContent);
-            addToDeclarationsArray(options, tree, `${classify(options.name)}ConfigMenuComponent`, `${componentPath.replace('.ts', '')}`).then();
+            addToDeclarationsArray(
+                options,
+                tree,
+                `${classify(options.name)}ConfigMenuComponent`,
+                `${componentPath.replace('.ts', '')}`
+            ).then();
             return tree;
         }
     };
