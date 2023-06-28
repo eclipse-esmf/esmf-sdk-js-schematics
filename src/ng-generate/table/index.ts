@@ -64,9 +64,18 @@ export default function (options: Schema): Rule {
 export function generateTable(options: Schema): Rule {
     options.spinner = ora().start();
 
-    if (!options.skipImport) {
-        options.skipImport = false;
+    const defaultOptions = {
+        skipImport: false,
+    };
+
+    if (options.configFile !== WIZARD_CONFIG_FILE) {
+        options.configFile = WIZARD_CONFIG_FILE;
     }
+
+    options = {
+        ...defaultOptions,
+        ...options,
+    };
 
     loadAndApplyConfigFile(options.configFile, options);
 

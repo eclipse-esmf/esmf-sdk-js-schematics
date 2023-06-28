@@ -202,6 +202,7 @@ function getTtlPaths(promptSubj: Subject<any>, allAnswers: Schema, subscriber: S
                 case singleAnswer.name === configFileName.name: {
                     if (singleAnswer.answer !== WIZARD_CONFIG_FILE) {
                         WIZARD_CONFIG_FILE = `${singleAnswer.answer}-${WIZARD_CONFIG_FILE}`;
+                        allAnswers.configFile = WIZARD_CONFIG_FILE;
                     }
                     promptSubj.next(pathDecision);
                     break;

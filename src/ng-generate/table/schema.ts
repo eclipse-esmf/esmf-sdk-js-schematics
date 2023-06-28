@@ -69,4 +69,5 @@ export interface Schema extends ComponentSchema, DefaultSchema {
     complexProps: Array<{prop: string; propsToShow: ComplexEntityProperty[]}>;
     skipInstall: boolean;
     getOptionalMaterialTheme: boolean;
+    skipImport: boolean;
 }

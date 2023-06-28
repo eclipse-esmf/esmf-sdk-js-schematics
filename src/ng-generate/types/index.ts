@@ -19,11 +19,16 @@ import {formatGeneratedFiles, loadAndApplyConfigFile} from '../../utils/file';
 import {TemplateHelper} from '../../utils/template-helper';
 import {visitAspectModel} from './aspect-model-type-generator-visitor';
 import {Schema} from './schema';
+import {WIZARD_CONFIG_FILE} from "../table-prompter/index";
 
 export default function (options: Schema): Rule {
     const spinner = ora().start();
     options.spinner = spinner;
     options.templateHelper = new TemplateHelper();
+
+    if(options.configFile !== WIZARD_CONFIG_FILE) {
+        options.configFile = WIZARD_CONFIG_FILE;
+    }
 
     loadAndApplyConfigFile(options.configFile, options);
 
