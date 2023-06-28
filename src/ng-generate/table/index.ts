@@ -611,9 +611,10 @@ function updateConfigFiles(options: any): Rule {
         addStylePreprocessorOptions(angularBuildOptions);
 
         const defaultMaterialtheme = 'node_modules/@angular/material/prebuilt-themes/indigo-pink.css';
-
-        if (!angularBuildOptions['styles'].includes(defaultMaterialtheme)) {
-            angularBuildOptions['styles'].push(defaultMaterialtheme);
+        if (options.getOptionalMaterialTheme) {
+            if (!angularBuildOptions['styles'].includes(defaultMaterialtheme)) {
+                angularBuildOptions['styles'].push(defaultMaterialtheme);
+            }
         }
 
         tree.overwrite('/angular.json', JSON.stringify(angularJson, null, 2));

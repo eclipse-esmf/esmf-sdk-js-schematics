@@ -152,7 +152,7 @@ function getTtlPaths(promptSubj: Subject<any>, allAnswers: Schema, subscriber: S
         message: 'Please enter a name for your config file. It will be automatically appended to (<config-file-name>-wizard.config.json):',
         validate: function (input: string) {
             return input.length === 0 ? 'The config file name cannot be empty. Please provide a valid name.' : true;
-        }
+        },
     };
 
     const importConfigFile = {
@@ -161,7 +161,8 @@ function getTtlPaths(promptSubj: Subject<any>, allAnswers: Schema, subscriber: S
         excludeFilter: (nodePath: any) => !nodePath.endsWith('wizard.config.json'),
         excludePath: (nodePath: any) => nodePath.startsWith('node_modules'),
         itemType: 'file',
-        message: 'Choose the path to an existing wizard config file which ends with "wizard.config.json". Start writing file name for suggestions:',
+        message:
+            'Choose the path to an existing wizard config file which ends with "wizard.config.json". Start writing file name for suggestions:',
         rootPath: './',
         suggestOnly: false,
         depthLimit: 5,
@@ -188,7 +189,7 @@ function getTtlPaths(promptSubj: Subject<any>, allAnswers: Schema, subscriber: S
     // listener
     const process = inquirer.prompt(promptSubj as any).ui.process;
     process.subscribe(
-        (singleAnswer: { name: string; answer: any }) => {
+        (singleAnswer: {name: string; answer: any}) => {
             switch (true) {
                 case singleAnswer.name === createOrImport.name: {
                     if (singleAnswer.answer) {
@@ -253,8 +254,7 @@ function getTtlPaths(promptSubj: Subject<any>, allAnswers: Schema, subscriber: S
         err => {
             console.log('Error: ', err);
         },
-        () => {
-        }
+        () => {}
     );
 
     promptSubj.next(createOrImport);
@@ -356,7 +356,7 @@ function loadSourceProcessResult(allAnswers: any, tree: Tree, options: Schema, p
                     .then(aspect => {
                         resolve(
                             !aspect.isCollectionAspect &&
-                            loader.filterElements((entry: DefaultEntity) => entry instanceof DefaultEntity).length >= 1
+                                loader.filterElements((entry: DefaultEntity) => entry instanceof DefaultEntity).length >= 1
                         );
                     })
                     .catch(error => reject(error));
@@ -525,6 +525,14 @@ function getUserConfigQuestions(allAnswers: any, tree: Tree, options: Schema): Q
         default: false,
     };
 
+    const requestOptionalMaterialTheme = {
+        type: 'confirm',
+        name: 'getOptionalMaterialTheme',
+        message: 'Do you want to add the Angular Material theme? (Indigo Pink Theme)',
+        when: () => !options.getOptionalMaterialTheme,
+        default: false,
+    };
+
     const requestCustomRowActions = {
         type: 'suggest',
         name: 'customRowActions',
@@ -675,15 +683,14 @@ function getUserConfigQuestions(allAnswers: any, tree: Tree, options: Schema): Q
                 const languageCodes = templateHelper.resolveAllLanguageCodes(selectedElement);
                 const choices = [{name: 'English', value: 'en'}];
 
-
                 languageCodes.forEach(code => {
                     if (code !== 'en') {
                         choices.push({name: locale.getByTag(code).name, value: code});
                     }
                 });
 
-                return choices
-            })
+                return choices;
+            });
         },
         default: 'en',
     };
@@ -751,6 +758,7 @@ function getUserConfigQuestions(allAnswers: any, tree: Tree, options: Schema): Q
         requestEnableRemoteDataHandling,
         requestCustomService,
         requestAspectModelVersionSupport,
+        requestOptionalMaterialTheme,
         requestCustomStyleImports,
         requestOverwriteFiles,
     ];

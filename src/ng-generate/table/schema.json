@@ -159,6 +159,10 @@
             "type": "boolean",
             "default": false,
             "description": "Weather or not to install dependencies at the end of the generation process."
+        },
+        "getOptionalMaterialTheme": {
+            "type": "boolean",
+            "default": false
         }
     }
 }
