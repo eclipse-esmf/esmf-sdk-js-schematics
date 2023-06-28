@@ -66,7 +66,7 @@ export function generateTable(options: Schema): Rule {
 
     const defaultOptions = {
         skipImport: false,
-        configFile: WIZARD_CONFIG_FILE,
+        configFile: options.configFile !== WIZARD_CONFIG_FILE ? WIZARD_CONFIG_FILE : options.configFile,
     };
 
     options = {
