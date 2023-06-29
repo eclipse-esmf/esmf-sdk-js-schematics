@@ -748,7 +748,7 @@ function getUserConfigQuestions(allAnswers: any, tree: Tree, options: Schema): Q
         type: 'list',
         name: 'viewEncapsulation',
         message: 'Do you want to specify view encapsulation strategy?',
-        choices: ['None', 'Emulated', 'ShadowDom'],
+        choices: [ViewEncapsulation.None, ViewEncapsulation.Emulated, ViewEncapsulation.ShadowDom],
         default: ViewEncapsulation.None,
     };
 
@@ -769,7 +769,7 @@ function getUserConfigQuestions(allAnswers: any, tree: Tree, options: Schema): Q
         requestAspectModelVersionSupport,
         requestOptionalMaterialTheme,
         requestCustomStyleImports,
-        requestOverwriteFiles,
         requestSetViewEncapsulation,
+        requestOverwriteFiles,
     ];
 }
