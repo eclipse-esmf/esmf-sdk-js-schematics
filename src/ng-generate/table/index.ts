@@ -37,6 +37,7 @@ import {TsComponentGenerator} from './generators/ts-component.generator';
 import {addModuleImportToModule} from '@angular/cdk/schematics';
 import ora from 'ora';
 import {WIZARD_CONFIG_FILE} from '../table-prompter/index';
+import {ViewEncapsulation} from '@schematics/angular/component/schema';
 
 export default function (options: Schema): Rule {
     return (tree: Tree, context: SchematicContext): void => {
@@ -618,7 +619,6 @@ function updateConfigFiles(options: any): Rule {
         }
 
         tree.overwrite('/angular.json', JSON.stringify(angularJson, null, 2));
-
         return tree;
     };
 }

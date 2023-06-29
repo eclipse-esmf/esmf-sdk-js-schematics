@@ -80,11 +80,11 @@ export class TsComponentGenerator {
             pageChange(): void {
                 this.applyFilters();
                 ${
-            !isRemote && this.options.addRowCheckboxes
-                ? `this.selection.clear();
+                    !isRemote && this.options.addRowCheckboxes
+                        ? `this.selection.clear();
                            this.rowSelectionEvent.emit(this.selection.selected);`
-                : ''
-        }
+                        : ''
+                }
             }
             
             sortData(): void {
@@ -124,24 +124,24 @@ export class TsComponentGenerator {
             ${this.processRowCheckboxes(isRemote)}
             
             ${
-            this.options.customRowActions.length > 0
-                ? ` executeCustomAction($event: MouseEvent, action: string, row:any): void{
+                this.options.customRowActions.length > 0
+                    ? ` executeCustomAction($event: MouseEvent, action: string, row:any): void{
                         if(this.customRowActionsLength <= this.visibleRowActionsIcons) {
                             $event.stopPropagation();
                         }
                         this.customActionEvent.emit({action: action, data: row})
                    }`
-                : ''
-        }
+                    : ''
+            }
             
             ${
-            this.options.customCommandBarActions.length > 0
-                ? ` executeCustomCommandBarAction($event: MouseEvent, action: string){
+                this.options.customCommandBarActions.length > 0
+                    ? ` executeCustomCommandBarAction($event: MouseEvent, action: string){
                             $event.stopPropagation()
                             this.customCommandBarActionEvent.emit({action: action})
                       }`
-                : ``
-        }
+                    : ``
+            }
             
             ${TsComponentGenerator.getReloadFilters()}
             ${this.getApplyFilters(isRemote)}
@@ -153,15 +153,15 @@ export class TsComponentGenerator {
                 this.columMenuComponent.columnsDefault = [
                     ...Object.values(${classify(this.options.name)}Column)
                       ${
-            this.options.addRowCheckboxes
-                ? `.filter(columnName => columnName !== ${classify(this.options.name)}Column['CHECKBOX'])`
-                : ''
-        }
+                          this.options.addRowCheckboxes
+                              ? `.filter(columnName => columnName !== ${classify(this.options.name)}Column['CHECKBOX'])`
+                              : ''
+                      }
                       ${
-            this.options.customRowActions.length > 0
-                ? `.filter(columnName => columnName !== ${classify(this.options.name)}Column['CUSTOM_ROW_ACTIONS'])`
-                : ''
-        }
+                          this.options.customRowActions.length > 0
+                              ? `.filter(columnName => columnName !== ${classify(this.options.name)}Column['CUSTOM_ROW_ACTIONS'])`
+                              : ''
+                      }
                       .filter(columnName => columnName !== ${classify(this.options.name)}Column['COLUMNS_MENU'])
                       .map(columnName => {
                         return {name: columnName, selected: true};
@@ -171,7 +171,9 @@ export class TsComponentGenerator {
                 this.columMenuComponent.columns.push(...this.columns);
             }
             
-            ${this.hasSearchBar ? `
+            ${
+                this.hasSearchBar
+                    ? `
             initOpenedConfigurationDialog(): void {
               this.configurationComponent.keyLocalStorage = this.${this.options.templateHelper.getLocalStorageKeyConfig(this.options)};;
               this.configurationComponent.configs.splice(0, this.configurationComponent.configs.length);
@@ -186,33 +188,35 @@ export class TsComponentGenerator {
               const highlightLetters = [...new Set(this.highlightString.join().split(''))].join();
               const index = name.toString().indexOf(letter);
               return index !== -1 && highlightLetters.includes(name.toString()[index]);
-            }` : ''}
+            }`
+                    : ''
+            }
             
             setDisplayedColumns(columns: Array<Column>): void {
                 let displayedColumnsTmp: Array<Column> = [];
         
                 ${
-            this.options.addRowCheckboxes
-                ? `if (columns[0].name !== ${classify(this.options.name)}Column['CHECKBOX']) {
+                    this.options.addRowCheckboxes
+                        ? `if (columns[0].name !== ${classify(this.options.name)}Column['CHECKBOX']) {
                         displayedColumnsTmp.push({name: ${classify(this.options.name)}Column['CHECKBOX'], selected: true});
                     }`
-                : ''
-        }
+                        : ''
+                }
                 
         
                 displayedColumnsTmp.push(...columns);
         
                 ${
-            this.options.customRowActions.length > 0
-                ? `if (${classify(
-                    this.options.name
-                )}Column['CUSTOM_ROW_ACTIONS'] && columns[columns.length - 1].name !== ${classify(
-                    this.options.name
-                )}Column['CUSTOM_ROW_ACTIONS']) {
+                    this.options.customRowActions.length > 0
+                        ? `if (${classify(
+                              this.options.name
+                          )}Column['CUSTOM_ROW_ACTIONS'] && columns[columns.length - 1].name !== ${classify(
+                              this.options.name
+                          )}Column['CUSTOM_ROW_ACTIONS']) {
                         displayedColumnsTmp.push({name: ${classify(this.options.name)}Column['CUSTOM_ROW_ACTIONS'], selected: true});
                     }`
-                : ''
-        }
+                        : ''
+                }
                 
                 if (${classify(this.options.name)}Column['COLUMNS_MENU'] && columns[columns.length - 1].name !== ${classify(
             this.options.name
@@ -229,14 +233,14 @@ export class TsComponentGenerator {
             }
     
             ${
-            !isRemote
-                ? `checkIfOnValidPage(): void {
+                !isRemote
+                    ? `checkIfOnValidPage(): void {
                             if(this.paginator.length  > this.filteredData.length){
                                 this.paginator.firstPage();
                             }
                       }`
-                : ``
-        }
+                    : ``
+            }
         }`;
     }
 
@@ -244,44 +248,44 @@ export class TsComponentGenerator {
         return `
             ${this.hasSearchBar ? ` @Input() initialSearchString = '';` : ''}
             ${this.options.customRowActions
-            .map(cra => {
-                const formattedAction = cra.replace(/\.[^/.]+$/, '');
-                const classifiedFormattedAction = classify(formattedAction);
-                return `@Input() is${classifiedFormattedAction}Visible = true;`;
-            })
-            .join('')}
+                .map(cra => {
+                    const formattedAction = cra.replace(/\.[^/.]+$/, '');
+                    const classifiedFormattedAction = classify(formattedAction);
+                    return `@Input() is${classifiedFormattedAction}Visible = true;`;
+                })
+                .join('')}
             
             ${
-            this.options.templateHelper.getDateProperties(this.options).find(prop => this.options.templateHelper.isDateProperty(prop))
-                ? "@Input() tableDateFormat = 'short';"
-                : ''
-        }
+                this.options.templateHelper.getDateProperties(this.options).find(prop => this.options.templateHelper.isDateProperty(prop))
+                    ? "@Input() tableDateFormat = 'short';"
+                    : ''
+            }
             ${
-            this.options.templateHelper
-                .getDateProperties(this.options)
-                .find(prop => this.options.templateHelper.isDateTimestampProperty(prop))
-                ? "@Input() tableDateTimeFormat = 'short';"
-                : ''
-        }
+                this.options.templateHelper
+                    .getDateProperties(this.options)
+                    .find(prop => this.options.templateHelper.isDateTimestampProperty(prop))
+                    ? "@Input() tableDateTimeFormat = 'short';"
+                    : ''
+            }
             ${
-            this.options.templateHelper.getDateProperties(this.options).find(prop => this.options.templateHelper.isTimeProperty(prop))
-                ? "@Input() tableTimeFormat = 'shortTime';"
-                : ''
-        }
+                this.options.templateHelper.getDateProperties(this.options).find(prop => this.options.templateHelper.isTimeProperty(prop))
+                    ? "@Input() tableTimeFormat = 'shortTime';"
+                    : ''
+            }
                         
             @Input() data: Array<(${classify(this.options.templateHelper.resolveType(this.options.aspectModel).name)})> = [];
             @Input() customTemplate?: TemplateRef<any>;
             @Input() searchHint?: string;
             @Input() showFirstLastButtons: boolean = true;
             ${
-            this.options.customColumns && this.options.customColumns.length > 0
-                ? `${this.options.customColumns
-                    .map(cc => {
-                        return `@Input("${camelize(cc)}Column") ${camelize(cc)}Template!: TemplateRef<any>;`;
-                    })
-                    .join('')}`
-                : ''
-        }
+                this.options.customColumns && this.options.customColumns.length > 0
+                    ? `${this.options.customColumns
+                          .map(cc => {
+                              return `@Input("${camelize(cc)}Column") ${camelize(cc)}Template!: TemplateRef<any>;`;
+                          })
+                          .join('')}`
+                    : ''
+            }
             
             @Input() pageSize: number = 20;
             @Input() pageSizeOptions: Array<number> = [5, 20, 50, 100];
@@ -299,19 +303,17 @@ export class TsComponentGenerator {
             @Input() maxNumberCharacters: number = 50;
             @Input() allowedCharacters: string = '';
             @Input() regexValidator:string = '';
+            ${this.hasSearchBar ? `@Input() hasAdvancedSearch: boolean = this.filterService.stringColumns.length > 1;` : ''}   
             ${
-                this.hasSearchBar ? `@Input() hasAdvancedSearch: boolean = this.filterService.stringColumns.length > 1;` : ''
-            }   
-            ${
-            isRemote
-                ? ` 
+                isRemote
+                    ? ` 
                         @Input() maxExportRows: number = 5000;
                         @Input() customFilterExtension: CustomRQLFilterExtension | undefined;
                         @Input() customOptionsExtension: CustomRQLOptionExtension | undefined;
                         @Input() extendedCsvExporter: ExtendedCsvExporter | undefined;
                         @Input() remoteAPI: string = '';`
-                : '@Input() maxExportRows: number = 0'
-        }
+                    : '@Input() maxExportRows: number = 0'
+            }
 
             @Output() rowClickEvent = new EventEmitter<any>();
             @Output() rowDblClickEvent = new EventEmitter<any>();
@@ -327,10 +329,18 @@ export class TsComponentGenerator {
             @ViewChild(MatSort) private sort!: MatSort;
             @ViewChild(MatPaginator) private paginator!: MatPaginator
             @ViewChild(MatTable) private table!: MatTable<${classify(
-            this.options.templateHelper.resolveType(this.options.aspectModel).name
-        )}>;
-            @ViewChild(${classify(this.options.name)}ColumnMenuComponent) private columMenuComponent!: ${classify(this.options.name)}ColumnMenuComponent;
-            ${this.hasSearchBar ? `@ViewChild(${classify(this.options.name)}ConfigMenuComponent) private configurationComponent!: ${classify(this.options.name)}ConfigMenuComponent;` : ''}
+                this.options.templateHelper.resolveType(this.options.aspectModel).name
+            )}>;
+            @ViewChild(${classify(this.options.name)}ColumnMenuComponent) private columMenuComponent!: ${classify(
+            this.options.name
+        )}ColumnMenuComponent;
+            ${
+                this.hasSearchBar
+                    ? `@ViewChild(${classify(this.options.name)}ConfigMenuComponent) private configurationComponent!: ${classify(
+                          this.options.name
+                      )}ConfigMenuComponent;`
+                    : ''
+            }
             @ViewChild('searchInput') searchInput!: ElementRef;
 
             @HostBinding("attr.style")
@@ -346,19 +356,23 @@ export class TsComponentGenerator {
             .replace(this.options.templateHelper.getLocalStoragePrefix(), '')
             .toLowerCase()}'; 
             
-            ${this.hasSearchBar ? `
+            ${
+                this.hasSearchBar
+                    ? `
             readonly ${this.options.templateHelper.getLocalStorageKeyConfig(this.options)} = '${this.options.templateHelper
-            .getLocalStorageKeyConfig(this.options)
-            .replace(this.options.templateHelper.getLocalStoragePrefix(), '')
-            .toLowerCase()}';
-            ` : ''}
+                          .getLocalStorageKeyConfig(this.options)
+                          .replace(this.options.templateHelper.getLocalStoragePrefix(), '')
+                          .toLowerCase()}';
+            `
+                    : ''
+            }
             
             totalItems: number = 0;
             selection = new SelectionModel<any>(this.isMultipleSelectionEnabled, []);
             dataSource: ${classify(this.options.name)}DataSource;
             columnToSort:{sortColumnName: string, sortDirection: SortDirection} = {sortColumnName:'${
-            this.options.defaultSortingCol
-        }', sortDirection : 'asc'};
+                this.options.defaultSortingCol
+            }', sortDirection : 'asc'};
             displayedColumns: Array<string> = Object.values(${classify(this.options.name)}Column);
             columns: Array<Column> = [];
             ${this.hasSearchBar ? `configs: Array<Config> = [];` : ''}
@@ -369,15 +383,19 @@ export class TsComponentGenerator {
             closeColumnMenu: boolean = false;
             rqlString: string = '';
             searchFocused: boolean = false;
-            ${this.hasSearchBar ? `
+            ${
+                this.hasSearchBar
+                    ? `
             highlightString: string[] = [];
             
             get highlightConfig(): Config | undefined {
               return this.configs.find((config: Config) => config.name.includes('highlight'));
-            }` : ''}
+            }`
+                    : ''
+            }
             ${this.getByValueFunction()}
             
-            ${this.hasSearchBar || isRemote? `private readonly ngUnsubscribe = new Subject<void>();` : ``}
+            ${this.hasSearchBar || isRemote ? `private readonly ngUnsubscribe = new Subject<void>();` : ``}
             `;
     }
 
@@ -386,15 +404,12 @@ export class TsComponentGenerator {
                 selector: '${this.options.selector}',
                 templateUrl: './${dasherize(this.options.name)}.component.html',
                 styleUrls: ['./${dasherize(this.options.name)}.component.${this.options.style}']
+                ${this.options.changeDetection ? `, changeDetection: ChangeDetectionStrategy.${this.options.changeDetection}` : ''}
                 ${
-            this.options.viewEncapsulation
-                ? `,encapsulation: ViewEncapsulation.${this.options.viewEncapsulation}${
-                    this.options.changeDetection !== 'Default'
-                        ? `, changeDetection: ChangeDetectionStrategy.${this.options.changeDetection},`
-                        : ''
-                }`
-                : ``
-        }
+                    this.options.viewEncapsulation
+                        ? `,encapsulation: ViewEncapsulation.${this.options.viewEncapsulation}`
+                        : `,encapsulation: ViewEncapsulation.None`
+                }  
               })`;
     }
 
@@ -404,18 +419,18 @@ export class TsComponentGenerator {
         const getSharedCustomRows = `
                 this.currentLanguage = this.translateService.currentLang;
                 ${[...this.options.customRowActions, ...this.options.customCommandBarActions]
-            .map(
-                cra =>
-                    `${
-                        cra.lastIndexOf('.') > -1
-                            ? `iconRegistry.addSvgIcon('${cra.replace(
-                                /\.[^/.]+$/,
-                                ''
-                            )}', sanitizer.bypassSecurityTrustResourceUrl('./assets/icons/${cra}'));`
-                            : ``
-                    }`
-            )
-            .join('')}`;
+                    .map(
+                        cra =>
+                            `${
+                                cra.lastIndexOf('.') > -1
+                                    ? `iconRegistry.addSvgIcon('${cra.replace(
+                                          /\.[^/.]+$/,
+                                          ''
+                                      )}', sanitizer.bypassSecurityTrustResourceUrl('./assets/icons/${cra}'));`
+                                    : ``
+                            }`
+                    )
+                    .join('')}`;
 
         const commonImports = `
             ${hasCustomActions ? `iconRegistry: MatIconRegistry,` : ``}
@@ -426,10 +441,10 @@ export class TsComponentGenerator {
             private storageService: JSSdkLocalStorageService,
             ${this.hasFilters ? `public filterService: ${this.filterServiceName},` : ''}
             ${
-            this.hasDateQuickFilter
-                ? 'private dateAdapter: DateAdapter<any>,@Inject(MAT_DATE_FORMATS) private dateFormats: MatDateFormats,'
-                : ''
-        }`;
+                this.hasDateQuickFilter
+                    ? 'private dateAdapter: DateAdapter<any>,@Inject(MAT_DATE_FORMATS) private dateFormats: MatDateFormats,'
+                    : ''
+            }`;
         if (isRemote) {
             return `constructor(
                     ${commonImports} private ${camelize((this.options.customRemoteService ? 'custom' : '') + this.options.name)}Service: ${
@@ -457,32 +472,32 @@ export class TsComponentGenerator {
             export enum ${classify(this.options.name)}Column {
             ${this.options.addRowCheckboxes ? `CHECKBOX = 'checkboxes',` : ''}
             ${this.allProps
-            .map((prop: Property, index: number, arr: Property[]) => {
-                let complexEnumProperties = ``;
-                if (prop.effectiveDataType?.isComplex && prop.characteristic instanceof DefaultSingleEntity) {
-                    const complexProps = templateHelper.getComplexProperties(prop, this.options);
-                    complexProps.properties.map((complexProp: Property, i: number, complexPropsArr: Property[]) => {
-                        complexEnumProperties = `${complexEnumProperties}${dasherize(`${complexProps.complexProp}_${complexProp.name}`)
-                            .replace(/-/g, '_')
-                            .toUpperCase()} = '${complexProps.complexProp}.${complexProp.name}',`;
-                        return complexProp;
-                    });
-                }
+                .map((prop: Property, index: number, arr: Property[]) => {
+                    let complexEnumProperties = ``;
+                    if (prop.effectiveDataType?.isComplex && prop.characteristic instanceof DefaultSingleEntity) {
+                        const complexProps = templateHelper.getComplexProperties(prop, this.options);
+                        complexProps.properties.map((complexProp: Property, i: number, complexPropsArr: Property[]) => {
+                            complexEnumProperties = `${complexEnumProperties}${dasherize(`${complexProps.complexProp}_${complexProp.name}`)
+                                .replace(/-/g, '_')
+                                .toUpperCase()} = '${complexProps.complexProp}.${complexProp.name}',`;
+                            return complexProp;
+                        });
+                    }
 
-                return `${
-                    !(prop.effectiveDataType?.isComplex && prop.characteristic instanceof DefaultSingleEntity)
-                        ? `${dasherize(prop.name).replace(/-/g, '_').toUpperCase()} = '${
-                            this.options.jsonAccessPath
-                        }${prop.name.trim()}'${index <= arr.length - 1 ? `,` : ``}`
-                        : `${complexEnumProperties}`
-                }`;
-            })
-            .join('')}
+                    return `${
+                        !(prop.effectiveDataType?.isComplex && prop.characteristic instanceof DefaultSingleEntity)
+                            ? `${dasherize(prop.name).replace(/-/g, '_').toUpperCase()} = '${
+                                  this.options.jsonAccessPath
+                              }${prop.name.trim()}'${index <= arr.length - 1 ? `,` : ``}`
+                            : `${complexEnumProperties}`
+                    }`;
+                })
+                .join('')}
             ${this.options.customColumns
-            .map(prop => {
-                return `${dasherize(prop.trim()).replace(/-/g, '_').toUpperCase()} = '${prop.trim()}',`;
-            })
-            .join('')}
+                .map(prop => {
+                    return `${dasherize(prop.trim()).replace(/-/g, '_').toUpperCase()} = '${prop.trim()}',`;
+                })
+                .join('')}
             ${this.options.customRowActions.length > 0 ? `CUSTOM_ROW_ACTIONS = 'customRowActions',` : ''}
             COLUMNS_MENU = 'columnsMenu'
         }`;
@@ -517,11 +532,11 @@ export class TsComponentGenerator {
                         this.data.length = this.maxExportRows;
                     } 
                     ${
-            this.options.enableRemoteDataHandling
-                ? `const columns = exportAllColumns ? this.columns.map(c => c.name) : this.displayedColumns;
+                        this.options.enableRemoteDataHandling
+                            ? `const columns = exportAllColumns ? this.columns.map(c => c.name) : this.displayedColumns;
                                 this.extendedCsvExporter?.export(columns, this.rqlString)`
-                : `this.prepareCsv(this.${serviceName}.flatten(this.data), exportAllColumns,exportAllPages,this.paginator.pageSize)`
-        }
+                            : `this.prepareCsv(this.${serviceName}.flatten(this.data), exportAllColumns,exportAllPages,this.paginator.pageSize)`
+                    }
                 });
             }
 
@@ -532,8 +547,8 @@ export class TsComponentGenerator {
     private generatePrepareCsvFn(): string {
         const columnTransKeyPrefix = this.options.enableVersionSupport
             ? `${this.options.selectedModelElement.name.toLowerCase()}.v${this.options.templateHelper.formatAspectModelVersion(
-                this.options.aspectModelVersion
-            )}.`
+                  this.options.aspectModelVersion
+              )}.`
             : ``;
 
         return `prepareCsv(data: any, exportAllColumns: boolean, exportAllPages: boolean, currentPageSize: number): void {
@@ -566,10 +581,10 @@ export class TsComponentGenerator {
         return `
             isCustomColumn(columnName: string): boolean {
                 const customColumns = [${this.options.customColumns
-            .map(prop => {
-                return `'${prop.trim()}'`;
-            })
-            .join(', ')}];
+                    .map(prop => {
+                        return `'${prop.trim()}'`;
+                    })
+                    .join(', ')}];
 
                 return customColumns.includes(columnName);
             }
@@ -602,8 +617,8 @@ export class TsComponentGenerator {
             this.downloadEvent.emit({error: false, success: false, inProgress: true});
             try {
                 this.${camelize(
-            (this.options.enableRemoteDataHandling && this.options.customRemoteService ? 'custom' : '') + this.options.name
-        )}Service.downloadCsv(csvArray);
+                    (this.options.enableRemoteDataHandling && this.options.customRemoteService ? 'custom' : '') + this.options.name
+                )}Service.downloadCsv(csvArray);
                 this.downloadEvent.emit({error: false, success: true, inProgress: false});
             } catch(error: any) {
                 this.downloadEvent.emit({error: true, success: false, inProgress: false});
@@ -722,28 +737,32 @@ export class TsComponentGenerator {
             return `
                 applyFilters(): void {
                 ${
-                this.hasSearchBar
-                    ? `
+                    this.hasSearchBar
+                        ? `
                     if(this.filterService.searchString.errors){
                         return;
                     }
                 `
-                    : ``
-            }
+                        : ``
+                }
                     
                     this.tableUpdateStartEvent.emit();
                     ${
-                this.options.addRowCheckboxes
-                    ? `this.selection.clear();
+                        this.options.addRowCheckboxes
+                            ? `this.selection.clear();
                                 this.rowSelectionEvent.emit(this.selection.selected);`
-                    : ``
-            }
+                            : ``
+                    }
                     const query = new And();
                     ${this.hasEnumQuickFilter ? `this.filterService.applyEnumFilter(query);` : ``}
-                    ${this.hasSearchBar ? `this.filterService.applyStringSearchFilter(query);
+                    ${
+                        this.hasSearchBar
+                            ? `this.filterService.applyStringSearchFilter(query);
                         this.highlightString = this.filterService.activeFilters
                             .filter(elem => elem.type === FilterEnums.Search && elem.filterValue !== undefined)
-                            .map(elem => elem.filterValue as string);` : ``}
+                            .map(elem => elem.filterValue as string);`
+                            : ``
+                    }
                     ${this.hasDateQuickFilter ? `this.filterService.applyDateFilter(query);` : ``}
 
                     if (this.customFilterExtension) {
@@ -775,7 +794,9 @@ export class TsComponentGenerator {
                         return value;
                     };
                     
-                    const additionalCondition = new Eq('local', '${this.options.chooseLanguageForSearch ? this.options.chooseLanguageForSearch.toUpperCase() : 'EN'}');
+                    const additionalCondition = new Eq('local', '${
+                        this.options.chooseLanguageForSearch ? this.options.chooseLanguageForSearch.toUpperCase() : 'EN'
+                    }');
                     queryFilter?.queryNode.subNodes.push(additionalCondition);
 
                     const filterRQLQuery = queryFilter ? QueryStringifier.stringify(queryFilter) : '';
@@ -810,8 +831,8 @@ export class TsComponentGenerator {
 
                     try{
                       this.${camelize(
-                (this.options.customRemoteService ? 'custom' : '') + this.options.name
-            )}Service.requestData(this.remoteAPI, {query: rqlStringTemp}).subscribe((response: ${classify(
+                          (this.options.customRemoteService ? 'custom' : '') + this.options.name
+                      )}Service.requestData(this.remoteAPI, {query: rqlStringTemp}).subscribe((response: ${classify(
                 this.options.aspectModel.name
             )}Response): void => {
                           this.dataSource.setData(response.items);
@@ -834,20 +855,24 @@ export class TsComponentGenerator {
             return `
                       applyFilters(): void {
                           ${
-                this.hasSearchBar
-                    ? `
+                              this.hasSearchBar
+                                  ? `
                           if(this.filterService.searchString.errors){
                               return;
                           }`
-                    : ``
-            }
+                                  : ``
+                          }
                           this.tableUpdateStartEvent.emit();
                           let dataTemp = [...this.data];
                           ${this.hasEnumQuickFilter ? `dataTemp = this.filterService.applyEnumFilter(dataTemp);` : ``}
-                          ${this.hasSearchBar ? `dataTemp = this.filterService.applyStringSearchFilter(dataTemp);
+                          ${
+                              this.hasSearchBar
+                                  ? `dataTemp = this.filterService.applyStringSearchFilter(dataTemp);
                           this.highlightString = this.filterService.activeFilters
                                 .filter(elem => elem.type === FilterEnums.Search && elem.filterValue !== undefined)
-                                .map(elem => elem.filterValue as string);` : ``}
+                                .map(elem => elem.filterValue as string);`
+                                  : ``
+                          }
                           ${this.hasDateQuickFilter ? `dataTemp = this.filterService.applyDateFilter(dataTemp); ` : ``}
                           this.dataSource.setData(dataTemp);
                           this.filteredData = dataTemp;
@@ -887,8 +912,8 @@ export class TsComponentGenerator {
                     }
 
                     ${
-                !isRemote
-                    ? `  trimSelectionToCurrentPage(): void {
+                        !isRemote
+                            ? `  trimSelectionToCurrentPage(): void {
                                       const indexOfLastItemOnPreviousPage = this.paginator.pageSize * this.paginator.pageIndex - 1;
                                       const indexOfFirstItemOnNextPage = this.paginator.pageSize * (this.paginator.pageIndex + 1);
                                       this.selection.selected.forEach((u): void => {
@@ -903,8 +928,8 @@ export class TsComponentGenerator {
                                       });
                                       this.rowSelectionEvent.emit(this.selection.selected);
                                 }`
-                    : ``
-            }
+                            : ``
+                    }
             `;
         }
         return defaultFunctions;
@@ -925,9 +950,9 @@ export class TsComponentGenerator {
             AfterViewChecked,
             TemplateRef,
             ElementRef,
+            ViewEncapsulation,
            ${isRemote || this.hasSearchBar ? `OnDestroy,` : ``}
            ${!isRemote ? `OnChanges,` : ``}
-           ${this.options.viewEncapsulation ? `ViewEncapsulation,` : ``}
            ${this.options.changeDetection !== 'Default' ? `ChangeDetectionStrategy,` : ``}
            ${isRemote ? `ChangeDetectorRef, ` : ``}
             } from '@angular/core';
@@ -935,72 +960,77 @@ export class TsComponentGenerator {
             import { MatSort, SortDirection } from '@angular/material/sort';
             import { MatTable } from '@angular/material/table';
             ${
-            this.hasFilters || this.hasSearchBar
-                ? `import { FilterEnums, ${this.filterServiceName}} from './${dasherize(
-                    this.options.name
-                )}.filter.service'`
-                : ''
-        }
+                this.hasFilters || this.hasSearchBar
+                    ? `import { FilterEnums, ${this.filterServiceName}} from './${dasherize(this.options.name)}.filter.service'`
+                    : ''
+            }
             import {Clipboard} from '@angular/cdk/clipboard';
             import {unparse} from 'papaparse';
             import {ExportConfirmationDialog} from '${
-            this.options.enableVersionSupport ? `../` : ``
-        }../export-confirmation-dialog/export-confirmation-dialog.component';
+                this.options.enableVersionSupport ? `../` : ``
+            }../export-confirmation-dialog/export-confirmation-dialog.component';
             import {MatDialog} from '@angular/material/dialog';
             import {
             ${classify(this.options.templateHelper.resolveType(this.options.selectedModelElement).name)}
             ${
-            this.options.selectedModelElement.aspectModelUrn !== this.options.aspectModel.aspectModelUrn &&
-            !this.options.aspectModel.isCollectionAspect
-                ? `, ${classify(this.options.templateHelper.resolveType(this.options.aspectModel).name)}`
-                : ''
-        }
+                this.options.selectedModelElement.aspectModelUrn !== this.options.aspectModel.aspectModelUrn &&
+                !this.options.aspectModel.isCollectionAspect
+                    ? `, ${classify(this.options.templateHelper.resolveType(this.options.aspectModel).name)}`
+                    : ''
+            }
             ${
-            this.hasEnumQuickFilter
-                ? `, ${this.options.templateHelper
-                    .getEnumProperties(this.options)
-                    .map(prop => {
-                        return classify(prop.characteristic.name);
-                    })
-                    .join(',')}`
-                : ''
-        }
+                this.hasEnumQuickFilter
+                    ? `, ${this.options.templateHelper
+                          .getEnumProperties(this.options)
+                          .map(prop => {
+                              return classify(prop.characteristic.name);
+                          })
+                          .join(',')}`
+                    : ''
+            }
             } from '${this.options.templateHelper.getTypesPath(
-            this.options.enableVersionSupport,
-            this.options.aspectModelVersion,
-            this.options.aspectModel
-        )}';
+                this.options.enableVersionSupport,
+                this.options.aspectModelVersion,
+                this.options.aspectModel
+            )}';
             import {${classify(this.options.name)}DataSource} from './${dasherize(this.options.name)}-datasource';
             ${
-            this.hasDateQuickFilter
-                ? `
+                this.hasDateQuickFilter
+                    ? `
                        import {DateAdapter,MatDateFormats,MAT_DATE_FORMATS} from '@angular/material/core';`
-                : ''
-        }
+                    : ''
+            }
             ${
-            [...this.options.customRowActions, ...this.options.customCommandBarActions].findIndex(element => element.includes('.')) !==
-            -1
-                ? `import { MatIconRegistry } from '@angular/material/icon';`
-                : ''
-        }
+                [...this.options.customRowActions, ...this.options.customCommandBarActions].findIndex(element => element.includes('.')) !==
+                -1
+                    ? `import { MatIconRegistry } from '@angular/material/icon';`
+                    : ''
+            }
             import {DomSanitizer} from '@angular/platform-browser';
             import {SelectionModel} from '@angular/cdk/collections';
             import {TranslateService} from '@ngx-translate/core';
             import {JSSdkLocalStorageService} from "${this.options.enableVersionSupport ? `../` : ``}../../services/storage.service";
             import {${classify(this.options.name)}ColumnMenuComponent} from './${dasherize(this.options.name)}-column-menu.component';
-            ${this.hasSearchBar ? `import {${classify(this.options.name)}ConfigMenuComponent} from './${dasherize(this.options.name)}-config-menu.component';` : ''}
             ${
-            this.hasFilters
-                ? `import {debounceTime, filter, map, takeUntil} from 'rxjs/operators';`
-                : (this.hasSearchBar ? `import {debounceTime, filter, takeUntil} from 'rxjs/operators';` :
-                    `import {filter, takeUntil} from 'rxjs/operators';`)
+                this.hasSearchBar
+                    ? `import {${classify(this.options.name)}ConfigMenuComponent} from './${dasherize(
+                          this.options.name
+                      )}-config-menu.component';`
+                    : ''
+            }
+            ${
+                this.hasFilters
+                    ? `import {debounceTime, filter, map, takeUntil} from 'rxjs/operators';`
+                    : this.hasSearchBar
+                    ? `import {debounceTime, filter, takeUntil} from 'rxjs/operators';`
+                    : `import {filter, takeUntil} from 'rxjs/operators';`
             }
             import {Subject} from 'rxjs';
             ${
-            isRemote
-                ? `import {${this.options.customRemoteService ? 'Custom' : ''}${classify(this.options.name)}Service} from './${
-                    this.options.customRemoteService ? 'custom-' : ''
-                }${dasherize(this.options.name)}.service';
+                isRemote
+                    ? `import {${this.options.customRemoteService ? 'Custom' : ''}${classify(this.options.name)}Service} from './${
+                          this.options.customRemoteService ? 'custom-' : ''
+                      }${dasherize(this.options.name)}.service';
                        import {${classify(this.options.aspectModel.name)}Response} from './${dasherize(this.options.name)}.service'; 
                        import {AbstractArrayNode,
                                AbstractLogicalNode,
@@ -1052,10 +1082,10 @@ export class TsComponentGenerator {
                              */
                             export(displayedColumns: string[], rqlQuery: string): void;
                        }`
-                : `import {${classify(this.options.name)}Service, ${classify(
-                    this.options.aspectModel.name
-                )}Response} from './${dasherize(this.options.name)}.service';`
-        }
+                    : `import {${classify(this.options.name)}Service, ${classify(
+                          this.options.aspectModel.name
+                      )}Response} from './${dasherize(this.options.name)}.service';`
+            }
             
             export interface Column {
                 /** Column name **/
@@ -1064,8 +1094,9 @@ export class TsComponentGenerator {
                 selected: boolean;
             }
             
-            ${this.hasSearchBar ?
-            `export interface Config {
+            ${
+                this.hasSearchBar
+                    ? `export interface Config {
                /** Column name **/
                name: string;
                /** Desc of the config **/
@@ -1074,20 +1105,26 @@ export class TsComponentGenerator {
                selected: boolean;
                /** Color for the highlighted configuration **/
                color?: string;
-             }` : ``}
+             }`
+                    : ``
+            }
         `;
     }
 
     private getOnInit(isRemote: boolean): string {
         return `ngOnInit(): void {
-                    ${this.hasSearchBar ? `
+                    ${
+                        this.hasSearchBar
+                            ? `
                     this.filterService.searchStringInit(this.initialSearchString, this.regexValidator, this.minNumberCharacters, this.maxNumberCharacters);
                     this.filterService.selectedStringColumn.valueChanges.pipe(takeUntil(this.ngUnsubscribe), debounceTime(100)).subscribe(() => {
                         if(this.searchInput) {
                             this.searchInput.nativeElement.focus();
                         }
                      });
-                    ` : ''}
+                    `
+                            : ''
+                    }
                     this.initializeColumns();
                     ${!isRemote ? 'this.maxExportRows = this.data.length;' : ''}
                }`;
@@ -1130,16 +1167,24 @@ export class TsComponentGenerator {
     private getOnInitializeColumns(options: Schema): string {
         return `
         initializeColumns(): void {
-            ${this.hasSearchBar ? `const configStorage = this.storageService.getItem(this.${options.templateHelper.getLocalStorageKeyConfig(options)});` : ''}
+            ${
+                this.hasSearchBar
+                    ? `const configStorage = this.storageService.getItem(this.${options.templateHelper.getLocalStorageKeyConfig(options)});`
+                    : ''
+            }
             const columnStorage = this.storageService.getItem(this.${options.templateHelper.getLocalStorageKeyColumns(options)});
         
-            ${this.hasSearchBar ? `
+            ${
+                this.hasSearchBar
+                    ? `
             if (configStorage?.length > 0) {
               configStorage
                 .forEach((config: Config) => this.configs.push(config));
             } else {
               this.configs.push({name: 'settings.highlight.name', desc: 'settings.highlight.desc', selected: false, color: '#FFFF00'});
-            }` : ''}
+            }`
+                    : ''
+            }
 
             if (columnStorage?.length > 0) {
                 columnStorage
@@ -1150,7 +1195,11 @@ export class TsComponentGenerator {
             this.displayedColumns.forEach((displayedColumn: string): void => {
                 if (
                     ${options.addRowCheckboxes ? `displayedColumn === ${classify(options.name)}Column['CHECKBOX'] ||` : ''}
-                    ${options.customRowActions.length > 0 ? `displayedColumn === ${classify(options.name)}Column['CUSTOM_ROW_ACTIONS'] ||` : ''}
+                    ${
+                        options.customRowActions.length > 0
+                            ? `displayedColumn === ${classify(options.name)}Column['CUSTOM_ROW_ACTIONS'] ||`
+                            : ''
+                    }
                     displayedColumn === ${classify(options.name)}Column['COLUMNS_MENU'] ||                 
                     this.columns.find(column => column.name === displayedColumn)
                 ) {

@@ -29,9 +29,11 @@
             "description": "Specifies the view encapsulation strategy.",
             "enum": [
                 "Emulated",
-                "None"
+                "None",
+                "ShadowDom"
             ],
             "type": "string",
+            "default": "None",
             "alias": "v"
         },
         "changeDetection": {
@@ -41,7 +43,6 @@
                 "OnPush"
             ],
             "type": "string",
-            "default": "OnPush",
             "alias": "c"
         },
         "prefix": {

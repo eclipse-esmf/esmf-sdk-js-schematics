@@ -33,6 +33,7 @@ import {Observable, Subject, Subscriber} from 'rxjs';
 import {TemplateHelper} from '../../utils/template-helper';
 import {Schema} from '../table/schema';
 import * as locale from 'locale-codes';
+import {ViewEncapsulation} from '@schematics/angular/component/schema';
 
 inquirer.registerPrompt('fuzzypath', require('inquirer-fuzzy-path'));
 inquirer.registerPrompt('suggest', require('inquirer-prompt-suggest'));
@@ -743,6 +744,14 @@ function getUserConfigQuestions(allAnswers: any, tree: Tree, options: Schema): Q
         default: true,
     };
 
+    const requestSetViewEncapsulation = {
+        type: 'list',
+        name: 'viewEncapsulation',
+        message: 'Do you want to specify view encapsulation strategy?',
+        choices: ['None', 'Emulated', 'ShadowDom'],
+        default: ViewEncapsulation.None,
+    };
+
     return [
         requestJSONPathSelectedModelElement,
         requestExcludedProperties,
@@ -761,5 +770,6 @@ function getUserConfigQuestions(allAnswers: any, tree: Tree, options: Schema): Q
         requestOptionalMaterialTheme,
         requestCustomStyleImports,
         requestOverwriteFiles,
+        requestSetViewEncapsulation,
     ];
 }
