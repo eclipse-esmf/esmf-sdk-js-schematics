@@ -208,6 +208,22 @@ shared
         │    │   │   <component-name>-datasource.ts
 ----
 
+=== _Material theme(Indigo pink)_
+
+User can add to angular.json Indigo pink material theme. These action will appear in the actions column of the table. In the following prompt you can choose to add the Indigo pink material theme.
+
+image::material-theme-prompt.png[width=100%]
+
+In the generated angular.json table if user selected yes we can observe the change in styles array.
+
+image::angular-json-example.png[width=100%]
+
+=== _Set view encapsulation strategy for the generated table component_
+
+User can set the View Encapsulation strategy by default the ViewEncapsulation will be set to None on the generated table component. In the following prompt you can choose to add another View Encapsulation value.
+
+image::view-encapsulation-prompt.png[width=100%]
+
 === _Flags for generating the table_
 
 By using

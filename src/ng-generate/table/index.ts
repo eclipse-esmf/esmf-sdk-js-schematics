@@ -618,7 +618,6 @@ function updateConfigFiles(options: any): Rule {
         }
 
         tree.overwrite('/angular.json', JSON.stringify(angularJson, null, 2));
-
         return tree;
     };
 }

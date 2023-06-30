@@ -27,6 +27,8 @@
     -   [Pre-load config file](#pre-load-config-file)
     -   [Skip Installation](#skip-install)
     -   [Overwrite](#overwrite)
+    -   [Add material css theme](#Add material css theme)
+    -   [Set View Encapsulation strategy](#Set View Encapsulation strategy)
 -   [Documentation](#documentation)
 -   [License](#license)
 
@@ -616,9 +618,13 @@ ng generate @esmf/semantic-ui-schematics:table --overwrite
 
 If you want to add the indigo pink material theme, you may use the '--getOptionalMaterialTheme' flag
 
+when the wizard will prompt the question:
+
 ```bash
-ng generate @esmf/semantic-ui-schematics:table --getOptionalMaterialTheme
+Do you want to add the Angular Material theme? (Indigo Pink Theme)
 ```
+
+User may choose Yes or No.
 
 if user did not set --getOptionalMaterialTheme to true but wants to add a material theme to the project,
 in angular.json in styles section the following code can be added:
@@ -632,6 +638,22 @@ in angular.json in styles section the following code can be added:
 }
 
 ```
+
+---
+
+### Set View Encapsulation strategy
+
+By default the view encapsulation for the generated table component is set to None.
+If you want to change the View Encapsulation strategy, you may use the '--viewEncapsulation' flag
+where user can choose one of the following options: None, Emulated, ShadowDom.
+
+when the wizard will prompt the question:
+
+```bash
+Do you want to specify view encapsulation strategy?
+```
+
+User may choose one of the values: None, Emulated, ShadowDom.
 
 ---
 
