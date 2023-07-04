@@ -1,0 +1,12 @@
+import {Component} from '@angular/core';
+import {<%= classify(name) %>FilterService} from './<%= dasherize(name) %>.filter.service';
+
+@Component({
+    selector: 'esmf-chip-list',
+    templateUrl: './<%= dasherize(name) %>-chip-list.component.html',
+    styleUrls: []
+})
+export class <%= classify(name) %>ChipListComponent {
+    constructor(public filterService: <%= classify(name) %>FilterService) {
+    }
+}

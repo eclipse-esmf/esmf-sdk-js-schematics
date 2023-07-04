@@ -51,43 +51,8 @@ export class HtmlGenerator {
         <div class="js-sdk-component-container">
             ${this.options.addCommandBar ? this.getCommandBar() : ''}
             ${this.getCustomTemplate()}
-            ${
-            this.hasFilters
-                ? `<div class="scrollable-chips-container" *ngIf="filterService.activeFilters.length">
-                          <button data-test="scroll-left-button" mat-mini-fab class="mat-elevation-z0"
-                                  [disabled]="chipsScrollEl.disableLeftBtn" (click)="chipsScrollEl.scrollChipList('left')"
-                                  *ngIf="chipsScrollEl.scrollable">
-                              <mat-icon data-test="scroll-left-icon" class="material-icons"
-                                        [matTooltip]="'scroll.left' | translate">chevron_left
-                              </mat-icon>
-                          </button>
-                          <div class="chip-list-container" data-test="chip-list-container" horizontalOverflow #chipsScrollEl="horizontalOverflow" #chipList [chipsObj]="chips">
-                              <mat-chip-list data-test="chip-list" #chips>
-                                  <mat-chip
-                                          data-test="chip"
-                                          *ngFor="let filter of filterService.activeFilters"
-                                          [removable]="filter.removable"
-                                          (removed)="removeFilter(filter)"
-                                  >
-                                      <div data-test="chip-text" class="chip-text"
-                                           matTooltip="{{ filter.prop }}: {{ filter.label }}">
-                                           <b>{{filter.prop}}</b>: {{ filter.label }}</div>
-                                      <button *ngIf="filter.removable" matChipRemove data-test="mat-chip-remove">
-                                          <mat-icon class="material-icons" data-test="remove-chip">cancel</mat-icon>
-                                      </button>
-                                  </mat-chip>
-                              </mat-chip-list>
-                          </div>
-                          <button data-test="scroll-right-button" mat-mini-fab class="mat-elevation-z0"
-                                  [disabled]="chipsScrollEl.disableRightBtn" (click)="chipsScrollEl.scrollChipList('right')"
-                                  *ngIf="chipsScrollEl.scrollable">
-                              <mat-icon data-test="scroll-right-icon" class="material-icons"
-                                        [matTooltip]="'scroll.right' | translate">chevron_right
-                              </mat-icon>
-                          </button>
-                      </div>`
-                : ''
-        }
+            // TODO only an example please change this ..
+            <esmf-chip-list></esmf-chip-list>
             <div [hidden]="!!customTemplate && !dataSource.data.length">
                 <div data-test="table-container" class="mat-table-container">
                     <table data-test="table" mat-table class="full-width-table" matSortDisableClear="true" matSort (matSortChange)="sortData()"

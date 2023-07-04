@@ -12,7 +12,17 @@
  */
 
 import {classify, dasherize} from '@angular-devkit/core/src/utils/strings';
-import {chain, Rule, SchematicContext, Tree} from '@angular-devkit/schematics';
+import {
+    apply,
+    applyTemplates,
+    chain, MergeStrategy,
+    mergeWith, move,
+    noop,
+    Rule,
+    SchematicContext,
+    Tree,
+    url
+} from '@angular-devkit/schematics';
 import {NodePackageInstallTask, RunSchematicTask} from '@angular-devkit/schematics/tasks';
 import {NodeDependencyType} from '@schematics/angular/utility/dependencies';
 import {JSONFile} from '@schematics/angular/utility/json-file';
@@ -37,6 +47,8 @@ import {TsComponentGenerator} from './generators/ts-component.generator';
 import {addModuleImportToModule} from '@angular/cdk/schematics';
 import ora from 'ora';
 import {WIZARD_CONFIG_FILE} from '../table-prompter/index';
+import {strings} from "@angular-devkit/core";
+import {chipList} from "./generators/chip-list/index";
 
 export default function (options: Schema): Rule {
     return (tree: Tree, context: SchematicContext): void => {
@@ -233,6 +245,7 @@ export function generateTable(options: Schema): Rule {
             {name: 'FormsModule', fromLib: '@angular/forms'},
             {name: 'NgIf', fromLib: '@angular/common'},
         ]),
+        chipList(options),
         generateComponentFiles(options),
         generateStyles(options),
         generateTranslationFiles(options),

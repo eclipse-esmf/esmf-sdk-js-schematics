@@ -1,0 +1,47 @@
+<!--
+ * Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH
+ *
+ * See the AUTHORS file(s) distributed with this work for
+ * additional information regarding authorship.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ *
+ * SPDX-License-Identifier: MPL-2.0
+ -->
+
+<div class="scrollable-chips-container" *ngIf="filterService.activeFilters.length">
+    <button data-test="scroll-left-button" mat-mini-fab class="mat-elevation-z0"
+            [disabled]="chipsScrollEl.disableLeftBtn" (click)="chipsScrollEl.scrollChipList('left')"
+            *ngIf="chipsScrollEl.scrollable">
+        <mat-icon data-test="scroll-left-icon" class="material-icons"
+                  [matTooltip]="'scroll.left' | translate">chevron_left
+        </mat-icon>
+    </button>
+    <div class="chip-list-container" data-test="chip-list-container" horizontalOverflow
+         #chipsScrollEl="horizontalOverflow" #chipList [chipsObj]="chips">
+        <mat-chip-list data-test="chip-list" #chips>
+            <mat-chip
+                    data-test="chip"
+                    *ngFor="let filter of filterService.activeFilters"
+                    [removable]="filter.removable"
+                    (removed)="filterService.removeFilter(filter)"
+            >
+                <div data-test="chip-text" class="chip-text"
+                     matTooltip="{{ filter.prop }}: {{ filter.label }}">
+                    <b>{{filter.prop}}</b>: {{ filter.label }}</div>
+                <button *ngIf="filter.removable" matChipRemove data-test="mat-chip-remove">
+                    <mat-icon class="material-icons" data-test="remove-chip">cancel</mat-icon>
+                </button>
+            </mat-chip>
+        </mat-chip-list>
+    </div>
+    <button data-test="scroll-right-button" mat-mini-fab class="mat-elevation-z0"
+            [disabled]="chipsScrollEl.disableRightBtn" (click)="chipsScrollEl.scrollChipList('right')"
+            *ngIf="chipsScrollEl.scrollable">
+        <mat-icon data-test="scroll-right-icon" class="material-icons"
+                  [matTooltip]="'scroll.right' | translate">chevron_right
+        </mat-icon>
+    </button>
+</div>
