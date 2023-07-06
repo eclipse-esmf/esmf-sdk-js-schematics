@@ -1,0 +1,11 @@
+import {Component} from '@angular/core';
+
+@Component({
+    selector: 'esmf-command-bar',
+    templateUrl: './<%= dasherize(name) %>-command-bar.component.html',
+    styleUrls: []
+})
+export class <%= classify(name) %>CommandBarComponent {
+    constructor() {
+    }
+}

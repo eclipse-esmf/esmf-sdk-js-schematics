@@ -15,6 +15,11 @@
       "factory": "./ng-generate/table/generators/chip-list/index#chipList",
       "schema": "./ng-generate/table/schema.json"
     },
+    "table-new": {
+      "description": "Generate a html for the table content",
+      "factory": "./ng-generate/table/generators/table/index#table",
+      "schema": "./ng-generate/table/schema.json"
+    },
     "table-prompter": {
       "description": "generate custom prompter",
       "factory": "./ng-generate/table-prompter/index"

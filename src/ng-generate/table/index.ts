@@ -49,6 +49,7 @@ import ora from 'ora';
 import {WIZARD_CONFIG_FILE} from '../table-prompter/index';
 import {strings} from "@angular-devkit/core";
 import {chipList} from "./generators/chip-list/index";
+import {tableGeneration} from "./generators/table/index";
 
 export default function (options: Schema): Rule {
     return (tree: Tree, context: SchematicContext): void => {
@@ -245,7 +246,7 @@ export function generateTable(options: Schema): Rule {
             {name: 'FormsModule', fromLib: '@angular/forms'},
             {name: 'NgIf', fromLib: '@angular/common'},
         ]),
-        chipList(options),
+        tableGeneration(options),
         generateComponentFiles(options),
         generateStyles(options),
         generateTranslationFiles(options),
