@@ -244,7 +244,7 @@ export function generateTable(options: Schema): Rule {
         generateResizeDirective(options),
         generateValidateInputDirective(options),
         generateShowDescriptionPipe(options),
-        generateSearchStringPipe(options),
+        generateHighlightDirective(options),
         generateHorizontalOverflowDirective(options),
         generateStorageService(options),
         formatGeneratedFiles(
@@ -524,6 +524,20 @@ function generateValidateInputDirective(options: Schema): Rule {
     };
 }
 
+function generateHighlightDirective(options: Schema): Rule {
+    return (tree: Tree, _context: SchematicContext) => {
+        if (options.enabledCommandBarFunctions.includes('addSearchBar')) {
+            const directiveName = 'HighlightDirective';
+            const directiveContent = options.tsGenerator.generateHighlightDirective();
+            const directivePath = 'src/app/shared/directives/highlight.directive';
+            createOrOverwrite(tree, `${directivePath}.ts`, options.overwrite, directiveContent);
+            addToDeclarationsArray(options, tree, directiveName, directivePath, options.templateHelper.getSharedModulePath()).then();
+            addToExportsArray(options, tree, directiveName, directivePath, options.templateHelper.getSharedModulePath()).then();
+            return tree;
+        }
+    };
+}
+
 function generateShowDescriptionPipe(options: Schema): Rule {
     return (tree: Tree, _context: SchematicContext): Tree => {
         const pipeName = 'ShowDescriptionPipe';
@@ -533,20 +547,6 @@ function generateShowDescriptionPipe(options: Schema): Rule {
         addToDeclarationsArray(options, tree, pipeName, pipePath, options.templateHelper.getSharedModulePath()).then();
         addToExportsArray(options, tree, pipeName, pipePath, options.templateHelper.getSharedModulePath()).then();
         return tree;
-    };
-}
-
-function generateSearchStringPipe(options: Schema): Rule {
-    return (tree: Tree, context: SchematicContext) => {
-        if (options.enabledCommandBarFunctions.includes('addSearchBar')) {
-            const pipeName = 'SearchStringPipe';
-            const pipeContent = options.tsGenerator.generateSearchStringPipe();
-            const pipePath = 'src/app/shared/pipes/search-string.pipe';
-            createOrOverwrite(tree, `${pipePath}.ts`, options.overwrite, pipeContent);
-            addToDeclarationsArray(options, tree, pipeName, pipePath, options.templateHelper.getSharedModulePath()).then();
-            addToExportsArray(options, tree, pipeName, pipePath, options.templateHelper.getSharedModulePath()).then();
-            return tree;
-        }
     };
 }
 

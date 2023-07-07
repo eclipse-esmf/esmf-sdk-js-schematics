@@ -290,4 +290,148 @@ export class TsDirectiveGenerator {
         }
         `;
     }
+
+    static generateHighlightDirective(options: Schema): string {
+        return `
+        /** ${options.templateHelper.getGenerationDisclaimerText()} **/
+        import {
+            Directive,
+            ElementRef,
+            Input,
+            OnChanges,
+            OnInit,
+            SecurityContext,
+            SimpleChange,
+            SimpleChanges
+          } from '@angular/core';
+          import { DomSanitizer } from '@angular/platform-browser';
+           
+          interface HighlightSimpleChanges extends SimpleChanges {
+            highlight: SimpleChange;
+            caseSensitive: SimpleChange;
+          }
+          
+          interface HighlightRange {
+            from: number;
+            to: number;
+          }
+          
+            @Directive({
+              selector: '[highlight]'
+            })
+            export class HighlightDirective implements OnChanges, OnInit {
+              @Input() highlightSource: string | null = null;
+              @Input() set highlight(value: string | string[]) {
+                this._highlight = Array.isArray(value) ? value : [value];
+              }
+              
+              @Input('highlightColor') highlightColor: string | undefined = undefined;
+              
+              @Input() set caseSensitive(value: boolean) {
+                  this.regExpFlags = value ? 'g' : 'gi'
+              };
+            
+              private regExpFlags = 'gi';
+              private _highlight: string[] = [];
+          
+              constructor(private el: ElementRef, private sanitizer: DomSanitizer) {}
+            
+              ngOnChanges(changes: HighlightSimpleChanges) {
+                if ((changes.highlight && !changes.highlight.firstChange) || (changes.caseSensitive && !changes.caseSensitive.firstChange)) {
+                  this.transformText();
+                }
+              }
+          
+              ngOnInit(): void {
+                this.transformText();
+              }
+          
+              private transformText(): void {
+                if (this.el?.nativeElement) {
+                    if (this._highlight.length > 0 && this.highlightSource && !!this.highlightColor) {
+                      
+                      const allRanges = this.calcRangesToReplace();
+                      const rangesToHighlight = this.mergeRangeIntersections(allRanges);
+                      const content = this.sanitizer.sanitize(SecurityContext.STYLE, this.replaceHighlights(rangesToHighlight));
+          
+                      if (content?.length) {
+                        (this.el.nativeElement as HTMLElement).innerHTML = content;
+                      }
+                    }
+                }
+              }
+          
+              private calcRangesToReplace(): HighlightRange[] {
+                return this._highlight
+                        .map(highlightString => {
+                          const matches = this.highlightSource?.toLowerCase().matchAll(new RegExp(highlightString.toLowerCase(), this.regExpFlags));
+                          if(!matches) {
+                            return [];  
+                          }
+          
+                          const len = highlightString.length;
+          
+                          const matchIndexes = [...matches]
+                            .filter((a: RegExpMatchArray) => a && a.index !== undefined)
+                            .map<HighlightRange>(a => ({from: a.index!, to: a.index! + len}));
+          
+                          return matchIndexes;
+                        })
+                        .filter(match => match.length > 0)
+                        .flat()
+                        .sort((a, b) => a.from - b.from);
+              }
+          
+              private mergeRangeIntersections(allRanges: HighlightRange[]): HighlightRange[] {
+                if (allRanges.length === 0) {
+                  return [];
+                }
+          
+                const rangesToHighlight = [allRanges[0]];
+               
+                allRanges.forEach((range) => {
+                  const currentRange = rangesToHighlight[rangesToHighlight.length-1];
+          
+                  if(range.from <= currentRange.from) {
+                    currentRange.from = range.from;
+          
+                    if(range.to > currentRange.to) {
+                      currentRange.to = range.to;
+                    }
+                  } else if(range.from <= currentRange.to && range.to >= currentRange.to) {
+                    currentRange.to = range.to;
+                  } else {
+                    rangesToHighlight.push(range);
+                  }
+                });
+          
+                return rangesToHighlight;
+              }
+          
+              private replaceHighlights(rangesToHighlight: HighlightRange[]): string {
+                if(!this.highlightSource?.length || rangesToHighlight.length === 0) {
+                  return '';
+                }
+          
+                const resultStringParts: string[] = [];
+                let index = 0;
+                
+                rangesToHighlight.forEach(({from, to}) => {
+                  if (from > index) {
+                    resultStringParts.push(this.highlightSource!.substring(index, from));
+                  }
+          
+                  const strPart = this.highlightSource!.substring(from, to);
+                  resultStringParts.push('<mark style="background-color: ' + this.highlightColor!.padStart(7,'#') + ';">'+ strPart + '</mark>');
+                  index = to;
+                });
+          
+                if (index < this.highlightSource!.length) {
+                  resultStringParts.push(this.highlightSource!.substring(index));
+                }
+          
+                return resultStringParts.join('');
+              }
+            }`;
+    }
 }

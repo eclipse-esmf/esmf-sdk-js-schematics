@@ -59,8 +59,8 @@ export class TsGenerator {
         return TsPipeGenerator.generateShowDescriptionPipe(this.options);
     }
 
-    generateSearchStringPipe(): string {
-        return TsPipeGenerator.generateSearchStringPipe(this.options);
+    generateHighlightDirective(): string {
+        return TsDirectiveGenerator.generateHighlightDirective(this.options);
     }
 
     generateHorizontalOverflowDirective(): string {

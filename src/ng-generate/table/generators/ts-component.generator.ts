@@ -182,12 +182,6 @@ export class TsComponentGenerator {
             
             setConfiguration(configs: Array<Config>): void {
               this.configs = [...configs];
-            }
-            
-            shouldHighlight(name: string, letter: string): boolean {
-              const highlightLetters = [...new Set(this.highlightString.join().split(''))].join();
-              const index = name.toString().indexOf(letter);
-              return index !== -1 && highlightLetters.includes(name.toString()[index]);
             }`
                     : ''
             }

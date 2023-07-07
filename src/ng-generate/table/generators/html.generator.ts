@@ -70,8 +70,8 @@ export class HtmlGenerator {
                                           (removed)="removeFilter(filter)"
                                   >
                                       <div data-test="chip-text" class="chip-text"
-                                           matTooltip="{{ filter.prop }}: {{ filter.label }}">
-                                           <b>{{filter.prop}}</b>: {{ filter.label }}</div>
+                                           matTooltip="{{ filter.filterValue }}: {{ filter.label }}">
+                                           <b>{{filter.filterValue}}</b>: {{ filter.label }}</div>
                                       <button *ngIf="filter.removable" matChipRemove data-test="mat-chip-remove">
                                           <mat-icon class="material-icons" data-test="remove-chip">cancel</mat-icon>
                                       </button>
@@ -148,17 +148,13 @@ export class HtmlGenerator {
         
         ${this.hasSearchBar ? `
             <!-- Highlighting search values -->
-            <ng-template #normal let-value="value">{{ value === null ? '-' : value }}</ng-template>
-            <ng-template #searchedWordExists let-value="value">
-              <ng-container *ngFor="let letter of value.toString().split(''); let i = index">
-                <ng-container [ngTemplateOutlet]="shouldHighlight(value, letter) ? highlight : notHighlighted"
-                              [ngTemplateOutletContext]="{ $implicit: letter }"></ng-container>
-              </ng-container>
-            </ng-template>
-            <ng-template #highlight let-letter>
-              <mark [style.background-color]="highlightConfig?.color">{{ letter }}</mark>
-            </ng-template>
-            <ng-template #notHighlighted let-letter>{{ letter }}</ng-template>` : ''}
+            <ng-template #highlightCell let-value="value">
+                <span [highlight]="highlightString"
+                      [highlightSource]="value"
+                      [highlightColor]="highlightConfig?.color">
+                {{ value === null ? '-' : value }}
+            </span>  
+            </ng-template>` : ''}
         `;
     }
 
@@ -346,7 +342,7 @@ export class HtmlGenerator {
             mat-cell *matCellDef="let row" ${this.templateHelper.isNumberProperty(property) ? `class="table-cell-number"` : ''}>
             ${this.hasSearchBar ? `
                  <ng-container
-                  [ngTemplateOutlet]="highlightConfig?.selected && ((${cellContent}) | searchString: highlightString) ? searchedWordExists : normal"
+                  [ngTemplateOutlet]="highlightCell"
                   [ngTemplateOutletContext]="{ value: ${cellContent} }"></ng-container>` : `{{${cellContent}}}`}
             
               <button data-test="copy-to-clipboard-button"
