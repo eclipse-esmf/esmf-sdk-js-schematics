@@ -26,11 +26,11 @@
                     data-test="chip"
                     *ngFor="let filter of filterService.activeFilters"
                     [removable]="filter.removable"
-                    (removed)="filterService.removeFilter(filter)"
+                    (removed)="triggerRemoveFilter(filter)"
             >
                 <div data-test="chip-text" class="chip-text"
                      matTooltip="{{ filter.prop }}: {{ filter.label }}">
-                    <b>{{filter.prop}}</b>: {{ filter.label }}</div>
+                    <b>{{filter.filterValue}}</b>: {{ filter.label }}</div>
                 <button *ngIf="filter.removable" matChipRemove data-test="mat-chip-remove">
                     <mat-icon class="material-icons" data-test="remove-chip">cancel</mat-icon>
                 </button>

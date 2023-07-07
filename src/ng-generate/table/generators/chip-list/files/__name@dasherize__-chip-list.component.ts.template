@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {Component, EventEmitter, Output} from '@angular/core';
 import {<%= classify(name) %>FilterService} from './<%= dasherize(name) %>.filter.service';
 
 @Component({
@@ -7,6 +7,12 @@ import {<%= classify(name) %>FilterService} from './<%= dasherize(name) %>.filte
     styleUrls: []
 })
 export class <%= classify(name) %>ChipListComponent {
+    @Output() removeFilter = new EventEmitter<any>();
+
     constructor(public filterService: <%= classify(name) %>FilterService) {
+    }
+
+    triggerRemoveFilter(filter: any): void {
+      this.removeFilter.emit(filter);
     }
 }

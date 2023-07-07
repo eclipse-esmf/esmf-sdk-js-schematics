@@ -16,19 +16,12 @@ import {strings} from '@angular-devkit/core';
 
 export function chipList(options: any): Rule {
     return (tree: Tree, _context: SchematicContext) => {
-        options.hasFilters = true;
-
-        if (!options.hasFilters) {
-            return noop();
-        }
-
-        const sourceTemplates = url('./generators/chip-list/files');
-
         return mergeWith(
-            apply(sourceTemplates, [
+            apply(url('./generators/chip-list/files'), [
                 applyTemplates({
                     classify: strings.classify,
                     dasherize: strings.dasherize,
+                    options: options,
                     name: options.name,
                 }),
                 move(options.path),

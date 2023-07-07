@@ -14,20 +14,20 @@ import {
     TemplateRef,
     ElementRef,
     ViewEncapsulation,
-    <% if (isRemote || hasSearchBar) { %>OnDestroy,<% } %>
-    <% if (!isRemote) { %>OnChanges,<% } %>
-    <% if (isRemote) { %>ChangeDetectorRef,<% } %>
-    <% if (changeDetection !== 'Default') { %>ChangeDetectionStrategy,<% } %>
+    <% if (options.enableRemoteDataHandling || options.hasSearchBar) { %>OnDestroy,<% } %>
+    <% if (!options.enableRemoteDataHandling) { %>OnChanges,<% } %>
+    <% if (options.enableRemoteDataHandling) { %>ChangeDetectorRef,<% } %>
+    <% if (options.changeDetection !== 'Default') { %>ChangeDetectionStrategy,<% } %>
 } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort, SortDirection } from '@angular/material/sort';
 import { MatTable } from '@angular/material/table';
-<% if (hasFilters || hasSearchBar) { %>
-    import { FilterEnums, <%= filterServiceName %>} from './<%= dasherize(name) %>.filter.service'
+<% if (options.hasFilters || options.hasSearchBar) { %>
+    import { FilterEnums, <%= options.filterServiceName %>} from './<%= dasherize(name) %>.filter.service'
 <% } %>
 import {Clipboard} from '@angular/cdk/clipboard';
 import {unparse} from 'papaparse';
-import {ExportConfirmationDialog} from '<% if (enableVersionSupport) { %>../<% } %>../export-confirmation-dialog/export-confirmation-dialog.component';
+import {ExportConfirmationDialog} from '<% if (options.enableVersionSupport) { %>../<% } %>../export-confirmation-dialog/export-confirmation-dialog.component';
 import {MatDialog} from '@angular/material/dialog';
 import {
     <%= classify(selectedModelTypeName) %>
@@ -44,23 +44,23 @@ import {<%= classify(name) %>DataSource} from './<%= dasherize(name) %>-datasour
     import {DateAdapter, MatDateFormats, MAT_DATE_FORMATS} from '@angular/material/core';
 <% } %>
 
-<% if ([...customRowActions, ...customCommandBarActions].findIndex(element => element.includes('.')) !== -1) { %>
+<% if ([...options.customRowActions, ...options.customCommandBarActions].findIndex(element => element.includes('.')) !== -1) { %>
     import { MatIconRegistry } from '@angular/material/icon';
 <% } %>
 
 import {DomSanitizer} from '@angular/platform-browser';
 import {SelectionModel} from '@angular/cdk/collections';
 import {TranslateService} from '@ngx-translate/core';
-import {JSSdkLocalStorageService} from "<% if (enableVersionSupport) { %>../<% } %>../../services/storage.service";
+import {JSSdkLocalStorageService} from "<% if (options.enableVersionSupport) { %>../<% } %>../../services/storage.service";
 import {<%= classify(name) %>ColumnMenuComponent} from './<%= dasherize(name) %>-column-menu.component';
 
-<% if (hasSearchBar) { %>
+<% if (options.hasSearchBar) { %>
     import {<%= classify(name) %>ConfigMenuComponent} from './<%= dasherize(name) %>-config-menu.component';
 <% } %>
 
-<% if (hasFilters) { %>
+<% if (options.hasFilters) { %>
     import {debounceTime, filter, map, takeUntil} from 'rxjs/operators'
-<% } else if (hasSearchBar) { %>
+<% } else if (options.hasSearchBar) { %>
     import {debounceTime, filter, takeUntil} from 'rxjs/operators';
 <% } else { %>
     import {filter, takeUntil} from 'rxjs/operators';
@@ -68,8 +68,8 @@ import {<%= classify(name) %>ColumnMenuComponent} from './<%= dasherize(name) %>
 
 import {Subject} from 'rxjs';
 
-<% if (isRemote) { %>
-    import {<% if (customRemoteService) { %>Custom<% } %><%= classify(name) %>Service} from './<% if (customRemoteService) { %>Custom<% } %><%= dasherize(name) %>.service';
+<% if (options.enableRemoteDataHandling) { %>
+    import {<% if (options.customRemoteService) { %>Custom<% } %><%= classify(name) %>Service} from './<% if (options.customRemoteService) { %>Custom<% } %><%= dasherize(name) %>.service';
     import {<%= classify(name) %>Response} from './<%= dasherize(name) %>.service';
     import {
         AbstractArrayNode,
@@ -126,7 +126,7 @@ import {Subject} from 'rxjs';
     import {<%= classify(name) %>Service, <%= classify(aspectModelName) %>Response} from './<%= dasherize(name) %>.service';
 <% } %>
 
-<% if (hasSearchBar) { %>
+<% if (options.hasSearchBar) { %>
 export interface Config {
     /** Column name **/
     name: string;
@@ -152,22 +152,22 @@ export interface Column {
  * Enumeration of all available columns which can be shown/hide in the table.
  */
 export enum <%= classify(name) %>Column {
-    <% if (addRowCheckboxes) { %>CHECKBOX = 'checkboxes',<% } %>
+    <% if (options.addRowCheckboxes) { %>CHECKBOX = 'checkboxes',<% } %>
     <%= getEnumPropertyColumns %>
     <%= getEnumCustomColumns %>
-    <% if (customRowActions.length > 0) { %>CUSTOM_ROW_ACTIONS = 'customRowActions',<% } %>
+    <% if (options.customRowActions.length > 0) { %>CUSTOM_ROW_ACTIONS = 'customRowActions',<% } %>
     COLUMNS_MENU = 'columnsMenu'
 }
 
 @Component({
     selector: 'esmf-table-refactoring',
     templateUrl: './<%= dasherize(name) %>-table.component.html',
-    styleUrls: ['./<%= dasherize(name) %>-table.component.<%= styleExtension %>']
-    <% if (changeDetection) { %>, changeDetection: ChangeDetectionStrategy.<%= changeDetection %><% } %>
-    <% if (viewEncapsulation) { %>,encapsulation: ViewEncapsulation.<%= viewEncapsulation %><% } else { %>,encapsulation: ViewEncapsulation.None<% } %>
+    styleUrls: ['./<%= dasherize(name) %>-table.component.<%= options.style %>']
+    <% if (options.changeDetection) { %>, changeDetection: ChangeDetectionStrategy.<%= options.changeDetection %><% } %>
+    <% if (options.viewEncapsulation) { %>,encapsulation: ViewEncapsulation.<%= options.viewEncapsulation %><% } else { %>,encapsulation: ViewEncapsulation.None<% } %>
 })
-export class <%= classify(name) %>TableComponent implements OnInit, AfterViewInit, AfterViewChecked<% if (!isRemote) { %>, OnChanges<% } %><% if (hasSearchBar || isRemote) { %>, OnDestroy<% } %> {
-    <% if (hasSearchBar) { %>@Input() initialSearchString = '';<% } %>
+export class <%= classify(name) %>TableComponent implements OnInit, AfterViewInit, AfterViewChecked<% if (!options.enableRemoteDataHandling) { %>, OnChanges<% } %><% if (options.hasSearchBar || options.enableRemoteDataHandling) { %>, OnDestroy<% } %> {
+    <% if (options.hasSearchBar) { %>@Input() initialSearchString = '';<% } %>
     <%= getCustomRowActionInput %>
     <% if (getTableDateFormat) { %>@Input() tableDateFormat = 'short';<% } %>
     <% if (getTableDateTimeFormat) { %>@Input() tableDateTimeFormat = 'short';<% } %>
@@ -197,8 +197,8 @@ export class <%= classify(name) %>TableComponent implements OnInit, AfterViewIni
     @Input() allowedCharacters: string = '';
     @Input() regexValidator:string = '';
 
-    <% if (hasSearchBar) { %>@Input() hasAdvancedSearch: boolean = this.filterService.stringColumns.length > 1;<% } %>
-    <% if (isRemote) { %>
+    <% if (options.hasSearchBar) { %>@Input() hasAdvancedSearch: boolean = this.filterService.stringColumns.length > 1;<% } %>
+    <% if (options.enableRemoteDataHandling) { %>
         @Input() maxExportRows: number = 5000;
         @Input() customFilterExtension: CustomRQLFilterExtension | undefined;
         @Input() customOptionsExtension: CustomRQLOptionExtension | undefined;
@@ -217,10 +217,10 @@ export class <%= classify(name) %>TableComponent implements OnInit, AfterViewIni
     @Output() downloadEvent = new EventEmitter<{error: boolean, success: boolean, inProgress: boolean}>();
     @Output() rowSelectionEvent = new EventEmitter<any>();
 
-    <% if (customRowActions.length > 0) { %>
+    <% if (options.customRowActions.length > 0) { %>
         @Output() customActionEvent = new EventEmitter<any>();
     <% } %>
-    <% if (customCommandBarActions.length > 0) { %>
+    <% if (options.customCommandBarActions.length > 0) { %>
         @Output() customCommandBarActionEvent = new EventEmitter<any>();
     <% } %>
 
@@ -229,7 +229,7 @@ export class <%= classify(name) %>TableComponent implements OnInit, AfterViewIni
     @ViewChild(MatTable) private table!: MatTable<<%= classify(aspectModelName) %>>;
     @ViewChild(<%= classify(name) %>ColumnMenuComponent) private columMenuComponent!: <%= classify(name) %>ColumnMenuComponent;
 
-    <% if (hasSearchBar) { %>
+    <% if (options.hasSearchBar) { %>
         @ViewChild(<%= classify(name) %>ConfigMenuComponent) private configurationComponent!: <%= classify(name) %>ConfigMenuComponent;
     <% } %>
 
@@ -245,7 +245,7 @@ export class <%= classify(name) %>TableComponent implements OnInit, AfterViewIni
 
     readonly <%= getLocalStorageKeyColumns %> = '<%= getReplacedLocalStorageKeyColumnsLowerCase %>';
 
-    <% if (hasSearchBar) { %>
+    <% if (options.hasSearchBar) { %>
         readonly <%= getLocalStorageKeyConfig %> = '<%= getReplacedLocalStorageKeyConfigLowerCase %>';
     <% } %>
 
@@ -253,23 +253,23 @@ export class <%= classify(name) %>TableComponent implements OnInit, AfterViewIni
     selection = new SelectionModel<any>(this.isMultipleSelectionEnabled, []);
     dataSource: <%= classify(name) %>DataSource;
 
-    columnToSort:{sortColumnName: string, sortDirection: SortDirection} = {sortColumnName:'<%= defaultSortingCol %>', sortDirection : 'asc'};
+    columnToSort:{sortColumnName: string, sortDirection: SortDirection} = {sortColumnName:'<%= options.defaultSortingCol %>', sortDirection : 'asc'};
     displayedColumns: Array<string> = Object.values(<%= classify(name) %>Column);
     columns: Array<Column> = [];
 
-    <% if (hasSearchBar) { %>
+    <% if (options.hasSearchBar) { %>
         configs: Array<Config> = [];
     <% } %>
 
     currentLanguage: string;
     filteredData: Array<<%= classify(aspectModelName) %>> = [];
     dragging: boolean = false;
-    customRowActionsLength: number = <%= customRowActions.length %>;
+    customRowActionsLength: number = <%= options.customRowActions.length %>;
     closeColumnMenu: boolean = false;
     rqlString: string = '';
     searchFocused: boolean = false;
 
-    <% if (hasSearchBar) { %>
+    <% if (options.hasSearchBar) { %>
         highlightString: string[] = [];
 
         get highlightConfig(): Config | undefined {
@@ -279,12 +279,12 @@ export class <%= classify(name) %>TableComponent implements OnInit, AfterViewIni
 
     <%= getByValueFunction %>
 
-    <% if (hasSearchBar || isRemote) { %>
+    <% if (options.hasSearchBar || options.enableRemoteDataHandling) { %>
         private readonly ngUnsubscribe = new Subject<void>();
     <% } %>
 
-    <% if (isRemote) { %>
-        constructor(<%= commonImports %> private <% if (camelize(customRemoteService)) { %>custom<% } %><%= name %>Service: <% if (customRemoteService) { %>Custom<% } %><%= classify(name) %>Service, private cd: ChangeDetectorRef) {
+    <% if (options.enableRemoteDataHandling) { %>
+        constructor(<%= commonImports %> private <% if (camelize(options.customRemoteService)) { %>custom<% } %><%= name %>Service: <% if (options.customRemoteService) { %>Custom<% } %><%= classify(name) %>Service, private cd: ChangeDetectorRef) {
             this.dataSource = new <%= classify(name) %>DataSource();
             <%= getSharedCustomRows %>
         }
@@ -296,7 +296,7 @@ export class <%= classify(name) %>TableComponent implements OnInit, AfterViewIni
     <% } %>
 
     ngOnInit(): void {
-        <% if (hasSearchBar) { %>
+        <% if (options.hasSearchBar) { %>
             this.filterService.searchStringInit(this.initialSearchString, this.regexValidator, this.minNumberCharacters, this.maxNumberCharacters);
             this.filterService.selectedStringColumn.valueChanges.pipe(takeUntil(this.ngUnsubscribe), debounceTime(100)).subscribe(() => {
                 if(this.searchInput) {
@@ -305,12 +305,12 @@ export class <%= classify(name) %>TableComponent implements OnInit, AfterViewIni
             })
         <% } %>
            this.initializeColumns();
-        <% if (!isRemote) { %>
+        <% if (!options.enableRemoteDataHandling) { %>
             this.maxExportRows = this.data.length;
         <% } %>
     }
 
-    <% if (!isRemote) { %>
+    <% if (!options.enableRemoteDataHandling) { %>
      ngOnChanges(changes: SimpleChanges): void {
         if (this.table) {
             this.applyFilters();
@@ -318,16 +318,16 @@ export class <%= classify(name) %>TableComponent implements OnInit, AfterViewIni
      }
     <% } %>
 
-    <% if (hasSearchBar || isRemote) { %>
+    <% if (options.hasSearchBar || options.enableRemoteDataHandling) { %>
         ngOnDestroy(): void {
-            <% if (hasSearchBar) { %>this.filterService.searchString.setValue('');<% } %>
+            <% if (options.hasSearchBar) { %>this.filterService.searchString.setValue('');<% } %>
             this.ngUnsubscribe.next();
             this.ngUnsubscribe.complete();
         }
     <% } %>
 
     ngAfterViewInit(): void {
-        <% if (isRemote) { %>this.applyFilters();<% } %>
+        <% if (options.enableRemoteDataHandling) { %>this.applyFilters();<% } %>
         this.dataSource.paginator = this.paginator;
         this.dataSource.sort = this.sort;
         this.pageChange();
@@ -340,12 +340,12 @@ export class <%= classify(name) %>TableComponent implements OnInit, AfterViewIni
     }
 
     initializeColumns(): void {
-        <% if (hasSearchBar) { %>
+        <% if (options.hasSearchBar) { %>
             const configStorage = this.storageService.getItem(this.<%= getLocalStorageKeyConfig %>);
         <% } %>
         const columnStorage = this.storageService.getItem(this.<%= getLocalStorageKeyColumns %>);
 
-        <% if (hasSearchBar) { %>
+        <% if (options.hasSearchBar) { %>
             if (configStorage?.length > 0) {
                 configStorage.forEach((config: Config) => this.configs.push(config));
             } else {
@@ -360,8 +360,8 @@ export class <%= classify(name) %>TableComponent implements OnInit, AfterViewIni
         }
 
         this.displayedColumns.forEach((displayedColumn: string): void => {
-            if (<% if (addRowCheckboxes) { %>displayedColumn === <%= classify(name) %>Column['CHECKBOX'] ||<% } %>
-                <% if (customRowActions.length > 0) { %>displayedColumn === <%= classify(name) %>Column['CUSTOM_ROW_ACTIONS'] ||<% } %>
+            if (<% if (options.addRowCheckboxes) { %>displayedColumn === <%= classify(name) %>Column['CHECKBOX'] ||<% } %>
+                <% if (options.customRowActions.length > 0) { %>displayedColumn === <%= classify(name) %>Column['CUSTOM_ROW_ACTIONS'] ||<% } %>
                 displayedColumn === <%= classify(name) %>Column['COLUMNS_MENU'] ||
                 this.columns.find(column => column.name === displayedColumn)) {
                     return;
@@ -392,7 +392,7 @@ export class <%= classify(name) %>TableComponent implements OnInit, AfterViewIni
         this.displayedColumns = Object.values(<%= classify(name) %>Column);
     }
 
-    <% if (customColumns.length > 0) { %>
+    <% if (options.customColumns.length > 0) { %>
         isCustomColumn(columnName: string): boolean {
             const customColumns = [%= getCustomColumn %>];
             return customColumns.includes(columnName);
@@ -401,7 +401,7 @@ export class <%= classify(name) %>TableComponent implements OnInit, AfterViewIni
 
     pageChange(): void {
         this.applyFilters();
-        <% if (!isRemote && addRowCheckboxes) { %>
+        <% if (!options.enableRemoteDataHandling && options.addRowCheckboxes) { %>
             this.selection.clear();
             this.rowSelectionEvent.emit(this.selection.selected);
         <% } %>
@@ -453,7 +453,7 @@ export class <%= classify(name) %>TableComponent implements OnInit, AfterViewIni
         this.rowSelectionEvent.emit(this.selection.selected);
     }
 
-    <% if (addRowCheckboxes) { %>
+    <% if (options.addRowCheckboxes) { %>
         isAllSelected(): boolean {
             return this.selection.selected.length == this.dataSource.displayedData.length;
         }
@@ -463,7 +463,7 @@ export class <%= classify(name) %>TableComponent implements OnInit, AfterViewIni
             this.rowSelectionEvent.emit(this.selection.selected);
         }
 
-        <% if (isRemote) { %>
+        <% if (options.enableRemoteDataHandling) { %>
             trimSelectionToCurrentPage(): void {
                 const indexOfLastItemOnPreviousPage = this.paginator.pageSize * this.paginator.pageIndex - 1;
                 const indexOfFirstItemOnNextPage = this.paginator.pageSize * (this.paginator.pageIndex + 1);
@@ -484,7 +484,7 @@ export class <%= classify(name) %>TableComponent implements OnInit, AfterViewIni
         <% } %>
     <% } %>
 
-    <% if (customRowActions.length > 0) { %>
+    <% if (options.customRowActions.length > 0) { %>
         executeCustomAction($event: MouseEvent, action: string, row:any): void{
             if(this.customRowActionsLength <= this.visibleRowActionsIcons) {
                    $event.stopPropagation();
@@ -494,7 +494,7 @@ export class <%= classify(name) %>TableComponent implements OnInit, AfterViewIni
         }
     <% } %>
 
-    <% if (customCommandBarActions.length > 0) { %>
+    <% if (options.customCommandBarActions.length > 0) { %>
         executeCustomCommandBarAction($event: MouseEvent, action: string) {
             $event.stopPropagation()
             this.customCommandBarActionEvent.emit({action: action})
@@ -517,7 +517,7 @@ export class <%= classify(name) %>TableComponent implements OnInit, AfterViewIni
 
         const dialogRef = this.dialog.open(ExportConfirmationDialog, {
             data: {
-                <% if (isRemote) { %>extendedCsvExporter: this.extendedCsvExporter,<% } %>
+                <% if (options.enableRemoteDataHandling) { %>extendedCsvExporter: this.extendedCsvExporter,<% } %>
                 allColumns: this.columns.length,
                 displayedColumns: this.displayedColumns.length - reduce,
                 maxExportRows: this.maxExportRows,
@@ -531,11 +531,11 @@ export class <%= classify(name) %>TableComponent implements OnInit, AfterViewIni
             if (exportAllPages && this.data.length > this.maxExportRows) {
                 this.data.length = this.maxExportRows;
             }
-            <% if (isRemote) { %>
+            <% if (options.enableRemoteDataHandling) { %>
                 const columns = exportAllColumns ? this.columns.map(c => c.name) : this.displayedColumns;
                 this.extendedCsvExporter?.export(columns, this.rqlString);
             <% } else { %>
-                this.prepareCsv(this.<%= (camelize((isRemote && customRemoteService ? 'custom' : '') + name)) %>Service.flatten(this.data), exportAllColumns,exportAllPages,this.paginator.pageSize);
+                this.prepareCsv(this.<%= (camelize((options.enableRemoteDataHandling && options.customRemoteService ? 'custom' : '') + name)) %>Service.flatten(this.data), exportAllColumns,exportAllPages,this.paginator.pageSize);
             <% } %>
         });
     }
@@ -565,7 +565,7 @@ export class <%= classify(name) %>TableComponent implements OnInit, AfterViewIni
     downloadCsv(csvArray: any): void {
         this.downloadEvent.emit({error: false, success: false, inProgress: true});
         try {
-            this.<%= (camelize((isRemote && customRemoteService ? 'custom' : '') + name)) %>Service.downloadCsv(csvArray);
+            this.<%= (camelize((options.enableRemoteDataHandling && options.customRemoteService ? 'custom' : '') + name)) %>Service.downloadCsv(csvArray);
             this.downloadEvent.emit({error: false, success: true, inProgress: false});
         } catch(error: any) {
             this.downloadEvent.emit({error: true, success: false, inProgress: false});
@@ -576,8 +576,8 @@ export class <%= classify(name) %>TableComponent implements OnInit, AfterViewIni
         this.columMenuComponent.keyLocalStorage = this.<%= getLocalStorageKeyColumns %>;
         this.columMenuComponent.columnsDefault = [
             ...Object.values(<%= classify(name) %>Column)
-            <% if (addRowCheckboxes) { %>.filter(columnName => columnName !== <%= classify(name) %>Column['CHECKBOX'])<% } %>
-            <% if (customRowActions.length > 0) { %>.filter(columnName => columnName !== <%= classify(name) %>Column['CUSTOM_ROW_ACTIONS'])<% } %>
+            <% if (options.addRowCheckboxes) { %>.filter(columnName => columnName !== <%= classify(name) %>Column['CHECKBOX'])<% } %>
+            <% if (options.customRowActions.length > 0) { %>.filter(columnName => columnName !== <%= classify(name) %>Column['CUSTOM_ROW_ACTIONS'])<% } %>
             .filter(columnName => columnName !== <%= classify(name) %>Column['COLUMNS_MENU'])
             .map(columnName => ({name: columnName, selected: true})),
         ];
@@ -585,13 +585,7 @@ export class <%= classify(name) %>TableComponent implements OnInit, AfterViewIni
         this.columMenuComponent.columns.push(...this.columns);
     }
 
-    <% if (hasSearchBar) { %>
-        initOpenedConfigurationDialog(): void {
-            this.configurationComponent.keyLocalStorage = this.<%= getLocalStorageKeyConfig %>;
-            this.configurationComponent.configs.splice(0, this.configurationComponent.configs.length);
-            this.configurationComponent.configs.push(...this.configs.map(config => ({...config})));
-        }
-
+    <% if (options.hasSearchBar) { %>
         setConfiguration(configs: Array<Config>): void {
             this.configs = [...configs];
         }
@@ -607,7 +601,7 @@ export class <%= classify(name) %>TableComponent implements OnInit, AfterViewIni
     setDisplayedColumns(columns: Array<Column>): void {
         let displayedColumnsTmp: Array<Column> = [];
 
-        <% if (addRowCheckboxes) { %>
+        <% if (options.addRowCheckboxes) { %>
             if (columns[0].name !== <%= classify(name) %>Column['CHECKBOX']) {
                 displayedColumnsTmp.push({name: <%= classify(name) %>Column['CHECKBOX'], selected: true});
             }
@@ -615,7 +609,7 @@ export class <%= classify(name) %>TableComponent implements OnInit, AfterViewIni
 
         displayedColumnsTmp.push(...columns);
 
-        <% if (customRowActions.length > 0) { %>
+        <% if (options.customRowActions.length > 0) { %>
             if (<%= classify(name) %>Column['CUSTOM_ROW_ACTIONS'] && columns[columns.length - 1].name !== <%= classify(name) %>Column['CUSTOM_ROW_ACTIONS']) {
                 displayedColumnsTmp.push({name: <%= classify(name) %>Column['CUSTOM_ROW_ACTIONS'], selected: true});
             }
@@ -633,7 +627,7 @@ export class <%= classify(name) %>TableComponent implements OnInit, AfterViewIni
         return this.customTemplate ? this.customTemplate as TemplateRef<any> : null;
     }
 
-    <% if (!isRemote) { %>
+    <% if (!options.enableRemoteDataHandling) { %>
         checkIfOnValidPage(): void {
             if(this.paginator.length  > this.filteredData.length){
                 this.paginator.firstPage();

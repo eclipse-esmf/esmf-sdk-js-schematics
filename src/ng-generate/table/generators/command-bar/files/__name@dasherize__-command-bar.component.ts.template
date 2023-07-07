@@ -1,4 +1,10 @@
-import {Component} from '@angular/core';
+import {Component, EventEmitter, Input, Output, ViewChild} from '@angular/core';
+import {<%= classify(name) %>FilterService} from './<%= dasherize(name) %>.filter.service';
+import {SelectionModel} from "@angular/cdk/collections";
+import {Config} from "./command-bar-search-table.component";
+<% if (options.hasSearchBar) { %>
+    import {<%= classify(name) %>ConfigMenuComponent} from './<%= dasherize(name) %>-config-menu.component';
+<% } %>
 
 @Component({
     selector: 'esmf-command-bar',
@@ -6,6 +12,52 @@ import {Component} from '@angular/core';
     styleUrls: []
 })
 export class <%= classify(name) %>CommandBarComponent {
-    constructor() {
+    @Input() isMultipleSelectionEnabled = true;
+    @Input() allowedCharacters: string = '';
+    @Input() minNumberCharacters: number = 2;
+    @Input() maxNumberCharacters: number = 50;
+    @Input() searchHint?: string;
+    @Input() configs: Array<Config> = [];
+    @Input() <%= getLocalStorageKeyConfig %>: string = '';
+    @Input() hasAdvancedSearch: boolean = this.filterService.stringColumns.length > 1;
+
+    @Output() applyFilters = new EventEmitter<void>();
+    @Output() reloadFilter = new EventEmitter<void>();
+    @Output() exportToCsv = new EventEmitter<void>();
+
+    <% if (options.hasSearchBar) { %>
+        @Output() setConfiguration = new EventEmitter<Array<Config>>();
+        @ViewChild(<%= classify(name) %>ConfigMenuComponent) private configurationComponent!: <%= classify(name) %>ConfigMenuComponent;
+    <% } %>
+
+    selection = new SelectionModel<any>(this.isMultipleSelectionEnabled, []);
+    totalItems: number = 0;
+    searchFocused: boolean = false;
+
+    constructor(public filterService: <%= classify(name) %>FilterService) {
     }
+
+    triggerApplyFilters(): void {
+      this.applyFilters.emit();
+    }
+
+    triggerExportToCsv(): void {
+      this.exportToCsv.emit();
+    }
+
+    <% if (options.hasSearchBar) { %>
+        triggerReloadFilter(): void {
+          this.reloadFilter.emit();
+        }
+
+        triggerInitOpenedConfigurationDialog(): void {
+            this.configurationComponent.keyLocalStorage = this.<%= getLocalStorageKeyConfig %>;
+            this.configurationComponent.configs.splice(0, this.configurationComponent.configs.length);
+            this.configurationComponent.configs.push(...this.configs.map(config => ({...config})));
+        }
+
+        triggerSetConfiguration(config: Array<Config>): void {
+          this.setConfiguration.emit(config);
+        }
+    <% } %>
 }

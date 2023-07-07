@@ -41,8 +41,9 @@ export function commandBar(options: any, allProps: Array<Property>): Rule {
         const isAddDateQuickFilters = options.templateHelper.isAddDateQuickFilters(options.enabledCommandBarFunctions);
         const isAddEnumQuickFilters = options.templateHelper.isAddEnumQuickFilters(options.enabledCommandBarFunctions);
         const getTranslationPath = options.templateHelper.getTranslationPath(options);
+        const getLocalStorageKeyConfig = options.templateHelper.getLocalStorageKeyConfig(options);
 
-        const propValues= getPropertiesToCreateFilters(options, allProps);
+        const propValues = getPropertiesToCreateFilters(options, allProps);
         const customCommandBarActions = options.customCommandBarActions;
 
         return mergeWith(
@@ -50,6 +51,9 @@ export function commandBar(options: any, allProps: Array<Property>): Rule {
                 applyTemplates({
                     classify: strings.classify,
                     dasherize: strings.dasherize,
+                    options: options,
+                    name: options.name,
+                    getLocalStorageKeyConfig: getLocalStorageKeyConfig,
                     versionedAccessPrefix: versionedAccessPrefix,
                     isAddCommandBarFunctionSearch: isAddCommandBarFunctionSearch,
                     isAddDateQuickFilters: isAddDateQuickFilters,
@@ -57,7 +61,6 @@ export function commandBar(options: any, allProps: Array<Property>): Rule {
                     getTranslationPath: getTranslationPath,
                     customCommandBarActions: customCommandBarActions,
                     spinalCaseFunc: options.templateHelper.spinalCase,
-                    name: options.name,
                     hasSearchBar: options.hasSearchBar,
                     propValues: propValues,
                 }),
@@ -69,10 +72,9 @@ export function commandBar(options: any, allProps: Array<Property>): Rule {
 }
 
 function getPropertiesToCreateFilters(options: any, allProps: Array<Property>): PropValue[] {
-    if (
-        !options.templateHelper.isAddEnumQuickFilters(options.enabledCommandBarFunctions) &&
-        !options.templateHelper.isAddDateQuickFilters(options.enabledCommandBarFunctions)
-    ) {
+    if (!options.templateHelper.isAddEnumQuickFilters(options.enabledCommandBarFunctions) &&
+        !options.templateHelper.isAddDateQuickFilters(options.enabledCommandBarFunctions)) {
+
         return [];
     }
 
@@ -83,8 +85,7 @@ function getPropertiesToCreateFilters(options: any, allProps: Array<Property>): 
             complexPropObj.properties.forEach((complexProp: Property) => {
                 if (
                     options.options.templateHelper.isEnumProperty(complexProp) ||
-                    options.options.templateHelper.isDateTimeProperty(complexProp)
-                ) {
+                    options.options.templateHelper.isDateTimeProperty(complexProp)) {
                     propertyValues.push({
                         propertyName: `${complexPropObj.complexProp}${classify(complexProp.name)}`,
                         propertyValue: `${complexPropObj.complexProp}.${complexProp.name}`,

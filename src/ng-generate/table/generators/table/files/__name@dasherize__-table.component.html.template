@@ -12,11 +12,27 @@
  -->
 
 <div class="js-sdk-component-container">
-  <% if (addCommandBar) { %><esmf-command-bar></esmf-command-bar><% } %>
+  <% if (options.addCommandBar) { %>
+    <esmf-command-bar
+        [isMultipleSelectionEnabled]="isMultipleSelectionEnabled"
+        [allowedCharacters]="allowedCharacters"
+        [minNumberCharacters]="minNumberCharacters"
+        [maxNumberCharacters]="maxNumberCharacters"
+        [searchHint]="searchHint"
+        [configs]="configs"
+        [<%= getLocalStorageKeyConfig %>]="<%= getLocalStorageKeyConfig %>"
+        (applyFilters)="applyFilters()"
+        (reloadFilter)="reloadFilter()"
+        (exportToCsv)="exportToCsv()"
+        (setConfiguration)="setConfiguration($event)"
+    ></esmf-command-bar>
+  <% } %>
   <ng-container *ngIf="!!customTemplate && !dataSource.data.length">
     <ng-container *ngTemplateOutlet="loadCustomTemplate()"></ng-container>
   </ng-container>
-  <% if (hasFilters) { %><esmf-chip-list></esmf-chip-list><% } %>
+  <% if (options.hasFilters) { %>
+    <esmf-chip-list (removeFilter)="removeFilter($event)"></esmf-chip-list>
+  <% } %>
   <div [hidden]="!!customTemplate && !dataSource.data.length">
     <div data-test="table-container" class="mat-table-container">
       <table data-test="table" mat-table class="full-width-table" matSortDisableClear="true" matSort (matSortChange)="sortData()"
@@ -30,7 +46,7 @@
           </td>
         </tr>
 
-        <% if (addRowCheckboxes) { %>
+        <% if (options.addRowCheckboxes) { %>
             <ng-container matColumnDef="checkboxes" data-test="checkboxes-container">
                 <th mat-header-cell *matHeaderCellDef data-test="table-header-checkbox">
                     <mat-checkbox data-test="header-checkbox" (change)="$event ? toggleSelectAll() : null" [checked]="selection.hasValue() && isAllSelected()" [indeterminate]="selection.hasValue() && !isAllSelected()"></mat-checkbox>
@@ -41,8 +57,66 @@
             </ng-container>
         <% } %>
 
-        <%= getTableColumns %>
+        <% for(let value of getTableColumValues) { %>
+            <%
+                let language = templateHelper.isMultiStringProperty(value.property) ? '[currentLanguage]' : '';
+                let propertyName = templateHelper.isEnumPropertyWithEntityValues(value.property)
+                    ? value.property.name + '?.' + templateHelper.getEnumEntityInstancePayloadKey(value.property)
+                    : value.property.name;
+                let cellPropertyPath = `${options.jsonAccessPath}${value.complexPrefix}${propertyName}`;
+                let isEmptyValue = `row.${cellPropertyPath} === null || row.${cellPropertyPath} === undefined`;
+                let propertyLocaleKeyPath = `${templateHelper.getVersionedAccessPrefix(options)}${templateHelper.isAspectSelected(options) ? options.jsonAccessPath : ''}${value.complexPrefix}${value.property.name}`;
+                let datePipe = templateHelper.isDateTimeProperty(value.property) ? `| date: ${resolveDateTimeFormat(value.property)}` : '';
+                let descriptionPipe = templateHelper.isEnumPropertyWithEntityValues(value.property) ? ` | showDescription:get${classify(value.property.name)}Value` : '';
+                let cellContent = `!(${isEmptyValue}) ? (row.${cellPropertyPath}${descriptionPipe}${language}${datePipe})  : '-'`;
+            %>
+            <!-- <%= value.complex %><%= value.property.name %> Column -->
+            <ng-container data-test="table-column" matColumnDef="<%= options.jsonAccessPath %><%= value.complex %><%= value.property.name %>">
+                <th data-test="table-header" mat-header-cell *matHeaderCellDef
+                    mat-sort-header="<%= cellPropertyPath %>"
+                    <%= templateHelper.isNumberProperty(value.property) ? `class="table-header-number"` : '' %>
+                    <% if (getTableColumValues.length - 1 > value.index) { %>
+                        [resizeColumn]="true" [index]="<%= value.index %>" (dragging)='dragging = $event'
+                    <% } %>
+                >
+                    <span [matTooltip]=" '<%= propertyLocaleKeyPath %>.description' | translate"
+                          [matTooltipDisabled]="headerTooltipsOff"
+                          matTooltipPosition="above"
+                          data-test="table-header-text">
+                        {{ '<%= propertyLocaleKeyPath %>.preferredName' | translate }}
+                    </span>
+                </th>
+
+                <td data-test="table-cell"
+                    <% if(templateHelper.isEnumPropertyWithEntityValues(value.property)) { %>
+                        [matTooltip]="!('<%= isEmptyValue %>') ? (row.<%= cellPropertyPath %><%= descriptionPipe %>:true<%= language %>) : ''" [matTooltipDisabled]="'<%= isEmptyValue %>'"
+                    <% } %>
+                        mat-cell *matCellDef="let row"
+                    <% if(templateHelper.isNumberProperty(value.property)) { %>
+                        class="table-cell-number"
+                    <% } %>
+                >
+
+                <% if(options.hasSearchBar) { %>
+                    <ng-container
+                        [ngTemplateOutlet]="highlightConfig?.selected && ((<%= cellContent %>) | searchString: highlightString) ? searchedWordExists : normal"
+                        [ngTemplateOutletContext]="{ value: <%= cellContent %> }"></ng-container>
+                <% } else { %>
+                    {{<%= cellContent %>}}
+                <% } %>
+
+                    <button data-test="copy-to-clipboard-button"
+                        *ngIf="!(<%= isEmptyValue %>)"
+                        mat-icon-button class="copy-to-clipboard"
+                        (click)="copyToClipboard(row.<%= cellPropertyPath %><%= language %>, $event)">
+                        <mat-icon data-test="copy-to-clipboard-icon" class="material-icons">content_copy</mat-icon>
+                    </button>
+                </td>
+            </ng-container>
+        <% } %>
+
         <%= getCustomColumns %>
+        <%= getCustomRowActions %>
 
         <ng-container data-test="columns-menu-button-header" matColumnDef="columnsMenu" stickyEnd>
           <th data-test="columns-menu-button-header" mat-header-cell *matHeaderCellDef>
@@ -66,10 +140,10 @@
         <<%= dasherize(name) %>-column-menu #columMenuComponent (columnsChangedEvent)="setDisplayedColumns($event)"></<%= dasherize(name) %>-column-menu>
       </mat-menu>
 
-      <% if (hasSearchBar) { %>
-      <mat-menu data-test="column-menu" #configurationMenu="matMenu" class="column-menu">
-        <<%= dasherize(name) %>-config-menu #configurationMenuComponent (configChangedEvent)="setConfiguration($event)"></<%= dasherize(name) %>-config-menu>
-      </mat-menu>
+      <% if (options.hasSearchBar) { %>
+          <mat-menu data-test="column-menu" #configurationMenu="matMenu" class="column-menu">
+            <<%= dasherize(name) %>-config-menu #configurationMenuComponent (configChangedEvent)="setConfiguration($event)"></<%= dasherize(name) %>-config-menu>
+          </mat-menu>
       <% } %>
 
     </div>
@@ -84,7 +158,7 @@
   </div>
 </div>
 
-<% if (hasSearchBar) { %>
+<% if (options.hasSearchBar) { %>
     <!-- Highlighting search values -->
     <ng-template #normal let-value="value">{{ value === null ? '-' : value }}</ng-template>
     <ng-template #searchedWordExists let-value="value">
