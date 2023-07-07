@@ -29,7 +29,6 @@ import {commandBar} from "../command-bar/index";
 import {DefaultSingleEntity, Property} from "@esmf/aspect-model-loader";
 import {camelize, classify, dasherize} from "@angular-devkit/core/src/utils/strings";
 import {TsFilterServiceGenerator} from "../ts-filter-service.generator";
-import {share} from "rxjs";
 
 let sharedOptions: any = {};
 let allProps: Array<Property> = [];

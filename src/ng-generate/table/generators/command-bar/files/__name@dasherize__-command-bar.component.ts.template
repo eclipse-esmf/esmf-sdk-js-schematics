@@ -1,3 +1,4 @@
+/** <%= getGenerationDisclaimerText %> **/
 import {Component, EventEmitter, Input, Output, ViewChild} from '@angular/core';
 import {<%= classify(name) %>FilterService} from './<%= dasherize(name) %>.filter.service';
 import {SelectionModel} from "@angular/cdk/collections";
@@ -7,7 +8,7 @@ import {Config} from "./command-bar-search-table.component";
 <% } %>
 
 @Component({
-    selector: 'esmf-command-bar',
+    selector: 'command-bar',
     templateUrl: './<%= dasherize(name) %>-command-bar.component.html',
     styleUrls: []
 })

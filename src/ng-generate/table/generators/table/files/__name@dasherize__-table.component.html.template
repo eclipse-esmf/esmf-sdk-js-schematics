@@ -13,7 +13,7 @@
 
 <div class="js-sdk-component-container">
   <% if (options.addCommandBar) { %>
-    <esmf-command-bar
+    <command-bar
         [isMultipleSelectionEnabled]="isMultipleSelectionEnabled"
         [allowedCharacters]="allowedCharacters"
         [minNumberCharacters]="minNumberCharacters"
@@ -25,13 +25,13 @@
         (reloadFilter)="reloadFilter()"
         (exportToCsv)="exportToCsv()"
         (setConfiguration)="setConfiguration($event)"
-    ></esmf-command-bar>
+    ></command-bar>
   <% } %>
   <ng-container *ngIf="!!customTemplate && !dataSource.data.length">
     <ng-container *ngTemplateOutlet="loadCustomTemplate()"></ng-container>
   </ng-container>
   <% if (options.hasFilters) { %>
-    <esmf-chip-list (removeFilter)="removeFilter($event)"></esmf-chip-list>
+    <chip-list (removeFilter)="removeFilter($event)"></chip-list>
   <% } %>
   <div [hidden]="!!customTemplate && !dataSource.data.length">
     <div data-test="table-container" class="mat-table-container">

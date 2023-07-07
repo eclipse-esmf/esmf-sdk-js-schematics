@@ -1,2 +1,2 @@
-/** Generated from ESMF JS SDK Angular Schematics - PLEASE DO NOT CHANGE IT **/
+/** <%= getGenerationDisclaimerText %> **/
 @import 'table.component';

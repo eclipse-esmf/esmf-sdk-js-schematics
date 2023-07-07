@@ -47,9 +47,8 @@ import {TsComponentGenerator} from './generators/ts-component.generator';
 import {addModuleImportToModule} from '@angular/cdk/schematics';
 import ora from 'ora';
 import {WIZARD_CONFIG_FILE} from '../table-prompter/index';
-import {strings} from "@angular-devkit/core";
-import {chipList} from "./generators/chip-list/index";
 import {tableGeneration} from "./generators/table/index";
+import {generateExportDialog} from "./generators/export-dialog/index";
 
 export default function (options: Schema): Rule {
     return (tree: Tree, context: SchematicContext): void => {
@@ -247,6 +246,8 @@ export function generateTable(options: Schema): Rule {
             {name: 'NgIf', fromLib: '@angular/common'},
         ]),
         tableGeneration(options),
+        generateExportDialog(options),
+        // TODO can be removed
         generateComponentFiles(options),
         generateStyles(options),
         generateTranslationFiles(options),
@@ -411,7 +412,10 @@ function generateComponentFiles(options: Schema): Rule {
             const dashComponentName = dasherize(options.name);
             // contents
             const dataSourceContent = options.tsGenerator.generateDataSource();
+
+            // TODO can be removed
             const componentTsContent = options.tsGenerator.generateComponent();
+
             const filterServiceContent = options.tsGenerator.generateFilterService();
             const htmlContent = options.htmlGenerator.generate();
             const styleContent = StyleGenerator.getComponentStyle(options);
@@ -423,7 +427,10 @@ function generateComponentFiles(options: Schema): Rule {
             const stylePath = `${options.path}/${dashComponentName}.component.${options.style || 'css'}`;
 
             createOrOverwrite(tree, dataSourcePath, options.overwrite, dataSourceContent);
+
+            // TODO can be removed
             createOrOverwrite(tree, componentTsPath, options.overwrite, componentTsContent);
+
             if (filterServiceContent) {
                 createOrOverwrite(tree, filterServicePath, options.overwrite, filterServiceContent);
             }
@@ -491,13 +498,13 @@ function generateStyles(options: Schema): Rule {
 
 function generateExportConfirmationModalComponent(options: Schema, tree: Tree) {
     const componentName = 'ExportConfirmationDialog';
-    const componentTsContent = TsComponentGenerator.getExportComponentDialog(options);
+    // const componentTsContent = TsComponentGenerator.getExportComponentDialog(options);
     const componentHtmlContent = options.htmlGenerator.generateExportDialogContent();
     const componentStyleContent = StyleGenerator.getExportComponentStyle();
     const componentPath = 'src/app/shared/components/export-confirmation-dialog/export-confirmation-dialog.component';
 
     createOrOverwrite(tree, `${componentPath}.html`, options.overwrite, componentHtmlContent);
-    createOrOverwrite(tree, `${componentPath}.ts`, options.overwrite, componentTsContent);
+    // createOrOverwrite(tree, `${componentPath}.ts`, options.overwrite, componentTsContent);
     createOrOverwrite(tree, `${componentPath}.scss`, options.overwrite, componentStyleContent);
     addToDeclarationsArray(options, tree, componentName, componentPath, options.templateHelper.getSharedModulePath()).then();
     addToExportsArray(options, tree, componentName, componentPath, options.templateHelper.getSharedModulePath()).then();

@@ -39,6 +39,7 @@ export class TsGenerator {
         return new TsApiServiceGenerator(this.options).generateCustom();
     }
 
+    // TODO can be removed
     generateComponent(): string {
         return new TsComponentGenerator(this.options).generate();
     }

@@ -1,8 +1,9 @@
+/** <%= getGenerationDisclaimerText %> **/
 import {Component, EventEmitter, Output} from '@angular/core';
 import {<%= classify(name) %>FilterService} from './<%= dasherize(name) %>.filter.service';
 
 @Component({
-    selector: 'esmf-chip-list',
+    selector: 'chip-list',
     templateUrl: './<%= dasherize(name) %>-chip-list.component.html',
     styleUrls: []
 })

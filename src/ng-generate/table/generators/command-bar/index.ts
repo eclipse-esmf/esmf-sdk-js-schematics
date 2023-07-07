@@ -53,6 +53,7 @@ export function commandBar(options: any, allProps: Array<Property>): Rule {
                     dasherize: strings.dasherize,
                     options: options,
                     name: options.name,
+                    getGenerationDisclaimerText: options.templateHelper.getGenerationDisclaimerText(),
                     getLocalStorageKeyConfig: getLocalStorageKeyConfig,
                     versionedAccessPrefix: versionedAccessPrefix,
                     isAddCommandBarFunctionSearch: isAddCommandBarFunctionSearch,

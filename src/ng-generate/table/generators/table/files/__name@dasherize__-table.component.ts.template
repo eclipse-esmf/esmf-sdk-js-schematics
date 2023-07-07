@@ -27,7 +27,9 @@ import { MatTable } from '@angular/material/table';
 <% } %>
 import {Clipboard} from '@angular/cdk/clipboard';
 import {unparse} from 'papaparse';
-import {ExportConfirmationDialog} from '<% if (options.enableVersionSupport) { %>../<% } %>../export-confirmation-dialog/export-confirmation-dialog.component';
+<% if (options.addCommandBar) { %>
+    import {ExportConfirmationDialog} from '<% if (options.enableVersionSupport) { %>../<% } %>../export-confirmation-dialog/export-confirmation-dialog.component';
+<% } %>
 import {MatDialog} from '@angular/material/dialog';
 import {
     <%= classify(selectedModelTypeName) %>
@@ -508,37 +510,39 @@ export class <%= classify(name) %>TableComponent implements OnInit, AfterViewIni
 
     <%= getApplyFilters %>
 
-    exportToCsv() {
-        this.openExportConfirmationDialog();
-    }
+    <% if (options.addCommandBar) { %>
+        exportToCsv() {
+            this.openExportConfirmationDialog();
+        }
 
-    openExportConfirmationDialog() {
-        const reduce = this.displayedColumns.filter(col => col === 'checkboxes' || col === 'columnsMenu').length;
+        openExportConfirmationDialog() {
+            const reduce = this.displayedColumns.filter(col => col === 'checkboxes' || col === 'columnsMenu').length;
 
-        const dialogRef = this.dialog.open(ExportConfirmationDialog, {
-            data: {
-                <% if (options.enableRemoteDataHandling) { %>extendedCsvExporter: this.extendedCsvExporter,<% } %>
-                allColumns: this.columns.length,
-                displayedColumns: this.displayedColumns.length - reduce,
-                maxExportRows: this.maxExportRows,
-            },
-            maxWidth: 478,
-        });
+            const dialogRef = this.dialog.open(ExportConfirmationDialog, {
+                data: {
+                    <% if (options.enableRemoteDataHandling) { %>extendedCsvExporter: this.extendedCsvExporter,<% } %>
+                    allColumns: this.columns.length,
+                    displayedColumns: this.displayedColumns.length - reduce,
+                    maxExportRows: this.maxExportRows,
+                },
+                maxWidth: 478,
+            });
 
-        dialogRef.afterClosed().pipe(filter(e => !!e)).subscribe((exportEvent: {exportAllPages: boolean, exportAllColumns: boolean}): void => {
-            const { exportAllPages, exportAllColumns } = exportEvent;
+            dialogRef.afterClosed().pipe(filter(e => !!e)).subscribe((exportEvent: {exportAllPages: boolean, exportAllColumns: boolean}): void => {
+                const { exportAllPages, exportAllColumns } = exportEvent;
 
-            if (exportAllPages && this.data.length > this.maxExportRows) {
-                this.data.length = this.maxExportRows;
-            }
-            <% if (options.enableRemoteDataHandling) { %>
-                const columns = exportAllColumns ? this.columns.map(c => c.name) : this.displayedColumns;
-                this.extendedCsvExporter?.export(columns, this.rqlString);
-            <% } else { %>
-                this.prepareCsv(this.<%= (camelize((options.enableRemoteDataHandling && options.customRemoteService ? 'custom' : '') + name)) %>Service.flatten(this.data), exportAllColumns,exportAllPages,this.paginator.pageSize);
-            <% } %>
-        });
-    }
+                if (exportAllPages && this.data.length > this.maxExportRows) {
+                    this.data.length = this.maxExportRows;
+                }
+                <% if (options.enableRemoteDataHandling) { %>
+                    const columns = exportAllColumns ? this.columns.map(c => c.name) : this.displayedColumns;
+                    this.extendedCsvExporter?.export(columns, this.rqlString);
+                <% } else { %>
+                    this.prepareCsv(this.<%= (camelize((options.enableRemoteDataHandling && options.customRemoteService ? 'custom' : '') + name)) %>Service.flatten(this.data), exportAllColumns,exportAllPages,this.paginator.pageSize);
+                <% } %>
+            });
+        }
+    <% } %>
 
     prepareCsv(data: any, exportAllColumns: boolean, exportAllPages: boolean, currentPageSize: number): void {
         if (!exportAllPages && data.length > currentPageSize) {

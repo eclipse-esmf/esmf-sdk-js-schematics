@@ -14,18 +14,24 @@
 import {apply, applyTemplates, MergeStrategy, mergeWith, move, noop, Rule, SchematicContext, Tree, url} from '@angular-devkit/schematics';
 import {strings} from '@angular-devkit/core';
 
-export function chipList(options: any): Rule {
+export function generateExportDialog(options: any): Rule {
     return (tree: Tree, _context: SchematicContext) => {
+        const filePathHtml = `src/app/shared/components/export-confirmation-dialog/export-confirmation-dialog.component.html`;
+        const filePathScss = `src/app/shared/components/export-confirmation-dialog/export-confirmation-dialog.component.scss`;
+        const filePathTs = `src/app/shared/components/export-confirmation-dialog/export-confirmation-dialog.component.ts`;
+
+        if (tree.exists(filePathHtml) && tree.exists(filePathScss) && tree.exists(filePathTs)) {
+            return noop();
+        }
+
+        // TODO check MergeStrategy.Overwrite with options.overwrite ..
         return mergeWith(
-            apply(url('./generators/chip-list/files'), [
+            apply(url('./generators/export-dialog/files'), [
                 applyTemplates({
-                    classify: strings.classify,
-                    dasherize: strings.dasherize,
                     options: options,
-                    name: options.name,
                     getGenerationDisclaimerText: options.templateHelper.getGenerationDisclaimerText(),
                 }),
-                move(options.path),
+                move("src/app/shared/components/export-confirmation-dialog"),
             ]),
             MergeStrategy.Overwrite
         );
