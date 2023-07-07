@@ -29,6 +29,7 @@ import {commandBar} from "../command-bar/index";
 import {DefaultSingleEntity, Property} from "@esmf/aspect-model-loader";
 import {camelize, classify, dasherize} from "@angular-devkit/core/src/utils/strings";
 import {TsFilterServiceGenerator} from "../ts-filter-service.generator";
+import {share} from "rxjs";
 
 let sharedOptions: any = {};
 let allProps: Array<Property> = [];
@@ -86,11 +87,11 @@ function generateHtml(): Rule {
                 getReplacedLocalStorageKeyColumnsLowerCase: getReplacedLocalStorageKeyColumnsLowerCase(),
                 getReplacedLocalStorageKeyConfigLowerCase: getReplacedLocalStorageKeyConfigLowerCase(),
                 isAspectSelected: sharedOptions.templateHelper.isAspectSelected(sharedOptions),
+                formatAspectModelVersion: sharedOptions.templateHelper.formatAspectModelVersion(sharedOptions.aspectModelVersion),
                 remoteDataHandling: !sharedOptions.enableRemoteDataHandling ? ` dataSource.length` : `totalItems`,
                 getTableColumValues: getTableColumValues(),
                 getEnumPropertyColumns: getEnumPropertyColumns(),
                 getEnumCustomColumns: getEnumCustomColumns(),
-                getCustomColumns: getCustomColumns(),
                 getCustomRowActions: getCustomRowActions(),
                 getEnumProperties: getEnumProperties(),
                 getCustomRowActionInput: getCustomRowActionInput(),
@@ -139,28 +140,6 @@ function resolveDateTimeFormat(property: Property): string {
     }
     return '';
 }
-
-function getCustomColumns(): string {
-    return sharedOptions.customColumns && sharedOptions.customColumns.length > 0
-        ? ` ${sharedOptions.customColumns.map((columnName: string) => {
-            return `<!-- ${columnName} Column -->
-                          <ng-container data-test="custom-column-container" matColumnDef="${columnName}">
-                          ${
-                sharedOptions.enableVersionSupport
-                    ? `<th data-test="custom-column-header" mat-header-cell *matHeaderCellDef mat-sort-header>{{ '${sharedOptions.selectedModelElement.name.toLowerCase()}.v${sharedOptions.templateHelper.formatAspectModelVersion(
-                        sharedOptions.aspectModelVersion
-                    )}.customColumn.${columnName}' | translate }}</th>`
-                    : `<th data-test="custom-column-header" mat-header-cell *matHeaderCellDef mat-sort-header>{{ '${sharedOptions.selectedModelElement.name.toLowerCase()}.customColumn.${columnName}' | translate }}</th>`
-            }
-                                <td data-test="custom-column-cell" mat-cell *matCellDef="let row" >
-                                  <ng-container data-test="custom-column-container" *ngTemplateOutlet="${camelize(columnName)}Template; context:{aspect:row}"></ng-container>
-                                </td>
-                              </ng-container>`;
-        })
-            .join('')}`
-        : '';
-}
-
 function getCustomRowActions(): string {
     return sharedOptions.customRowActions.length > 0
         ? `  <ng-container data-test="custom-row-actions" matColumnDef="customRowActions" [stickyEnd]="setStickRowActions">

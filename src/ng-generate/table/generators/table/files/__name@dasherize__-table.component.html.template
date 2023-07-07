@@ -115,7 +115,26 @@
             </ng-container>
         <% } %>
 
-        <%= getCustomColumns %>
+        <% if(options.customColumns && options.customColumns.length > 0) { %>
+            <% for(let columnName of options.customColumns) { %>
+                <!-- <%= columnName %> Column -->
+                <ng-container data-test="custom-column-container" matColumnDef="<%= columnName %>">
+                    <% if(options.enableVersionSupport) { %>
+                        <th data-test="custom-column-header" mat-header-cell *matHeaderCellDef mat-sort-header>
+                            {{ '<%= selectedModelTypeName.toLowerCase() %>.v<%= formatAspectModelVersion %>.customColumn.<%= columnName %>' | translate }}
+                        </th>
+                    <% } else { %>
+                        <th data-test="custom-column-header" mat-header-cell *matHeaderCellDef mat-sort-header>
+                            {{ '<%= selectedModelTypeName.toLowerCase() %>.customColumn.<%= columnName %>' | translate }}
+                        </th>
+                    <% } %>
+                    <td data-test="custom-column-cell" mat-cell *matCellDef="let row">
+                        <ng-container data-test="custom-column-container" *ngTemplateOutlet="<%= camelize(columnName) %>Template; context:{aspect:row}"></ng-container>
+                    </td>
+                </ng-container>
+            <% } %>
+        <% } %>
+
         <%= getCustomRowActions %>
 
         <ng-container data-test="columns-menu-button-header" matColumnDef="columnsMenu" stickyEnd>
