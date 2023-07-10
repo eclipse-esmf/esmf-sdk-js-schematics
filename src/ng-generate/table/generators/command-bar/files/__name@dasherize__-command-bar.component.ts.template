@@ -1,6 +1,6 @@
 /** <%= getGenerationDisclaimerText %> **/
 import {Component, EventEmitter, Input, Output, ViewChild} from '@angular/core';
-import {<%= classify(name) %>FilterService} from './<%= dasherize(name) %>.filter.service';
+import {<%= classify(name) %>FilterService} from './<%= dasherize(name) %>-filter.service';
 import {SelectionModel} from "@angular/cdk/collections";
 import {Config} from "./command-bar-search-table.component";
 <% if (options.hasSearchBar) { %>

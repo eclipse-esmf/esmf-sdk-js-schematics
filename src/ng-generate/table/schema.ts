@@ -13,7 +13,6 @@
 
 import {Schema as ComponentSchema} from '@schematics/angular/component/schema';
 import {DefaultSchema} from '../default-schema';
-import {HtmlGenerator} from './generators/html.generator';
 import {LanguageGenerator} from './generators/language.generator';
 import {TsGenerator} from './generators/ts.generator';
 
@@ -61,7 +60,6 @@ export interface Schema extends ComponentSchema, DefaultSchema {
     getExcludedPropLabels: boolean;
     jsonAccessPath: string;
     customColumns: Array<string>;
-    htmlGenerator: HtmlGenerator;
     tsGenerator: TsGenerator;
     customStyleImports: [];
     languageGenerator: LanguageGenerator;

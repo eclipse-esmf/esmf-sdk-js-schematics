@@ -13,12 +13,9 @@
 
 import {Schema} from '../schema';
 import {TsApiServiceGenerator} from './ts-api-service.generator';
-import {TsComponentGenerator} from './ts-component.generator';
 import {TsDirectiveGenerator} from './ts-directive.generator';
 import {TsStorageServiceGenerator} from './ts-storage-service.generator';
-import {TsColumnMenuGenerator} from './ts-column-menu.generator';
 import {TsPipeGenerator} from './ts-pipe.generator';
-import {TsConfigMenuGenerator} from "./ts-config-menu.generator";
 
 export class TsGenerator {
     constructor(private options: Schema) {
@@ -30,11 +27,6 @@ export class TsGenerator {
 
     generateCustomService(): string {
         return new TsApiServiceGenerator(this.options).generateCustom();
-    }
-
-    // TODO can be removed
-    generateComponent(): string {
-        return new TsComponentGenerator(this.options).generate();
     }
 
     generateResizeDirective(): string {
@@ -59,13 +51,5 @@ export class TsGenerator {
 
     generateStorageService(): string {
         return new TsStorageServiceGenerator().generate(this.options);
-    }
-
-    generateColumnMenu(): string {
-        return new TsColumnMenuGenerator(this.options).generate();
-    }
-
-    generateConfigMenu(): string {
-        return new TsConfigMenuGenerator(this.options).generate();
     }
 }

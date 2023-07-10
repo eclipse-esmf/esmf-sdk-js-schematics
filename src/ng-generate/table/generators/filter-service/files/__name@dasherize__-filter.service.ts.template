@@ -32,8 +32,6 @@ import {Injectable<% if (this.hasDateQuickFilter) { %>, Inject<% } %>} from '@an
     import moment from 'moment';
 <% } %>
 
-<% if (hasSearchBar) { %>import { Subject } from 'rxjs';<% } %>
-
 import {<%= classify(selectedModelElementName) %>
 <% if (!options.aspectModel.isCollectionAspect && !options.templateHelper.isAspectSelected(options)) { %>
     , <%= classify(aspectModelName) %>
@@ -247,7 +245,7 @@ export class <%= classify(name) %>FilterService {
                         });
                     }
 
-                    <% if (allStringProps.length > 0) { %>
+                    <% if (getAllStringProps.length > 0) { %>
                         this.activeFilters.filter(af => af.type === FilterEnums.Search).forEach(af => {
                             if (af.prop !== null && af.filterValue !== undefined) {
                                 query.addNode(new Or(this.addSelectedColumnsQuery(af.prop, af.filterValue)));

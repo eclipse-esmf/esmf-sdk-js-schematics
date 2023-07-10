@@ -23,7 +23,7 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatSort, SortDirection } from '@angular/material/sort';
 import { MatTable } from '@angular/material/table';
 <% if (options.hasFilters || options.hasSearchBar) { %>
-    import { FilterEnums, <%= options.filterServiceName %>} from './<%= dasherize(name) %>.filter.service'
+    import { FilterEnums, <%= options.filterServiceName %>} from './<%= dasherize(name) %>-filter.service'
 <% } %>
 import {Clipboard} from '@angular/cdk/clipboard';
 import {unparse} from 'papaparse';

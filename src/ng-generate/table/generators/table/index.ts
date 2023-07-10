@@ -47,7 +47,6 @@ export function tableGeneration(options: any): Rule {
     return (tree: Tree, _context: SchematicContext) => {
         allProps = templateHelper.getProperties(sharedOptions);
 
-
         return chain([
             ...(sharedOptions.hasFilters ? [chipList(sharedOptions)] : []),
             ...(sharedOptions.addCommandBar ? [commandBar(sharedOptions, allProps)] : []),

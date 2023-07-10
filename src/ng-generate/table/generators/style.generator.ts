@@ -276,44 +276,4 @@ export class StyleGenerator {
         
         `;
     }
-
-    static getComponentStyle(options: Schema): string {
-        return `
-        /** ${options.templateHelper.getGenerationDisclaimerText()} **/
-        @import 'table.component';
-        `;
-    }
-
-    static getExportComponentStyle(): string {
-        return `
-            .export-dialog-button-container { 
-                float:right;
-            }
-
-            .export-dialog-title {
-                 display: flex;
-                 justify-content: space-between;
-                 margin-bottom: 1rem;
-                 font-weight: bold;
-            }
-
-            .export-dialog-close-button {
-                background: none;
-                border: none;
-                font-size: 1.3rem;
-                cursor: pointer;
-            }
-
-            .export-dialog-description-container {
-                font-size: 1.2rem;
-                height: 3rem;
-                margin-right: 2rem;
-                margin-bottom: 1.5rem;
-            }
-
-            .export-dialog-checkbox-wrapper {
-                margin: 0.5rem 0;
-            }
-        `;
-    }
 }

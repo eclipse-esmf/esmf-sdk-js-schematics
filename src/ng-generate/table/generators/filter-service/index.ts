@@ -38,8 +38,8 @@ export function filterService(options: any): Rule {
     }
 
     return (tree: Tree, _context: SchematicContext) => {
-        const allStringProps: string[] = [];
-        const allProps: Property[] = [];
+        const allProps: Property[] = sharedOptions.templateHelper.getProperties(sharedOptions);
+
         const allEnumProps: PropValue[] = [];
         const allDateProps: PropValue[] = [];
 
@@ -62,7 +62,7 @@ export function filterService(options: any): Rule {
                     options: sharedOptions,
                     name: sharedOptions.name,
                     itemKey: itemKey,
-                    allStringProps: allStringProps,
+                    getAllStringProps: getAllStringProps(allProps),
                     hasSearchBar: sharedOptions.hasSearchBar,
                     hasFilters: sharedOptions.hasFilters,
                     hasDateQuickFilter: sharedOptions.templateHelper.isAddDateQuickFilters(sharedOptions.enabledCommandBarFunctions),
@@ -73,7 +73,7 @@ export function filterService(options: any): Rule {
                     getTranslationPath: sharedOptions.templateHelper.getTranslationPath(sharedOptions),
                     aspectModelName: sharedOptions.aspectModel.name,
                     getEnumProperties: getEnumProperties(),
-                    setStringColumns: setStringColumns(allStringProps, allProps),
+                    setStringColumns: setStringColumns(allProps),
                     setEnumQuickFilter: setEnumQuickFilter(enumValues),
                     setEnumRemoveFilter: setEnumRemoveFilter(enumValues),
                     setDataQuickFilter: setDataQuickFilter(dataValues),
@@ -90,16 +90,7 @@ export function filterService(options: any): Rule {
     };
 }
 
-function getEnumProperties(): string {
-    return sharedOptions.templateHelper.getEnumProperties(sharedOptions)
-        .map((property: Property) => classify(property.characteristic.name)).join(', ')
-}
-
-function getAllStringProps(allStringProps: string[], allProps: Property[]): string[] {
-    if (allStringProps) {
-        return allStringProps;
-    }
-
+function getAllStringProps(allProps: Property[]): string[] {
     return allProps.flatMap((property: Property) => {
         if (property.effectiveDataType?.isComplex && property.characteristic instanceof DefaultSingleEntity) {
             const complexProps = sharedOptions.templateHelper.getComplexProperties(property, sharedOptions);
@@ -111,6 +102,11 @@ function getAllStringProps(allStringProps: string[], allProps: Property[]): stri
         }
         return (sharedOptions.templateHelper.isStringProperty(property) || sharedOptions.templateHelper.isMultiStringProperty(property)) ? [`'${property.name}'`] : [];
     });
+}
+
+function getEnumProperties(): string {
+    return sharedOptions.templateHelper.getEnumProperties(sharedOptions)
+        .map((property: Property) => classify(property.characteristic.name)).join(', ')
 }
 
 function getAllDateProps(allDateProps: PropValue[], allProps: Property[]) {
@@ -144,8 +140,8 @@ function getAllDateProps(allDateProps: PropValue[], allProps: Property[]) {
     });
 }
 
-function setStringColumns(allStringProps: string[], allProps: Property[]) {
-    const stringColumnsArr = `stringColumns: string[] = [${getAllStringProps(allStringProps, allProps).join(", ")}];\n`;
+function setStringColumns(allProps: Property[]) {
+    const stringColumnsArr = `stringColumns: string[] = [${getAllStringProps(allProps).join(", ")}];\n`;
     return `${stringColumnsArr}readonly advancedSearchAllValue = 'allTextFields';\nselectedStringColumn: FormControl<string | null> = new FormControl(this.advancedSearchAllValue);`;
 }
 

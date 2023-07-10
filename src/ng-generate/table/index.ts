@@ -12,17 +12,7 @@
  */
 
 import {classify, dasherize} from '@angular-devkit/core/src/utils/strings';
-import {
-    apply,
-    applyTemplates,
-    chain, MergeStrategy,
-    mergeWith, move,
-    noop,
-    Rule,
-    SchematicContext,
-    Tree,
-    url
-} from '@angular-devkit/schematics';
+import {chain, Rule, SchematicContext, Tree} from '@angular-devkit/schematics';
 import {NodePackageInstallTask, RunSchematicTask} from '@angular-devkit/schematics/tasks';
 import {NodeDependencyType} from '@schematics/angular/utility/dependencies';
 import {JSONFile} from '@schematics/angular/utility/json-file';
@@ -38,13 +28,10 @@ import {generateTranslationFiles, loadAspectModel, loadRDF} from '../../utils/as
 import {createOrOverwrite, formatGeneratedFiles, loadAndApplyConfigFile} from '../../utils/file';
 import {addPackageJsonDependencies, DEFAULT_DEPENDENCIES} from '../../utils/package-json';
 import {TemplateHelper} from '../../utils/template-helper';
-import {HtmlGenerator} from './generators/html.generator';
 import {LanguageGenerator} from './generators/language.generator';
 import {StyleGenerator} from './generators/style.generator';
 import {TsGenerator} from './generators/ts.generator';
 import {Schema} from './schema';
-import {TsComponentGenerator} from './generators/ts-component.generator';
-import {addModuleImportToModule} from '@angular/cdk/schematics';
 import ora from 'ora';
 import {WIZARD_CONFIG_FILE} from '../table-prompter/index';
 import {tableGeneration} from "./generators/table/index";
@@ -53,6 +40,8 @@ import {module} from "./generators/module";
 import {translationModule} from "./generators/translation-module/index";
 import {dataSource} from "./generators/data-source/index";
 import {filterService} from "./generators/filter-service/index";
+import {generateConfigMenu} from "./generators/config-menu/index";
+import {generateColumnMenu} from "./generators/column-menu/index";
 
 export default function (options: Schema): Rule {
     return (tree: Tree, context: SchematicContext): void => {
@@ -100,7 +89,7 @@ export function generateTable(options: Schema): Rule {
     }
 
     options.templateHelper = new TemplateHelper();
-    options.htmlGenerator = new HtmlGenerator(options);
+    // options.htmlGenerator = new HtmlGenerator(options);
     options.tsGenerator = new TsGenerator(options);
     options.languageGenerator = new LanguageGenerator(options);
 
@@ -132,25 +121,25 @@ export function generateTable(options: Schema): Rule {
             options.spinner,
             options.enableRemoteDataHandling
                 ? [
-                      ...DEFAULT_DEPENDENCIES,
-                      {
-                          type: NodeDependencyType.Default,
-                          version: '~0.9.4',
-                          name: 'rollun-ts-rql',
-                          overwrite: false,
-                      },
-                      {
-                          type: NodeDependencyType.Default,
-                          version: '~4.1.1',
-                          name: 'crypto-js',
-                          overwrite: false,
-                      },
-                  ]
+                    ...DEFAULT_DEPENDENCIES,
+                    {
+                        type: NodeDependencyType.Default,
+                        version: '~0.9.4',
+                        name: 'rollun-ts-rql',
+                        overwrite: false,
+                    },
+                    {
+                        type: NodeDependencyType.Default,
+                        version: '~4.1.1',
+                        name: 'crypto-js',
+                        overwrite: false,
+                    },
+                ]
                 : DEFAULT_DEPENDENCIES
         ),
         addPackageJsonDependencies(
             !options.enabledCommandBarFunctions?.includes('addDateQuickFilters') ||
-                (options.skipImport !== undefined && options.skipImport),
+            (options.skipImport !== undefined && options.skipImport),
             options.spinner,
             [
                 {
@@ -168,7 +157,10 @@ export function generateTable(options: Schema): Rule {
             ]
         ),
         updateConfigFiles(options),
-        addToAppModule(options.skipImport, [{name: 'BrowserAnimationsModule', fromLib: '@angular/platform-browser/animations'}]),
+        addToAppModule(options.skipImport, [{
+            name: 'BrowserAnimationsModule',
+            fromLib: '@angular/platform-browser/animations'
+        }]),
         addToComponentModule(options.skipImport, options, [
             {name: 'MatTableModule', fromLib: '@angular/material/table'},
             {name: 'MatPaginatorModule', fromLib: '@angular/material/paginator'},
@@ -256,8 +248,6 @@ export function generateTable(options: Schema): Rule {
         addExportComponentToSharedModule(options),
         dataSource(options),
         filterService(options),
-        // TODO can be removed
-        generateComponentFiles(options),
         generateStyles(options),
         generateTranslationFiles(options),
         wrapBuildComponentExecution(options),
@@ -265,6 +255,7 @@ export function generateTable(options: Schema): Rule {
         generateCustomAPIService(options),
         generateColumnMenu(options),
         generateConfigMenu(options),
+        addMenuComponentsToSharedModule(options),
         generateResizeDirective(options),
         generateValidateInputDirective(options),
         generateShowDescriptionPipe(options),
@@ -415,7 +406,7 @@ function insertVersionIntoPath(options: Schema): Rule {
     };
 }
 
-function addExportComponentToSharedModule(options: Schema){
+function addExportComponentToSharedModule(options: Schema) {
     return async () => {
         return (tree: Tree, _context: SchematicContext): Tree => {
             const componentName = 'export-confirmation-dialog';
@@ -428,78 +419,21 @@ function addExportComponentToSharedModule(options: Schema){
     };
 }
 
-function generateComponentFiles(options: Schema): Rule {
+function addMenuComponentsToSharedModule(options: Schema) {
     return async () => {
         return (tree: Tree, _context: SchematicContext): Tree => {
-            const dashComponentName = dasherize(options.name);
-            // contents
-            // const dataSourceContent = options.tsGenerator.generateDataSource();
-            //const componentTsContent = options.tsGenerator.generateComponent();
-            // const filterServiceContent = options.tsGenerator.generateFilterService();
+            if (options.enabledCommandBarFunctions.includes('addSearchBar')) {
+                const componentName = 'config-menu';
+                const configComponentPath = `${options.path}/${dasherize(options.name)}-config-menu.component.ts`;
 
-            const htmlContent = options.htmlGenerator.generate();
-            const styleContent = StyleGenerator.getComponentStyle(options);
-            // paths
-            // const dataSourcePath = `${options.path}/${dashComponentName}-datasource.ts`;
-            // const componentTsPath = `${options.path}/${dashComponentName}.component.ts`;
-            const filterServicePath = `${options.path}/${dashComponentName}.filter.service.ts`;
-            const htmlPath = `${options.path}/${dashComponentName}.component.html`;
-            const stylePath = `${options.path}/${dashComponentName}.component.${options.style || 'css'}`;
+                addToDeclarationsArray(options, tree, `${classify(options.name)}${classify(componentName)}Component`, `${configComponentPath.replace('.ts', '')}`).then();
+            }
 
-            // createOrOverwrite(tree, dataSourcePath, options.overwrite, dataSourceContent);
+            const columnComponentPath = `${options.path}/${dasherize(options.name)}-column-menu.component.ts`;
+            addToDeclarationsArray(options, tree, `${classify(options.name)}ColumnMenuComponent`, `${columnComponentPath.replace('.ts', '')}`).then();
 
-            // TODO can be removed
-            // createOrOverwrite(tree, componentTsPath, options.overwrite, componentTsContent);
-
-            // if (filterServiceContent) {
-            //     createOrOverwrite(tree, filterServicePath, options.overwrite, filterServiceContent);
-            // }
-
-            createOrOverwrite(tree, htmlPath, options.overwrite, htmlContent);
-            createOrOverwrite(tree, stylePath, options.overwrite, styleContent);
-
-            // generateExportConfirmationModalComponent(options, tree);
             return tree;
         };
-    };
-}
-
-//THIS IS ALREADY MOVED
-function generateModule(options: Schema): Rule {
-    return (tree: Tree, context: SchematicContext): Tree => {
-        options.module = `${dasherize(options.name)}.module.ts`;
-        // const moduleContent = options.tsGenerator.generateModule();
-        const modulePath = `${options.path}/${dasherize(options.name)}.module.ts`;
-        // createOrOverwrite(tree, `${modulePath}`, options.overwrite, moduleContent);
-        addModuleImportToModule(tree, '/src/app/app.module.ts', `${classify(options.name)}Module`, `${modulePath.replace('.ts', '')}`);
-        return tree;
-    };
-}
-
-function generateColumnMenu(options: Schema): Rule {
-    return (tree: Tree, context: SchematicContext): Tree => {
-        const componentContent = options.tsGenerator.generateColumnMenu();
-        const componentPath = `${options.path}/${dasherize(options.name)}-column-menu.component.ts`;
-        createOrOverwrite(tree, `${componentPath}`, options.overwrite, componentContent);
-        addToDeclarationsArray(options, tree, `${classify(options.name)}ColumnMenuComponent`, `${componentPath.replace('.ts', '')}`).then();
-        return tree;
-    };
-}
-
-function generateConfigMenu(options: Schema): Rule {
-    return (tree: Tree, context: SchematicContext) => {
-        if (options.enabledCommandBarFunctions.includes('addSearchBar')) {
-            const componentContent = options.tsGenerator.generateConfigMenu();
-            const componentPath = `${options.path}/${dasherize(options.name)}-config-menu.component.ts`;
-            createOrOverwrite(tree, `${componentPath}`, options.overwrite, componentContent);
-            addToDeclarationsArray(
-                options,
-                tree,
-                `${classify(options.name)}ConfigMenuComponent`,
-                `${componentPath.replace('.ts', '')}`
-            ).then();
-            return tree;
-        }
     };
 }
 

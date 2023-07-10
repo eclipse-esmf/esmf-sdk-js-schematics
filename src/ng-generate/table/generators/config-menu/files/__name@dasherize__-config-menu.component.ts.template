@@ -1,0 +1,51 @@
+/** <%= getGenerationDisclaimerText %> **/
+import {Component, EventEmitter, Output} from '@angular/core';
+import {JSSdkLocalStorageService} from "<% if (options.enableVersionSupport) { %>../<% } %>../../services/storage.service";
+import {Config} from './<%= dasherize(name) %>-table.component';
+
+@Component({
+    selector: '<%= dasherize(name) %>-config-menu',
+    templateUrl: './<%= dasherize(name) %>-config-menu.component.html',
+    styleUrls: ['./<%= dasherize(name) %>-table.component.scss'],
+})
+export class <%= classify(name) %>ConfigMenuComponent {
+    @Output() configChangedEvent = new EventEmitter<Array<Config>>();
+
+    keyLocalStorage: string = '';
+    closeConfigMenu: boolean = false;
+    configs: Array<Config> = [];
+
+    constructor(private storageService: JSSdkLocalStorageService) {}
+
+    closeMenu(): void {
+        this.closeConfigMenu = true;
+    }
+
+    stopMenuClosing(event: MouseEvent): void {
+        if (this.closeConfigMenu) {
+            return;
+        }
+        event.stopPropagation();
+    }
+
+    configClick(event: MouseEvent, config: Config): void {
+        config.selected = !config.selected;
+        event.preventDefault();
+        event.stopPropagation();
+    }
+
+    colorChange(event: Event, config: Config) {
+        config.color = (event.target as HTMLInputElement).value;
+        event.preventDefault();
+        event.stopPropagation();
+    }
+
+    /**
+    * Store columns locally and update displayed columns afterwards
+    */
+    storeConfig(): void {
+        this.closeConfigMenu = true;
+        this.storageService.setItem(this.keyLocalStorage, this.configs);
+        this.configChangedEvent.emit(this.configs);
+    }
+}
