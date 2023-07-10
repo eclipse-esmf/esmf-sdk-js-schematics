@@ -12,15 +12,30 @@
  */
 
 import {virtualFs} from '@angular-devkit/core';
-import {dasherize} from '@angular-devkit/core/src/utils/strings';
+import {classify, dasherize} from '@angular-devkit/core/src/utils/strings';
 import {Rule, SchematicContext, SchematicsException, Tree} from '@angular-devkit/schematics';
-import {Aspect, AspectModelLoader, DefaultCollection, DefaultEntity, Entity} from '@esmf/aspect-model-loader';
+import {
+    Aspect,
+    AspectModelLoader,
+    DefaultCollection,
+    DefaultEntity,
+    DefaultSingleEntity,
+    Entity,
+    Property
+} from '@esmf/aspect-model-loader';
 import {Observable, Subscriber} from 'rxjs';
-import {TsGenerator} from '../ng-generate/table/generators/ts.generator';
 import {Schema as tableSchema} from '../ng-generate/table/schema';
 import {Schema as typeSchema} from '../ng-generate/types/schema';
 import {createOrOverwrite} from './file';
-import {addToAppSharedModule} from './angular';
+
+export type PropValue = {
+    propertyValue: string;
+    propertyName: string;
+    characteristic: string;
+    enumWithEntities: boolean;
+    property: Property;
+    complexPropObj?: { complexProp: string; properties: Property[] };
+};
 
 /**
  * A rule that reads the comma-separated list of files specified as options.aspectModelTFiles
@@ -142,4 +157,50 @@ export function generateTranslationFiles(options: tableSchema): Rule {
             return tree;
         };
     };
+}
+
+export function getAllEnumProps(options: any, allEnumProps: PropValue[]): PropValue[] {
+    if (allEnumProps) {
+        return allEnumProps;
+    }
+
+    const properties = options.templateHelper.getProperties(options);
+    const isEnumProperty = options.templateHelper.isEnumProperty;
+    const isEnumPropertyWithEntityValues = options.templateHelper.isEnumPropertyWithEntityValues;
+    const getEnumEntityInstancePayloadKey = options.templateHelper.getEnumEntityInstancePayloadKey;
+
+    return properties.reduce((acc: PropValue[], property: Property) => {
+        const isEnum = isEnumProperty(property);
+
+        // Handle complex properties
+        if (property.effectiveDataType?.isComplex && property.characteristic instanceof DefaultSingleEntity && isEnum) {
+            const complexPropObj = options.templateHelper.getComplexProperties(property, options);
+            const complexEnumProps = complexPropObj.properties
+                .filter((complexProp: any) => isEnumProperty(complexProp) &&
+                    !options.excludedProperties.find((excludedProperty: any) => excludedProperty.propToExcludeAspectModelUrn === complexProp.aspectModelUrn))
+                .map((complexProp: any) => ({
+                    propertyValue: `${complexPropObj.complexProp}.${complexProp.name}${isEnumPropertyWithEntityValues(complexProp) ? '.' + getEnumEntityInstancePayloadKey(complexProp) : ''}`,
+                    propertyName: `${complexPropObj.complexProp}${classify(complexProp.name)}`,
+                    characteristic: complexProp.characteristic?.name,
+                    enumWithEntities: isEnumPropertyWithEntityValues(complexProp),
+                    property: complexProp,
+                    complexPropObj: complexPropObj,
+                }));
+
+            acc.push(...complexEnumProps);
+        }
+
+        // Handle scalar properties
+        if (isEnum) {
+            acc.push({
+                propertyName: property.name,
+                propertyValue: `${property.name}${isEnumPropertyWithEntityValues(property) ? '.' + getEnumEntityInstancePayloadKey(property) : ''}`,
+                characteristic: property.characteristic?.name,
+                enumWithEntities: isEnumPropertyWithEntityValues(property),
+                property: property,
+            });
+        }
+
+        return acc;
+    }, []);
 }

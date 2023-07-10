@@ -15,7 +15,6 @@ import {Schema} from '../schema';
 import {TsApiServiceGenerator} from './ts-api-service.generator';
 import {TsComponentGenerator} from './ts-component.generator';
 import {TsDirectiveGenerator} from './ts-directive.generator';
-import {TsFilterServiceGenerator} from './ts-filter-service.generator';
 import {TsStorageServiceGenerator} from './ts-storage-service.generator';
 import {TsColumnMenuGenerator} from './ts-column-menu.generator';
 import {TsPipeGenerator} from './ts-pipe.generator';
@@ -36,10 +35,6 @@ export class TsGenerator {
     // TODO can be removed
     generateComponent(): string {
         return new TsComponentGenerator(this.options).generate();
-    }
-
-    generateFilterService(): string | null {
-        return new TsFilterServiceGenerator(this.options).generate();
     }
 
     generateResizeDirective(): string {

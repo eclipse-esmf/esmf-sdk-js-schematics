@@ -52,6 +52,7 @@ import {generateExportDialog} from "./generators/export-dialog/index";
 import {module} from "./generators/module";
 import {translationModule} from "./generators/translation-module/index";
 import {dataSource} from "./generators/data-source/index";
+import {filterService} from "./generators/filter-service/index";
 
 export default function (options: Schema): Rule {
     return (tree: Tree, context: SchematicContext): void => {
@@ -254,6 +255,7 @@ export function generateTable(options: Schema): Rule {
         generateExportDialog(options),
         addExportComponentToSharedModule(options),
         dataSource(options),
+        filterService(options),
         // TODO can be removed
         generateComponentFiles(options),
         generateStyles(options),
@@ -433,7 +435,7 @@ function generateComponentFiles(options: Schema): Rule {
             // contents
             // const dataSourceContent = options.tsGenerator.generateDataSource();
             //const componentTsContent = options.tsGenerator.generateComponent();
-            const filterServiceContent = options.tsGenerator.generateFilterService();
+            // const filterServiceContent = options.tsGenerator.generateFilterService();
 
             const htmlContent = options.htmlGenerator.generate();
             const styleContent = StyleGenerator.getComponentStyle(options);
@@ -449,9 +451,10 @@ function generateComponentFiles(options: Schema): Rule {
             // TODO can be removed
             // createOrOverwrite(tree, componentTsPath, options.overwrite, componentTsContent);
 
-            if (filterServiceContent) {
-                createOrOverwrite(tree, filterServicePath, options.overwrite, filterServiceContent);
-            }
+            // if (filterServiceContent) {
+            //     createOrOverwrite(tree, filterServicePath, options.overwrite, filterServiceContent);
+            // }
+
             createOrOverwrite(tree, htmlPath, options.overwrite, htmlContent);
             createOrOverwrite(tree, stylePath, options.overwrite, styleContent);
 

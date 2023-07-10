@@ -28,7 +28,7 @@ import {chipList} from "../chip-list/index";
 import {commandBar} from "../command-bar/index";
 import {DefaultSingleEntity, Property} from "@esmf/aspect-model-loader";
 import {camelize, classify, dasherize} from "@angular-devkit/core/src/utils/strings";
-import {TsFilterServiceGenerator} from "../ts-filter-service.generator";
+import {getAllEnumProps} from "../../../../utils/aspect-model";
 
 let sharedOptions: any = {};
 let allProps: Array<Property> = [];
@@ -252,7 +252,7 @@ function getCustomColumn(): string {
 }
 
 function getByValueFunction(): string {
-    const propertyValues = new TsFilterServiceGenerator(sharedOptions).getAllEnumProps();
+    const propertyValues = getAllEnumProps(sharedOptions, []);
     return `${propertyValues.map(property => {
         return property.enumWithEntities ? `get${classify(property.propertyName)}Value = ${classify(property.characteristic)}.getByValue;` : '';
     }).join('')}`;
