@@ -1,0 +1,15 @@
+/** <%= getGenerationDisclaimerText %> **/
+import {NgModule} from '@angular/core';
+import {<%= classify(name) %>TableComponent} from './<%= dasherize(name) %>-table.component';
+import {<%= classify(name) %>CommandBarComponent} from './<%= dasherize(name) %>-command-bar.component';
+import {<%= classify(name) %>ChipListComponent} from './<%= dasherize(name) %>-chip-list.component';
+import {<%= classify(name) %>ColumnMenuComponent} from './<%= dasherize(name) %>-column-menu.component';
+import {AppSharedModule} from 'src/app/shared/app-shared.module';
+
+@NgModule({
+    declarations: [<%= classify(name) %>TableComponent, <%= classify(name) %>ColumnMenuComponent, <%= classify(name) %>CommandBarComponent, <%= classify(name) %>ChipListComponent],
+    imports: [AppSharedModule],
+    providers: [],
+    exports: [ <%= classify(name) %>TableComponent, <%= classify(name) %>CommandBarComponent, <%= classify(name) %>ChipListComponent ],
+})
+export class <%= classify(name) %>Module {}

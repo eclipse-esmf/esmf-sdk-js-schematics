@@ -34,7 +34,7 @@ import {
     addToExportsArray,
     wrapBuildComponentExecution,
 } from '../../utils/angular';
-import {generateTranslationFiles, generateTranslationModule, loadAspectModel, loadRDF} from '../../utils/aspect-model';
+import {generateTranslationFiles, loadAspectModel, loadRDF} from '../../utils/aspect-model';
 import {createOrOverwrite, formatGeneratedFiles, loadAndApplyConfigFile} from '../../utils/file';
 import {addPackageJsonDependencies, DEFAULT_DEPENDENCIES} from '../../utils/package-json';
 import {TemplateHelper} from '../../utils/template-helper';
@@ -49,6 +49,9 @@ import ora from 'ora';
 import {WIZARD_CONFIG_FILE} from '../table-prompter/index';
 import {tableGeneration} from "./generators/table/index";
 import {generateExportDialog} from "./generators/export-dialog/index";
+import {module} from "./generators/module";
+import {translationModule} from "./generators/translation-module/index";
+import {dataSource} from "./generators/data-source/index";
 
 export default function (options: Schema): Rule {
     return (tree: Tree, context: SchematicContext): void => {
@@ -119,8 +122,10 @@ export function generateTable(options: Schema): Rule {
         setTableName(options),
         insertVersionIntoSelector(options as Schema),
         insertVersionIntoPath(options as Schema),
-        generateModule(options),
-        generateTranslationModule(options),
+        //generateModule(options),
+        module(options),
+        translationModule(options),
+        // generateTranslationModule(options),
         addPackageJsonDependencies(
             options.skipImport,
             options.spinner,
@@ -247,6 +252,8 @@ export function generateTable(options: Schema): Rule {
         ]),
         tableGeneration(options),
         generateExportDialog(options),
+        addExportComponentToSharedModule(options),
+        dataSource(options),
         // TODO can be removed
         generateComponentFiles(options),
         generateStyles(options),
@@ -406,30 +413,41 @@ function insertVersionIntoPath(options: Schema): Rule {
     };
 }
 
+function addExportComponentToSharedModule(options: Schema){
+    return async () => {
+        return (tree: Tree, _context: SchematicContext): Tree => {
+            const componentName = 'export-confirmation-dialog';
+            const componentPath = `./components/${dasherize(componentName)}/${dasherize(componentName)}.component`;
+
+            addToDeclarationsArray(options, tree, `${classify(componentName)}Component`, componentPath, options.templateHelper.getSharedModulePath()).then();
+            addToExportsArray(options, tree, `${classify(componentName)}Component`, componentPath, options.templateHelper.getSharedModulePath()).then();
+            return tree;
+        };
+    };
+}
+
 function generateComponentFiles(options: Schema): Rule {
     return async () => {
         return (tree: Tree, _context: SchematicContext): Tree => {
             const dashComponentName = dasherize(options.name);
             // contents
-            const dataSourceContent = options.tsGenerator.generateDataSource();
-
-            // TODO can be removed
-            const componentTsContent = options.tsGenerator.generateComponent();
-
+            // const dataSourceContent = options.tsGenerator.generateDataSource();
+            //const componentTsContent = options.tsGenerator.generateComponent();
             const filterServiceContent = options.tsGenerator.generateFilterService();
+
             const htmlContent = options.htmlGenerator.generate();
             const styleContent = StyleGenerator.getComponentStyle(options);
             // paths
-            const dataSourcePath = `${options.path}/${dashComponentName}-datasource.ts`;
-            const componentTsPath = `${options.path}/${dashComponentName}.component.ts`;
+            // const dataSourcePath = `${options.path}/${dashComponentName}-datasource.ts`;
+            // const componentTsPath = `${options.path}/${dashComponentName}.component.ts`;
             const filterServicePath = `${options.path}/${dashComponentName}.filter.service.ts`;
             const htmlPath = `${options.path}/${dashComponentName}.component.html`;
             const stylePath = `${options.path}/${dashComponentName}.component.${options.style || 'css'}`;
 
-            createOrOverwrite(tree, dataSourcePath, options.overwrite, dataSourceContent);
+            // createOrOverwrite(tree, dataSourcePath, options.overwrite, dataSourceContent);
 
             // TODO can be removed
-            createOrOverwrite(tree, componentTsPath, options.overwrite, componentTsContent);
+            // createOrOverwrite(tree, componentTsPath, options.overwrite, componentTsContent);
 
             if (filterServiceContent) {
                 createOrOverwrite(tree, filterServicePath, options.overwrite, filterServiceContent);
@@ -437,18 +455,19 @@ function generateComponentFiles(options: Schema): Rule {
             createOrOverwrite(tree, htmlPath, options.overwrite, htmlContent);
             createOrOverwrite(tree, stylePath, options.overwrite, styleContent);
 
-            generateExportConfirmationModalComponent(options, tree);
+            // generateExportConfirmationModalComponent(options, tree);
             return tree;
         };
     };
 }
 
+//THIS IS ALREADY MOVED
 function generateModule(options: Schema): Rule {
     return (tree: Tree, context: SchematicContext): Tree => {
         options.module = `${dasherize(options.name)}.module.ts`;
-        const moduleContent = options.tsGenerator.generateModule();
+        // const moduleContent = options.tsGenerator.generateModule();
         const modulePath = `${options.path}/${dasherize(options.name)}.module.ts`;
-        createOrOverwrite(tree, `${modulePath}`, options.overwrite, moduleContent);
+        // createOrOverwrite(tree, `${modulePath}`, options.overwrite, moduleContent);
         addModuleImportToModule(tree, '/src/app/app.module.ts', `${classify(options.name)}Module`, `${modulePath.replace('.ts', '')}`);
         return tree;
     };
@@ -494,20 +513,6 @@ function generateStyles(options: Schema): Rule {
 
         return tree;
     };
-}
-
-function generateExportConfirmationModalComponent(options: Schema, tree: Tree) {
-    const componentName = 'ExportConfirmationDialog';
-    // const componentTsContent = TsComponentGenerator.getExportComponentDialog(options);
-    const componentHtmlContent = options.htmlGenerator.generateExportDialogContent();
-    const componentStyleContent = StyleGenerator.getExportComponentStyle();
-    const componentPath = 'src/app/shared/components/export-confirmation-dialog/export-confirmation-dialog.component';
-
-    createOrOverwrite(tree, `${componentPath}.html`, options.overwrite, componentHtmlContent);
-    // createOrOverwrite(tree, `${componentPath}.ts`, options.overwrite, componentTsContent);
-    createOrOverwrite(tree, `${componentPath}.scss`, options.overwrite, componentStyleContent);
-    addToDeclarationsArray(options, tree, componentName, componentPath, options.templateHelper.getSharedModulePath()).then();
-    addToExportsArray(options, tree, componentName, componentPath, options.templateHelper.getSharedModulePath()).then();
 }
 
 function generateAPIService(options: Schema): Rule {

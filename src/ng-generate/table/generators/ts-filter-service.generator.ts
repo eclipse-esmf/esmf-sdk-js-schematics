@@ -52,26 +52,6 @@ export class TsFilterServiceGenerator {
             return null;
         }
         return `
-        /** ${this.options.templateHelper.getGenerationDisclaimerText()} **/ 
-        ${
-            this.options.enableRemoteDataHandling
-                ? `import {
-                        AbstractArrayNode,
-                        AbstractLogicalNode,
-                        AbstractNode,
-                        And,
-                        Ge,
-                        In,
-                        Le,
-                        Like,
-                        Limit,
-                        Or,
-                        Query,
-                        QueryStringifier,
-                        Sort
-                    } from 'rollun-ts-rql';`
-                : ''
-        }
         
         ${this.hasSearchBar || this.hasDateQuickFilter ? `import {TranslateService} from '@ngx-translate/core';
         import {AbstractControl, FormControl, ValidationErrors, ValidatorFn} from '@angular/forms';` : ``}

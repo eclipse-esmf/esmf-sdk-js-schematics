@@ -115,17 +115,6 @@ export function getSelectedModelElement(loader: AspectModelLoader, aspect: Aspec
     }
 }
 
-export function generateTranslationModule(options: tableSchema | typeSchema): Rule {
-    return (tree: Tree, _context: SchematicContext) => {
-        const translationModuleContent = TsGenerator.generateAppSharedModule(options as any);
-
-        if (!tree.exists('src/app/shared/app-shared.module.ts')) {
-            tree.create('src/app/shared/app-shared.module.ts', translationModuleContent);
-            addToAppSharedModule(false, [{name: 'AppSharedModule', fromLib: './app/shared/app-shared.module'}]);
-        }
-    };
-}
-
 export function generateTranslationFiles(options: tableSchema): Rule {
     return async () => {
         return (tree: Tree, _context: SchematicContext) => {

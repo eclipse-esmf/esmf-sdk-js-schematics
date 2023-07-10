@@ -6,11 +6,11 @@ import { MatCheckbox } from '@angular/material/checkbox';
 import { ChangeDetectorRef } from '@angular/core';
 
 @Component({
-    selector: 'export-confirmation-dialog',
-    templateUrl: './export-confirmation-dialog.component.html',
-    styleUrls: ['./export-confirmation-dialog.component.scss']
+    selector: '<%= dasherize(name) %>',
+    templateUrl: './<%= dasherize(name) %>.component.html',
+    styleUrls: ['./<%= dasherize(name) %>.component.scss']
 })
-export class ExportConfirmationDialogComponent implements AfterViewInit {
+export class <%= classify(name) %>Component implements AfterViewInit {
     @ViewChild('exportAllPages') exportAllPages!: MatCheckbox;
     @ViewChild('exportAllColumns') exportAllColumns!: MatCheckbox;
 
@@ -25,7 +25,7 @@ export class ExportConfirmationDialogComponent implements AfterViewInit {
             displayedColumns: number;
             maxExportRows: number;
         },
-        public dialogRef: MatDialogRef<ExportConfirmationDialogComponent>,
+        public dialogRef: MatDialogRef<<%= classify(name) %>Component>,
         private translateService: TranslateService,
         private cdRef:ChangeDetectorRef
     ) {}

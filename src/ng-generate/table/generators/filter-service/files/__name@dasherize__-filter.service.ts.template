@@ -1,0 +1,35 @@
+/** <%= getGenerationDisclaimerText %> **/
+<%= if (options.enableRemoteDataHandling) { %>
+    import {
+        AbstractArrayNode,
+        AbstractLogicalNode,
+        AbstractNode,
+        And,
+        Ge,
+        In,
+        Le,
+        Like,
+        Limit,
+        Or,
+        Query,
+        QueryStringifier,
+        Sort
+    } from 'rollun-ts-rql';
+<% } %>
+
+<%= if (hasSearchBar || this.hasDateQuickFilter) { %>import {TranslateService} from '@ngx-translate/core';<% } %>
+
+import {AbstractControl, FormControl, ValidationErrors, ValidatorFn} from '@angular/forms';` : ``}
+import {Injectable<%= if (this.hasDateQuickFilter) { %>, Inject<% } %>} from '@angular/core';
+
+<%= if (this.hasDateQuickFilter) { %>
+    import { FormGroup } from '@angular/forms';
+    import {
+        DateAdapter,
+        MatDateFormats,
+        MAT_DATE_FORMATS,
+    } from '@angular/material/core';
+    import moment from 'moment';
+<% } %>
+
+<%= if (hasSearchBar) { %>import { Subject } from 'rxjs';<% } %>

@@ -1,0 +1,113 @@
+/** <%= getGenerationDisclaimerText %> **/
+import { DataSource } from '@angular/cdk/collections';
+import { MatPaginator } from '@angular/material/paginator';
+import { MatSort } from '@angular/material/sort';
+import { Observable, BehaviorSubject } from 'rxjs';
+import {<%= aspectModelName %>} from '<%= getTypesPath %>';
+<% if (!options.enableRemoteDataHandling) { %>import {TranslateService} from '@ngx-translate/core';<% } %>
+
+/**
+ * Data source for the <%= classify(name) %> view. This class should
+ * encapsulate all logic for fetching and manipulating the displayed
+ * data (including sorting, pagination, and filtering).
+ */
+export class <%= classify(name) %>DataSource extends DataSource<<%= aspectModelName %>> {
+
+  paginator: MatPaginator | undefined;
+  sort: MatSort | undefined;
+
+  <% if (options.enableRemoteDataHandling) { %>remoteAPI: string | undefined;<% } %>
+
+  private _data: Array<<%= aspectModelName %>> = new Array<<%= aspectModelName %>>();
+  private _dataSubject = new BehaviorSubject<Array< <%= aspectModelName %>>>([]);
+
+  constructor(<% if (!options.enableRemoteDataHandling) { %>private translateService: TranslateService<% } %>) {
+    super();
+  }
+
+  /**
+   * Connect this data source to the table. The table will
+   * only update when the returned stream emits new items.
+   * @returns A stream of the items to be rendered.
+   */
+  connect(): Observable<Array<<%= aspectModelName %>>> {
+    return this._dataSubject.asObservable();
+  }
+
+  get displayedData(): Array<<%= aspectModelName %>> {
+    return this._dataSubject.value;
+  }
+
+  get data(): Array<<%= aspectModelName %>> {
+    return this._data;
+  }
+
+  /**
+   * Called when the table is being destroyed. Use this function, to clean up
+   * any open connections or free any held resources that were set up during connect.
+   */
+  disconnect(): void {
+    this._dataSubject.complete();
+  }
+
+  setDataSubject(data: Array<<%= aspectModelName %>>): void {
+    this._dataSubject.next(data);
+  }
+
+  setData(data: Array<<%= aspectModelName %>>) {
+    this._data = [];
+    this.addData(data);
+  }
+
+  addData(data: Array<<%= aspectModelName %>>) {
+    this._data.push(...data);
+    this.setDataSubject(
+        <% if (!options.enableRemoteDataHandling) { %>
+            this.getPagedData(this.sortData(this._data))
+        <% } else { %>
+            this._data
+        <% } %>
+    );
+  }
+
+  get length(): number {
+    return this._data.length;
+  }
+
+  <% if (!options.enableRemoteDataHandling) { %>
+    private getPagedData(data: Array<<%= classify(aspectModelName) %>>): Array<<%= classify(aspectModelName) %>> {
+        if (this.paginator) {
+            const startIndex = this.paginator.pageIndex * this.paginator.pageSize;
+            return data.slice(startIndex, startIndex + this.paginator.pageSize);
+        } else {
+            return data;
+        }
+    }
+
+    sortData(data = this._data): <%= classify(aspectModelName) %>[] {
+        if (!this.sort || !this.sort.active || this.sort.direction === '') {
+          return data;
+        }
+
+        return data.sort((a: <%= classify(aspectModelName) %>, b: <%= classify(aspectModelName) %>): number => {
+          const isSortingAsc = this.sort?.direction === 'asc';
+          switch (this.sort?.active.trim()) {
+            <%= getSorting %>
+            default: return 0;
+          }
+        });
+    }
+
+    private compare(a: string | number | boolean | Date | undefined, b: string | number | boolean | Date | undefined, isSortingAsc: boolean): number {
+        if (a === undefined || b === undefined) {
+            return (a === undefined ? -1 : 1) * (isSortingAsc ? 1 : -1);
+        }
+
+        if (typeof a === "boolean") {
+            return (a === b ? 0 : a ? -1 : 1) * (isSortingAsc ? 1 : -1);
+        }
+
+        return (a < b ? -1 : 1) * (isSortingAsc ? 1 : -1);
+    }
+  <% } %>
+}

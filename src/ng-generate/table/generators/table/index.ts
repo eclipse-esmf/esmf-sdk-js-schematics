@@ -139,6 +139,7 @@ function resolveDateTimeFormat(property: Property): string {
     }
     return '';
 }
+
 function getCustomRowActions(): string {
     return sharedOptions.customRowActions.length > 0
         ? `  <ng-container data-test="custom-row-actions" matColumnDef="customRowActions" [stickyEnd]="setStickRowActions">

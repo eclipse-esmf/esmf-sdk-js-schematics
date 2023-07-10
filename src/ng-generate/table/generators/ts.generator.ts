@@ -12,23 +12,17 @@
  */
 
 import {Schema} from '../schema';
-import {TsDatasourceGenerator} from './ts-datasource.generator';
 import {TsApiServiceGenerator} from './ts-api-service.generator';
 import {TsComponentGenerator} from './ts-component.generator';
 import {TsDirectiveGenerator} from './ts-directive.generator';
 import {TsFilterServiceGenerator} from './ts-filter-service.generator';
 import {TsStorageServiceGenerator} from './ts-storage-service.generator';
-import {TsModuleGenerator} from './ts-module.generator';
 import {TsColumnMenuGenerator} from './ts-column-menu.generator';
 import {TsPipeGenerator} from './ts-pipe.generator';
 import {TsConfigMenuGenerator} from "./ts-config-menu.generator";
 
 export class TsGenerator {
     constructor(private options: Schema) {
-    }
-
-    generateDataSource() {
-        return new TsDatasourceGenerator(this.options).generate();
     }
 
     generateService(): string {
@@ -72,41 +66,11 @@ export class TsGenerator {
         return new TsStorageServiceGenerator().generate(this.options);
     }
 
-    generateModule(): string {
-        return new TsModuleGenerator(this.options).generate();
-    }
-
     generateColumnMenu(): string {
         return new TsColumnMenuGenerator(this.options).generate();
     }
 
     generateConfigMenu(): string {
         return new TsConfigMenuGenerator(this.options).generate();
-    }
-
-    static generateAppSharedModule(options: Schema): string {
-        return `
-        /** ${options.templateHelper.getGenerationDisclaimerText()} **/ 
-        import { HttpClient } from '@angular/common/http';
-        import { NgModule } from '@angular/core';
-        import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
-        import { TranslateHttpLoader } from '@ngx-translate/http-loader';
-        
-        export function HttpLoaderFactory(http: HttpClient) {
-            return new TranslateHttpLoader(http);
-        }
-        
-        @NgModule({
-            imports: [TranslateModule.forRoot({
-                defaultLanguage:'en',
-                loader: {
-                    provide: TranslateLoader,
-                    useFactory: HttpLoaderFactory,
-                    deps: [HttpClient]
-                }
-            })],
-            exports: [TranslateModule]
-        })
-        export class AppSharedModule { }`;
     }
 }

@@ -11,8 +11,22 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-import {apply, applyTemplates, MergeStrategy, mergeWith, move, noop, Rule, SchematicContext, Tree, url} from '@angular-devkit/schematics';
+import {
+    apply,
+    applyTemplates,
+    chain,
+    MergeStrategy,
+    mergeWith,
+    move,
+    noop,
+    Rule,
+    SchematicContext,
+    Tree,
+    url
+} from '@angular-devkit/schematics';
 import {strings} from '@angular-devkit/core';
+import {addToDeclarationsArray, addToExportsArray} from "../../../../utils/angular";
+import {classify} from "@angular-devkit/core/src/utils/strings";
 
 export function generateExportDialog(options: any): Rule {
     return (tree: Tree, _context: SchematicContext) => {
@@ -24,14 +38,20 @@ export function generateExportDialog(options: any): Rule {
             return noop();
         }
 
+        const componentName = 'export-confirmation-dialog';
+        const componentPath = 'src/app/shared/components/export-confirmation-dialog';
+
         // TODO check MergeStrategy.Overwrite with options.overwrite ..
         return mergeWith(
             apply(url('./generators/export-dialog/files'), [
                 applyTemplates({
+                    classify: strings.classify,
+                    dasherize: strings.dasherize,
                     options: options,
+                    name: componentName,
                     getGenerationDisclaimerText: options.templateHelper.getGenerationDisclaimerText(),
                 }),
-                move("src/app/shared/components/export-confirmation-dialog"),
+                move(componentPath),
             ]),
             MergeStrategy.Overwrite
         );

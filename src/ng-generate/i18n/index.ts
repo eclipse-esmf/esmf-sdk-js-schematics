@@ -15,10 +15,10 @@ import {chain, Rule} from '@angular-devkit/schematics';
 import {Schema} from './schema';
 import {addPackageJsonDependencies, addPackageJsonScripts} from '../../utils/package-json';
 import {NodeDependencyType} from '@schematics/angular/utility/dependencies';
-import {generateTranslationModule} from '../../utils/aspect-model';
 import {TemplateHelper} from '../../utils/template-helper';
 import {formatGeneratedFiles} from '../../utils/file';
 import ora from 'ora';
+import {translationModule} from "../table/generators/translation-module/index";
 
 /**
  * generates translation files for aspect model.
@@ -40,7 +40,7 @@ export default function (options: Schema): Rule {
                 command: 'ngx-i18n-combine -i ./src/**/i18n/shared/components/**/*.translation.json -o ./src/assets/i18n/{en,de}.json',
             },
         ]),
-        generateTranslationModule(options),
+        translationModule(options),
         formatGeneratedFiles(
             {
                 getPath() {

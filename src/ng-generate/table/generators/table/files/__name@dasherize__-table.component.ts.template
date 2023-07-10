@@ -28,7 +28,7 @@ import { MatTable } from '@angular/material/table';
 import {Clipboard} from '@angular/cdk/clipboard';
 import {unparse} from 'papaparse';
 <% if (options.addCommandBar) { %>
-    import {ExportConfirmationDialog} from '<% if (options.enableVersionSupport) { %>../<% } %>../export-confirmation-dialog/export-confirmation-dialog.component';
+    import {ExportConfirmationDialogComponent} from '<% if (options.enableVersionSupport) { %>../<% } %>../export-confirmation-dialog/export-confirmation-dialog.component';
 <% } %>
 import {MatDialog} from '@angular/material/dialog';
 import {
@@ -518,7 +518,7 @@ export class <%= classify(name) %>TableComponent implements OnInit, AfterViewIni
         openExportConfirmationDialog() {
             const reduce = this.displayedColumns.filter(col => col === 'checkboxes' || col === 'columnsMenu').length;
 
-            const dialogRef = this.dialog.open(ExportConfirmationDialog, {
+            const dialogRef = this.dialog.open(ExportConfirmationDialogComponent, {
                 data: {
                     <% if (options.enableRemoteDataHandling) { %>extendedCsvExporter: this.extendedCsvExporter,<% } %>
                     allColumns: this.columns.length,
