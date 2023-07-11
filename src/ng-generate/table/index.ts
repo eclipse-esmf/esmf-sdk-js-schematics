@@ -30,7 +30,6 @@ import {addPackageJsonDependencies, DEFAULT_DEPENDENCIES} from '../../utils/pack
 import {TemplateHelper} from '../../utils/template-helper';
 import {LanguageGenerator} from './generators/language.generator';
 import {StyleGenerator} from './generators/style.generator';
-import {TsGenerator} from './generators/ts.generator';
 import {Schema} from './schema';
 import ora from 'ora';
 import {WIZARD_CONFIG_FILE} from '../table-prompter/index';
@@ -49,6 +48,7 @@ import {validateInputDirective} from "./generators/validate-input-directive/inde
 import {horizontalOverflowDirective} from "./generators/horizontal-overflow-directive/index";
 import {showDescriptionPipe} from "./generators/show-description-pipe/index";
 import {searchStringPipe} from "./generators/search-string-pipe/index";
+import {storageService} from "./generators/storage-service/index";
 
 export default function (options: Schema): Rule {
     return (tree: Tree, context: SchematicContext): void => {
@@ -97,7 +97,7 @@ export function generateTable(options: Schema): Rule {
 
     options.templateHelper = new TemplateHelper();
     // options.htmlGenerator = new HtmlGenerator(options);
-    options.tsGenerator = new TsGenerator(options);
+    // options.tsGenerator = new TsGenerator(options);
     options.languageGenerator = new LanguageGenerator(options);
 
     validateURNs(options);
@@ -272,11 +272,12 @@ export function generateTable(options: Schema): Rule {
         showDescriptionPipe(options),
         searchStringPipe(options),
         addPipesToSharedModule(options),
+        storageService(options),
         // TODO add module import
         // generateResizeDirective(options),
         // generateValidateInputDirective(options),
         // generateShowDescriptionPipe(options),
-        generateStorageService(options),
+        // generateStorageService(options),
         formatGeneratedFiles(
             {
                 getPath(options: Schema) {
@@ -499,15 +500,6 @@ function generateStyles(options: Schema): Rule {
 
         createOrOverwrite(tree, 'src/styles.css', options.overwrite, contentForGlobalStyles);
 
-        return tree;
-    };
-}
-
-function generateStorageService(options: Schema): Rule {
-    return (tree: Tree, _context: SchematicContext): Tree => {
-        const content = options.tsGenerator.generateStorageService();
-        const targetPath = `src/app/shared/services/storage.service.ts`;
-        createOrOverwrite(tree, targetPath, options.overwrite, content);
         return tree;
     };
 }

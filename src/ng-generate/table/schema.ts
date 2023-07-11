@@ -14,7 +14,6 @@
 import {Schema as ComponentSchema} from '@schematics/angular/component/schema';
 import {DefaultSchema} from '../default-schema';
 import {LanguageGenerator} from './generators/language.generator';
-import {TsGenerator} from './generators/ts.generator';
 
 export interface ExcludedProperty {
     /**
@@ -60,7 +59,6 @@ export interface Schema extends ComponentSchema, DefaultSchema {
     getExcludedPropLabels: boolean;
     jsonAccessPath: string;
     customColumns: Array<string>;
-    tsGenerator: TsGenerator;
     customStyleImports: [];
     languageGenerator: LanguageGenerator;
     overwrite: boolean;
