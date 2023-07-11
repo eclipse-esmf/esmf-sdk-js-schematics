@@ -12,32 +12,10 @@
  */
 
 import {Schema} from '../schema';
-import {TsDirectiveGenerator} from './ts-directive.generator';
 import {TsStorageServiceGenerator} from './ts-storage-service.generator';
-import {TsPipeGenerator} from './ts-pipe.generator';
 
 export class TsGenerator {
     constructor(private options: Schema) {
-    }
-
-    generateResizeDirective(): string {
-        return TsDirectiveGenerator.generateResizeDirective(this.options);
-    }
-
-    generateValidateInputDirective(): string {
-        return TsDirectiveGenerator.generateValidateInputDirective(this.options);
-    }
-
-    generateShowDescriptionPipe(): string {
-        return TsPipeGenerator.generateShowDescriptionPipe(this.options);
-    }
-
-    generateSearchStringPipe(): string {
-        return TsPipeGenerator.generateSearchStringPipe(this.options);
-    }
-
-    generateHorizontalOverflowDirective(): string {
-        return TsDirectiveGenerator.generateHorizontalOverflowDirective(this.options);
     }
 
     generateStorageService(): string {

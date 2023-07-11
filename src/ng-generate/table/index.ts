@@ -44,6 +44,11 @@ import {generateConfigMenu} from "./generators/config-menu/index";
 import {generateColumnMenu} from "./generators/column-menu/index";
 import {service} from "./generators/service/index";
 import {customService} from "./generators/custom-service/index";
+import {resizeDirective} from "./generators/resize-directive/index";
+import {validateInputDirective} from "./generators/validate-input-directive/index";
+import {horizontalOverflowDirective} from "./generators/horizontal-overflow-directive/index";
+import {showDescriptionPipe} from "./generators/show-description-pipe/index";
+import {searchStringPipe} from "./generators/search-string-pipe/index";
 
 export default function (options: Schema): Rule {
     return (tree: Tree, context: SchematicContext): void => {
@@ -260,11 +265,17 @@ export function generateTable(options: Schema): Rule {
         generateColumnMenu(options),
         generateConfigMenu(options),
         addMenuComponentsToSharedModule(options),
-        generateResizeDirective(options),
-        generateValidateInputDirective(options),
-        generateShowDescriptionPipe(options),
-        generateSearchStringPipe(options),
-        generateHorizontalOverflowDirective(options),
+        resizeDirective(options),
+        validateInputDirective(options),
+        horizontalOverflowDirective(options),
+        addDirectivesToSharedModule(options),
+        showDescriptionPipe(options),
+        searchStringPipe(options),
+        addPipesToSharedModule(options),
+        // TODO add module import
+        // generateResizeDirective(options),
+        // generateValidateInputDirective(options),
+        // generateShowDescriptionPipe(options),
         generateStorageService(options),
         formatGeneratedFiles(
             {
@@ -441,6 +452,42 @@ function addMenuComponentsToSharedModule(options: Schema) {
     };
 }
 
+function addDirectivesToSharedModule(options: Schema) {
+    return async () => {
+        return (tree: Tree, _context: SchematicContext): Tree => {
+            const horizontalOverflowDirective = 'horizontal-overflow';
+            const resizeColumnDirective = 'resize-column';
+            const validateInputDirective = 'validate-input';
+
+            const directives = [horizontalOverflowDirective, resizeColumnDirective, validateInputDirective];
+
+            directives.forEach(value => {
+                addToDeclarationsArray(options, tree, `${classify(value)}Directive`, `./directives/${dasherize(value)}.directive`, options.templateHelper.getSharedModulePath()).then();
+                addToExportsArray(options, tree, `${classify(value)}Directive`, `./directives/${dasherize(value)}.directive`, options.templateHelper.getSharedModulePath()).then();
+            });
+            return tree;
+        };
+    };
+}
+
+function addPipesToSharedModule(options: Schema) {
+    return async () => {
+        return (tree: Tree, _context: SchematicContext): Tree => {
+            const pipes = ['show-description'];
+
+            if (options.enabledCommandBarFunctions.includes('addSearchBar')) {
+                pipes.push('search-string');
+            }
+
+            pipes.forEach(value => {
+                addToDeclarationsArray(options, tree, `${classify(value)}Pipe`, `./pipes/${dasherize(value)}.pipe`, options.templateHelper.getSharedModulePath()).then();
+                addToExportsArray(options, tree, `${classify(value)}Pipe`, `./pipes/${dasherize(value)}.pipe`, options.templateHelper.getSharedModulePath()).then();
+            });
+            return tree;
+        };
+    };
+}
+
 function generateStyles(options: Schema): Rule {
     return (tree: Tree, _context: SchematicContext): Tree => {
         const styleContent = StyleGenerator.getStyle(options);
@@ -452,79 +499,6 @@ function generateStyles(options: Schema): Rule {
 
         createOrOverwrite(tree, 'src/styles.css', options.overwrite, contentForGlobalStyles);
 
-        return tree;
-    };
-}
-
-function generateAPIService(options: Schema): Rule {
-    return async () => {
-        return (tree: Tree, _context: SchematicContext) => {
-            // const content = options.tsGenerator.generateService();
-            // const targetPath = options.path + `/${dasherize(options.name)}.service.ts`;
-            // createOrOverwrite(tree, targetPath, options.overwrite, content);
-            return tree;
-        };
-    };
-}
-
-function generateResizeDirective(options: Schema): Rule {
-    return (tree: Tree, _context: SchematicContext): Tree => {
-        const directiveName = 'ResizeColumnDirective';
-        const directiveContent = options.tsGenerator.generateResizeDirective();
-        const directivePath = `src/app/shared/directives/resize-column.directive`;
-        createOrOverwrite(tree, `${directivePath}.ts`, options.overwrite, directiveContent);
-        addToDeclarationsArray(options, tree, directiveName, directivePath, options.templateHelper.getSharedModulePath()).then();
-        addToExportsArray(options, tree, directiveName, directivePath, options.templateHelper.getSharedModulePath()).then();
-        return tree;
-    };
-}
-
-function generateValidateInputDirective(options: Schema): Rule {
-    return (tree: Tree, _context: SchematicContext): Tree => {
-        const directiveName = 'ValidateInputDirective';
-        const directiveContent = options.tsGenerator.generateValidateInputDirective();
-        const directivePath = `src/app/shared/directives/validate-input.directive`;
-        createOrOverwrite(tree, `${directivePath}.ts`, options.overwrite, directiveContent);
-        addToDeclarationsArray(options, tree, directiveName, directivePath, options.templateHelper.getSharedModulePath()).then();
-        addToExportsArray(options, tree, directiveName, directivePath, options.templateHelper.getSharedModulePath()).then();
-        return tree;
-    };
-}
-
-function generateShowDescriptionPipe(options: Schema): Rule {
-    return (tree: Tree, _context: SchematicContext): Tree => {
-        const pipeName = 'ShowDescriptionPipe';
-        const pipeContent = options.tsGenerator.generateShowDescriptionPipe();
-        const pipePath = 'src/app/shared/pipes/show-description.pipe';
-        createOrOverwrite(tree, `${pipePath}.ts`, options.overwrite, pipeContent);
-        addToDeclarationsArray(options, tree, pipeName, pipePath, options.templateHelper.getSharedModulePath()).then();
-        addToExportsArray(options, tree, pipeName, pipePath, options.templateHelper.getSharedModulePath()).then();
-        return tree;
-    };
-}
-
-function generateSearchStringPipe(options: Schema): Rule {
-    return (tree: Tree, context: SchematicContext) => {
-        if (options.enabledCommandBarFunctions.includes('addSearchBar')) {
-            const pipeName = 'SearchStringPipe';
-            const pipeContent = options.tsGenerator.generateSearchStringPipe();
-            const pipePath = 'src/app/shared/pipes/search-string.pipe';
-            createOrOverwrite(tree, `${pipePath}.ts`, options.overwrite, pipeContent);
-            addToDeclarationsArray(options, tree, pipeName, pipePath, options.templateHelper.getSharedModulePath()).then();
-            addToExportsArray(options, tree, pipeName, pipePath, options.templateHelper.getSharedModulePath()).then();
-            return tree;
-        }
-    };
-}
-
-function generateHorizontalOverflowDirective(options: Schema): Rule {
-    return (tree: Tree, _context: SchematicContext): Tree => {
-        const directiveName = 'HorizontalOverflowDirective';
-        const content = options.tsGenerator.generateHorizontalOverflowDirective();
-        const directivePath = `src/app/shared/directives/horizontal-overflow.directive`;
-        createOrOverwrite(tree, `${directivePath}.ts`, options.overwrite, content);
-        addToDeclarationsArray(options, tree, directiveName, directivePath, options.templateHelper.getSharedModulePath()).then();
-        addToExportsArray(options, tree, directiveName, directivePath, options.templateHelper.getSharedModulePath()).then();
         return tree;
     };
 }
