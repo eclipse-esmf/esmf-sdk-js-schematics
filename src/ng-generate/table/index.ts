@@ -28,7 +28,6 @@ import {generateTranslationFiles, loadAspectModel, loadRDF} from '../../utils/as
 import {createOrOverwrite, formatGeneratedFiles, loadAndApplyConfigFile} from '../../utils/file';
 import {addPackageJsonDependencies, DEFAULT_DEPENDENCIES} from '../../utils/package-json';
 import {TemplateHelper} from '../../utils/template-helper';
-import {LanguageGenerator} from './generators/language.generator';
 import {StyleGenerator} from './generators/style.generator';
 import {Schema} from './schema';
 import ora from 'ora';
@@ -98,7 +97,7 @@ export function generateTable(options: Schema): Rule {
     options.templateHelper = new TemplateHelper();
     // options.htmlGenerator = new HtmlGenerator(options);
     // options.tsGenerator = new TsGenerator(options);
-    options.languageGenerator = new LanguageGenerator(options);
+    // options.languageGenerator = new LanguageGenerator(options);
 
     validateURNs(options);
 
@@ -260,8 +259,6 @@ export function generateTable(options: Schema): Rule {
         wrapBuildComponentExecution(options),
         service(options),
         customService(options),
-        // generateAPIService(options),
-        // generateCustomAPIService(options),
         generateColumnMenu(options),
         generateConfigMenu(options),
         addMenuComponentsToSharedModule(options),
@@ -273,11 +270,6 @@ export function generateTable(options: Schema): Rule {
         searchStringPipe(options),
         addPipesToSharedModule(options),
         storageService(options),
-        // TODO add module import
-        // generateResizeDirective(options),
-        // generateValidateInputDirective(options),
-        // generateShowDescriptionPipe(options),
-        // generateStorageService(options),
         formatGeneratedFiles(
             {
                 getPath(options: Schema) {

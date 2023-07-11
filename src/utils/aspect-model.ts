@@ -13,7 +13,7 @@
 
 import {virtualFs} from '@angular-devkit/core';
 import {classify, dasherize} from '@angular-devkit/core/src/utils/strings';
-import {Rule, SchematicContext, SchematicsException, Tree} from '@angular-devkit/schematics';
+import {chain, Rule, SchematicContext, SchematicsException, Tree} from '@angular-devkit/schematics';
 import {
     Aspect,
     AspectModelLoader,
@@ -27,6 +27,7 @@ import {Observable, Subscriber} from 'rxjs';
 import {Schema as tableSchema} from '../ng-generate/table/schema';
 import {Schema as typeSchema} from '../ng-generate/types/schema';
 import {createOrOverwrite} from './file';
+import {languageTranslationAsset} from "../ng-generate/table/generators/language/index";
 
 export type PropValue = {
     propertyValue: string;
@@ -135,26 +136,28 @@ export function generateTranslationFiles(options: tableSchema): Rule {
         return (tree: Tree, _context: SchematicContext) => {
             const element = options.selectedModelElement as Aspect | Entity;
             const languages = new Map<string, string>();
+            const rules: Rule[] = [];
 
             element.properties.forEach(property => {
                 property.localesPreferredNames.forEach((locale: string) => languages.set(locale, locale));
                 property.localesDescriptions.forEach((locale: string) => languages.set(locale, locale));
             });
 
-            let assetsPath = 'src/assets/i18n/shared/components';
+            const baseAssetsPath = 'src/assets/i18n/shared/components';
+            const aspectModelPath = `/${dasherize(options.name).toLowerCase()}`;
+
+            let assetsPath = `${baseAssetsPath}${aspectModelPath}`;
+
             if (options.enableVersionSupport) {
                 const dasherizedAspectModelVersion = `v${options.aspectModelVersion.replace(/\./g, '')}`;
-                assetsPath = `${assetsPath}/${dasherize(options.name).toLowerCase()}/${dasherizedAspectModelVersion}`;
-            } else {
-                assetsPath = `${assetsPath}/${dasherize(options.name).toLowerCase()}`;
+                assetsPath += `/${dasherizedAspectModelVersion}`;
             }
 
-            languages.forEach(lang => {
-                const langFileName = `${lang}.${dasherize(options.name)}.translation.json`;
-                createOrOverwrite(tree, assetsPath + '/' + langFileName, options.overwrite, options.languageGenerator.generate(lang));
+            languages.forEach(language => {
+                rules.push(languageTranslationAsset(options, assetsPath, language));
             });
 
-            return tree;
+            return chain(rules)(tree, _context);
         };
     };
 }

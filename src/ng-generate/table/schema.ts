@@ -13,7 +13,6 @@
 
 import {Schema as ComponentSchema} from '@schematics/angular/component/schema';
 import {DefaultSchema} from '../default-schema';
-import {LanguageGenerator} from './generators/language.generator';
 
 export interface ExcludedProperty {
     /**
@@ -60,7 +59,6 @@ export interface Schema extends ComponentSchema, DefaultSchema {
     jsonAccessPath: string;
     customColumns: Array<string>;
     customStyleImports: [];
-    languageGenerator: LanguageGenerator;
     overwrite: boolean;
     complexProps: Array<{prop: string; propsToShow: ComplexEntityProperty[]}>;
     skipInstall: boolean;
