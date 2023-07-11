@@ -42,6 +42,8 @@ import {dataSource} from "./generators/data-source/index";
 import {filterService} from "./generators/filter-service/index";
 import {generateConfigMenu} from "./generators/config-menu/index";
 import {generateColumnMenu} from "./generators/column-menu/index";
+import {service} from "./generators/service/index";
+import {customService} from "./generators/custom-service/index";
 
 export default function (options: Schema): Rule {
     return (tree: Tree, context: SchematicContext): void => {
@@ -251,8 +253,10 @@ export function generateTable(options: Schema): Rule {
         generateStyles(options),
         generateTranslationFiles(options),
         wrapBuildComponentExecution(options),
-        generateAPIService(options),
-        generateCustomAPIService(options),
+        service(options),
+        customService(options),
+        // generateAPIService(options),
+        // generateCustomAPIService(options),
         generateColumnMenu(options),
         generateConfigMenu(options),
         addMenuComponentsToSharedModule(options),
@@ -455,9 +459,9 @@ function generateStyles(options: Schema): Rule {
 function generateAPIService(options: Schema): Rule {
     return async () => {
         return (tree: Tree, _context: SchematicContext) => {
-            const content = options.tsGenerator.generateService();
-            const targetPath = options.path + `/${dasherize(options.name)}.service.ts`;
-            createOrOverwrite(tree, targetPath, options.overwrite, content);
+            // const content = options.tsGenerator.generateService();
+            // const targetPath = options.path + `/${dasherize(options.name)}.service.ts`;
+            // createOrOverwrite(tree, targetPath, options.overwrite, content);
             return tree;
         };
     };
@@ -531,22 +535,6 @@ function generateStorageService(options: Schema): Rule {
         const targetPath = `src/app/shared/services/storage.service.ts`;
         createOrOverwrite(tree, targetPath, options.overwrite, content);
         return tree;
-    };
-}
-
-function generateCustomAPIService(options: Schema): Rule {
-    return async () => {
-        if (!options.enableRemoteDataHandling || !options.customRemoteService) {
-            return;
-        }
-        return (tree: Tree, _context: SchematicContext) => {
-            const content = options.tsGenerator.generateCustomService();
-            const targetPath = options.path + `/custom-${dasherize(options.name)}.service.ts`;
-            if (!tree.exists(targetPath)) {
-                tree.create(targetPath, content);
-            }
-            return tree;
-        };
     };
 }
 

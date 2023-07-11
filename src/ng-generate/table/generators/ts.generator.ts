@@ -12,21 +12,12 @@
  */
 
 import {Schema} from '../schema';
-import {TsApiServiceGenerator} from './ts-api-service.generator';
 import {TsDirectiveGenerator} from './ts-directive.generator';
 import {TsStorageServiceGenerator} from './ts-storage-service.generator';
 import {TsPipeGenerator} from './ts-pipe.generator';
 
 export class TsGenerator {
     constructor(private options: Schema) {
-    }
-
-    generateService(): string {
-        return new TsApiServiceGenerator(this.options).generate();
-    }
-
-    generateCustomService(): string {
-        return new TsApiServiceGenerator(this.options).generateCustom();
     }
 
     generateResizeDirective(): string {
