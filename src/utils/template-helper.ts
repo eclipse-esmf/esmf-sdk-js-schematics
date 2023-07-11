@@ -36,35 +36,35 @@ export class TemplateHelper {
     }
 
     isDateTimeProperty(property: Property) {
-        if (property.effectiveDataType && property.effectiveDataType.isScalar && property.effectiveDataType instanceof DefaultScalar) {
-            return this.isDateProperty(property) || this.isTimeProperty(property) || this.isDateTimestampProperty(property);
-        } else {
+        if (!this.isDefaultScalarProperty(property)) {
             return false;
         }
+
+        return this.isDateProperty(property) || this.isTimeProperty(property) || this.isDateTimestampProperty(property);
     }
 
     isDateTimestampProperty(property: Property) {
-        if (property.effectiveDataType && property.effectiveDataType.isScalar && property.effectiveDataType instanceof DefaultScalar) {
-            return property.effectiveDataType.shortUrn === 'dateTime' || property.effectiveDataType.shortUrn === 'dateTimeStamp';
-        } else {
+        if (!this.isDefaultScalarProperty(property)) {
             return false;
         }
+
+        return property.effectiveDataType?.shortUrn === 'dateTime' || property.effectiveDataType?.shortUrn === 'dateTimeStamp';
     }
 
     isDateProperty(property: Property) {
-        if (property.effectiveDataType && property.effectiveDataType.isScalar && property.effectiveDataType instanceof DefaultScalar) {
-            return property.effectiveDataType.shortUrn === 'date';
-        } else {
+        if (!this.isDefaultScalarProperty(property)) {
             return false;
         }
+
+        return property.effectiveDataType?.shortUrn === 'date';
     }
 
     isTimeProperty(property: Property) {
-        if (property.effectiveDataType && property.effectiveDataType.isScalar && property.effectiveDataType instanceof DefaultScalar) {
-            return property.effectiveDataType.shortUrn === 'time';
-        } else {
+        if (!this.isDefaultScalarProperty(property)) {
             return false;
         }
+
+        return property.effectiveDataType?.shortUrn === 'time';
     }
 
     isAddCommandBarFunctionSearch(commandBarFunctions: string[]) {
@@ -92,30 +92,37 @@ export class TemplateHelper {
     }
 
     isStringProperty(property: Property) {
-        return property.effectiveDataType ? property.effectiveDataType.urn.toString().indexOf('string') > -1 : false;
+        return property.effectiveDataType ? property.effectiveDataType?.urn.toString().indexOf('string') > -1 : false;
     }
 
     isNumberProperty(property: Property) {
-        if (property.effectiveDataType && property.effectiveDataType.isScalar && property.effectiveDataType instanceof DefaultScalar) {
-            const numberShortUrns = [
-                'decimal',
-                'integer',
-                'double',
-                'float',
-                'short',
-                'int',
-                'long',
-                'unsignedLong',
-                'unsignedInt',
-                'unsignedShort',
-                'positiveInteger',
-                'nonNegativeInteger',
-                'negativeInteger',
-                'nonPositiveInteger',
-            ];
-            return numberShortUrns.includes(property.effectiveDataType.shortUrn);
+        if (!this.isDefaultScalarProperty(property)) {
+            return false;
         }
-        return false;
+
+        if (!property.effectiveDataType) {
+            return false;
+        }
+
+        const numberShortUrns = [
+            'decimal',
+            'integer',
+            'double',
+            'float',
+            'short',
+            'int',
+            'long',
+            'unsignedLong',
+            'unsignedInt',
+            'unsignedShort',
+            'positiveInteger',
+            'nonNegativeInteger',
+            'negativeInteger',
+            'nonPositiveInteger',
+        ];
+
+        return numberShortUrns.includes(property.effectiveDataType.shortUrn);
+
     }
 
     isMultiStringProperty(property: Property) {
@@ -211,7 +218,7 @@ export class TemplateHelper {
         const allLanguageCodes: Set<string> = new Set();
 
         const processElement = (element: Aspect | Entity | Property | Characteristic) => {
-            const { localesPreferredNames, localesDescriptions } = element;
+            const {localesPreferredNames, localesDescriptions} = element;
 
             localesPreferredNames.forEach(code => allLanguageCodes.add(code));
             localesDescriptions.forEach(code => allLanguageCodes.add(code));
@@ -313,5 +320,9 @@ export class TemplateHelper {
     getTranslationPath(options: Schema): string {
         const translationPath = `${this.getVersionedAccessPrefix(options)}${this.isAspectSelected(options) ? options.jsonAccessPath : ''}`;
         return `${translationPath.length ? translationPath + '.' : ''}`;
+    }
+
+    private isDefaultScalarProperty(property: Property) {
+        return property.effectiveDataType && property.effectiveDataType?.isScalar && property.effectiveDataType instanceof DefaultScalar;
     }
 }

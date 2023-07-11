@@ -30,11 +30,8 @@ export function tableStyle(options: any): Rule {
         const styleName = `table`;
         const stylePath = `src/assets/scss`;
 
-        const contentForGlobalStyles =
-            "@font-face { font-family: 'Material Icons'; font-style: normal;font-weight: 400; src: url(https://fonts.gstatic.com/s/materialicons/v48/flUhRq6tzZclQEJ-Vdg-IuiaDsNcIhQ8tQ.woff2) format('woff2');} .material-icons {font-family: 'Material Icons', serif;font-weight: normal;font-style: normal;font-size: 24px; line-height: 1; letter-spacing: normal; text-transform: none;display: inline-block;white-space: nowrap;word-wrap: normal;direction: ltr; -webkit-font-feature-settings: 'liga';-webkit-font-smoothing: antialiased; };";
-
         const globalStylePath = 'src/styles.scss';
-        tree.exists(globalStylePath) ? tree.overwrite(globalStylePath, contentForGlobalStyles) : tree.create(globalStylePath, contentForGlobalStyles);
+        tree.exists(globalStylePath) ? tree.overwrite(globalStylePath, contentForGlobalStyles()) : tree.create(globalStylePath, contentForGlobalStyles());
 
 
         return mergeWith(
@@ -52,4 +49,15 @@ export function tableStyle(options: any): Rule {
             MergeStrategy.Overwrite
         );
     };
+}
+
+function contentForGlobalStyles() {
+    return `
+        "@font-face { font-family: 'Material Icons'; font-style: normal;font-weight: 400; src: url(https://fonts.gstatic.com/s/materialicons/v48/flUhRq6tzZclQEJ-Vdg-IuiaDsNcIhQ8tQ.woff2) format('woff2');} .material-icons {font-family: 'Material Icons', serif;font-weight: normal;font-style: normal;font-size: 24px; line-height: 1; letter-spacing: normal; text-transform: none;display: inline-block;white-space: nowrap;word-wrap: normal;direction: ltr; -webkit-font-feature-settings: 'liga';-webkit-font-smoothing: antialiased; };
+
+        html,
+        body {
+            margin: 0;
+        }
+    `
 }
