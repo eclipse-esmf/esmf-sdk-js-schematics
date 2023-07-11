@@ -28,6 +28,7 @@ import {InsertChange} from "@schematics/angular/utility/change";
 declare interface ModuleDefinition {
     name: string;
     fromLib: string;
+    skip?: () => boolean;
 }
 
 declare interface SkipHandler {
@@ -39,6 +40,7 @@ export function addToComponentModule(skipImport: SkipHandler | boolean, options:
         if (skipImport !== undefined && (skipImport === true || (skipImport !== false && (skipImport as SkipHandler).skip()))) {
             return;
         }
+
         const componentModuleFile = `${options.path}/${dasherize(options.name)}.module.ts`;
         const moduleFileEntry = tree.get(componentModuleFile);
 
@@ -46,9 +48,9 @@ export function addToComponentModule(skipImport: SkipHandler | boolean, options:
             throw new Error(`Module ${componentModuleFile}.`);
         }
 
-        modules.forEach(moduleDef => {
-            addModuleImportToModule(tree, moduleFileEntry.path, moduleDef.name, moduleDef.fromLib);
-        });
+        modules
+            .filter(module => !module.skip || !module.skip())
+            .forEach(moduleDef => addModuleImportToModule(tree, moduleFileEntry.path, moduleDef.name, moduleDef.fromLib));
 
     };
 }

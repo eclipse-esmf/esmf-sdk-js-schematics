@@ -26,8 +26,7 @@ import {
 import {Observable, Subscriber} from 'rxjs';
 import {Schema as tableSchema} from '../ng-generate/table/schema';
 import {Schema as typeSchema} from '../ng-generate/types/schema';
-import {createOrOverwrite} from './file';
-import {languageTranslationAsset} from "../ng-generate/table/generators/language/index";
+import {generateLanguageTranslationAsset} from "../ng-generate/table/generators/language/index";
 
 export type PropValue = {
     propertyValue: string;
@@ -43,40 +42,34 @@ export type PropValue = {
  * and provides them as strings in array options.ttl.
  */
 export function loadRDF(options: tableSchema | typeSchema): Rule {
-    const func = (tree: Tree, context: SchematicContext) => {
-        if (options.aspectModelTFiles === undefined || options.aspectModelTFiles.length <= 0) {
+    return (tree: Tree, context: SchematicContext) => {
+        const aspectModelTFiles = Array.isArray(options.aspectModelTFiles)
+            ? options.aspectModelTFiles
+            : (options.aspectModelTFiles as string).split(',');
+
+        if (!aspectModelTFiles.length) {
             throw new SchematicsException(
                 `No ttl files provided, please provide the ttl files you want to load using the cli param 'aspectModelTFilesString=ttl-file1,ttl-file2'.`
             );
         }
 
-        return new Observable<Tree>((subscriber: Subscriber<Tree>) => {
-            if (!Array.isArray(options.aspectModelTFiles)) {
-                options.aspectModelTFiles = (options.aspectModelTFiles as string).split(',');
-            }
-            options.aspectModelTFiles.forEach((aspectModel, index, aspectModels) => {
-                const path = `${tree.root.path}${aspectModel.trim()}`;
-                const data = tree.read(path);
-                if (!data) {
-                    throw new SchematicsException(`TTL file not found under '${path}'.`);
-                }
-                if (!options.ttl) {
-                    options.ttl = [];
-                }
-                options.ttl.push(virtualFs.fileBufferToString(data));
-                if (aspectModels.length > 1) {
-                    options.spinner.succeed(`Loaded RDF ${index + 1}/${aspectModels.length} from "${path}"`);
-                } else {
-                    options.spinner.succeed(`Loaded RDF from "${path}"`);
-                }
-            });
-            subscriber.next(tree);
-            subscriber.complete();
-        });
-    };
+        options.ttl = aspectModelTFiles.map((aspectModel, index) => {
+            const path = `${tree.root.path}${aspectModel.trim()}`;
+            const data = tree.read(path);
 
-    return func as unknown as Rule;
+            if (!data) {
+                throw new SchematicsException(`TTL file not found under '${path}'.`);
+            }
+
+            options.spinner.succeed(`Loaded RDF ${aspectModelTFiles.length > 1 ? index + 1 + '/' + aspectModelTFiles.length : ''} from "${path}"`);
+
+            return virtualFs.fileBufferToString(data);
+        });
+
+        return tree;
+    };
 }
+
 
 /**
  * A rule that interprets the provided strings in array options.ttl as RDF and
@@ -114,51 +107,34 @@ export function loadAspectModel(options: tableSchema | typeSchema): Rule {
 }
 
 export function getSelectedModelElement(loader: AspectModelLoader, aspect: Aspect, options: tableSchema | typeSchema): Aspect | Entity {
-    const element = loader.findByUrn(options.selectedModelElementUrn);
-    if (!element) {
-        let collectionElement;
-        if (aspect.isCollectionAspect) {
-            collectionElement = aspect.properties.find(property => property.characteristic instanceof DefaultCollection);
-        }
-        return collectionElement && collectionElement.effectiveDataType?.isComplex
-            ? (collectionElement.effectiveDataType as Entity)
-            : aspect;
-    }
-    if (element instanceof DefaultEntity) {
-        return element as Entity;
-    } else {
-        return element as Aspect;
-    }
+    const element = loader.findByUrn(options.selectedModelElementUrn) || findCollectionElement(aspect);
+
+    return (element instanceof DefaultEntity) ? element as Entity : element as Aspect;
+}
+
+function findCollectionElement(aspect: Aspect): Aspect | Entity | undefined {
+    if (!aspect.isCollectionAspect) return undefined;
+    const collectionElement = aspect.properties.find(property => property.characteristic instanceof DefaultCollection);
+    return collectionElement?.effectiveDataType?.isComplex ? collectionElement.effectiveDataType as Entity : aspect;
 }
 
 export function generateTranslationFiles(options: tableSchema): Rule {
-    return async () => {
-        return (tree: Tree, _context: SchematicContext) => {
-            const element = options.selectedModelElement as Aspect | Entity;
-            const languages = new Map<string, string>();
-            const rules: Rule[] = [];
+    return (tree: Tree, _context: SchematicContext) => {
+        const element = options.selectedModelElement as Aspect | Entity;
 
-            element.properties.forEach(property => {
-                property.localesPreferredNames.forEach((locale: string) => languages.set(locale, locale));
-                property.localesDescriptions.forEach((locale: string) => languages.set(locale, locale));
-            });
+        const languages = new Set([
+            ...element.properties.flatMap(property => property.localesPreferredNames),
+            ...element.properties.flatMap(property => property.localesDescriptions),
+        ]);
 
-            const baseAssetsPath = 'src/assets/i18n/shared/components';
-            const aspectModelPath = `/${dasherize(options.name).toLowerCase()}`;
+        const baseAssetsPath = 'src/assets/i18n/shared/components';
+        const aspectModelPath = `/${dasherize(options.name).toLowerCase()}`;
+        const versionPath = options.enableVersionSupport ? `/v${options.aspectModelVersion.replace(/\./g, '')}` : '';
+        const assetsPath = `${baseAssetsPath}${aspectModelPath}${versionPath}`;
 
-            let assetsPath = `${baseAssetsPath}${aspectModelPath}`;
+        const translationRules = Array.from(languages, language => generateLanguageTranslationAsset(options, assetsPath, language));
 
-            if (options.enableVersionSupport) {
-                const dasherizedAspectModelVersion = `v${options.aspectModelVersion.replace(/\./g, '')}`;
-                assetsPath += `/${dasherizedAspectModelVersion}`;
-            }
-
-            languages.forEach(language => {
-                rules.push(languageTranslationAsset(options, assetsPath, language));
-            });
-
-            return chain(rules)(tree, _context);
-        };
+        return chain(translationRules)(tree, _context);
     };
 }
 

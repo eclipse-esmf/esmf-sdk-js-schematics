@@ -16,7 +16,7 @@
     },
     "table-generation": {
       "description": "Executes the table generation",
-      "factory": "./ng-generate/table/index#generateTable",
+      "factory": "./ng-generate/table/index#generate",
       "schema": "./ng-generate/table/schema.json"
     },
     "i18n": {

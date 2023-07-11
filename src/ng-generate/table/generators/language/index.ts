@@ -28,7 +28,7 @@ import {dasherize} from "@angular-devkit/core/src/utils/strings";
 
 let sharedOptions: any = {};
 
-export function languageTranslationAsset(options: any, assetsPath: string, language: string): Rule {
+export function generateLanguageTranslationAsset(options: any, assetsPath: string, language: string): Rule {
     return (tree: Tree, _context: SchematicContext) => {
         sharedOptions = options;
 

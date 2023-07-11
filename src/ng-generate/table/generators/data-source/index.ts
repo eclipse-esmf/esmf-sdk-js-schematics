@@ -27,7 +27,7 @@ import {DefaultSingleEntity, Property} from "@esmf/aspect-model-loader";
 
 let sharedOptions: any = {};
 
-export function dataSource(options: any): Rule {
+export function generateDataSource(options: any): Rule {
     return (tree: Tree, _context: SchematicContext) => {
         sharedOptions = options;
 

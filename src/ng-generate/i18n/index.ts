@@ -18,7 +18,7 @@ import {NodeDependencyType} from '@schematics/angular/utility/dependencies';
 import {TemplateHelper} from '../../utils/template-helper';
 import {formatGeneratedFiles} from '../../utils/file';
 import ora from 'ora';
-import {translationModule} from "../table/generators/translation-module/index";
+import {generateTranslationModule} from "../table/generators/modules/translation/index";
 
 /**
  * generates translation files for aspect model.
@@ -40,7 +40,7 @@ export default function (options: Schema): Rule {
                 command: 'ngx-i18n-combine -i ./src/**/i18n/shared/components/**/*.translation.json -o ./src/assets/i18n/{en,de}.json',
             },
         ]),
-        translationModule(options),
+        generateTranslationModule(options),
         formatGeneratedFiles(
             {
                 getPath() {
