@@ -25,10 +25,9 @@ import {
     wrapBuildComponentExecution,
 } from '../../utils/angular';
 import {generateTranslationFiles, loadAspectModel, loadRDF} from '../../utils/aspect-model';
-import {createOrOverwrite, formatGeneratedFiles, loadAndApplyConfigFile} from '../../utils/file';
+import {formatGeneratedFiles, loadAndApplyConfigFile} from '../../utils/file';
 import {addPackageJsonDependencies, DEFAULT_DEPENDENCIES} from '../../utils/package-json';
 import {TemplateHelper} from '../../utils/template-helper';
-import {StyleGenerator} from './generators/style.generator';
 import {Schema} from './schema';
 import ora from 'ora';
 import {WIZARD_CONFIG_FILE} from '../table-prompter/index';
@@ -48,6 +47,7 @@ import {horizontalOverflowDirective} from "./generators/horizontal-overflow-dire
 import {showDescriptionPipe} from "./generators/show-description-pipe/index";
 import {searchStringPipe} from "./generators/search-string-pipe/index";
 import {storageService} from "./generators/storage-service/index";
+import {tableStyle} from "./generators/table-style/index";
 
 export default function (options: Schema): Rule {
     return (tree: Tree, context: SchematicContext): void => {
@@ -95,9 +95,6 @@ export function generateTable(options: Schema): Rule {
     }
 
     options.templateHelper = new TemplateHelper();
-    // options.htmlGenerator = new HtmlGenerator(options);
-    // options.tsGenerator = new TsGenerator(options);
-    // options.languageGenerator = new LanguageGenerator(options);
 
     validateURNs(options);
 
@@ -254,7 +251,7 @@ export function generateTable(options: Schema): Rule {
         addExportComponentToSharedModule(options),
         dataSource(options),
         filterService(options),
-        generateStyles(options),
+        tableStyle(options),
         generateTranslationFiles(options),
         wrapBuildComponentExecution(options),
         service(options),
@@ -478,21 +475,6 @@ function addPipesToSharedModule(options: Schema) {
             });
             return tree;
         };
-    };
-}
-
-function generateStyles(options: Schema): Rule {
-    return (tree: Tree, _context: SchematicContext): Tree => {
-        const styleContent = StyleGenerator.getStyle(options);
-        const stylePath = `src/assets/scss/table.component.${options.style || 'css'}`;
-        createOrOverwrite(tree, stylePath, options.overwrite, styleContent);
-
-        const contentForGlobalStyles =
-            "@font-face { font-family: 'Material Icons'; font-style: normal;font-weight: 400; src: url(https://fonts.gstatic.com/s/materialicons/v48/flUhRq6tzZclQEJ-Vdg-IuiaDsNcIhQ8tQ.woff2) format('woff2');} .material-icons {font-family: 'Material Icons', serif;font-weight: normal;font-style: normal;font-size: 24px; line-height: 1; letter-spacing: normal; text-transform: none;display: inline-block;white-space: nowrap;word-wrap: normal;direction: ltr; -webkit-font-feature-settings: 'liga';-webkit-font-smoothing: antialiased; };";
-
-        createOrOverwrite(tree, 'src/styles.css', options.overwrite, contentForGlobalStyles);
-
-        return tree;
     };
 }
 

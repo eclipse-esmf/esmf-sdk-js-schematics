@@ -79,14 +79,3 @@ export function formatGeneratedFiles(folderProvider: FolderPathProvider, options
         }
     };
 }
-
-/**
- * Used to handle a specific generation file. If it exists and overwrite is active the file is only updated.
- */
-export function createOrOverwrite(tree: Tree, path: string, isOverWrite: boolean, content: string) {
-    if (tree.exists(path) && isOverWrite) {
-        tree.overwrite(path, content);
-    } else {
-        tree.create(path, content);
-    }
-}
