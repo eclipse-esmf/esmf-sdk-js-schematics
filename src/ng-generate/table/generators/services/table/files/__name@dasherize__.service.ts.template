@@ -47,7 +47,7 @@ export class <%= classify(options.name) %>Service {
             const url = window.URL.createObjectURL(blob);
 
             a.href = url;
-            a.download = '<%= dasherize(name) %>.csv';
+            a.download = '<%= classify(aspectModelName) %>.csv';
             a.click();
             window.URL.revokeObjectURL(url);
             a.remove();

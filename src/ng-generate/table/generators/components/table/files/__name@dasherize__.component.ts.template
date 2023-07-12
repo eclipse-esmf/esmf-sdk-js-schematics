@@ -37,12 +37,12 @@ import {
         , <%= classify(aspectModelTypeName) %>
     <% } %>
     <% if (hasEnumQuickFilter) { %>
-        <%= getEnumProperties %>
+        , <%= getEnumProperties %>
     <% } %>
 } from '<%= getTypePath %>';
 import {<%= classify(name) %>DataSource} from './<%= dasherize(name) %>-datasource';
 
-<% if (hasEnumQuickFilter) { %>
+<% if (options.hasDateQuickFilter) { %>
     import {DateAdapter, MatDateFormats, MAT_DATE_FORMATS} from '@angular/material/core';
 <% } %>
 
@@ -71,8 +71,8 @@ import {<%= classify(name) %>ColumnMenuComponent} from './<%= dasherize(name) %>
 import {Subject} from 'rxjs';
 
 <% if (options.enableRemoteDataHandling) { %>
-    import {<% if (options.customRemoteService) { %>Custom<% } %><%= classify(name) %>Service} from './<% if (options.customRemoteService) { %>Custom<% } %><%= dasherize(name) %>.service';
-    import {<%= classify(name) %>Response} from './<%= dasherize(name) %>.service';
+    import {<% if (options.customRemoteService) { %>Custom<% } %><%= classify(name) %>Service} from './<% if (options.customRemoteService) { %>custom<% } %>-<%= dasherize(name) %>.service';
+    import {<%= aspectModelTypeName %>Response} from './<%= dasherize(name) %>.service';
     import {
         AbstractArrayNode,
         AbstractLogicalNode,
@@ -162,7 +162,7 @@ export enum <%= classify(name) %>Column {
 }
 
 @Component({
-    selector: 'esmf-table',
+    selector: 'esmf-table-<%= dasherize(name) %>',
     templateUrl: './<%= dasherize(name) %>.component.html',
     styleUrls: ['./<%= dasherize(name) %>.component.<%= options.style %>']
     <% if (options.changeDetection) { %>, changeDetection: ChangeDetectionStrategy.<%= options.changeDetection %><% } %>
@@ -175,7 +175,7 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
     <% if (getTableDateTimeFormat) { %>@Input() tableDateTimeFormat = 'short';<% } %>
     <% if (getTableTimeFormat) { %>@Input() tableTimeFormat = 'shortTime';<% } %>
 
-    @Input() data: Array<(<%= aspectModelTypeName %>)> = [];
+    @Input() data: Array<<%= aspectModelTypeName %>> = [];
     @Input() customTemplate?: TemplateRef<any>;
     @Input() searchHint?: string;
     @Input() showFirstLastButtons: boolean = true;
@@ -286,7 +286,7 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
     <% } %>
 
     <% if (options.enableRemoteDataHandling) { %>
-        constructor(<%= commonImports %> private <% if (camelize(options.customRemoteService)) { %>custom<% } %><%= name %>Service: <% if (options.customRemoteService) { %>Custom<% } %><%= classify(name) %>Service, private cd: ChangeDetectorRef) {
+        constructor(<%= commonImports %> private <% if (options.customRemoteService) { %>custom<% } %><%= classify(name) %>Service: <% if (options.customRemoteService) { %>Custom<% } %><%= classify(name) %>Service, private cd: ChangeDetectorRef) {
             this.dataSource = new <%= classify(name) %>DataSource();
             <%= getSharedCustomRows %>
         }
@@ -396,7 +396,7 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
 
     <% if (options.customColumns.length > 0) { %>
         isCustomColumn(columnName: string): boolean {
-            const customColumns = [%= getCustomColumn %>];
+            const customColumns: any = [<%= getCustomColumn %>];
             return customColumns.includes(columnName);
         }
     <% } %>
@@ -465,7 +465,7 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
             this.rowSelectionEvent.emit(this.selection.selected);
         }
 
-        <% if (options.enableRemoteDataHandling) { %>
+        <% if (!options.enableRemoteDataHandling && options.addRowCheckboxes) { %>
             trimSelectionToCurrentPage(): void {
                 const indexOfLastItemOnPreviousPage = this.paginator.pageSize * this.paginator.pageIndex - 1;
                 const indexOfFirstItemOnNextPage = this.paginator.pageSize * (this.paginator.pageIndex + 1);
@@ -544,37 +544,39 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
         }
     <% } %>
 
-    prepareCsv(data: any, exportAllColumns: boolean, exportAllPages: boolean, currentPageSize: number): void {
-        if (!exportAllPages && data.length > currentPageSize) {
-            data.length = currentPageSize;
+    <% if (options.addCommandBar) { %>
+        prepareCsv(data: any, exportAllColumns: boolean, exportAllPages: boolean, currentPageSize: number): void {
+            if (!exportAllPages && data.length > currentPageSize) {
+                data.length = currentPageSize;
+            }
+
+            const columns = exportAllColumns ? this.columns.map(c => c.name) : this.displayedColumns;
+
+            <%= getBlockHeaderToExport %>
+
+            const headersCSV = unparse({
+                fields: headersToExport
+                <% if (!isAspectSelected) { %>.map(columnName => columnName.split('.').pop())<% } %>
+                .map(columnName => {
+                    const translatedHeader = this.translateService.instant(`<%= getColumnTransKeyPrefix %>${columnName}.preferredName`);
+                    return translatedHeader !== `<%= getColumnTransKeyPrefix %>${columnName}.preferredName` ? translatedHeader : columnName;
+                }),
+                data: [],
+            });
+
+            this.downloadCsv(`${headersCSV}${unparse(data, {header: false, columns: headersToExport})}`);
         }
 
-        const columns = exportAllColumns ? this.columns.map(c => c.name) : this.displayedColumns;
-
-        <%= getBlockHeaderToExport %>
-
-        const headersCSV = unparse({
-            fields: headersToExport
-            <% if (!isAspectSelected) { %>.map(columnName => columnName.split('.').pop())<% } %>
-            .map(columnName => {
-                const translatedHeader = this.translateService.instant(`<%= getColumnTransKeyPrefix %>${columnName}.preferredName`);
-                return translatedHeader !== `<%= getColumnTransKeyPrefix %>${columnName}.preferredName` ? translatedHeader : columnName;
-            }),
-            data: [],
-        });
-
-        this.downloadCsv(`${headersCSV}${unparse(data, {header: false, columns: headersToExport})}`);
-    }
-
-    downloadCsv(csvArray: any): void {
-        this.downloadEvent.emit({error: false, success: false, inProgress: true});
-        try {
-            this.<%= (camelize((options.enableRemoteDataHandling && options.customRemoteService ? 'custom' : '') + name)) %>Service.downloadCsv(csvArray);
-            this.downloadEvent.emit({error: false, success: true, inProgress: false});
-        } catch(error: any) {
-            this.downloadEvent.emit({error: true, success: false, inProgress: false});
+        downloadCsv(csvArray: any): void {
+            this.downloadEvent.emit({error: false, success: false, inProgress: true});
+            try {
+                this.<%= (camelize((options.enableRemoteDataHandling && options.customRemoteService ? 'custom' : '') + name)) %>Service.downloadCsv(csvArray);
+                this.downloadEvent.emit({error: false, success: true, inProgress: false});
+            } catch(error: any) {
+                this.downloadEvent.emit({error: true, success: false, inProgress: false});
+            }
         }
-    }
+    <% } %>
 
     initOpenedColumnMenuDialog(): void {
         this.columMenuComponent.keyLocalStorage = this.<%= getLocalStorageKeyColumns %>;

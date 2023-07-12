@@ -37,12 +37,12 @@ export const COMPONENT_MODULES = (options: any) => [
     {
         name: 'MatCheckboxModule',
         fromLib: '@angular/material/checkbox',
-        skip: () => options.addRowCheckboxes || options.skipImport
+        skip: () => !options.addRowCheckboxes || options.skipImport
     },
     {
         name: 'MatDialogModule',
         fromLib: '@angular/material/dialog',
-        skip: () => options.addRowCheckboxes || options.skipImport
+        skip: () => !options.addRowCheckboxes || options.skipImport
     },
     {
         name: 'MatToolbarModule',
@@ -145,7 +145,7 @@ export function updateSharedModule(options: Schema) {
 
         ['horizontal-overflow', 'resize-column', 'validate-input'].forEach(directive => processItem('directive', directive));
 
-        const pipes = ['show-description'];
+        const pipes = ['show-description', 'search-string'];
         if (options.enabledCommandBarFunctions.includes('addSearchBar')) {
             pipes.push('search-string');
         }

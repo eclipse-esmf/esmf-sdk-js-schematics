@@ -17,18 +17,14 @@
     } from 'rollun-ts-rql';
 <% } %>
 
-<% if (hasSearchBar || this.hasDateQuickFilter) { %>import {TranslateService} from '@ngx-translate/core';<% } %>
+<% if (options.hasSearchBar || options.hasDateQuickFilter) { %>import {TranslateService} from '@ngx-translate/core';<% } %>
 
 import {AbstractControl, FormControl, ValidationErrors, ValidatorFn} from '@angular/forms';
-import {Injectable<% if (this.hasDateQuickFilter) { %>, Inject<% } %>} from '@angular/core';
+import {Injectable<% if (options.hasDateQuickFilter) { %>, Inject<% } %>} from '@angular/core';
 
-<% if (this.hasDateQuickFilter) { %>
+<% if (options.hasDateQuickFilter) { %>
     import { FormGroup } from '@angular/forms';
-    import {
-        DateAdapter,
-        MatDateFormats,
-        MAT_DATE_FORMATS,
-    } from '@angular/material/core';
+    import {DateAdapter, MAT_DATE_FORMATS, MatDateFormats} from "@angular/material/core";
     import moment from 'moment';
 <% } %>
 
@@ -37,7 +33,7 @@ import {<%= classify(selectedModelElementName) %>
     , <%= classify(aspectModelName) %>
 <% } %>
 
-<% if (this.hasDateQuickFilter) { %>
+<% if (hasEnumQuickFilter) { %>
     , <%= getEnumProperties %>
 <% } %>
 
@@ -57,7 +53,7 @@ type FilterType = {
     removable?: boolean;
 };
 
-<% if (hasSearchBar) { %>
+<% if (options.hasSearchBar) { %>
     export const validateInputsValidator = (pattern: string): ValidatorFn => {
         return (control: AbstractControl): ValidationErrors | null => {
             const value = control.value;
@@ -127,7 +123,7 @@ export class <%= classify(name) %>FilterService {
     /** Array of active filters */
     activeFilters: FilterType[] = [];
 
-    <% if (hasSearchBar) { %>
+    <% if (options.hasSearchBar) { %>
         searchString = new FormControl<string | null>('');
         <%= setStringColumns %>
     <% } %>
@@ -136,22 +132,22 @@ export class <%= classify(name) %>FilterService {
         <%= setEnumQuickFilter %>
     <% } %>
 
-    <% if (hasDateQuickFilter) { %>
+    <% if (options.hasDateQuickFilter) { %>
         <%= setDataQuickFilter %>
     <% } %>
 
 
     constructor(
-        <% if (hasDateQuickFilter) { %>
+        <% if (options.hasDateQuickFilter) { %>
             @Inject(MAT_DATE_FORMATS) private dateFormats: MatDateFormats,
             private dateAdapter: DateAdapter<any>,
         <% } %>
-        <% if (hasDateQuickFilter || hasSearchBar) { %>
+        <% if (options.hasDateQuickFilter || options.hasSearchBar) { %>
             private translateService: TranslateService
         <% } %>
     ){}
 
-    <% if (hasSearchBar) { %>
+    <% if (options.hasSearchBar) { %>
         searchStringInit(initialValue: string, regexValidator: string, minCharNo: number, maxCharNo: number) {
             this.searchString = new FormControl<string | null>(initialValue, [validateInputsValidator(regexValidator), validateInputLength(minCharNo, maxCharNo)]);
         }
@@ -159,9 +155,9 @@ export class <%= classify(name) %>FilterService {
 
 
     /** Removes a specific filter. */
-    removeFilter(filter:FilterType){
+    removeFilter(filter:FilterType) {
         switch(filter.type) {
-            <% if (hasSearchBar) { %>
+            <% if (options.hasSearchBar) { %>
                 case FilterEnums.Search:
                     const removedFilter = this.activeFilters.findIndex(elem => elem.filterValue === filter.filterValue && elem.prop === filter.prop);
                     this.activeFilters.splice(removedFilter, 1);
@@ -173,13 +169,13 @@ export class <%= classify(name) %>FilterService {
                 <%= setEnumRemoveFilter %>
             <% } %>
 
-            <% if (hasDateQuickFilter) { %>
-                <%= hasDataQuickFilter %>
+            <% if (options.hasDateQuickFilter) { %>
+                <%= setDataRemoveFilter %>
             <% } %>
         }
     }
 
-    <% if (hasSearchBar) { %>
+    <% if (options.hasSearchBar) { %>
         /**
         * Get a value using a dot access path
         * @param accessPath access path e.g. object.attrL1.attrL2
@@ -275,7 +271,7 @@ export class <%= classify(name) %>FilterService {
         <% } %>
     <% } %>
 
-    <% if (hasDateQuickFilter) { %>
+    <% if (options.hasDateQuickFilter) { %>
         <% if (options.enableRemoteDataHandling) { %>
             <%= getDateRemote %>
         <% } else { %>

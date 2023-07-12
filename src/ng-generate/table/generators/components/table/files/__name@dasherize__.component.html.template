@@ -19,12 +19,15 @@
         [minNumberCharacters]="minNumberCharacters"
         [maxNumberCharacters]="maxNumberCharacters"
         [searchHint]="searchHint"
-        [configs]="configs"
-        [<%= getLocalStorageKeyConfig %>]="<%= getLocalStorageKeyConfig %>"
+        <% if (options.hasSearchBar) { %>
+            [configs]="configs"
+            [<%= getLocalStorageKeyConfig %>]="<%= getLocalStorageKeyConfig %>"
+            (setConfiguration)="setConfiguration($event)"
+        <% } %>
         (applyFilters)="applyFilters()"
         (reloadFilter)="reloadFilter()"
         (exportToCsv)="exportToCsv()"
-        (setConfiguration)="setConfiguration($event)"
+        (executeCustomCommandBarAction)="customCommandBarActionEvent()"
     ></command-bar>
   <% } %>
   <ng-container *ngIf="!!customTemplate && !dataSource.data.length">

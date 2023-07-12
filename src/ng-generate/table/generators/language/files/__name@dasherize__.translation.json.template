@@ -33,7 +33,7 @@
         }
     <% } %>
 
-    <% if (hasSearchBar) { %>
+    <% if (options.hasSearchBar) { %>
         ,
         "search": "Search",
         "advancedSearch": "Advanced Search",
@@ -91,7 +91,7 @@
         "right": "Scroll right"
     }
 
-    <% if (hasSearchBar) { %>
+    <% if (options.hasSearchBar) { %>
         ,
         "settings": {
             "title": "Settings",

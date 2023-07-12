@@ -1,9 +1,14 @@
 /** <%= getGenerationDisclaimerText %> **/
 import {Component, EventEmitter, Input, Output, ViewChild} from '@angular/core';
-import {<%= classify(name) %>FilterService} from './<%= dasherize(name) %>-filter.service';
+
+<% if (options.hasFilters) { %>
+    import {<%= classify(name) %>FilterService} from './<%= dasherize(name) %>-filter.service';
+<% } %>
+
 import {SelectionModel} from "@angular/cdk/collections";
-import {Config} from "./<%= dasherize(name) %>.component";
+
 <% if (options.hasSearchBar) { %>
+    import {Config} from "./<%= dasherize(name) %>.component";
     import {<%= classify(name) %>ConfigMenuComponent} from './<%= dasherize(name) %>-config-menu.component';
 <% } %>
 
@@ -18,13 +23,21 @@ export class <%= classify(name) %>CommandBarComponent {
     @Input() minNumberCharacters: number = 2;
     @Input() maxNumberCharacters: number = 50;
     @Input() searchHint?: string;
-    @Input() configs: Array<Config> = [];
     @Input() <%= getLocalStorageKeyConfig %>: string = '';
-    @Input() hasAdvancedSearch: boolean = this.filterService.stringColumns.length > 1;
+
+    <% if (isAddCommandBarFunctionSearch) { %>
+        @Input() configs: Array<Config> = [];
+        @Input() hasAdvancedSearch: boolean = this.filterService.stringColumns.length > 1;
+    <% } %>
 
     @Output() applyFilters = new EventEmitter<void>();
     @Output() reloadFilter = new EventEmitter<void>();
     @Output() exportToCsv = new EventEmitter<void>();
+
+    <% if (options.customRowActions.length > 0) { %>
+        @Output() customCommandBarActionEvent = new EventEmitter<any>();
+    <% } >
+
 
     <% if (options.hasSearchBar) { %>
         @Output() setConfiguration = new EventEmitter<Array<Config>>();
@@ -35,7 +48,7 @@ export class <%= classify(name) %>CommandBarComponent {
     totalItems: number = 0;
     searchFocused: boolean = false;
 
-    constructor(public filterService: <%= classify(name) %>FilterService) {
+    constructor(<% if (options.hasFilters) { %>public filterService: <%= classify(name) %>FilterService<% } %>) {
     }
 
     triggerApplyFilters(): void {
@@ -61,4 +74,9 @@ export class <%= classify(name) %>CommandBarComponent {
           this.setConfiguration.emit(config);
         }
     <% } %>
+
+    <% if (options.customRowActions.length > 0) { %>
+        $event.stopPropagation();
+        this.customCommandBarActionEvent.emit({action: action});
+    <% } >
 }

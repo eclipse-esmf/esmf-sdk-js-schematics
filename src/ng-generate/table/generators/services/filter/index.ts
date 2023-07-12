@@ -40,16 +40,8 @@ export function generateFilterService(options: any): Rule {
     return (tree: Tree, _context: SchematicContext) => {
         const allProps: Property[] = sharedOptions.templateHelper.getProperties(sharedOptions);
 
-        const allEnumProps: PropValue[] = [];
-        const allDateProps: PropValue[] = [];
-
-        const enumValues = getAllEnumProps(sharedOptions, allEnumProps);
-        const dataValues = getAllDateProps(allDateProps, allProps);
-
-        sharedOptions.hasSearchBar = sharedOptions.templateHelper.isAddCommandBarFunctionSearch(sharedOptions.enabledCommandBarFunctions);
-        sharedOptions.hasFilters = sharedOptions.hasSearchBar ||
-            sharedOptions.templateHelper.isAddDateQuickFilters(sharedOptions.enabledCommandBarFunctions) ||
-            sharedOptions.templateHelper.isAddEnumQuickFilters(sharedOptions.enabledCommandBarFunctions);
+        const enumValues = getAllEnumProps(sharedOptions);
+        const dataValues = getAllDateProps(allProps);
 
         const key = `item.${sharedOptions.jsonAccessPath}`;
         const itemKey = key.substring(0, key.length - 1);
@@ -63,9 +55,6 @@ export function generateFilterService(options: any): Rule {
                     name: sharedOptions.name,
                     itemKey: itemKey,
                     getAllStringProps: getAllStringProps(allProps),
-                    hasSearchBar: sharedOptions.hasSearchBar,
-                    hasFilters: sharedOptions.hasFilters,
-                    hasDateQuickFilter: sharedOptions.templateHelper.isAddDateQuickFilters(sharedOptions.enabledCommandBarFunctions),
                     hasEnumQuickFilter: sharedOptions.templateHelper.isAddEnumQuickFilters(sharedOptions.enabledCommandBarFunctions),
                     getGenerationDisclaimerText: sharedOptions.templateHelper.getGenerationDisclaimerText(),
                     selectedModelElementName: sharedOptions.templateHelper.resolveType(sharedOptions.selectedModelElement).name,
@@ -109,11 +98,7 @@ function getEnumProperties(): string {
         .map((property: Property) => classify(property.characteristic.name)).join(', ')
 }
 
-function getAllDateProps(allDateProps: PropValue[], allProps: Property[]) {
-    if (allDateProps) {
-        return allDateProps;
-    }
-
+function getAllDateProps(allProps: Property[]) {
     const getPropValue = (prop: Property, complexPropObj?: any) => ({
         propertyValue: complexPropObj ? `${complexPropObj.complexProp}.${prop.name}` : prop.name,
         propertyName: complexPropObj ? `${complexPropObj.complexProp}${classify(prop.name)}` : prop.name,
@@ -198,16 +183,6 @@ function setDataRemoveFilter(values: PropValue[]) {
 }
 
 function getEnumFilterRemote(values: PropValue[]) {
-    const code = values.map(generateFilterCode).join('');
-
-    return `applyEnumFilter(data: Array<${classify(sharedOptions.selectedModelElement.name)}>) {
-        let filteredData = data;
-        ${code}
-        return filteredData;
-    }`;
-}
-
-function getEnumFilterNotRemote(values: PropValue[]) {
     const template = (value: any) => `
         if (this.${value.propertyName}Selected.length > 0) {
             query.addNode(new In('${sharedOptions.jsonAccessPath}${value.propertyValue}', this.${value.propertyName}Selected));
@@ -238,6 +213,16 @@ function getEnumFilterNotRemote(values: PropValue[]) {
 
     return `applyEnumFilter(query: AbstractLogicalNode): void {
         ${values.map(template).join('')}
+    }`;
+}
+
+function getEnumFilterNotRemote(values: PropValue[]) {
+    const code = values.map(generateFilterCode).join('');
+
+    return `applyEnumFilter(data: Array<${classify(sharedOptions.selectedModelElement.name)}>) {
+        let filteredData = data;
+        ${code}
+        return filteredData;
     }`;
 }
 
@@ -280,6 +265,37 @@ const getChipLabelEnum = (filterProp: PropValue) => {
 }
 
 function getDateRemote(values: PropValue[]): string {
+    const template = (value: any) => `
+        if (this.${value.propertyName}Group.value.end && this.${value.propertyName}Group.value.start) {
+            const eDate = new Date(this.${value.propertyName}Group.value.end).setHours(23, 59, 59, 999);
+            const endDate = this.createDateAsUTC(new Date(eDate));
+            const startDate = this.createDateAsUTC(new Date(this.${value.propertyName}Group.value.start));
+
+            query.addNode(new And([new Le('${sharedOptions.jsonAccessPath}${value.propertyValue}', \`\${endDate}\`), new Ge('${sharedOptions.jsonAccessPath}${value.propertyValue}', \`\${startDate}\`)]));
+            const filter = this.activeFilters.find(af => af.prop === '${value.propertyValue}');
+            const newLabel =\`${value.propertyValue}: from \${this.getFormattedDate(startDate)} to \${this.getFormattedDate(endDate)}\`;
+
+            if(!filter) {
+                this.activeFilters.push(<FilterType>{
+                    removable: true,
+                    type: FilterEnums.Date,
+                    label: newLabel, 
+                    prop: '${value.propertyValue}' 
+                });
+            } else {
+                filter.label = newLabel;
+            }
+        }`;
+
+    const formattedValues = values.map(template).join('');
+
+    return `
+        applyDateFilter(query: AbstractLogicalNode): void {
+            ${formattedValues}
+        }`;
+}
+
+function getDateNotRemote(values: PropValue[]): string {
     const dateFilterLogic = (value: any) => `
     if (this.${value.propertyName}Group.value.start !== null && this.${value.propertyName}Group.value.end !== null) {
       const startDate = this.createDateAsUTC(new Date(this.${value.propertyName}Group.value.start));
@@ -316,37 +332,6 @@ function getDateRemote(values: PropValue[]): string {
           } else {
             filter.label = label;
           }
-        }`;
-}
-
-function getDateNotRemote(values: PropValue[]): string {
-    const template = (value: any) => `
-        if (this.${value.propertyName}Group.value.end && this.${value.propertyName}Group.value.start) {
-            const eDate = new Date(this.${value.propertyName}Group.value.end).setHours(23, 59, 59, 999);
-            const endDate = this.createDateAsUTC(new Date(eDate));
-            const startDate = this.createDateAsUTC(new Date(this.${value.propertyName}Group.value.start));
-
-            query.addNode(new And([new Le('${sharedOptions.jsonAccessPath}${value.propertyValue}', \`\${endDate}\`), new Ge('${sharedOptions.jsonAccessPath}${value.propertyValue}', \`\${startDate}\`)]));
-            const filter = this.activeFilters.find(af => af.prop === '${value.propertyValue}');
-            const newLabel =\`${value.propertyValue}: from \${this.getFormattedDate(startDate)} to \${this.getFormattedDate(endDate)}\`;
-
-            if(!filter) {
-                this.activeFilters.push(<FilterType>{
-                    removable: true,
-                    type: FilterEnums.Date,
-                    label: newLabel, 
-                    prop: '${value.propertyValue}' 
-                });
-            } else {
-                filter.label = newLabel;
-            }
-        }`;
-
-    const formattedValues = values.map(template).join('');
-
-    return `
-        applyDateFilter(query: AbstractLogicalNode): void {
-            ${formattedValues}
         }`;
 }
 

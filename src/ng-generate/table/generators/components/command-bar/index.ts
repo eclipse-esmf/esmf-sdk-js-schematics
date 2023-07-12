@@ -44,7 +44,6 @@ export function generateCommandBar(options: any, allProps: Array<Property>): Rul
         const getLocalStorageKeyConfig = options.templateHelper.getLocalStorageKeyConfig(options);
 
         const propValues = getPropertiesToCreateFilters(options, allProps);
-        const customCommandBarActions = options.customCommandBarActions;
 
         return mergeWith(
             apply(url('./generators/components/command-bar/files'), [
@@ -60,9 +59,8 @@ export function generateCommandBar(options: any, allProps: Array<Property>): Rul
                     isAddDateQuickFilters: isAddDateQuickFilters,
                     isAddEnumQuickFilters: isAddEnumQuickFilters,
                     getTranslationPath: getTranslationPath,
-                    customCommandBarActions: customCommandBarActions,
+                    customCommandBarActions: options.customCommandBarActions,
                     spinalCaseFunc: options.templateHelper.spinalCase,
-                    hasSearchBar: options.hasSearchBar,
                     propValues: propValues,
                 }),
                 move(options.path),

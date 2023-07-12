@@ -325,4 +325,14 @@ export class TemplateHelper {
     private isDefaultScalarProperty(property: Property) {
         return property.effectiveDataType && property.effectiveDataType?.isScalar && property.effectiveDataType instanceof DefaultScalar;
     }
+
+    hasSearchBar(options: Schema): boolean {
+        return options.templateHelper.isAddCommandBarFunctionSearch(options.enabledCommandBarFunctions);
+    }
+
+    hasFilters(options: Schema): boolean {
+        return options.templateHelper.isAddCommandBarFunctionSearch(options.enabledCommandBarFunctions) ||
+            options.templateHelper.isAddDateQuickFilters(options.enabledCommandBarFunctions) ||
+            options.templateHelper.isAddEnumQuickFilters(options.enabledCommandBarFunctions);
+    }
 }

@@ -29,6 +29,7 @@ import {generateCommandBar} from "../command-bar/index";
 import {DefaultSingleEntity, Property} from "@esmf/aspect-model-loader";
 import {camelize, classify, dasherize} from "@angular-devkit/core/src/utils/strings";
 import {getAllEnumProps} from "../../../../../utils/aspect-model";
+import { Schema } from '../../../schema';
 
 let sharedOptions: any = {};
 let allProps: Array<Property> = [];
@@ -37,12 +38,12 @@ export function generateTable(options: any): Rule {
     sharedOptions = options;
 
     const templateHelper = sharedOptions.templateHelper;
-    sharedOptions.hasSearchBar = sharedOptions.templateHelper.isAddCommandBarFunctionSearch(sharedOptions.enabledCommandBarFunctions);
-    sharedOptions.hasFilters = sharedOptions.hasSearchBar ||
-        sharedOptions.templateHelper.isAddDateQuickFilters(sharedOptions.enabledCommandBarFunctions) ||
-        sharedOptions.templateHelper.isAddEnumQuickFilters(sharedOptions.enabledCommandBarFunctions);
+    sharedOptions.hasSearchBar = sharedOptions.templateHelper.hasSearchBar(options);
+    sharedOptions.hasFilters = sharedOptions.templateHelper.hasFilters(options);
+    sharedOptions.hasEnumQuickFilter = sharedOptions.templateHelper.isAddEnumQuickFilters(sharedOptions.enabledCommandBarFunctions);
+    sharedOptions.hasDateQuickFilter = sharedOptions.templateHelper.isAddDateQuickFilters(sharedOptions.enabledCommandBarFunctions);
 
-    sharedOptions.filterServiceName = `${classify(sharedOptions.name)}FilterService`;
+        sharedOptions.filterServiceName = `${classify(sharedOptions.name)}FilterService`;
 
     return (tree: Tree, _context: SchematicContext) => {
         allProps = templateHelper.getProperties(sharedOptions);
@@ -251,7 +252,7 @@ function getCustomColumn(): string {
 }
 
 function getByValueFunction(): string {
-    const propertyValues = getAllEnumProps(sharedOptions, []);
+    const propertyValues = getAllEnumProps(sharedOptions);
     return `${propertyValues.map(property => {
         return property.enumWithEntities ? `get${classify(property.propertyName)}Value = ${classify(property.characteristic)}.getByValue;` : '';
     }).join('')}`;
@@ -369,7 +370,7 @@ function getApplyFilters() {
                     this.rqlString = rqlStringTemp;
 
                     try{
-                      this.${camelize((sharedOptions.customRemoteService ? 'custom' : '') + sharedOptions.name)}Service.requestData(this.remoteAPI, {query: rqlStringTemp}).subscribe((response: ${classify(sharedOptions.aspectModel.name)}Response): void => {
+                      this.${camelize((sharedOptions.customRemoteService ? 'custom' : '') + '-' + sharedOptions.name)}Service.requestData(this.remoteAPI, {query: rqlStringTemp}).subscribe((response: ${classify(sharedOptions.aspectModel.name)}Response): void => {
                           this.dataSource.setData(response.items);
                           this.filteredData = response.items;
                           this.totalItems = this.data.length;
@@ -408,7 +409,7 @@ function getApplyFilters() {
                           this.totalItems = this.data.length;
                           this.maxExportRows = this.totalItems;
                           this.checkIfOnValidPage();
-                          ${sharedOptions.addRowCheckboxes ? `this.trimSelectionToCurrentPage();` : ``}
+                          ${sharedOptions.addRowCheckboxes && !sharedOptions.enableRemoteDataHandling ? `this.trimSelectionToCurrentPage();` : ``}
                           this.tableUpdateFinishedEvent.emit();
                        }
                     ${removeFilterFn}

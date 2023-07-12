@@ -1,16 +1,52 @@
 /** <%= getGenerationDisclaimerText %> **/
 import {NgModule} from '@angular/core';
 import {<%= classify(name) %>Component} from './<%= dasherize(name) %>.component';
-import {<%= classify(name) %>CommandBarComponent} from './<%= dasherize(name) %>-command-bar.component';
-import {<%= classify(name) %>ChipListComponent} from './<%= dasherize(name) %>-chip-list.component';
+
+<% if (options.addCommandBar) { %>
+    import {<%= classify(name) %>CommandBarComponent} from './<%= dasherize(name) %>-command-bar.component';
+<% } %>
+
+<% if (options.addCommandBar && options.hasFilters) { %>
+    import {<%= classify(name) %>ChipListComponent} from './<%= dasherize(name) %>-chip-list.component';
+<% } %>
+
+<% if (options.addCommandBar && options.hasSearchBar) { %>
+    import {<%= classify(name) %>ConfigMenuComponent} from './<%= dasherize(name) %>-config-menu.component';
+<% } %>
+
 import {<%= classify(name) %>ColumnMenuComponent} from './<%= dasherize(name) %>-column-menu.component';
-import {<%= classify(name) %>ConfigMenuComponent} from './<%= dasherize(name) %>-config-menu.component';
+
 import {AppSharedModule} from 'src/app/shared/app-shared.module';
 
 @NgModule({
-    declarations: [<%= classify(name) %>Component, <%= classify(name) %>ColumnMenuComponent, <%= classify(name) %>ConfigMenuComponent, <%= classify(name) %>CommandBarComponent, <%= classify(name) %>ChipListComponent],
+    declarations: [
+        <%= classify(name) %>Component,
+        <%= classify(name) %>ColumnMenuComponent
+
+        <% if (options.addCommandBar) { %>
+            , <%= classify(name) %>CommandBarComponent
+        <% } %>
+
+        <% if (options.addCommandBar && options.hasFilters) { %>
+            , <%= classify(name) %>ChipListComponent
+        <% } %>
+
+        <% if (options.addCommandBar && options.hasSearchBar) { %>
+            , <%= classify(name) %>ConfigMenuComponent
+        <% } %>
+    ],
     imports: [AppSharedModule],
     providers: [],
-    exports: [ <%= classify(name) %>Component, <%= classify(name) %>CommandBarComponent, <%= classify(name) %>ChipListComponent ],
+    exports: [
+        <%= classify(name) %>Component
+
+        <% if (options.addCommandBar) { %>
+            , <%= classify(name) %>CommandBarComponent
+        <% } %>
+
+        <% if (options.addCommandBar && options.hasFilters) { %>
+            , <%= classify(name) %>ChipListComponent
+        <% } %>
+    ],
 })
 export class <%= classify(name) %>Module {}

@@ -41,7 +41,6 @@ export function generateLanguageTranslationAsset(options: any, assetsPath: strin
                     dasherize: strings.dasherize,
                     options: sharedOptions,
                     name: langFileName,
-                    hasSearchBar: sharedOptions.hasSearchBar,
                     aspectModelName: sharedOptions.aspectModel.name,
                     selectedModelElementName: sharedOptions.selectedModelElement.name,
                     hasDateQuickFilter: sharedOptions.templateHelper.isAddDateQuickFilters(sharedOptions.enabledCommandBarFunctions),
@@ -107,20 +106,21 @@ function getBlockEntityInstance(property: Property, lang: string, parentProperty
 }
 
 function getBlockTransCustomColumns(): string {
-    return sharedOptions.customColumns
+    const customColumns = sharedOptions.customColumns
         .map((cc: string) => `"customColumn.${cc}": "${cc}"`)
         .join(', ');
+
+    return customColumns.length > 0? `${customColumns},` : '';
+
 }
 
 function getBlockTransRowActions(): string {
     const customRowActions = sharedOptions.customRowActions.map((cr: string, i: number, arr: string[]) => {
         const crReplaced = cr.replace(/\.[^/.]+$/, '').replace(/\s+/g, '-').toLowerCase();
-        const prefix = i === 0 ? ', ' : '';
-        const suffix = i < arr.length - 1 ? ',' : '';
-        return `${prefix}"${crReplaced}.customRowAction": "${crReplaced}"${suffix}`;
-    });
+        return `"${crReplaced}.customRowAction": "${crReplaced}"`;
+    }).join(', ');
 
-    return customRowActions.join('');
+    return customRowActions.length > 0? `${customRowActions},` : '';
 }
 
 function getBlockCustomCommandBarActions(): string {
@@ -130,11 +130,9 @@ function getBlockCustomCommandBarActions(): string {
 
     const actions = sharedOptions.customCommandBarActions.map(transformActionName);
 
-    const actionStrings = actions.map((action: string, index: number) => {
-        const trailingComma = index < actions.length - 1 ? ',' : '';
-        return `", ${action}.customCommandBarAction": "${action}"${trailingComma}`;
-    });
+    const actionStrings = actions.map((action: string, index: number) =>
+        `"${action}.customCommandBarAction": "${action}"`);
 
-    return `${actionStrings.join('')}`;
+    return actionStrings.length > 0? `${actionStrings},` : '';
 }
 

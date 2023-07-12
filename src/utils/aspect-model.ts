@@ -138,48 +138,48 @@ export function generateTranslationFiles(options: tableSchema): Rule {
     };
 }
 
-export function getAllEnumProps(options: any, allEnumProps: PropValue[]): PropValue[] {
-    if (allEnumProps) {
-        return allEnumProps;
-    }
-
-    const properties = options.templateHelper.getProperties(options);
-    const isEnumProperty = options.templateHelper.isEnumProperty;
-    const isEnumPropertyWithEntityValues = options.templateHelper.isEnumPropertyWithEntityValues;
-    const getEnumEntityInstancePayloadKey = options.templateHelper.getEnumEntityInstancePayloadKey;
-
-    return properties.reduce((acc: PropValue[], property: Property) => {
-        const isEnum = isEnumProperty(property);
-
-        // Handle complex properties
-        if (property.effectiveDataType?.isComplex && property.characteristic instanceof DefaultSingleEntity && isEnum) {
+export function getAllEnumProps(options: any): PropValue[] {
+    const enumProps: PropValue[] = [];
+    options.templateHelper.getProperties(options).forEach((property: Property) => {
+        if (property.effectiveDataType?.isComplex && property.characteristic instanceof DefaultSingleEntity) {
             const complexPropObj = options.templateHelper.getComplexProperties(property, options);
-            const complexEnumProps = complexPropObj.properties
-                .filter((complexProp: any) => isEnumProperty(complexProp) &&
-                    !options.excludedProperties.find((excludedProperty: any) => excludedProperty.propToExcludeAspectModelUrn === complexProp.aspectModelUrn))
-                .map((complexProp: any) => ({
-                    propertyValue: `${complexPropObj.complexProp}.${complexProp.name}${isEnumPropertyWithEntityValues(complexProp) ? '.' + getEnumEntityInstancePayloadKey(complexProp) : ''}`,
-                    propertyName: `${complexPropObj.complexProp}${classify(complexProp.name)}`,
-                    characteristic: complexProp.characteristic?.name,
-                    enumWithEntities: isEnumPropertyWithEntityValues(complexProp),
-                    property: complexProp,
-                    complexPropObj: complexPropObj,
-                }));
+            complexPropObj.properties.forEach((complexProp: Property) => {
+                if (
+                    options.templateHelper.isEnumProperty(complexProp) &&
+                    !options.excludedProperties.find(
+                        (excludedProperty: any) => excludedProperty.propToExcludeAspectModelUrn === complexProp.aspectModelUrn
+                    )
+                ) {
+                    const propertyName = `${complexPropObj.complexProp}${classify(complexProp.name)}`;
+                    const propertyValue = `${complexPropObj.complexProp}.${complexProp.name}${
+                        options.templateHelper.isEnumPropertyWithEntityValues(complexProp)
+                            ? '.' + options.templateHelper.getEnumEntityInstancePayloadKey(complexProp)
+                            : ''
+                    }`;
 
-            acc.push(...complexEnumProps);
-        }
-
-        // Handle scalar properties
-        if (isEnum) {
-            acc.push({
+                    enumProps.push({
+                        propertyValue: propertyValue,
+                        propertyName: propertyName,
+                        characteristic: complexProp.characteristic?.name,
+                        enumWithEntities: options.templateHelper.isEnumPropertyWithEntityValues(complexProp),
+                        property: complexProp,
+                        complexPropObj: complexPropObj,
+                    });
+                }
+            });
+        } else if (options.templateHelper.isEnumProperty(property)) {
+            enumProps.push({
                 propertyName: property.name,
-                propertyValue: `${property.name}${isEnumPropertyWithEntityValues(property) ? '.' + getEnumEntityInstancePayloadKey(property) : ''}`,
+                propertyValue: `${property.name}${
+                    options.templateHelper.isEnumPropertyWithEntityValues(property)
+                        ? '.' + options.templateHelper.getEnumEntityInstancePayloadKey(property)
+                        : ''
+                }`,
                 characteristic: property.characteristic?.name,
-                enumWithEntities: isEnumPropertyWithEntityValues(property),
+                enumWithEntities: options.templateHelper.isEnumPropertyWithEntityValues(property),
                 property: property,
             });
         }
-
-        return acc;
-    }, []);
+    });
+    return enumProps;
 }

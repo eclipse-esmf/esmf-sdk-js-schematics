@@ -103,20 +103,21 @@
         <% } %>
     <% } %>
     <span data-test="spacer" class="spacer"></span>
-    <% for(let action in customCommandBarActions) { %>
-        <button data-test="toolbar-custom-action-button" mat-icon-button (click)="executeCustomCommandBarAction($event, '<%= spinalCase(action) %>')" attr.aria-label="{{ '<%= versionedAccessPrefix %><%= spinalCase(action) %>.customCommandBarAction' | translate }}">
-            <mat-icon data-test="toolbar-custom-action-icon" matTooltip="{{'<%= versionedAccessPrefix %><%= spinalCase(action) %>.customCommandBarAction' | translate }}" aria-hidden="false"
-                <% if (action.lastIndexOf(".") > -1) { %>
-                    svgIcon="<%= spinalCase(action) %>
-                <% } %>
-                <% if (action.lastIndexOf(".") === -1) { %>
-                    class='material-icons'
-                <% } %>
-                <% if (action.lastIndexOf(".") === -1) { %>
-                    class='material-icons' <%= action %>
-                <% } %>
-            </mat-icon>
-        </button>
+
+    <% if (options.customCommandBarActions.length > 0) { %>
+        <% for(let action in customCommandBarActions) { %>
+            <button data-test="toolbar-custom-action-button" mat-icon-button (click)="executeCustomCommandBarAction($event, '<%= spinalCaseFunc(action) %>')" attr.aria-label="{{ '<%= versionedAccessPrefix %><%= spinalCaseFunc(action) %>.customCommandBarAction' | translate }}">
+                <mat-icon data-test="toolbar-custom-action-icon" matTooltip="{{'<%= versionedAccessPrefix %><%= spinalCaseFunc(action) %>.customCommandBarAction' | translate }}" aria-hidden="false"
+                    <% if (action.lastIndexOf(".") > -1) { %>
+                        svgIcon="<%= spinalCaseFunc(action) %>
+                    <% } %>
+                    <% if (action.lastIndexOf(".") === -1) { %>
+                        class='material-icons'>
+                        <%= action %>
+                    <% } %>
+                </mat-icon>
+            </button>
+        <% } %>
     <% } %>
 
     <button data-test="refresh-data-button" mat-icon-button aria-label="Refresh table" (click)="triggerApplyFilters()">
