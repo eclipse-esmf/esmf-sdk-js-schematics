@@ -36,7 +36,7 @@ export class <%= classify(name) %>CommandBarComponent {
 
     <% if (options.customRowActions.length > 0) { %>
         @Output() customCommandBarActionEvent = new EventEmitter<any>();
-    <% } >
+    <% } %>
 
 
     <% if (options.hasSearchBar) { %>
@@ -78,5 +78,5 @@ export class <%= classify(name) %>CommandBarComponent {
     <% if (options.customRowActions.length > 0) { %>
         $event.stopPropagation();
         this.customCommandBarActionEvent.emit({action: action});
-    <% } >
+    <% } %>
 }

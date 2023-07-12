@@ -123,9 +123,11 @@
     <button data-test="refresh-data-button" mat-icon-button aria-label="Refresh table" (click)="triggerApplyFilters()">
       <mat-icon data-test="refresh-data-icon" class="material-icons" [matTooltip]="'tableActions.refreshData' | translate">autorenew</mat-icon>
     </button>
+
     <button data-test="export-data-button" mat-icon-button aria-label="Download data as CSV" (click)="triggerExportToCsv()">
       <mat-icon data-test="export-data-icon" class="material-icons" [matTooltip]="'tableActions.exportData' | translate">file_download</mat-icon>
     </button>
+
     <% if (options.hasSearchBar) { %>
         <button data-test="open-configuration" mat-icon-button aria-label="Open configuration" [matMenuTriggerFor]="configurationMenu" (menuOpened)="triggerInitOpenedConfigurationDialog()">
             <mat-icon data-test="open-configuration-icon" class="material-icons"[matTooltip]="'tableActions.openConfig' | translate">settings </mat-icon>
