@@ -34,7 +34,7 @@ export class <%= classify(name) %>CommandBarComponent {
     @Output() reloadFilter = new EventEmitter<void>();
     @Output() exportToCsv = new EventEmitter<void>();
 
-    <% if (options.customRowActions.length > 0) { %>
+    <% if (options.customCommandBarActions.length > 0) { %>
         @Output() customCommandBarActionEvent = new EventEmitter<any>();
     <% } %>
 
@@ -75,8 +75,10 @@ export class <%= classify(name) %>CommandBarComponent {
         }
     <% } %>
 
-    <% if (options.customRowActions.length > 0) { %>
-        $event.stopPropagation();
-        this.customCommandBarActionEvent.emit({action: action});
+    <% if (options.customCommandBarActions.length > 0) { %>
+        executeCustomCommandBarAction($event: MouseEvent, action: string) {
+            $event.stopPropagation()
+            this.customCommandBarActionEvent.emit({action: action})
+        }
     <% } %>
 }
