@@ -59,11 +59,11 @@ export class <%= classify(name) %>CommandBarComponent {
       this.exportToCsv.emit();
     }
 
-    <% if (options.hasSearchBar) { %>
-        triggerReloadFilter(): void {
-          this.reloadFilter.emit();
-        }
+    triggerReloadFilter(): void {
+        this.reloadFilter.emit();
+    }
 
+    <% if (options.hasSearchBar) { %>
         triggerInitOpenedConfigurationDialog(): void {
             this.configurationComponent.keyLocalStorage = this.<%= getLocalStorageKeyConfig %>;
             this.configurationComponent.configs.splice(0, this.configurationComponent.configs.length);

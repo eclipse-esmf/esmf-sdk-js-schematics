@@ -27,7 +27,9 @@
         (applyFilters)="applyFilters()"
         (reloadFilter)="reloadFilter()"
         (exportToCsv)="exportToCsv()"
-        (executeCustomCommandBarAction)="customCommandBarActionEvent()"
+        <% if (options.customRowActions.length > 0) { %>
+            (executeCustomCommandBarAction)="customCommandBarActionEvent()"
+        <% } %>
     ></command-bar>
   <% } %>
   <ng-container *ngIf="!!customTemplate && !dataSource.data.length">

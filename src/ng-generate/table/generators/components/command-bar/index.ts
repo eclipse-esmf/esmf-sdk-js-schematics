@@ -71,7 +71,7 @@ export function generateCommandBar(options: any, allProps: Array<Property>): Rul
 }
 
 function getPropertiesToCreateFilters(options: any, allProps: Array<Property>): PropValue[] {
-    if (!options.templateHelper.isAddEnumQuickFilters(options.enabledCommandBarFunctions) || !options.templateHelper.isAddDateQuickFilters(options.enabledCommandBarFunctions)) {
+    if (!options.templateHelper.isAddEnumQuickFilters(options.enabledCommandBarFunctions) && !options.templateHelper.isAddDateQuickFilters(options.enabledCommandBarFunctions)) {
         return [];
     }
 
