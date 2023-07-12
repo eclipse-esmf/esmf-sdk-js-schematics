@@ -21,6 +21,11 @@ Model (SAMM) and supports its use.
 * For discussions specific to development, the preferred way is
   the [developer mailing list](https://accounts.eclipse.org/mailing-list/esmf-dev).
 
+## Architecture Decision Records
+
+Decisions on code and architecture are documented using [Markdown Any Decision
+Records](https://adr.github.io/madr/) in [documentation/decisions/](https://github.com/eclipse-esmf/esmf-sdk-js-schematics/tree/main/documentation/decisions).
+
 ## Branching
 
 We follow
