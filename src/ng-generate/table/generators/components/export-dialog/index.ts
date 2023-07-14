@@ -38,7 +38,6 @@ export function generateExportDialog(options: any): Rule {
         const componentName = 'export-confirmation-dialog';
         const componentPath = 'src/app/shared/components/export-confirmation-dialog';
 
-        // TODO check MergeStrategy.Overwrite with options.overwrite ..
         return mergeWith(
             apply(url('./generators/components/export-dialog/files'), [
                 applyTemplates({
@@ -50,7 +49,7 @@ export function generateExportDialog(options: any): Rule {
                 }),
                 move(componentPath),
             ]),
-            MergeStrategy.Overwrite
+            options.overwrite? MergeStrategy.Overwrite : MergeStrategy.Error
         );
     };
 }

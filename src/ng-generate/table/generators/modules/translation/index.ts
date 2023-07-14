@@ -42,7 +42,7 @@ export function generateTranslationModule(options: any): Rule {
                 }),
                 move('src/app/shared'),
             ]),
-            MergeStrategy.Overwrite
+            options.overwrite? MergeStrategy.Overwrite : MergeStrategy.Error
         );
     };
 }

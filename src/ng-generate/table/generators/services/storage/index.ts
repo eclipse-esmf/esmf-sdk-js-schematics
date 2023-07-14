@@ -40,7 +40,7 @@ export function generateStorageService(options: any): Rule {
                 }),
                 move(servicePath),
             ]),
-            MergeStrategy.Overwrite
+            options.overwrite? MergeStrategy.Overwrite : MergeStrategy.Error
         );
     };
 }

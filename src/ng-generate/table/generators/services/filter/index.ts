@@ -74,7 +74,7 @@ export function generateFilterService(options: any): Rule {
                 }),
                 move(sharedOptions.path),
             ]),
-            MergeStrategy.Overwrite
+            options.overwrite? MergeStrategy.Overwrite : MergeStrategy.Error
         );
     };
 }

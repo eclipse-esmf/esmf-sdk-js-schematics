@@ -44,7 +44,7 @@ export function generateCustomService(options: any): Rule {
                 }),
                 move(options.path),
             ]),
-            MergeStrategy.Overwrite
+            options.overwrite? MergeStrategy.Overwrite : MergeStrategy.Error
         );
     };
 }

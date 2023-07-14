@@ -46,7 +46,7 @@ export function genrateTableStyle(options: any): Rule {
                 }),
                 move(stylePath),
             ]),
-            MergeStrategy.Overwrite
+            options.overwrite? MergeStrategy.Overwrite : MergeStrategy.Error
         );
     };
 }

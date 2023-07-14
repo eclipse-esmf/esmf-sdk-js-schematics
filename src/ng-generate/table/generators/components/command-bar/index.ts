@@ -65,7 +65,7 @@ export function generateCommandBar(options: any, allProps: Array<Property>): Rul
                 }),
                 move(options.path),
             ]),
-            MergeStrategy.Overwrite
+            options.overwrite? MergeStrategy.Overwrite : MergeStrategy.Error
         );
     };
 }

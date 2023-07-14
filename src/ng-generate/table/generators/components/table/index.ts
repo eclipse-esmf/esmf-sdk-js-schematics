@@ -110,7 +110,7 @@ function generateHtml(): Rule {
             }),
             move(sharedOptions.path),
         ]),
-        MergeStrategy.Overwrite
+        options.overwrite? MergeStrategy.Overwrite : MergeStrategy.Error
     );
 }
 

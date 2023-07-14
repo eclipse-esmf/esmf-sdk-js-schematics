@@ -42,7 +42,7 @@ export function generateConfigMenu(options: any): Rule {
                 }),
                 move(options.path),
             ]),
-            MergeStrategy.Overwrite
+            options.overwrite? MergeStrategy.Overwrite : MergeStrategy.Error
         );
     };
 }

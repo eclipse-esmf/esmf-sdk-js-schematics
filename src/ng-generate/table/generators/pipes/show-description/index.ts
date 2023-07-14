@@ -40,7 +40,7 @@ export function generateShowDescriptionPipe(options: any): Rule {
                 }),
                 move(pipePath),
             ]),
-            MergeStrategy.Overwrite
+            options.overwrite? MergeStrategy.Overwrite : MergeStrategy.Error
         );
     };
 }

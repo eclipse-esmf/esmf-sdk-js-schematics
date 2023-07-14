@@ -38,7 +38,7 @@ export function generateColumnMenu(options: any): Rule {
                 }),
                 move(options.path),
             ]),
-            MergeStrategy.Overwrite
+            options.overwrite? MergeStrategy.Overwrite : MergeStrategy.Error
         );
     };
 }

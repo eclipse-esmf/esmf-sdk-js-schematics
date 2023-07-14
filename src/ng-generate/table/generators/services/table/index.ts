@@ -46,7 +46,7 @@ export function generateTableService(options: any): Rule {
                 }),
                 move(options.path),
             ]),
-            MergeStrategy.Overwrite
+            options.overwrite? MergeStrategy.Overwrite : MergeStrategy.Error
         );
     };
 }

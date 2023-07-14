@@ -40,7 +40,7 @@ export function generateHorizontalOverflowDirective(options: any): Rule {
                 }),
                 move(directivePath),
             ]),
-            MergeStrategy.Overwrite
+            options.overwrite? MergeStrategy.Overwrite : MergeStrategy.Error
         );
     };
 }
