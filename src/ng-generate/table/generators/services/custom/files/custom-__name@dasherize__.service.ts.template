@@ -2,6 +2,7 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {<%= classify(options.name) %>Service} from './<%= dasherize(options.name) %>.service';
+import {TranslateService} from '@ngx-translate/core';
 
 /**
 * Custom service which extend the original API service for fetching
@@ -17,7 +18,7 @@ import {<%= classify(options.name) %>Service} from './<%= dasherize(options.name
     providedIn: 'root'
 })
 export class Custom<%= classify(options.name) %>Service extends <%= classify(options.name) %>Service {
-    constructor(http: HttpClient) {
-        super(http);
+    constructor(http: HttpClient, translationService: TranslateService) {
+        super(http, translationService);
     }
 }

@@ -37,6 +37,9 @@ export type PropValue = {
     complexPropObj?: { complexProp: string; properties: Property[] };
 };
 
+export const assetsPath = 'assets/i18n/shared/components';
+export const baseAssetsPath = `src/${assetsPath}`;
+
 /**
  * A rule that reads the comma-separated list of files specified as options.aspectModelTFiles
  * and provides them as strings in array options.ttl.
@@ -127,7 +130,6 @@ export function generateTranslationFiles(options: tableSchema): Rule {
             ...element.properties.flatMap(property => property.localesDescriptions),
         ]);
 
-        const baseAssetsPath = 'src/assets/i18n/shared/components';
         const aspectModelPath = `/${dasherize(options.name).toLowerCase()}`;
         const versionPath = options.enableVersionSupport ? `/v${options.aspectModelVersion.replace(/\./g, '')}` : '';
         const assetsPath = `${baseAssetsPath}${aspectModelPath}${versionPath}`;

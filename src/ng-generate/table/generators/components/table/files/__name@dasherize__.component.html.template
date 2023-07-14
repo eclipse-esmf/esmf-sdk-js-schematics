@@ -75,8 +75,8 @@
                 let descriptionPipe = templateHelper.isEnumPropertyWithEntityValues(value.property) ? ` | showDescription:get${classify(value.property.name)}Value` : '';
                 let cellContent = `!(${isEmptyValue}) ? (row.${cellPropertyPath}${descriptionPipe}${language}${datePipe})  : '-'`;
             %>
-            <!-- <%= value.complex %><%= value.property.name %> Column -->
-            <ng-container data-test="table-column" matColumnDef="<%= options.jsonAccessPath %><%= value.complex %><%= value.property.name %>">
+            <!-- <%= cellPropertyPath %> Column -->
+            <ng-container data-test="table-column" matColumnDef="<%= cellPropertyPath %>">
                 <th data-test="table-header" mat-header-cell *matHeaderCellDef
                     mat-sort-header="<%= cellPropertyPath %>"
                     <%= templateHelper.isNumberProperty(value.property) ? `class="table-header-number"` : '' %>

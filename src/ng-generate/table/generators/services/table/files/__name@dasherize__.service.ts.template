@@ -3,6 +3,7 @@ import {HttpClient} from '@angular/common/http';
 import {Observable} from 'rxjs';
 import {<%= classify(aspectModelType) %>} from '<%= getTypesPath %>';
 import {Injectable} from '@angular/core';
+import {TranslateService} from "@ngx-translate/core";
 
 export interface <%= classify(aspectModelName) %>Response {
     items: <%= classify(aspectModelType) %>[];
@@ -22,7 +23,12 @@ export type <%= classify(aspectModelName) %>Payload<T extends Generic<%= classif
 })
 export class <%= classify(options.name) %>Service {
 
-    constructor(protected http: HttpClient) {}
+    constructor(protected http: HttpClient, private translateService: TranslateService) {
+        this.http.get(`<%= assetsPath %>/<%= dasherize(options.name) %><% if (options.enableVersionSupport) { %>/v<%= aspectModelVersion %><% } %>/${this.translateService.currentLang}.<%= dasherize(options.name) %>.translation.json`)
+          .subscribe(translations => {
+            this.translateService.setTranslation(this.translateService.currentLang, translations, true);
+          });
+    }
 
     <% if (options.enableRemoteDataHandling) { %>
         requestData(remoteAPI: string, body: <%= classify(aspectModelName) %>Payload): Observable<<%= classify(aspectModelName) %>Response> {

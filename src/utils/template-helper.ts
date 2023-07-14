@@ -285,7 +285,7 @@ export class TemplateHelper {
         if (!options.enableVersionSupport) {
             return ``;
         }
-        return `${options.selectedModelElement.name.toLowerCase()}.v${this.formatAspectModelVersion(options.aspectModelVersion)}`;
+        return `${options.selectedModelElement.name.toLowerCase()}.v${this.formatAspectModelVersion(options.aspectModelVersion)}.`;
     }
 
     spinalCase(text: string): string {
