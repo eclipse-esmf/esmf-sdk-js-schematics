@@ -36,15 +36,6 @@ type PropValue = {
 
 export function generateCommandBar(options: any, allProps: Array<Property>): Rule {
     return (tree: Tree, _context: SchematicContext) => {
-        const versionedAccessPrefix = options.templateHelper.getVersionedAccessPrefix(options);
-        const isAddCommandBarFunctionSearch = options.templateHelper.isAddCommandBarFunctionSearch(options.enabledCommandBarFunctions);
-        const isAddDateQuickFilters = options.templateHelper.isAddDateQuickFilters(options.enabledCommandBarFunctions);
-        const isAddEnumQuickFilters = options.templateHelper.isAddEnumQuickFilters(options.enabledCommandBarFunctions);
-        const getTranslationPath = options.templateHelper.getTranslationPath(options);
-        const getLocalStorageKeyConfig = options.templateHelper.getLocalStorageKeyConfig(options);
-
-        const propValues = getPropertiesToCreateFilters(options, allProps);
-
         return mergeWith(
             apply(url('./generators/components/command-bar/files'), [
                 applyTemplates({
@@ -52,16 +43,8 @@ export function generateCommandBar(options: any, allProps: Array<Property>): Rul
                     dasherize: strings.dasherize,
                     options: options,
                     name: options.name,
-                    getGenerationDisclaimerText: options.templateHelper.getGenerationDisclaimerText(),
-                    getLocalStorageKeyConfig: getLocalStorageKeyConfig,
-                    versionedAccessPrefix: versionedAccessPrefix,
-                    isAddCommandBarFunctionSearch: isAddCommandBarFunctionSearch,
-                    isAddDateQuickFilters: isAddDateQuickFilters,
-                    isAddEnumQuickFilters: isAddEnumQuickFilters,
-                    getTranslationPath: getTranslationPath,
-                    customCommandBarActions: options.customCommandBarActions,
                     spinalCaseFunc: options.templateHelper.spinalCase,
-                    propValues: propValues,
+                    propValues: getPropertiesToCreateFilters(options, allProps),
                 }),
                 move(options.path),
             ]),

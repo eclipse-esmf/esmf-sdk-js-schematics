@@ -27,21 +27,17 @@ import {strings} from "@angular-devkit/core";
 
 export function generateValidateInputDirective(options: any): Rule {
     return (tree: Tree, _context: SchematicContext) => {
-        const directiveName = 'validate-input';
-        const directivePath = 'src/app/shared/directives';
-
         return mergeWith(
             apply(url('./generators/directives/validate-input/files'), [
                 applyTemplates({
                     classify: strings.classify,
                     dasherize: strings.dasherize,
                     options: options,
-                    name: directiveName,
-                    getGenerationDisclaimerText: options.templateHelper.getGenerationDisclaimerText(),
+                    name: 'validate-input',
                 }),
-                move(directivePath),
+                move('src/app/shared/directives'),
             ]),
-            options.overwrite? MergeStrategy.Overwrite : MergeStrategy.Error
+            options.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error
         );
     };
 }

@@ -24,7 +24,7 @@ import {
     Property
 } from '@esmf/aspect-model-loader';
 import {Observable, Subscriber} from 'rxjs';
-import {Schema as tableSchema} from '../ng-generate/table/schema';
+import {Schema, Schema as tableSchema} from '../ng-generate/table/schema';
 import {Schema as typeSchema} from '../ng-generate/types/schema';
 import {generateLanguageTranslationAsset} from "../ng-generate/table/generators/language/index";
 
@@ -107,6 +107,23 @@ export function loadAspectModel(options: tableSchema | typeSchema): Rule {
     };
 
     return func as unknown as Rule;
+}
+
+export function validateUrns(options: Schema): void {
+    // if there is only one definition ('... a samm:Aspect') this one will be used
+    if (options.aspectModelUrnToLoad && options.aspectModelUrnToLoad !== '') {
+        if (!options.aspectModelUrnToLoad.includes('#')) {
+            options.spinner?.fail(`Aspect URN to be loaded ${options.aspectModelUrnToLoad} is not valid.`);
+        }
+    }
+
+    // if defined, validate URN otherwise the default (all properties 'samm:properties ( ... ) '
+    // of the Aspect definition '... a samm:Aspect') is used
+    if (options.selectedModelElementUrn && options.selectedModelElementUrn !== '') {
+        if (!options.selectedModelElementUrn.includes('#')) {
+            options.spinner?.fail(`URN ${options.selectedModelElementUrn} is not valid.`);
+        }
+    }
 }
 
 export function getSelectedModelElement(loader: AspectModelLoader, aspect: Aspect, options: tableSchema | typeSchema): Aspect | Entity {

@@ -33,7 +33,6 @@ export function generateChipList(options: any): Rule {
                     dasherize: strings.dasherize,
                     options: options,
                     name: options.name,
-                    getGenerationDisclaimerText: options.templateHelper.getGenerationDisclaimerText(),
                 }),
                 move(options.path),
             ]),

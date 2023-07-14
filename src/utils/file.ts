@@ -28,7 +28,7 @@ export function loadAndApplyConfigFile(configFile: string, options: any): void {
             Object.assign(options, JSON.parse(data));
         }
     } catch (error) {
-        // nothing to do. the file is missing.
+        console.error('File cannot be found: ' + configFile, error);
     }
 }
 

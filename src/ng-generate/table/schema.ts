@@ -13,6 +13,7 @@
 
 import {Schema as ComponentSchema} from '@schematics/angular/component/schema';
 import {DefaultSchema} from '../default-schema';
+import {Property} from "@esmf/aspect-model-loader";
 
 export interface ExcludedProperty {
     /**
@@ -60,8 +61,31 @@ export interface Schema extends ComponentSchema, DefaultSchema {
     customColumns: Array<string>;
     customStyleImports: [];
     overwrite: boolean;
-    complexProps: Array<{prop: string; propsToShow: ComplexEntityProperty[]}>;
+    complexProps: Array<{ prop: string; propsToShow: ComplexEntityProperty[] }>;
     skipInstall: boolean;
     getOptionalMaterialTheme: boolean;
     skipImport: boolean;
+}
+
+export interface Values extends Schema {
+    filterServiceName: string;
+    hasSearchBar: boolean;
+    hasFilters: boolean;
+    typePath: string;
+    dateProperties: Property[];
+    dateTimeStampProperties: Array<Property>;
+    timeProperties: Array<Property>;
+    generationDisclaimerText: string;
+    isDateQuickFilter: boolean;
+    isEnumQuickFilter: boolean;
+    selectedModelTypeName: string;
+    aspectModelTypeName: string;
+    localStorageKeyColumns: string;
+    localStoragePrefix: string;
+    localStorageKeyConfig: string;
+    versionedAccessPrefix: string;
+    translationPath: string;
+    isAspectSelected: boolean;
+    formatedAspectModelVersion: string;
+    listAllProperties: Array<Property>;
 }

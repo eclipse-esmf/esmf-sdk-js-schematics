@@ -26,13 +26,8 @@ import {strings} from '@angular-devkit/core';
 
 export function genrateTableStyle(options: any): Rule {
     return (tree: Tree, _context: SchematicContext) => {
-
-        const styleName = `table`;
-        const stylePath = `src/assets/scss`;
-
         const globalStylePath = 'src/styles.scss';
         tree.exists(globalStylePath) ? tree.overwrite(globalStylePath, contentForGlobalStyles()) : tree.create(globalStylePath, contentForGlobalStyles());
-
 
         return mergeWith(
             apply(url('./generators/styles/table/files'), [
@@ -40,13 +35,12 @@ export function genrateTableStyle(options: any): Rule {
                     classify: strings.classify,
                     dasherize: strings.dasherize,
                     options: options,
-                    name: styleName,
-                    getGenerationDisclaimerText: options.templateHelper.getGenerationDisclaimerText(),
+                    name: 'table',
                     customStyleImports: options.customStyleImports.map((styleImport: string) => `@import '${styleImport}';`).join(''),
                 }),
-                move(stylePath),
+                move('src/assets/scss'),
             ]),
-            options.overwrite? MergeStrategy.Overwrite : MergeStrategy.Error
+            options.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error
         );
     };
 }

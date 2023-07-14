@@ -1,11 +1,11 @@
 {
-    <% if (!isAspectSelected) { %>
+    <% if (!options.isAspectSelected) { %>
         <% if (options.enableVersionSupport) { %>
-            "<%= aspectModelName.toLowerCase() %>.v<%= formatAspectModelVersion %>": {
+            "<%= aspectModelName.toLowerCase() %>.v<%= options.formatedAspectModelVersion %>": {
         <% } %>
 
-        "preferredName": "<%= getPreferredName %>",
-        "description": "<%= getDescription %>"
+        "preferredName": "<%= preferredName %>",
+        "description": "<%= description %>"
 
         <% if (options.enableVersionSupport) { %>
             },
@@ -13,20 +13,20 @@
     <% } %>
 
     <% if (options.enableVersionSupport) { %>
-        "<%= selectedModelElementName.toLowerCase() %>.v<%= formatAspectModelVersion %>": {
+        "<%= selectedModelElementName.toLowerCase() %>.v<%= options.formatedAspectModelVersion %>": {
     <% } %>
 
-    <%= getProperties %>
-    <%= getBlockTransCustomColumns %>
-    <%= getBlockTransRowActions %>
-    <%= getBlockCustomCommandBarActions %>
+    <%= properties %>
+    <%= blockTransCustomColumns %>
+    <%= blockTransRowActions %>
+    <%= blockCustomCommandBarActions %>
 
     "customRowActions.preferredName": "Actions", "customRowActions.description": "Custom row actions"
 
-    <% if (isAspectSelected) { %>
+    <% if (options.isAspectSelected) { %>
         ,
-        "preferredName": "<%= getPreferredName %>",
-        "description": "<%= getDescription %>"
+        "preferredName": "<%= preferredName %>",
+        "description": "<%= description %>"
     <% } %>
 
     <% if (options.enableVersionSupport) { %>
@@ -40,7 +40,7 @@
         "allTextFields": "All Text Fields"
     <% } %>
 
-    <% if (hasEnumQuickFilter || hasDateQuickFilter) { %>
+    <% if (options.isEnumQuickFilter || options.isDateQuickFilter) { %>
         ,
         "date": {
             "start": "Start date",

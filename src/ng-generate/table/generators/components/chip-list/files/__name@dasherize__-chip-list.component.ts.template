@@ -1,4 +1,4 @@
-/** <%= getGenerationDisclaimerText %> **/
+/** <%= options.enerationDisclaimerText %> **/
 import {Component, EventEmitter, Output} from '@angular/core';
 import {<%= classify(name) %>FilterService} from './<%= dasherize(name) %>-filter.service';
 

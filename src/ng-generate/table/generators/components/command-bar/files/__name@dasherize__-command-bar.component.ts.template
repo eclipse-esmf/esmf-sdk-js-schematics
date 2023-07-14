@@ -1,4 +1,4 @@
-/** <%= getGenerationDisclaimerText %> **/
+/** <%= options.generationDisclaimerText %> **/
 import {Component, EventEmitter, Input, Output, ViewChild} from '@angular/core';
 
 <% if (options.hasFilters) { %>
@@ -23,9 +23,9 @@ export class <%= classify(name) %>CommandBarComponent {
     @Input() minNumberCharacters: number = 2;
     @Input() maxNumberCharacters: number = 50;
     @Input() searchHint?: string;
-    @Input() <%= getLocalStorageKeyConfig %>: string = '';
+    @Input() <%= options.localStorageKeyConfig %>: string = '';
 
-    <% if (isAddCommandBarFunctionSearch) { %>
+    <% if (options.hasSearchBar) { %>
         @Input() configs: Array<Config> = [];
         @Input() hasAdvancedSearch: boolean = this.filterService.stringColumns.length > 1;
     <% } %>
@@ -65,7 +65,7 @@ export class <%= classify(name) %>CommandBarComponent {
 
     <% if (options.hasSearchBar) { %>
         triggerInitOpenedConfigurationDialog(): void {
-            this.configurationComponent.keyLocalStorage = this.<%= getLocalStorageKeyConfig %>;
+            this.configurationComponent.keyLocalStorage = this.<%= options.localStorageKeyConfig %>;
             this.configurationComponent.configs.splice(0, this.configurationComponent.configs.length);
             this.configurationComponent.configs.push(...this.configs.map(config => ({...config})));
         }

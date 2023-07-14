@@ -1,4 +1,4 @@
-/** <%= getGenerationDisclaimerText %> **/
+/** <%= options.generationDisclaimerText %> **/
 .export-dialog-button-container {
   float: right;
 }

@@ -25,10 +25,13 @@ import {
 import {strings} from '@angular-devkit/core';
 import {classify, dasherize} from "@angular-devkit/core/src/utils/strings";
 import {addModuleImportToModule} from "@angular/cdk/schematics";
+import {Values} from "../../../schema";
 
 export function generateSharedModule(options: any): Rule {
     return (tree: Tree, _context: SchematicContext) => {
         options.module = `${dasherize(options.name)}.module.ts`;
+
+        options.templateHelper.setTemplateOptionValues(options as Values);
 
         const modulePath = `${options.path}/${dasherize(options.name)}.module.ts`;
         addModuleImportToModule(tree, '/src/app/app.module.ts', `${classify(options.name)}Module`, `${modulePath.replace('.ts', '')}`);
@@ -40,7 +43,6 @@ export function generateSharedModule(options: any): Rule {
                     dasherize: strings.dasherize,
                     options: options,
                     name: options.name,
-                    getGenerationDisclaimerText: options.templateHelper.getGenerationDisclaimerText(),
                 }),
                 move(options.path),
             ]),

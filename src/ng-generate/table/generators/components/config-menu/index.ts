@@ -27,7 +27,7 @@ import {strings} from '@angular-devkit/core';
 
 export function generateConfigMenu(options: any): Rule {
     return (tree: Tree, _context: SchematicContext) => {
-        if (!options.enabledCommandBarFunctions.includes('addSearchBar')) {
+        if (!options.hasSearchBar) {
             return noop();
         }
 
@@ -38,7 +38,6 @@ export function generateConfigMenu(options: any): Rule {
                     dasherize: strings.dasherize,
                     options: options,
                     name: options.name,
-                    getGenerationDisclaimerText: options.templateHelper.getGenerationDisclaimerText(),
                 }),
                 move(options.path),
             ]),

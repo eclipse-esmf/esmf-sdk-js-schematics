@@ -27,16 +27,14 @@ import {strings} from '@angular-devkit/core';
 
 export function generateExportDialog(options: any): Rule {
     return (tree: Tree, _context: SchematicContext) => {
-        const filePathHtml = `src/app/shared/components/export-confirmation-dialog/export-confirmation-dialog.component.html`;
-        const filePathScss = `src/app/shared/components/export-confirmation-dialog/export-confirmation-dialog.component.scss`;
-        const filePathTs = `src/app/shared/components/export-confirmation-dialog/export-confirmation-dialog.component.ts`;
+        const filePath = 'src/app/shared/components/export-confirmation-dialog/export-confirmation-dialog.component'
+        const htmlPath = `${filePath}.html`;
+        const scssPath = `${filePath}.scss`;
+        const tsPath = `${filePath}.ts`;
 
-        if (tree.exists(filePathHtml) && tree.exists(filePathScss) && tree.exists(filePathTs)) {
+        if (tree.exists(htmlPath) && tree.exists(scssPath) && tree.exists(tsPath)) {
             return noop();
         }
-
-        const componentName = 'export-confirmation-dialog';
-        const componentPath = 'src/app/shared/components/export-confirmation-dialog';
 
         return mergeWith(
             apply(url('./generators/components/export-dialog/files'), [
@@ -44,12 +42,11 @@ export function generateExportDialog(options: any): Rule {
                     classify: strings.classify,
                     dasherize: strings.dasherize,
                     options: options,
-                    name: componentName,
-                    getGenerationDisclaimerText: options.templateHelper.getGenerationDisclaimerText(),
+                    name: 'export-confirmation-dialog',
                 }),
-                move(componentPath),
+                move('src/app/shared/components/export-confirmation-dialog'),
             ]),
-            options.overwrite? MergeStrategy.Overwrite : MergeStrategy.Error
+            options.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error
         );
     };
 }

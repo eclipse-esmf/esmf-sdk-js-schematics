@@ -641,19 +641,19 @@ function getUserConfigQuestions(allAnswers: any, tree: Tree, options: Schema): Q
                                 value: 'addCustomCommandBarActions',
                             },
                         ];
-                        if (templateHelper.getStringProperties(options).length > 0) {
+                        if (templateHelper.getStringProperties(options as Schema).length > 0) {
                             choices.push({
                                 name: 'Search for string properties',
                                 value: 'addSearchBar',
                             });
                         }
-                        if (templateHelper.getDateProperties(options).length > 0) {
+                        if (templateHelper.getDateProperties(options as Schema).length > 0) {
                             choices.push({
                                 name: 'Quick filters for properties of type date',
                                 value: 'addDateQuickFilters',
                             });
                         }
-                        if (templateHelper.getEnumProperties(options).length > 0) {
+                        if (templateHelper.getEnumProperties(options as Schema).length > 0) {
                             choices.push({
                                 name: 'Quick filters for properties of type enumeration',
                                 value: 'addEnumQuickFilters',

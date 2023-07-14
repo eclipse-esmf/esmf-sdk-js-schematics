@@ -27,12 +27,9 @@ import {strings} from "@angular-devkit/core";
 
 export function generateSearchStringPipe(options: any): Rule {
     return (tree: Tree, _context: SchematicContext) => {
-        if (!options.enabledCommandBarFunctions.includes('addSearchBar')) {
+        if (!options.hasSearchBar) {
             return noop;
         }
-
-        const pipeName = 'search-string';
-        const pipePath = 'src/app/shared/pipes';
 
         return mergeWith(
             apply(url('./generators/pipes/search-string/files'), [
@@ -40,10 +37,9 @@ export function generateSearchStringPipe(options: any): Rule {
                     classify: strings.classify,
                     dasherize: strings.dasherize,
                     options: options,
-                    name: pipeName,
-                    getGenerationDisclaimerText: options.templateHelper.getGenerationDisclaimerText(),
+                    name: 'search-string',
                 }),
-                move(pipePath),
+                move('src/app/shared/pipes'),
             ]),
             options.overwrite? MergeStrategy.Overwrite : MergeStrategy.Error
         );

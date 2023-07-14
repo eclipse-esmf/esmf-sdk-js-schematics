@@ -21,7 +21,7 @@
         [searchHint]="searchHint"
         <% if (options.hasSearchBar) { %>
             [configs]="configs"
-            [<%= getLocalStorageKeyConfig %>]="<%= getLocalStorageKeyConfig %>"
+            [<%= options.localStorageKeyConfig %>]="<%= options.localStorageKeyConfig %>"
             (setConfiguration)="setConfiguration($event)"
         <% } %>
         (applyFilters)="applyFilters()"
@@ -62,7 +62,7 @@
             </ng-container>
         <% } %>
 
-        <% for(let value of getTableColumValues) { %>
+        <% for(let value of tableColumValues) { %>
             <%
                 let language = templateHelper.isMultiStringProperty(value.property) ? '[currentLanguage]' : '';
                 let propertyName = templateHelper.isEnumPropertyWithEntityValues(value.property)
@@ -70,7 +70,7 @@
                     : value.property.name;
                 let cellPropertyPath = `${options.jsonAccessPath}${value.complexPrefix}${propertyName}`;
                 let isEmptyValue = `row.${cellPropertyPath} === null || row.${cellPropertyPath} === undefined`;
-                let propertyLocaleKeyPath = `${templateHelper.getVersionedAccessPrefix(options)}${templateHelper.isAspectSelected(options) ? options.jsonAccessPath : ''}${value.complexPrefix}${value.property.name}`;
+                let propertyLocaleKeyPath = `${templateHelper.getVersionedAccessPrefix(options)}${options.isAspectSelected ? options.jsonAccessPath : ''}${value.complexPrefix}${value.property.name}`;
                 let datePipe = templateHelper.isDateTimeProperty(value.property) ? `| date: ${resolveDateTimeFormat(value.property)}` : '';
                 let descriptionPipe = templateHelper.isEnumPropertyWithEntityValues(value.property) ? ` | showDescription:get${classify(value.property.name)}Value` : '';
                 let cellContent = `!(${isEmptyValue}) ? (row.${cellPropertyPath}${descriptionPipe}${language}${datePipe})  : '-'`;
@@ -80,7 +80,7 @@
                 <th data-test="table-header" mat-header-cell *matHeaderCellDef
                     mat-sort-header="<%= cellPropertyPath %>"
                     <%= templateHelper.isNumberProperty(value.property) ? `class="table-header-number"` : '' %>
-                    <% if (getTableColumValues.length - 1 > value.index) { %>
+                    <% if (tableColumValues.length - 1 > value.index) { %>
                         [resizeColumn]="true" [index]="<%= value.index %>" (dragging)='dragging = $event'
                     <% } %>
                 >
@@ -126,11 +126,11 @@
                 <ng-container data-test="custom-column-container" matColumnDef="<%= columnName %>">
                     <% if(options.enableVersionSupport) { %>
                         <th data-test="custom-column-header" mat-header-cell *matHeaderCellDef mat-sort-header>
-                            {{ '<%= selectedModelTypeName.toLowerCase() %>.v<%= formatAspectModelVersion %>.customColumn.<%= columnName %>' | translate }}
+                            {{ '<%= options.selectedModelTypeName.toLowerCase() %>.v<%= options.formatedAspectModelVersion %>.customColumn.<%= columnName %>' | translate }}
                         </th>
                     <% } else { %>
                         <th data-test="custom-column-header" mat-header-cell *matHeaderCellDef mat-sort-header>
-                            {{ '<%= selectedModelTypeName.toLowerCase() %>.customColumn.<%= columnName %>' | translate }}
+                            {{ '<%= options.selectedModelTypeName.toLowerCase() %>.customColumn.<%= columnName %>' | translate }}
                         </th>
                     <% } %>
                     <td data-test="custom-column-cell" mat-cell *matCellDef="let row">
@@ -140,7 +140,7 @@
             <% } %>
         <% } %>
 
-        <%= getCustomRowActions %>
+        <%= customRowActions %>
 
         <ng-container data-test="columns-menu-button-header" matColumnDef="columnsMenu" stickyEnd>
           <th data-test="columns-menu-button-header" mat-header-cell *matHeaderCellDef>

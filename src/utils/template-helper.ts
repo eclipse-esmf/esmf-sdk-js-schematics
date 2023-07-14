@@ -26,12 +26,36 @@ import {
     Entity,
     Property,
 } from '@esmf/aspect-model-loader';
-import {dasherize, underscore} from '@angular-devkit/core/src/utils/strings';
-import {ExcludedProperty, Schema} from '../ng-generate/table/schema';
+import {classify, dasherize, underscore} from '@angular-devkit/core/src/utils/strings';
+import {ExcludedProperty, Schema, Values} from '../ng-generate/table/schema';
 import * as locale from 'locale-codes';
+import {DefaultSchema} from "../ng-generate/default-schema";
 
 export class TemplateHelper {
-    isAspectSelected(options: Schema | any) {
+    setTemplateOptionValues(options: Values) {
+        options.filterServiceName = `${classify(options.name)}FilterService`;
+        options.hasSearchBar = this.hasSearchBar(options);
+        options.hasFilters = this.hasFilters(options);
+        options.typePath = this.getTypesPath(options.enableVersionSupport, options.aspectModelVersion, options.aspectModel);
+        options.dateProperties = this.getDateProperties(options).filter((property: Property) => this.isDateProperty(property));
+        options.dateTimeStampProperties = this.getDateProperties(options).filter((property: Property) => this.isDateTimestampProperty(property));
+        options.timeProperties = this.getDateProperties(options).filter((property: Property) => this.isTimeProperty(property));
+        options.generationDisclaimerText = this.getGenerationDisclaimerText();
+        options.isDateQuickFilter = this.isAddDateQuickFilters(options.enabledCommandBarFunctions);
+        options.isEnumQuickFilter = this.isAddEnumQuickFilters(options.enabledCommandBarFunctions);
+        options.selectedModelTypeName = this.resolveType(options.selectedModelElement).name;
+        options.aspectModelTypeName = this.resolveType(options.aspectModel).name;
+        options.localStorageKeyColumns = this.getLocalStorageKeyColumns(options);
+        options.localStoragePrefix = this.getLocalStoragePrefix();
+        options.localStorageKeyConfig = this.getLocalStorageKeyConfig(options);
+        options.versionedAccessPrefix = this.getVersionedAccessPrefix(options);
+        options.translationPath = this.getTranslationPath(options);
+        options.isAspectSelected = this.isAspectSelected(options);
+        options.formatedAspectModelVersion = this.formatAspectModelVersion(options.aspectModelVersion);
+        options.listAllProperties = this.getProperties(options);
+    }
+
+    isAspectSelected(options: Schema) {
         return options.selectedModelElementUrn === options.aspectModel.aspectModelUrn;
     }
 
@@ -129,7 +153,7 @@ export class TemplateHelper {
         return property.characteristic.name === 'MultiLanguageText';
     }
 
-    getEnumProperties(options: Schema | any): Array<Property> {
+    getEnumProperties(options: Schema): Array<Property> {
         return this.getAllProperties(options).filter(
             property =>
                 this.isEnumProperty(property) &&
@@ -139,7 +163,7 @@ export class TemplateHelper {
         );
     }
 
-    getStringProperties(options: Schema | any): Array<Property> {
+    getStringProperties(options: Schema): Array<Property> {
         return this.getAllProperties(options).filter(
             property =>
                 this.isStringProperty(property) &&
@@ -149,7 +173,7 @@ export class TemplateHelper {
         );
     }
 
-    getDateProperties(options: Schema | any): Array<Property> {
+    getDateProperties(options: Schema): Array<Property> {
         return this.getAllProperties(options).filter(
             property =>
                 this.isDateTimeProperty(property) &&
@@ -171,7 +195,7 @@ export class TemplateHelper {
      * Gets a flat list of properties. A property with a complex type will be resolved to
      * the chosen property of the underlying element.
      */
-    getAllProperties(options: Schema | any) {
+    getAllProperties(options: Schema) {
         const properties = this.getProperties(options);
         const resolvedProperties: Array<Property> = [];
         properties
@@ -319,7 +343,7 @@ export class TemplateHelper {
 
     getTranslationPath(options: Schema): string {
         const translationPath = `${this.getVersionedAccessPrefix(options)}${this.isAspectSelected(options) ? options.jsonAccessPath : ''}`;
-        return `${translationPath.length ? translationPath + '.' : ''}`;
+        return `${translationPath.length ? translationPath : ''}`;
     }
 
     private isDefaultScalarProperty(property: Property) {
@@ -327,12 +351,12 @@ export class TemplateHelper {
     }
 
     hasSearchBar(options: Schema): boolean {
-        return options.templateHelper.isAddCommandBarFunctionSearch(options.enabledCommandBarFunctions);
+        return this.isAddCommandBarFunctionSearch(options.enabledCommandBarFunctions);
     }
 
     hasFilters(options: Schema): boolean {
-        return options.templateHelper.isAddCommandBarFunctionSearch(options.enabledCommandBarFunctions) ||
-            options.templateHelper.isAddDateQuickFilters(options.enabledCommandBarFunctions) ||
-            options.templateHelper.isAddEnumQuickFilters(options.enabledCommandBarFunctions);
+        return this.isAddCommandBarFunctionSearch(options.enabledCommandBarFunctions) ||
+            this.isAddDateQuickFilters(options.enabledCommandBarFunctions) ||
+            this.isAddEnumQuickFilters(options.enabledCommandBarFunctions);
     }
 }

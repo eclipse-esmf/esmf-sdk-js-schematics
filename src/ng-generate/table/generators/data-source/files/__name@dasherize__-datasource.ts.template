@@ -1,9 +1,9 @@
-/** <%= getGenerationDisclaimerText %> **/
+/** <%= options.generationDisclaimerText %> **/
 import { DataSource } from '@angular/cdk/collections';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { Observable, BehaviorSubject } from 'rxjs';
-import {<%= aspectModelName %>} from '<%= getTypesPath %>';
+import {<%= options.aspectModelTypeName %>} from '<%= options.typePath %>';
 <% if (!options.enableRemoteDataHandling) { %>import {TranslateService} from '@ngx-translate/core';<% } %>
 
 /**
@@ -11,15 +11,15 @@ import {<%= aspectModelName %>} from '<%= getTypesPath %>';
  * encapsulate all logic for fetching and manipulating the displayed
  * data (including sorting, pagination, and filtering).
  */
-export class <%= classify(name) %>DataSource extends DataSource<<%= aspectModelName %>> {
+export class <%= classify(name) %>DataSource extends DataSource<<%= options.aspectModelTypeName %>> {
 
   paginator: MatPaginator | undefined;
   sort: MatSort | undefined;
 
   <% if (options.enableRemoteDataHandling) { %>remoteAPI: string | undefined;<% } %>
 
-  private _data: Array<<%= aspectModelName %>> = new Array<<%= aspectModelName %>>();
-  private _dataSubject = new BehaviorSubject<Array< <%= aspectModelName %>>>([]);
+  private _data: Array<<%= options.aspectModelTypeName %>> = new Array<<%= options.aspectModelTypeName %>>();
+  private _dataSubject = new BehaviorSubject<Array< <%= options.aspectModelTypeName %>>>([]);
 
   constructor(<% if (!options.enableRemoteDataHandling) { %>private translateService: TranslateService<% } %>) {
     super();
@@ -30,15 +30,15 @@ export class <%= classify(name) %>DataSource extends DataSource<<%= aspectModelN
    * only update when the returned stream emits new items.
    * @returns A stream of the items to be rendered.
    */
-  connect(): Observable<Array<<%= aspectModelName %>>> {
+  connect(): Observable<Array<<%= options.aspectModelTypeName %>>> {
     return this._dataSubject.asObservable();
   }
 
-  get displayedData(): Array<<%= aspectModelName %>> {
+  get displayedData(): Array<<%= options.aspectModelTypeName %>> {
     return this._dataSubject.value;
   }
 
-  get data(): Array<<%= aspectModelName %>> {
+  get data(): Array<<%= options.aspectModelTypeName %>> {
     return this._data;
   }
 
@@ -50,16 +50,16 @@ export class <%= classify(name) %>DataSource extends DataSource<<%= aspectModelN
     this._dataSubject.complete();
   }
 
-  setDataSubject(data: Array<<%= aspectModelName %>>): void {
+  setDataSubject(data: Array<<%= options.aspectModelTypeName %>>): void {
     this._dataSubject.next(data);
   }
 
-  setData(data: Array<<%= aspectModelName %>>) {
+  setData(data: Array<<%= options.aspectModelTypeName %>>) {
     this._data = [];
     this.addData(data);
   }
 
-  addData(data: Array<<%= aspectModelName %>>) {
+  addData(data: Array<<%= options.aspectModelTypeName %>>) {
     this._data.push(...data);
     this.setDataSubject(
         <% if (!options.enableRemoteDataHandling) { %>
@@ -75,7 +75,7 @@ export class <%= classify(name) %>DataSource extends DataSource<<%= aspectModelN
   }
 
   <% if (!options.enableRemoteDataHandling) { %>
-    private getPagedData(data: Array<<%= classify(aspectModelName) %>>): Array<<%= classify(aspectModelName) %>> {
+    private getPagedData(data: Array<<%= classify(options.aspectModelTypeName) %>>): Array<<%= classify(options.aspectModelTypeName) %>> {
         if (this.paginator) {
             const startIndex = this.paginator.pageIndex * this.paginator.pageSize;
             return data.slice(startIndex, startIndex + this.paginator.pageSize);
@@ -84,12 +84,12 @@ export class <%= classify(name) %>DataSource extends DataSource<<%= aspectModelN
         }
     }
 
-    sortData(data = this._data): <%= classify(aspectModelName) %>[] {
+    sortData(data = this._data): <%= classify(options.aspectModelTypeName) %>[] {
         if (!this.sort || !this.sort.active || this.sort.direction === '') {
           return data;
         }
 
-        return data.sort((a: <%= classify(aspectModelName) %>, b: <%= classify(aspectModelName) %>): number => {
+        return data.sort((a: <%= classify(options.aspectModelTypeName) %>, b: <%= classify(options.aspectModelTypeName) %>): number => {
           const isSortingAsc = this.sort?.direction === 'asc';
           switch (this.sort?.active.trim()) {
             <%= getSorting %>

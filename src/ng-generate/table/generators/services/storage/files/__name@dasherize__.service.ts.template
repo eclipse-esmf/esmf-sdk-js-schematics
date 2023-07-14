@@ -1,4 +1,4 @@
-/** <%= getGenerationDisclaimerText %> **/
+/** <%= options.generationDisclaimerText %> **/
 import {Injectable} from '@angular/core';
 
 /**

@@ -26,19 +26,15 @@ import {strings} from "@angular-devkit/core";
 
 export function generateHorizontalOverflowDirective(options: any): Rule {
     return (tree: Tree, _context: SchematicContext) => {
-        const directiveName = 'horizontal-overflow';
-        const directivePath = 'src/app/shared/directives';
-
         return mergeWith(
             apply(url('./generators/directives/horizontal-overflow/files'), [
                 applyTemplates({
                     classify: strings.classify,
                     dasherize: strings.dasherize,
                     options: options,
-                    name: directiveName,
-                    getGenerationDisclaimerText: options.templateHelper.getGenerationDisclaimerText(),
+                    name: 'horizontal-overflow',
                 }),
-                move(directivePath),
+                move('src/app/shared/directives'),
             ]),
             options.overwrite? MergeStrategy.Overwrite : MergeStrategy.Error
         );

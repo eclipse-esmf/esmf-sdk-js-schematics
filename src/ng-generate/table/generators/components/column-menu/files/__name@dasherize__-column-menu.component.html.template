@@ -5,8 +5,8 @@
   <mat-list-option cdkDrag data-test="column-list-option" *ngFor="let column of columns" [selected]="column.selected" (click)="columnClick($event, column)">
     <div class="list-content">
       <div class="list-text">
-        <div data-test="column-option-preferred-name">{{ '<% if (getVersionedAccessPrefix) { %><%= getVersionedAccessPrefix %><% } %>' + column.name + '.preferredName' | translate }}</div>
-        <div class="mat-small" data-test="column-option-description">{{ '<% if (getVersionedAccessPrefix) { %><%= getVersionedAccessPrefix %><% } %>' + column.name + '.description' | translate }}</div>
+        <div data-test="column-option-preferred-name">{{ '<% if (options.versionedAccessPrefix) { %><%= options.versionedAccessPrefix %><% } %>' + column.name + '.preferredName' | translate }}</div>
+        <div class="mat-small" data-test="column-option-description">{{ '<% if (options.versionedAccessPrefix) { %><%= options.versionedAccessPrefix %><% } %>' + column.name + '.description' | translate }}</div>
       </div>
       <mat-icon data-test="drag-indicator-icon" matTooltip="Draggable row" class="material-icons" style="color:rgba(0,0,0,.54);">drag_indicator</mat-icon>
     </div>

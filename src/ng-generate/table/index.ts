@@ -21,7 +21,7 @@ import {
     addToComponentModule,
     wrapBuildComponentExecution,
 } from '../../utils/angular';
-import {generateTranslationFiles, loadAspectModel, loadRDF} from '../../utils/aspect-model';
+import {generateTranslationFiles, loadAspectModel, loadRDF, validateUrns} from '../../utils/aspect-model';
 import {formatGeneratedFiles, loadAndApplyConfigFile} from '../../utils/file';
 import {
     addPackageJsonDependencies,
@@ -63,6 +63,7 @@ export default function (options: Schema): Rule {
             const prompterTaskId = context.addTask(new RunSchematicTask('table-prompter', options));
             generateTypesTaskId = context.addTask(new RunSchematicTask('types', options), [prompterTaskId]);
         }
+
         const tableGenId = context.addTask(new RunSchematicTask('table-generation', options), [generateTypesTaskId]);
 
         if (!options.skipInstall) {
@@ -79,12 +80,10 @@ export function generate(options: Schema): Rule {
     options.spinner = ora().start();
 
     const defaultOptions = {
-        skipImport: false,
+        configFile: options.configFile !== WIZARD_CONFIG_FILE ? WIZARD_CONFIG_FILE : options.configFile,
+        templateHelper: new TemplateHelper(),
+        skipImport: false
     };
-
-    if (options.configFile !== WIZARD_CONFIG_FILE) {
-        options.configFile = WIZARD_CONFIG_FILE;
-    }
 
     options = {
         ...defaultOptions,
@@ -97,23 +96,17 @@ export function generate(options: Schema): Rule {
         options.aspectModelTFiles = options.aspectModelTFilesString.split(',');
     }
 
-    options.templateHelper = new TemplateHelper();
-
-    validateURNs(options);
-
-    if (!options.path) {
-        options.path = `src/app/shared/components`;
-    }
+    validateUrns(options);
 
     if (options.jsonAccessPath.length > 0 && !options.jsonAccessPath.endsWith('.')) {
         options.jsonAccessPath = `${options.jsonAccessPath}.`;
     }
 
+    options.path = !options.path ? 'src/app/shared/components' : '';
+
     return chain([
-        // load the ttl files
-        loadRDF(options),
-        // serialize RDf into aspect model object
-        loadAspectModel(options),
+        loadRDF(options), // load the ttl files
+        loadAspectModel(options), // serialize RDf into aspect model object
         setCustomActionsAndFilters(options),
         setTableName(options),
         insertVersionIntoSelector(options),
@@ -168,23 +161,6 @@ function setCustomActionsAndFilters(options: Schema): Rule {
             }
         });
     };
-}
-
-function validateURNs(options: Schema): void {
-    // if there is only one definition ('... a samm:Aspect') this one will be used
-    if (options.aspectModelUrnToLoad && options.aspectModelUrnToLoad !== '') {
-        if (!options.aspectModelUrnToLoad.includes('#')) {
-            options.spinner?.fail(`Aspect URN to be loaded ${options.aspectModelUrnToLoad} is not valid.`);
-        }
-    }
-
-    // if defined, validate URN otherwise the default (all properties 'samm:properties ( ... ) '
-    // of the Aspect definition '... a samm:Aspect') is used
-    if (options.selectedModelElementUrn && options.selectedModelElementUrn !== '') {
-        if (!options.selectedModelElementUrn.includes('#')) {
-            options.spinner?.fail(`URN ${options.selectedModelElementUrn} is not valid.`);
-        }
-    }
 }
 
 function setTableName(options: Schema): Rule {
@@ -324,8 +300,8 @@ function formatAllFiles(options: Schema): Rule {
         'src/app/shared'
     ];
 
-    const rules = paths.map(path => formatGeneratedFiles({ getPath: () => path }, options));
-    rules.push(formatGeneratedFiles({ getPath: () => 'src/app/shared' }, options, ['app-shared.module.ts']));
+    const rules = paths.map(path => formatGeneratedFiles({getPath: () => path}, options));
+    rules.push(formatGeneratedFiles({getPath: () => 'src/app/shared'}, options, ['app-shared.module.ts']));
 
     return chain(rules);
 }

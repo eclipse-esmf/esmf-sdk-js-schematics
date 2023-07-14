@@ -1,4 +1,4 @@
-/** <%= getGenerationDisclaimerText %> **/
+/** <%= options.generationDisclaimerText %> **/
 import {Directive, ElementRef, EventEmitter, Inject, Input, OnInit, Output, Renderer2} from '@angular/core';
 import {DOCUMENT} from '@angular/common';
 

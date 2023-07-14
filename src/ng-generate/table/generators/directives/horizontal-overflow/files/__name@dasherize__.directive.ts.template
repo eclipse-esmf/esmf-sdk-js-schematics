@@ -1,4 +1,4 @@
-/** <%= getGenerationDisclaimerText %> **/
+/** <%= options.enerationDisclaimerText %> **/
 import {AfterContentInit, Directive, ElementRef, HostListener, Input, NgZone, OnDestroy} from '@angular/core';
 import {MatChipList} from '@angular/material/chips';
 import {Subject} from 'rxjs';

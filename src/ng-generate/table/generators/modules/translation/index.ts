@@ -38,7 +38,6 @@ export function generateTranslationModule(options: any): Rule {
                     classify: strings.classify,
                     dasherize: strings.dasherize,
                     name: 'app-shared',
-                    getGenerationDisclaimerText: options.templateHelper.getGenerationDisclaimerText(),
                 }),
                 move('src/app/shared'),
             ]),

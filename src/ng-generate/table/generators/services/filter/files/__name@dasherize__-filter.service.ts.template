@@ -1,4 +1,4 @@
-/** <%= getGenerationDisclaimerText %> **/
+/** <%= options.generationDisclaimerText %> **/
 <% if (options.enableRemoteDataHandling) { %>
     import {
         AbstractArrayNode,
@@ -17,27 +17,27 @@
     } from 'rollun-ts-rql';
 <% } %>
 
-<% if (options.hasSearchBar || options.hasDateQuickFilter) { %>import {TranslateService} from '@ngx-translate/core';<% } %>
+<% if (options.hasSearchBar || options.isDateQuickFilter) { %>import {TranslateService} from '@ngx-translate/core';<% } %>
 
 import {AbstractControl, FormControl, ValidationErrors, ValidatorFn} from '@angular/forms';
-import {Injectable<% if (options.hasDateQuickFilter) { %>, Inject<% } %>} from '@angular/core';
+import {Injectable<% if (options.isDateQuickFilter) { %>, Inject<% } %>} from '@angular/core';
 
-<% if (options.hasDateQuickFilter) { %>
+<% if (options.isDateQuickFilter) { %>
     import { FormGroup } from '@angular/forms';
     import {DateAdapter, MAT_DATE_FORMATS, MatDateFormats} from "@angular/material/core";
     import moment from 'moment';
 <% } %>
 
-import {<%= classify(selectedModelElementName) %>
-<% if (!options.aspectModel.isCollectionAspect && !options.templateHelper.isAspectSelected(options)) { %>
-    , <%= classify(aspectModelName) %>
+import {<%= classify(options.selectedModelTypeName) %>
+<% if (!options.aspectModel.isCollectionAspect && !options.isAspectSelected) { %>
+    , <%= classify(options.aspectModelTypeName) %>
 <% } %>
 
-<% if (hasEnumQuickFilter) { %>
+<% if (options.isEnumQuickFilter) { %>
     , <%= getEnumProperties %>
 <% } %>
 
-} from '<%= getTypesPath %>';
+} from '<%= options.typePath %>';
 
 export enum FilterEnums {
     Date,
@@ -128,21 +128,21 @@ export class <%= classify(name) %>FilterService {
         <%= setStringColumns %>
     <% } %>
 
-    <% if (hasEnumQuickFilter) { %>
+    <% if (options.isEnumQuickFilter) { %>
         <%= setEnumQuickFilter %>
     <% } %>
 
-    <% if (options.hasDateQuickFilter) { %>
+    <% if (options.isDateQuickFilter) { %>
         <%= setDataQuickFilter %>
     <% } %>
 
 
     constructor(
-        <% if (options.hasDateQuickFilter) { %>
+        <% if (options.isDateQuickFilter) { %>
             @Inject(MAT_DATE_FORMATS) private dateFormats: MatDateFormats,
             private dateAdapter: DateAdapter<any>,
         <% } %>
-        <% if (options.hasDateQuickFilter || options.hasSearchBar) { %>
+        <% if (options.isDateQuickFilter || options.hasSearchBar) { %>
             private translateService: TranslateService
         <% } %>
     ){}
@@ -165,11 +165,11 @@ export class <%= classify(name) %>FilterService {
                     break;
             <% } %>
 
-            <% if (hasEnumQuickFilter) { %>
+            <% if (options.isEnumQuickFilter) { %>
                 <%= setEnumRemoveFilter %>
             <% } %>
 
-            <% if (options.hasDateQuickFilter) { %>
+            <% if (options.isDateQuickFilter) { %>
                 <%= setDataRemoveFilter %>
             <% } %>
         }
@@ -191,11 +191,11 @@ export class <%= classify(name) %>FilterService {
         }
 
         <% if (!options.enableRemoteDataHandling) { %>
-            applyStringSearchFilter(data: Array<<%= classify(aspectModelName) %>>): Array<<%= classify(aspectModelName) %>> {
+            applyStringSearchFilter(data: Array<<%= classify(options.aspectModelTypeName) %>>): Array<<%= classify(options.aspectModelTypeName) %>> {
                 if (this.searchString.value && this.searchString.value !== '' && !this.activeFilters.find(elem => elem.prop === this.selectedStringColumn.value && elem.filterValue === this.searchString.value)) {
                     const label = `in ${ this.selectedStringColumn.value === this.advancedSearchAllValue ?
                     this.translateService.instant('allTextFields') :
-                        this.translateService.instant(`<%= getTranslationPath %>` + this.selectedStringColumn.value + '.preferredName')}`;
+                        this.translateService.instant(`<%= options.translationPath %>` + this.selectedStringColumn.value + '.preferredName')}`;
                         this.activeFilters.push(<FilterType> {
                             removable: true,
                             type:FilterEnums.Search,
@@ -231,7 +231,7 @@ export class <%= classify(name) %>FilterService {
                 if (this.searchString.value && this.searchString.value !== '' && !this.activeFilters.find(elem => elem.prop === this.selectedStringColumn.value && elem.filterValue === this.searchString.value)) {
                     const label = ` in ${ this.selectedStringColumn.value === this.advancedSearchAllValue ?
                     this.translateService.instant('allTextFields') :
-                        this.translateService.instant(`<%= getTranslationPath %>` + this.selectedStringColumn.value + '.preferredName')}`;
+                        this.translateService.instant(`<%= options.translationPath %>` + this.selectedStringColumn.value + '.preferredName')}`;
                          this.activeFilters.push(<FilterType> {
                             removable: true,
                             type:FilterEnums.Search,
@@ -263,7 +263,7 @@ export class <%= classify(name) %>FilterService {
         }
     <% } %>
 
-    <% if (hasEnumQuickFilter) { %>
+    <% if (options.isEnumQuickFilter) { %>
         <% if (options.enableRemoteDataHandling) { %>
             <%= getEnumFilterRemote %>
         <% } else { %>
@@ -271,7 +271,7 @@ export class <%= classify(name) %>FilterService {
         <% } %>
     <% } %>
 
-    <% if (options.hasDateQuickFilter) { %>
+    <% if (options.isDateQuickFilter) { %>
         <% if (options.enableRemoteDataHandling) { %>
             <%= getDateRemote %>
         <% } else { %>

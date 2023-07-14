@@ -27,6 +27,7 @@ import {strings} from "@angular-devkit/core";
 import {DefaultSingleEntity, Property} from "@esmf/aspect-model-loader";
 import {classify} from "@angular-devkit/core/src/utils/strings";
 import {getAllEnumProps, PropValue} from "../../../../../utils/aspect-model";
+import {share} from "rxjs";
 
 let sharedOptions: any = {};
 
@@ -38,10 +39,8 @@ export function generateFilterService(options: any): Rule {
     }
 
     return (tree: Tree, _context: SchematicContext) => {
-        const allProps: Property[] = sharedOptions.templateHelper.getProperties(sharedOptions);
-
         const enumValues = getAllEnumProps(sharedOptions);
-        const dataValues = getAllDateProps(allProps);
+        const dataValues = getAllDateProps(sharedOptions.listAllProperties);
 
         const key = `item.${sharedOptions.jsonAccessPath}`;
         const itemKey = key.substring(0, key.length - 1);
@@ -54,15 +53,9 @@ export function generateFilterService(options: any): Rule {
                     options: sharedOptions,
                     name: sharedOptions.name,
                     itemKey: itemKey,
-                    getAllStringProps: getAllStringProps(allProps),
-                    hasEnumQuickFilter: sharedOptions.templateHelper.isAddEnumQuickFilters(sharedOptions.enabledCommandBarFunctions),
-                    getGenerationDisclaimerText: sharedOptions.templateHelper.getGenerationDisclaimerText(),
-                    selectedModelElementName: sharedOptions.templateHelper.resolveType(sharedOptions.selectedModelElement).name,
-                    getTypesPath: sharedOptions.templateHelper.getTypesPath(sharedOptions.enableVersionSupport, sharedOptions.aspectModelVersion, sharedOptions.aspectModel),
-                    getTranslationPath: sharedOptions.templateHelper.getTranslationPath(sharedOptions),
-                    aspectModelName: sharedOptions.aspectModel.name,
+                    getAllStringProps: getAllStringProps(sharedOptions.listAllProperties),
+                    setStringColumns: setStringColumns(sharedOptions.listAllProperties),
                     getEnumProperties: getEnumProperties(),
-                    setStringColumns: setStringColumns(allProps),
                     setEnumQuickFilter: setEnumQuickFilter(enumValues),
                     setEnumRemoveFilter: setEnumRemoveFilter(enumValues),
                     setDataQuickFilter: setDataQuickFilter(dataValues),

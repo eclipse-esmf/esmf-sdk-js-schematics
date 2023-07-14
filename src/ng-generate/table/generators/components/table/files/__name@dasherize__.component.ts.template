@@ -1,4 +1,4 @@
-/** <%= getGenerationDisclaimerText %> **/
+/** <%= options.generationDisclaimerText %> **/
 import {
     AfterViewInit,
     Component,
@@ -32,17 +32,17 @@ import {unparse} from 'papaparse';
 <% } %>
 import {MatDialog} from '@angular/material/dialog';
 import {
-    <%= classify(selectedModelTypeName) %>
+    <%= classify(options.selectedModelTypeName) %>
     <% if (selectedModelElementUrn !== aspectModelElementUrn && !isCollectionAspect) { %>
-        , <%= classify(aspectModelTypeName) %>
+        , <%= classify(options.aspectModelTypeName) %>
     <% } %>
-    <% if (hasEnumQuickFilter) { %>
-        , <%= getEnumProperties %>
+    <% if (options.isEnumQuickFilter) { %>
+        , <%= enumProperties %>
     <% } %>
-} from '<%= getTypePath %>';
+} from '<%= options.typePath %>';
 import {<%= classify(name) %>DataSource} from './<%= dasherize(name) %>-datasource';
 
-<% if (options.hasDateQuickFilter) { %>
+<% if (options.isDateQuickFilter) { %>
     import {DateAdapter, MatDateFormats, MAT_DATE_FORMATS} from '@angular/material/core';
 <% } %>
 
@@ -72,7 +72,7 @@ import {Subject} from 'rxjs';
 
 <% if (options.enableRemoteDataHandling) { %>
     import {<% if (options.customRemoteService) { %>Custom<% } %><%= classify(name) %>Service} from './<% if (options.customRemoteService) { %>custom<% } %>-<%= dasherize(name) %>.service';
-    import {<%= aspectModelTypeName %>Response} from './<%= dasherize(name) %>.service';
+    import {<%= options.aspectModelTypeName %>Response} from './<%= dasherize(name) %>.service';
     import {
         AbstractArrayNode,
         AbstractLogicalNode,
@@ -155,8 +155,8 @@ export interface Column {
  */
 export enum <%= classify(name) %>Column {
     <% if (options.addRowCheckboxes) { %>CHECKBOX = 'checkboxes',<% } %>
-    <%= getEnumPropertyColumns %>
-    <%= getEnumCustomColumns %>
+    <%= enumPropertyColumns %>
+    <%= enumCustomColumns %>
     <% if (options.customRowActions.length > 0) { %>CUSTOM_ROW_ACTIONS = 'customRowActions',<% } %>
     COLUMNS_MENU = 'columnsMenu'
 }
@@ -170,17 +170,17 @@ export enum <%= classify(name) %>Column {
 })
 export class <%= classify(name) %>Component implements OnInit, AfterViewInit, AfterViewChecked<% if (!options.enableRemoteDataHandling) { %>, OnChanges<% } %><% if (options.hasSearchBar || options.enableRemoteDataHandling) { %>, OnDestroy<% } %> {
     <% if (options.hasSearchBar) { %>@Input() initialSearchString = '';<% } %>
-    <%= getCustomRowActionInput %>
-    <% if (getTableDateFormat) { %>@Input() tableDateFormat = 'short';<% } %>
-    <% if (getTableDateTimeFormat) { %>@Input() tableDateTimeFormat = 'short';<% } %>
-    <% if (getTableTimeFormat) { %>@Input() tableTimeFormat = 'shortTime';<% } %>
+    <%= customRowActionInput %>
+    <% if (options.dateProperties) { %>@Input() tableDateFormat = 'short';<% } %>
+    <% if (options.dateTimeStampProperties) { %>@Input() tableDateTimeFormat = 'short';<% } %>
+    <% if (options.timeProperties) { %>@Input() tableTimeFormat = 'shortTime';<% } %>
 
-    @Input() data: Array<<%= aspectModelTypeName %>> = [];
+    @Input() data: Array<<%= options.aspectModelTypeName %>> = [];
     @Input() customTemplate?: TemplateRef<any>;
     @Input() searchHint?: string;
     @Input() showFirstLastButtons: boolean = true;
 
-    <%= getCustomColumnsInput %>
+    <%= customColumnsInput %>
 
     @Input() pageSize: number = 20;
     @Input() pageSizeOptions: Array<number> = [5, 20, 50, 100];
@@ -245,10 +245,10 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
         return this.sanitizer.bypassSecurityTrustStyle(`--selected-row-highlight-color: ${this.highlightColor}`);
     }
 
-    readonly <%= getLocalStorageKeyColumns %> = '<%= getReplacedLocalStorageKeyColumnsLowerCase %>';
+    readonly <%= options.localStorageKeyColumns %> = '<%= options.localStorageKeyColumns.replace(options.localStoragePrefix, '').toLowerCase() %>';
 
     <% if (options.hasSearchBar) { %>
-        readonly <%= getLocalStorageKeyConfig %> = '<%= getReplacedLocalStorageKeyConfigLowerCase %>';
+        readonly <%= options.localStorageKeyConfig %> = '<%= options.localStorageKeyConfig.replace(options.localStoragePrefix, '').toLowerCase() %>';
     <% } %>
 
     totalItems: number = 0;
@@ -279,7 +279,7 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
         }
     <% } %>
 
-    <%= getByValueFunction %>
+    <%= byValueFunction %>
 
     <% if (options.hasSearchBar || options.enableRemoteDataHandling) { %>
         private readonly ngUnsubscribe = new Subject<void>();
@@ -288,12 +288,12 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
     <% if (options.enableRemoteDataHandling) { %>
         constructor(<%= commonImports %> private <% if (options.customRemoteService) { %>custom<% } %><%= classify(name) %>Service: <% if (options.customRemoteService) { %>Custom<% } %><%= classify(name) %>Service, private cd: ChangeDetectorRef) {
             this.dataSource = new <%= classify(name) %>DataSource();
-            <%= getSharedCustomRows %>
+            <%= sharedCustomRows %>
         }
     <% } else { %>
         constructor(<%= commonImports %> private <%= camelize(name) %>Service: <%= classify(name) %>Service) {
             this.dataSource = new <%= classify(name) %>DataSource(this.translateService);
-            <%= getSharedCustomRows %>
+            <%= sharedCustomRows %>
         }
     <% } %>
 
@@ -343,9 +343,9 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
 
     initializeColumns(): void {
         <% if (options.hasSearchBar) { %>
-            const configStorage = this.storageService.getItem(this.<%= getLocalStorageKeyConfig %>);
+            const configStorage = this.storageService.getItem(this.<%= options.localStorageKeyConfig %>);
         <% } %>
-        const columnStorage = this.storageService.getItem(this.<%= getLocalStorageKeyColumns %>);
+        const columnStorage = this.storageService.getItem(this.<%= options.localStorageKeyColumns %>);
 
         <% if (options.hasSearchBar) { %>
             if (configStorage?.length > 0) {
@@ -396,7 +396,7 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
 
     <% if (options.customColumns.length > 0) { %>
         isCustomColumn(columnName: string): boolean {
-            const customColumns: any = [<%= getCustomColumn %>];
+            const customColumns: any = [<%= customColumn %>];
             return customColumns.includes(columnName);
         }
     <% } %>
@@ -508,7 +508,7 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
         this.applyFilters();
     }
 
-    <%= getApplyFilters %>
+    <%= applyFilters %>
 
     <% if (options.addCommandBar) { %>
         exportToCsv() {
@@ -552,14 +552,14 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
 
             const columns = exportAllColumns ? this.columns.map(c => c.name) : this.displayedColumns;
 
-            <%= getBlockHeaderToExport %>
+            <%= blockHeaderToExport %>
 
             const headersCSV = unparse({
                 fields: headersToExport
-                <% if (!isAspectSelected) { %>.map(columnName => columnName.split('.').pop())<% } %>
+                <% if (!options.isAspectSelected) { %>.map(columnName => columnName.split('.').pop())<% } %>
                 .map(columnName => {
-                    const translatedHeader = this.translateService.instant(`<%= getColumnTransKeyPrefix %>${columnName}.preferredName`);
-                    return translatedHeader !== `<%= getColumnTransKeyPrefix %>${columnName}.preferredName` ? translatedHeader : columnName;
+                    const translatedHeader = this.translateService.instant(`<%= columnTransKeyPrefix %>${columnName}.preferredName`);
+                    return translatedHeader !== `<%= columnTransKeyPrefix %>${columnName}.preferredName` ? translatedHeader : columnName;
                 }),
                 data: [],
             });
@@ -579,7 +579,7 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
     <% } %>
 
     initOpenedColumnMenuDialog(): void {
-        this.columMenuComponent.keyLocalStorage = this.<%= getLocalStorageKeyColumns %>;
+        this.columMenuComponent.keyLocalStorage = this.<%= options.localStorageKeyColumns %>;
         this.columMenuComponent.columnsDefault = [
             ...Object.values(<%= classify(name) %>Column)
             <% if (options.addRowCheckboxes) { %>.filter(columnName => columnName !== <%= classify(name) %>Column['CHECKBOX'])<% } %>

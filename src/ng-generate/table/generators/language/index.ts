@@ -32,27 +32,21 @@ export function generateLanguageTranslationAsset(options: any, assetsPath: strin
     return (tree: Tree, _context: SchematicContext) => {
         sharedOptions = options;
 
-        const langFileName = `${language}.${dasherize(options.name)}`;
-
         return mergeWith(
             apply(url('./generators/language/files'), [
                 applyTemplates({
                     classify: strings.classify,
                     dasherize: strings.dasherize,
                     options: sharedOptions,
-                    name: langFileName,
+                    name: `${language}.${dasherize(options.name)}`,
                     aspectModelName: sharedOptions.aspectModel.name,
                     selectedModelElementName: sharedOptions.selectedModelElement.name,
-                    hasDateQuickFilter: sharedOptions.templateHelper.isAddDateQuickFilters(sharedOptions.enabledCommandBarFunctions),
-                    hasEnumQuickFilter: sharedOptions.templateHelper.isAddEnumQuickFilters(sharedOptions.enabledCommandBarFunctions),
-                    isAspectSelected: sharedOptions.templateHelper.isAspectSelected(sharedOptions),
-                    formatAspectModelVersion: sharedOptions.templateHelper.formatAspectModelVersion(sharedOptions.aspectModelVersion),
-                    getPreferredName: sharedOptions.aspectModel.getPreferredName(language),
-                    getDescription: sharedOptions.aspectModel.getDescription(language),
-                    getProperties: getProperties(language),
-                    getBlockTransCustomColumns: getBlockTransCustomColumns(),
-                    getBlockTransRowActions: getBlockTransRowActions(),
-                    getBlockCustomCommandBarActions: getBlockCustomCommandBarActions(),
+                    preferredName: sharedOptions.aspectModel.getPreferredName(language),
+                    description: sharedOptions.aspectModel.getDescription(language),
+                    properties: getProperties(language),
+                    blockTransCustomColumns: getBlockTransCustomColumns(),
+                    blockTransRowActions: getBlockTransRowActions(),
+                    blockCustomCommandBarActions: getBlockCustomCommandBarActions(),
                 }),
                 move(assetsPath),
             ]),

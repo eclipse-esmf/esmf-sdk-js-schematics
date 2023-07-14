@@ -29,7 +29,6 @@ import {generateCommandBar} from "../command-bar/index";
 import {DefaultSingleEntity, Property} from "@esmf/aspect-model-loader";
 import {camelize, classify, dasherize} from "@angular-devkit/core/src/utils/strings";
 import {getAllEnumProps} from "../../../../../utils/aspect-model";
-import { Schema } from '../../../schema';
 
 let sharedOptions: any = {};
 let allProps: Array<Property> = [];
@@ -37,16 +36,8 @@ let allProps: Array<Property> = [];
 export function generateTable(options: any): Rule {
     sharedOptions = options;
 
-    const templateHelper = sharedOptions.templateHelper;
-    sharedOptions.hasSearchBar = sharedOptions.templateHelper.hasSearchBar(options);
-    sharedOptions.hasFilters = sharedOptions.templateHelper.hasFilters(options);
-    sharedOptions.hasEnumQuickFilter = sharedOptions.templateHelper.isAddEnumQuickFilters(sharedOptions.enabledCommandBarFunctions);
-    sharedOptions.hasDateQuickFilter = sharedOptions.templateHelper.isAddDateQuickFilters(sharedOptions.enabledCommandBarFunctions);
-
-        sharedOptions.filterServiceName = `${classify(sharedOptions.name)}FilterService`;
-
     return (tree: Tree, _context: SchematicContext) => {
-        allProps = templateHelper.getProperties(sharedOptions);
+        allProps = sharedOptions.listAllProperties;
 
         return chain([
             ...(sharedOptions.hasFilters ? [generateChipList(sharedOptions)] : []),
@@ -58,11 +49,6 @@ export function generateTable(options: any): Rule {
 
 
 function generateHtml(): Rule {
-    const getTypePath = sharedOptions.templateHelper.getTypesPath(sharedOptions.enableVersionSupport, sharedOptions.aspectModelVersion, sharedOptions.aspectModel);
-    const getTableDateFormat = sharedOptions.templateHelper.getDateProperties(sharedOptions).find((property: Property) => sharedOptions.templateHelper.isDateProperty(property));
-    const getTableDateTimeFormat = sharedOptions.templateHelper.getDateProperties(sharedOptions).find((property: Property) => sharedOptions.templateHelper.isDateTimestampProperty(property));
-    const getTableTimeFormat = sharedOptions.templateHelper.getDateProperties(sharedOptions).find((property: Property) => sharedOptions.templateHelper.isTimeProperty(property));
-
     return mergeWith(
         apply(url('./generators/components/table/files'), [
             applyTemplates({
@@ -76,41 +62,26 @@ function generateHtml(): Rule {
                 aspectModelElementUrn: sharedOptions.aspectModel.aspectModelUrn,
                 isCollectionAspect: sharedOptions.aspectModel.isCollectionAspect,
                 aspectModelName: sharedOptions.aspectModel.name,
-                getGenerationDisclaimerText: sharedOptions.templateHelper.getGenerationDisclaimerText(),
-                hasDateQuickFilter: sharedOptions.templateHelper.isAddDateQuickFilters(sharedOptions.enabledCommandBarFunctions),
-                hasEnumQuickFilter: sharedOptions.templateHelper.isAddEnumQuickFilters(sharedOptions.enabledCommandBarFunctions),
-                selectedModelTypeName: sharedOptions.templateHelper.resolveType(sharedOptions.selectedModelElement).name,
-                aspectModelTypeName: sharedOptions.templateHelper.resolveType(sharedOptions.aspectModel).name,
-                getLocalStorageKeyColumns: sharedOptions.templateHelper.getLocalStorageKeyColumns(sharedOptions),
-                getLocalStorageKeyConfig: sharedOptions.templateHelper.getLocalStorageKeyConfig(sharedOptions),
-                getReplacedLocalStorageKeyColumnsLowerCase: getReplacedLocalStorageKeyColumnsLowerCase(),
-                getReplacedLocalStorageKeyConfigLowerCase: getReplacedLocalStorageKeyConfigLowerCase(),
-                isAspectSelected: sharedOptions.templateHelper.isAspectSelected(sharedOptions),
-                formatAspectModelVersion: sharedOptions.templateHelper.formatAspectModelVersion(sharedOptions.aspectModelVersion),
                 remoteDataHandling: !sharedOptions.enableRemoteDataHandling ? ` dataSource.length` : `totalItems`,
-                getTableColumValues: getTableColumValues(),
-                getEnumPropertyColumns: getEnumPropertyColumns(),
-                getEnumCustomColumns: getEnumCustomColumns(),
-                getCustomRowActions: getCustomRowActions(),
-                getEnumProperties: getEnumProperties(),
-                getCustomRowActionInput: getCustomRowActionInput(),
-                getCustomColumnsInput: getCustomColumnsInput(),
-                getByValueFunction: getByValueFunction(),
+                tableColumValues: getTableColumValues(),
+                enumPropertyColumns: getEnumPropertyColumns(),
+                enumCustomColumns: getEnumCustomColumns(),
+                customRowActions: getCustomRowActions(),
+                enumProperties: getEnumProperties(),
+                customRowActionInput: getCustomRowActionInput(),
+                customColumnsInput: getCustomColumnsInput(),
+                byValueFunction: getByValueFunction(),
                 commonImports: commonImports(),
-                getSharedCustomRows: getSharedCustomRows(),
-                getCustomColumn: getCustomColumn(),
-                getApplyFilters: getApplyFilters(),
-                getColumnTransKeyPrefix: getColumnTransKeyPrefix(),
-                getBlockHeaderToExport: getBlockHeaderToExport(),
-                getTypePath: getTypePath,
-                getTableDateFormat: getTableDateFormat,
-                getTableDateTimeFormat: getTableDateTimeFormat,
-                getTableTimeFormat: getTableTimeFormat,
+                sharedCustomRows: getSharedCustomRows(),
+                customColumn: getCustomColumn(),
+                applyFilters: getApplyFilters(),
+                columnTransKeyPrefix: getColumnTransKeyPrefix(),
+                blockHeaderToExport: getBlockHeaderToExport(),
                 resolveDateTimeFormat: resolveDateTimeFormat,
             }),
             move(sharedOptions.path),
         ]),
-        options.overwrite? MergeStrategy.Overwrite : MergeStrategy.Error
+        sharedOptions.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error
     );
 }
 
@@ -277,7 +248,7 @@ function commonImports(): string {
             private clipboard: Clipboard,
             private storageService: JSSdkLocalStorageService,
             ${sharedOptions.hasFilters ? `public filterService: ${sharedOptions.filterServiceName},` : ''}
-            ${sharedOptions.hasDateQuickFilter ? 'private dateAdapter: DateAdapter<any>,@Inject(MAT_DATE_FORMATS) private dateFormats: MatDateFormats,' : ''}`;
+            ${sharedOptions.isDateQuickFilter ? 'private dateAdapter: DateAdapter<any>,@Inject(MAT_DATE_FORMATS) private dateFormats: MatDateFormats,' : ''}`;
 }
 
 function getApplyFilters() {
@@ -300,12 +271,12 @@ function getApplyFilters() {
                     ${sharedOptions.addRowCheckboxes ? `this.selection.clear();
                     this.rowSelectionEvent.emit(this.selection.selected);` : ``}
                     const query = new And();
-                    ${sharedOptions.hasEnumQuickFilter ? `this.filterService.applyEnumFilter(query);` : ``}
+                    ${sharedOptions.isEnumQuickFilter ? `this.filterService.applyEnumFilter(query);` : ``}
                     ${sharedOptions.hasSearchBar ? `this.filterService.applyStringSearchFilter(query);
                         this.highlightString = this.filterService.activeFilters
                             .filter(elem => elem.type === FilterEnums.Search && elem.filterValue !== undefined)
                             .map(elem => elem.filterValue as string);` : ``}
-                    ${sharedOptions.hasDateQuickFilter ? `this.filterService.applyDateFilter(query);` : ``}
+                    ${sharedOptions.isDateQuickFilter ? `this.filterService.applyDateFilter(query);` : ``}
 
                     if (this.customFilterExtension) {
                         this.customFilterExtension.apply(query);
@@ -397,13 +368,13 @@ function getApplyFilters() {
                     
                     this.tableUpdateStartEvent.emit();
                     let dataTemp = [...this.data];
-                    ${sharedOptions.hasEnumQuickFilter ? `dataTemp = this.filterService.applyEnumFilter(dataTemp);` : ``}
+                    ${sharedOptions.isEnumQuickFilter ? `dataTemp = this.filterService.applyEnumFilter(dataTemp);` : ``}
                     ${sharedOptions.hasSearchBar ? `dataTemp = this.filterService.applyStringSearchFilter(dataTemp);
                     this.highlightString = this.filterService.activeFilters
                     .filter(elem => elem.type === FilterEnums.Search && elem.filterValue !== undefined)
                     .map(elem => elem.filterValue as string);` : ``}
                     
-                    ${sharedOptions.hasDateQuickFilter ? `dataTemp = this.filterService.applyDateFilter(dataTemp); ` : ``}
+                    ${sharedOptions.isDateQuickFilter ? `dataTemp = this.filterService.applyDateFilter(dataTemp); ` : ``}
                         this.dataSource.setData(dataTemp);
                           this.filteredData = dataTemp;
                           this.totalItems = this.data.length;
@@ -439,12 +410,4 @@ function getBlockHeaderToExport(): string {
     }
 
     return `${defTemp};`;
-}
-
-function getReplacedLocalStorageKeyColumnsLowerCase(): string {
-    return sharedOptions.templateHelper.getLocalStorageKeyColumns(sharedOptions).replace(sharedOptions.templateHelper.getLocalStoragePrefix(), '').toLowerCase()
-}
-
-function getReplacedLocalStorageKeyConfigLowerCase(): string {
-    return sharedOptions.templateHelper.getLocalStorageKeyConfig(sharedOptions).replace(sharedOptions.templateHelper.getLocalStoragePrefix(), '').toLowerCase()
 }

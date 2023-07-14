@@ -1,6 +1,6 @@
 <mat-toolbar data-test="toolbar" class="toolbar">
     <div *ngIf="isMultipleSelectionEnabled" data-test="toolbar-number-of-items" class="command-bar-number-of-items">{{ selection.selected.length > 0 ? (selection.selected.length + ' / ') : '' }}{{ totalItems }}</div>
-    <% if (isAddCommandBarFunctionSearch) { %>
+    <% if (options.hasSearchBar) { %>
         <mat-form-field data-test="search-form-field" appearance="fill" floatLabel="never" class="search-input">
           <mat-label data-test="search-label">{{ 'search' | translate }}</mat-label>
           <input
@@ -38,8 +38,8 @@
             <mat-select data-test="select" [formControl]="filterService.selectedStringColumn">
               <mat-option [value]="filterService.advancedSearchAllValue">{{ 'allTextFields' | translate }}</mat-option>
               <mat-option *ngFor="let searchField of filterService.stringColumns" [value]="searchField">
-                <span>{{ '<%= getTranslationPath %>' + searchField + '.preferredName' | translate }}</span>
-                <span class="advanced-search-option-description">{{ '<%= getTranslationPath %>' + searchField + '.description' | translate }}</span>
+                <span>{{ '<%= options.translationPath %>' + searchField + '.preferredName' | translate }}</span>
+                <span class="advanced-search-option-description">{{ '<%= options.translationPath %>' + searchField + '.description' | translate }}</span>
               </mat-option>
             </mat-select>
           </mat-form-field>
@@ -47,10 +47,10 @@
     <% } %>
 
     <% for(let property of propValues) { %>
-        <% if (isAddDateQuickFilters && property.isDate) { %>
+        <% if (options.isDateQuickFilter && property.isDate) { %>
             <mat-form-field data-test="form-field-date-time" appearance="fill" floatLabel="never">
               <mat-label
-                data-test="date-time-label">{{ '<%= versionedAccessPrefix %><%= property.propertyValue %>.preferredName' | translate }}</mat-label>
+                data-test="date-time-label">{{ '<%= options.versionedAccessPrefix %><%= property.propertyValue %>.preferredName' | translate }}</mat-label>
               <mat-date-range-input data-test="date-range-input" [rangePicker]="<%= property.propertyName %>Picker"
                                     [formGroup]="filterService.<%= property.propertyName %>Group">
                 <input data-test="start-date-input" matStartDate [placeholder]="'date.start' | translate" formControlName="start">
@@ -68,9 +68,9 @@
               </mat-date-range-picker>
             </mat-form-field>
         <% } %>
-        <% if (isAddEnumQuickFilters && property.isEnum) { %>
+        <% if (options.isEnumQuickFilter && property.isEnum) { %>
             <mat-form-field data-test="form-field-select" appearance="fill" floatLabel="never">
-                <mat-label data-test="select-label">{{ '<%= versionedAccessPrefix %><%= property.propertyValue %>.preferredName' | translate }}</mat-label>
+                <mat-label data-test="select-label">{{ '<%= options.versionedAccessPrefix %><%= property.propertyValue %>.preferredName' | translate }}</mat-label>
                     <mat-select data-test="select" [(value)]="filterService.<%= property.propertyName %>Selected" #<%= property.propertyName %>Select multiple>
                         <div class="filter-options-container">
                         <% if (property.enumWithEntities) { %>
@@ -105,9 +105,9 @@
     <span data-test="spacer" class="spacer"></span>
 
     <% if (options.customCommandBarActions.length > 0) { %>
-        <% for(let action of customCommandBarActions) { %>
-            <button data-test="toolbar-custom-action-button" mat-icon-button (click)="executeCustomCommandBarAction($event, '<%= spinalCaseFunc(action) %>')" attr.aria-label="{{ '<%= versionedAccessPrefix %><%= spinalCaseFunc(action) %>.customCommandBarAction' | translate }}">
-                <mat-icon data-test="toolbar-custom-action-icon" matTooltip="{{'<%= versionedAccessPrefix %><%= spinalCaseFunc(action) %>.customCommandBarAction' | translate }}" aria-hidden="false"
+        <% for(let action of options.customCommandBarActions) { %>
+            <button data-test="toolbar-custom-action-button" mat-icon-button (click)="executeCustomCommandBarAction($event, '<%= spinalCaseFunc(action) %>')" attr.aria-label="{{ '<%= options.versionedAccessPrefix %><%= spinalCaseFunc(action) %>.customCommandBarAction' | translate }}">
+                <mat-icon data-test="toolbar-custom-action-icon" matTooltip="{{'<%= options.versionedAccessPrefix %><%= spinalCaseFunc(action) %>.customCommandBarAction' | translate }}" aria-hidden="false"
                     <% if (action.lastIndexOf(".") > -1) { %>
                         svgIcon="<%= spinalCaseFunc(action) %>
                     <% } %>

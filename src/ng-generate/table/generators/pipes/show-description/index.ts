@@ -26,19 +26,15 @@ import {strings} from "@angular-devkit/core";
 
 export function generateShowDescriptionPipe(options: any): Rule {
     return (tree: Tree, _context: SchematicContext) => {
-        const pipeName = 'show-description';
-        const pipePath = 'src/app/shared/pipes';
-
         return mergeWith(
             apply(url('./generators/pipes/show-description/files'), [
                 applyTemplates({
                     classify: strings.classify,
                     dasherize: strings.dasherize,
                     options: options,
-                    name: pipeName,
-                    getGenerationDisclaimerText: options.templateHelper.getGenerationDisclaimerText(),
+                    name: 'show-description',
                 }),
-                move(pipePath),
+                move('src/app/shared/pipes'),
             ]),
             options.overwrite? MergeStrategy.Overwrite : MergeStrategy.Error
         );

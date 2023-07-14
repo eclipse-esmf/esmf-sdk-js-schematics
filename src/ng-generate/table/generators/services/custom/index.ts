@@ -29,6 +29,7 @@ import {dasherize} from "@angular-devkit/core/src/utils/strings";
 export function generateCustomService(options: any): Rule {
     return (tree: Tree, _context: SchematicContext) => {
         const targetPath = `${options.path}/custom-${dasherize(options.name)}.service.ts`
+
         if (tree.exists(targetPath) || !(options.enableRemoteDataHandling && options.customRemoteService)) {
             return noop();
         }
@@ -40,11 +41,10 @@ export function generateCustomService(options: any): Rule {
                     dasherize: strings.dasherize,
                     options: options,
                     name: options.name,
-                    getGenerationDisclaimerText: options.templateHelper.getGenerationDisclaimerText(),
                 }),
                 move(options.path),
             ]),
-            options.overwrite? MergeStrategy.Overwrite : MergeStrategy.Error
+            options.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error
         );
     };
 }

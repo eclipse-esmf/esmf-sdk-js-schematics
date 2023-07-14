@@ -26,21 +26,17 @@ import {strings} from "@angular-devkit/core";
 
 export function generateResizeDirective(options: any): Rule {
     return (tree: Tree, _context: SchematicContext) => {
-        const directiveName = 'resize-column';
-        const directivePath = 'src/app/shared/directives';
-
         return mergeWith(
             apply(url('./generators/directives/resize/files'), [
                 applyTemplates({
                     classify: strings.classify,
                     dasherize: strings.dasherize,
                     options: options,
-                    name: directiveName,
-                    getGenerationDisclaimerText: options.templateHelper.getGenerationDisclaimerText(),
+                    name: 'resize-column',
                 }),
-                move(directivePath),
+                move('src/app/shared/directives'),
             ]),
-            options.overwrite? MergeStrategy.Overwrite : MergeStrategy.Error
+            options.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error
         );
     };
 }

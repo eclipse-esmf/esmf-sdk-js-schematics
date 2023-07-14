@@ -26,19 +26,15 @@ import {strings} from "@angular-devkit/core";
 
 export function generateStorageService(options: any): Rule {
     return (tree: Tree, _context: SchematicContext) => {
-        const serviceName = 'storage';
-        const servicePath = 'src/app/shared/services';
-
         return mergeWith(
             apply(url('./generators/services/storage/files'), [
                 applyTemplates({
                     classify: strings.classify,
                     dasherize: strings.dasherize,
                     options: options,
-                    name: serviceName,
-                    getGenerationDisclaimerText: options.templateHelper.getGenerationDisclaimerText(),
+                    name: 'storage',
                 }),
-                move(servicePath),
+                move('src/app/shared/services'),
             ]),
             options.overwrite? MergeStrategy.Overwrite : MergeStrategy.Error
         );

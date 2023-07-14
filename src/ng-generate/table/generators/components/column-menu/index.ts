@@ -33,8 +33,6 @@ export function generateColumnMenu(options: any): Rule {
                     dasherize: strings.dasherize,
                     options: options,
                     name: options.name,
-                    getGenerationDisclaimerText: options.templateHelper.getGenerationDisclaimerText(),
-                    getVersionedAccessPrefix: options.templateHelper.getVersionedAccessPrefix(options),
                 }),
                 move(options.path),
             ]),

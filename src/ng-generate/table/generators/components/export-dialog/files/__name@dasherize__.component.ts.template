@@ -1,4 +1,4 @@
-/** <%= getGenerationDisclaimerText %> **/
+/** <%= options.generationDisclaimerText %> **/
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { AfterViewInit, Component, Inject, ViewChild } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';

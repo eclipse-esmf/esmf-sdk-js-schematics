@@ -1,4 +1,4 @@
-/** <%= getGenerationDisclaimerText %> **/
+/** <%= options.enerationDisclaimerText %> **/
 import {Pipe, PipeTransform} from '@angular/core';
 import {FormControl} from "@angular/forms";
 @Pipe({
