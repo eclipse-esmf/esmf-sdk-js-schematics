@@ -31,6 +31,11 @@ import {ExcludedProperty, Schema, Values} from '../ng-generate/table/schema';
 import * as locale from 'locale-codes';
 
 export class TemplateHelper {
+    /**
+     * Sets the template option values.
+     * @param {Values} options The template options.
+     * @returns {void}
+     */
     setTemplateOptionValues(options: Values) {
         options.filterServiceName = `${classify(options.name)}FilterService`;
         options.hasSearchBar = this.hasSearchBar(options);

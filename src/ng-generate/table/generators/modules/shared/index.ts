@@ -31,8 +31,6 @@ export function generateSharedModule(options: any): Rule {
     return (tree: Tree, _context: SchematicContext) => {
         options.module = `${dasherize(options.name)}.module.ts`;
 
-        options.templateHelper.setTemplateOptionValues(options as Values);
-
         const modulePath = `${options.path}/${dasherize(options.name)}.module.ts`;
         addModuleImportToModule(tree, '/src/app/app.module.ts', `${classify(options.name)}Module`, `${modulePath.replace('.ts', '')}`);
 

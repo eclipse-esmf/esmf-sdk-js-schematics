@@ -30,7 +30,7 @@ import {
     REMOTE_HANDLING_DEPENDENCIES
 } from '../../utils/package-json';
 import {TemplateHelper} from '../../utils/template-helper';
-import {Schema} from './schema';
+import {Schema, Values} from './schema';
 import ora from 'ora';
 import {WIZARD_CONFIG_FILE} from '../table-prompter/index';
 import {generateTable} from "./generators/components/table/index";
@@ -109,6 +109,7 @@ export function generate(options: Schema): Rule {
         loadAspectModel(options), // serialize RDf into aspect model object
         setCustomActionsAndFilters(options),
         setTableName(options),
+        setTemplateOptionValues(options),
         insertVersionIntoSelector(options),
         insertVersionIntoPath(options),
         generateSharedModule(options),
@@ -171,6 +172,10 @@ function setTableName(options: Schema): Rule {
     };
 }
 
+function setTemplateOptionValues(options: Schema): Rule {
+    return () => options.templateHelper.setTemplateOptionValues(options as Values);
+}
+
 function insertVersionIntoSelector(options: Schema): Rule {
     return (tree: Tree) => {
         const prefixPart = options.prefix ? `${options.prefix}-` : '';
@@ -209,7 +214,6 @@ function updateConfigFiles(options: any): Rule {
         }
 
         addStylePreprocessorOptions(angularBuildOptions);
-
         addOptionalMaterialTheme(angularBuildOptions, options.getOptionalMaterialTheme);
 
         tree.overwrite('/angular.json', JSON.stringify(angularJson, null, 2));
