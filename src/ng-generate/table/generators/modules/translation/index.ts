@@ -37,6 +37,7 @@ export function generateTranslationModule(options: any): Rule {
                 applyTemplates({
                     classify: strings.classify,
                     dasherize: strings.dasherize,
+                    options: options,
                     name: 'app-shared',
                 }),
                 move('src/app/shared'),

@@ -162,7 +162,7 @@ export enum <%= classify(name) %>Column {
 }
 
 @Component({
-    selector: 'esmf-table-<%= dasherize(name) %>',
+    selector: '<%= options.selector %>',
     templateUrl: './<%= dasherize(name) %>.component.html',
     styleUrls: ['./<%= dasherize(name) %>.component.<%= options.style %>']
     <% if (options.changeDetection) { %>, changeDetection: ChangeDetectionStrategy.<%= options.changeDetection %><% } %>

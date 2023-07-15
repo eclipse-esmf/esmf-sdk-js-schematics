@@ -109,9 +109,9 @@ export function generate(options: Schema): Rule {
         loadAspectModel(options), // serialize RDf into aspect model object
         setCustomActionsAndFilters(options),
         setTableName(options),
-        setTemplateOptionValues(options),
         insertVersionIntoSelector(options),
         insertVersionIntoPath(options),
+        setTemplateOptionValues(options),
         generateSharedModule(options),
         generateTranslationModule(options),
         addPackageJsonDependencies(options.skipImport, options.spinner, loadDependencies(options)),
@@ -165,15 +165,12 @@ function setCustomActionsAndFilters(options: Schema): Rule {
 }
 
 function setTableName(options: Schema): Rule {
-    return async () => {
+    return (tree: Tree, context: SchematicContext) => {
         if (options.name === 'table') {
             options.name = `${options.selectedModelElement?.name}-${options.name}`;
+            context.logger.info('Option name set.');
         }
     };
-}
-
-function setTemplateOptionValues(options: Schema): Rule {
-    return () => options.templateHelper.setTemplateOptionValues(options as Values);
 }
 
 function insertVersionIntoSelector(options: Schema): Rule {
@@ -199,6 +196,14 @@ function insertVersionIntoPath(options: Schema): Rule {
 
         options.path += pathSuffix;
 
+        return tree;
+    };
+}
+
+function setTemplateOptionValues(options: Schema): Rule {
+    return (tree: Tree, context: SchematicContext) => {
+        options.templateHelper.setTemplateOptionValues(options as Values);
+        context.logger.info('Template option values set.');
         return tree;
     };
 }
@@ -240,9 +245,9 @@ function getTsConfigJson(tree: Tree) {
 }
 
 function addOptionalMaterialTheme(angularBuildOptions: any, getOptionalMaterialTheme: any) {
-    const defaultMaterialtheme = 'node_modules/@angular/material/prebuilt-themes/indigo-pink.css';
-    if (getOptionalMaterialTheme && !angularBuildOptions['styles'].includes(defaultMaterialtheme)) {
-        angularBuildOptions['styles'].push(defaultMaterialtheme);
+    const defaultMaterialTheme = 'node_modules/@angular/material/prebuilt-themes/indigo-pink.css';
+    if (getOptionalMaterialTheme && !angularBuildOptions['styles'].includes(defaultMaterialTheme)) {
+        angularBuildOptions['styles'].push(defaultMaterialTheme);
     }
 }
 

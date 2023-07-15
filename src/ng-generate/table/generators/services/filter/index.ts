@@ -27,18 +27,17 @@ import {strings} from "@angular-devkit/core";
 import {DefaultSingleEntity, Property} from "@esmf/aspect-model-loader";
 import {classify} from "@angular-devkit/core/src/utils/strings";
 import {getAllEnumProps, PropValue} from "../../../../../utils/aspect-model";
-import {share} from "rxjs";
 
 let sharedOptions: any = {};
 
 export function generateFilterService(options: any): Rule {
     sharedOptions = options;
 
-    if (!sharedOptions.hasFilters) {
-        return noop;
-    }
-
     return (tree: Tree, _context: SchematicContext) => {
+        if (!sharedOptions.hasFilters) {
+            return noop;
+        }
+
         const enumValues = getAllEnumProps(sharedOptions);
         const dataValues = getAllDateProps(sharedOptions.listAllProperties);
 
@@ -67,7 +66,7 @@ export function generateFilterService(options: any): Rule {
                 }),
                 move(sharedOptions.path),
             ]),
-            options.overwrite? MergeStrategy.Overwrite : MergeStrategy.Error
+            options.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error
         );
     };
 }

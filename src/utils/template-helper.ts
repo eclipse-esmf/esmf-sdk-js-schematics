@@ -231,16 +231,6 @@ export class TemplateHelper {
     }
 
     /**
-     * Checks if the given command bar functions include the `addSearchBar` function.
-     *
-     * @param {string[]} commandBarFunctions A list of command bar functions.
-     * @returns {boolean} True if the `addSearchBar` function is included, False otherwise.
-     */
-    isAddCommandBarFunctionSearch(commandBarFunctions: string[]) {
-        return commandBarFunctions.includes('addSearchBar');
-    }
-
-    /**
      * Checks if the given command bar functions include the `addCustomCommandBarActions` function.
      *
      * @param {string[]} commandBarFunctions A list of command bar functions.
@@ -553,7 +543,7 @@ export class TemplateHelper {
      * @returns Whether the schema has a search bar.
      */
     hasSearchBar(options: Schema): boolean {
-        return this.isAddCommandBarFunctionSearch(options.enabledCommandBarFunctions);
+        return options.enabledCommandBarFunctions.includes('addSearchBar');
     }
 
     /**
@@ -563,7 +553,7 @@ export class TemplateHelper {
      * @returns Whether the schema has filters.
      */
     hasFilters(options: Schema): boolean {
-        return this.isAddCommandBarFunctionSearch(options.enabledCommandBarFunctions) ||
+        return this.hasSearchBar(options) ||
             this.isAddDateQuickFilters(options.enabledCommandBarFunctions) ||
             this.isAddEnumQuickFilters(options.enabledCommandBarFunctions);
     }

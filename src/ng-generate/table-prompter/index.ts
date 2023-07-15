@@ -672,7 +672,7 @@ function getUserConfigQuestions(allAnswers: any, tree: Tree, options: Schema): Q
         name: 'chooseLanguageForSearch',
         message: 'Which language should be used for the search functionality?',
         when: (answers: any) =>
-            answers.addCommandBar && new TemplateHelper().isAddCommandBarFunctionSearch(answers.enabledCommandBarFunctions),
+            answers.addCommandBar && new TemplateHelper().hasSearchBar(answers),
         choices: () => {
             loadAspect(allAnswers, tree).then(aspect => {
                 const templateHelper = new TemplateHelper();
