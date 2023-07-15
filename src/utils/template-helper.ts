@@ -29,7 +29,6 @@ import {
 import {classify, dasherize, underscore} from '@angular-devkit/core/src/utils/strings';
 import {ExcludedProperty, Schema, Values} from '../ng-generate/table/schema';
 import * as locale from 'locale-codes';
-import {DefaultSchema} from "../ng-generate/default-schema";
 
 export class TemplateHelper {
     setTemplateOptionValues(options: Values) {
@@ -40,25 +39,142 @@ export class TemplateHelper {
         options.dateProperties = this.getDateProperties(options).filter((property: Property) => this.isDateProperty(property));
         options.dateTimeStampProperties = this.getDateProperties(options).filter((property: Property) => this.isDateTimestampProperty(property));
         options.timeProperties = this.getDateProperties(options).filter((property: Property) => this.isTimeProperty(property));
-        options.generationDisclaimerText = this.getGenerationDisclaimerText();
         options.isDateQuickFilter = this.isAddDateQuickFilters(options.enabledCommandBarFunctions);
         options.isEnumQuickFilter = this.isAddEnumQuickFilters(options.enabledCommandBarFunctions);
         options.selectedModelTypeName = this.resolveType(options.selectedModelElement).name;
         options.aspectModelTypeName = this.resolveType(options.aspectModel).name;
         options.localStorageKeyColumns = this.getLocalStorageKeyColumns(options);
-        options.localStoragePrefix = this.getLocalStoragePrefix();
         options.localStorageKeyConfig = this.getLocalStorageKeyConfig(options);
         options.versionedAccessPrefix = this.getVersionedAccessPrefix(options);
         options.translationPath = this.getTranslationPath(options);
-        options.isAspectSelected = this.isAspectSelected(options);
         options.formatedAspectModelVersion = this.formatAspectModelVersion(options.aspectModelVersion);
         options.listAllProperties = this.getProperties(options);
+        options.generationDisclaimerText = this.getGenerationDisclaimerText();
+        options.localStoragePrefix = this.getLocalStoragePrefix();
+        options.isAspectSelected = this.isAspectSelected(options);
     }
 
-    isAspectSelected(options: Schema) {
+    private getGenerationDisclaimerText(): string {
+        return 'Generated from ESMF JS SDK Angular Schematics - PLEASE DO NOT CHANGE IT';
+    }
+
+    /**
+     * Returns the prefix for the local storage key.
+     *
+     * @returns {string} The prefix for the local storage key.
+     */
+    private getLocalStoragePrefix(): string {
+        return `KEY_LOCAL_STORAGE_`;
+    }
+
+    /**
+     * Checks if the given options indicate that the aspect is selected.
+     *
+     * @param {Schema} options The options object.
+     * @returns {boolean} Whether or not the aspect is selected.
+     */
+    private isAspectSelected(options: Schema) {
         return options.selectedModelElementUrn === options.aspectModel.aspectModelUrn;
     }
 
+    /**
+     * Gets the local storage key for the columns of the given schema.
+     *
+     * @param {Schema} options The schema.
+     * @returns {string} The local storage key.
+     */
+    private getLocalStorageKeyColumns(options: Schema): string {
+        return `${this.getLocalStoragePrefix()}${underscore(options.name)}${
+            options.enableVersionSupport ? `_${'v' + options.aspectModelVersion.replace(/\./g, '')}` : ''
+        }_columns`.toUpperCase();
+    }
+
+    /**
+     * Gets the local storage key for the config of the given schema.
+     *
+     * @param {Schema} options The schema.
+     * @returns {string} The local storage key.
+     */
+    private getLocalStorageKeyConfig(options: Schema): string {
+        return `${this.getLocalStoragePrefix()}${underscore(options.name)}${
+            options.enableVersionSupport ? `_${'v' + options.aspectModelVersion.replace(/\./g, '')}` : ''
+        }_config`.toUpperCase();
+    }
+
+    /**
+     * Gets the translation path for the given options.
+     *
+     * @param {Schema} options The options object.
+     * @returns {string} The translation path.
+     */
+    private getTranslationPath(options: Schema): string {
+        const translationPath = `${this.getVersionedAccessPrefix(options)}${this.isAspectSelected(options) ? options.jsonAccessPath : ''}`;
+        return `${translationPath.length ? translationPath : ''}`;
+    }
+
+    /**
+     * Checks if the given property is a default scalar property.
+     *
+     * @param {Property} property The property to check.
+     * @returns {boolean} Whether the property is a default scalar property.
+     */
+    private isDefaultScalarProperty(property: Property) {
+        return property.effectiveDataType && property.effectiveDataType?.isScalar && property.effectiveDataType instanceof DefaultScalar;
+    }
+
+    /**
+     * @function addLocalized
+     * @param {Set<string>} languages - The set of languages to add localized strings for.
+     * @returns {string[]} - An array of localized strings.
+     */
+    private addLocalized(languages: Set<string>): string[] {
+        return Array.from(languages)
+            .map(languageCode => locale.getByTag(languageCode).tag)
+            .filter(e => !!e);
+    }
+
+    /**
+     * Gets all the properties of the schema, including complex properties.
+     @private
+     @param {Schema} options The schema options.
+     @returns {Array<Property>} The array of all properties, including complex properties.
+     */
+    private getAllProperties(options: Schema) {
+        const properties = this.getProperties(options);
+        const resolvedProperties: Array<Property> = [];
+        properties
+            .filter(prop => prop.effectiveDataType?.isComplex && prop.characteristic instanceof DefaultSingleEntity)
+            .forEach(prop => {
+                resolvedProperties.push(...this.getComplexProperties(prop, options).properties);
+            });
+
+        return [
+            ...properties.filter(prop => !(prop.effectiveDataType?.isComplex && prop.characteristic instanceof DefaultSingleEntity)),
+            ...resolvedProperties,
+        ];
+    }
+
+    /**
+     * Gets the path to the types file for the specified aspect model.
+     *
+     * @param {boolean} aspectModelVersionSupport Whether or not the aspect model supports versioned types.
+     * @param {string} version The version of the aspect model.
+     * @param {Aspect} aspectModel The aspect model.
+     * @returns {string} The path to the types file.
+     */
+    private getTypesPath(aspectModelVersionSupport: boolean, version: string, aspectModel: Aspect): string {
+        if (aspectModelVersionSupport) {
+            return `../../../types/${dasherize(aspectModel.name)}/v${version.split('.').join('')}/${dasherize(aspectModel.name)}.types`;
+        }
+        return `../../types/${dasherize(aspectModel.name)}/${dasherize(aspectModel.name)}.types`;
+    }
+
+    /**
+     * Checks if the given property is a dateTime property.
+     *
+     * @param {Property} property The property to check.
+     * @returns {boolean} Whether the property is a date or time property.
+     */
     isDateTimeProperty(property: Property) {
         if (!this.isDefaultScalarProperty(property)) {
             return false;
@@ -67,6 +183,12 @@ export class TemplateHelper {
         return this.isDateProperty(property) || this.isTimeProperty(property) || this.isDateTimestampProperty(property);
     }
 
+    /**
+     * Checks if the given property is a dateTimeStamp property.
+     *
+     * @param {Property} property The property to check.
+     * @returns {boolean} Whether the property is a date or time property.
+     */
     isDateTimestampProperty(property: Property) {
         if (!this.isDefaultScalarProperty(property)) {
             return false;
@@ -75,6 +197,12 @@ export class TemplateHelper {
         return property.effectiveDataType?.shortUrn === 'dateTime' || property.effectiveDataType?.shortUrn === 'dateTimeStamp';
     }
 
+    /**
+     * Checks if the given property is a date property.
+     *
+     * @param {Property} property The property to check.
+     * @returns {boolean} Whether the property is a date or time property.
+     */
     isDateProperty(property: Property) {
         if (!this.isDefaultScalarProperty(property)) {
             return false;
@@ -83,6 +211,12 @@ export class TemplateHelper {
         return property.effectiveDataType?.shortUrn === 'date';
     }
 
+    /**
+     * Checks if the given property is a time property.
+     *
+     * @param {Property} property The property to check.
+     * @returns {boolean} Whether the property is a date or time property.
+     */
     isTimeProperty(property: Property) {
         if (!this.isDefaultScalarProperty(property)) {
             return false;
@@ -91,34 +225,82 @@ export class TemplateHelper {
         return property.effectiveDataType?.shortUrn === 'time';
     }
 
+    /**
+     * Checks if the given command bar functions include the `addSearchBar` function.
+     *
+     * @param {string[]} commandBarFunctions A list of command bar functions.
+     * @returns {boolean} True if the `addSearchBar` function is included, False otherwise.
+     */
     isAddCommandBarFunctionSearch(commandBarFunctions: string[]) {
         return commandBarFunctions.includes('addSearchBar');
     }
 
+    /**
+     * Checks if the given command bar functions include the `addCustomCommandBarActions` function.
+     *
+     * @param {string[]} commandBarFunctions A list of command bar functions.
+     * @returns {boolean} True if the `addCustomCommandBarActions` function is included, False otherwise.
+     */
     isAddCustomCommandBarActions(commandBarFunctions: string[]) {
         return commandBarFunctions.includes('addCustomCommandBarActions');
     }
 
+    /**
+     * Checks if the given command bar functions include the `addDateQuickFilters` function.
+     *
+     * @param {string[]} commandBarFunctions A list of command bar functions.
+     * @returns {boolean} True if the `addDateQuickFilters` function is included, False otherwise.
+     */
     isAddDateQuickFilters(commandBarFunctions: string[]) {
         return commandBarFunctions.includes('addDateQuickFilters');
     }
 
+    /**
+     * Checks if the given command bar functions include the `addEnumQuickFilters` function.
+     *
+     * @param {string[]} commandBarFunctions A list of command bar functions.
+     * @returns {boolean} True if the `addEnumQuickFilters` function is included, False otherwise.
+     */
     isAddEnumQuickFilters(commandBarFunctions: string[]) {
         return commandBarFunctions.includes('addEnumQuickFilters');
     }
 
+    /**
+     * Returns true if the given property is an enumeration property.
+     *
+     * @param {Property} property The property to check.
+     * @returns {boolean} True if the property is an enumeration property.
+     */
     isEnumProperty(property: Property) {
         return property.characteristic instanceof DefaultEnumeration;
     }
 
+    /**
+     * Returns true if the given property is an enumeration property with entity values.
+     *
+     * @param {Property} property The property to check.
+     * @returns {boolean} True if the property is an enumeration with entity values property.
+     */
     isEnumPropertyWithEntityValues(property: Property) {
         return this.isEnumProperty(property) && property.effectiveDataType instanceof DefaultEntity;
     }
 
+    /**
+     * Returns true if the given property is a string property.
+     *
+     * @param {Property} property The property to check.
+     * @returns {boolean} True if the property is a string property.
+     */
     isStringProperty(property: Property) {
         return property.effectiveDataType ? property.effectiveDataType?.urn.toString().indexOf('string') > -1 : false;
     }
 
+    /**
+     * Returns True if the property is a number property.
+     *
+     * @param {Property} property The property to check.
+     * @returns {boolean} True if the property is a number property, False otherwise.
+     */
     isNumberProperty(property: Property) {
         if (!this.isDefaultScalarProperty(property)) {
             return false;
@@ -149,10 +331,22 @@ export class TemplateHelper {
 
     }
 
+    /**
+     * Returns true if the given property is a multi string property.
+     *
+     * @param {Property} property The property to check.
+     * @returns {boolean} True if the property is a multi string property.
+     */
     isMultiStringProperty(property: Property) {
         return property.characteristic.name === 'MultiLanguageText';
     }
 
+    /**
+     * Gets all enum properties.
+     *
+     * @param {Schema} options The schema options.
+     * @returns {Array<Property>} The array of enum properties.
+     */
     getEnumProperties(options: Schema): Array<Property> {
         return this.getAllProperties(options).filter(
             property =>
@@ -163,6 +357,12 @@ export class TemplateHelper {
         );
     }
 
+    /**
+     * Gets all string properties.
+     *
+     * @param {Schema} options The schema options.
+     * @returns {Array<Property>} The array of string properties.
+     */
     getStringProperties(options: Schema): Array<Property> {
         return this.getAllProperties(options).filter(
             property =>
@@ -173,6 +373,12 @@ export class TemplateHelper {
         );
     }
 
+    /**
+     * Gets all date properties.
+     *
+     * @param {Schema} options The schema options.
+     * @returns {Array<Property>} The array of date properties.
+     */
     getDateProperties(options: Schema): Array<Property> {
         return this.getAllProperties(options).filter(
             property =>
@@ -183,35 +389,27 @@ export class TemplateHelper {
         );
     }
 
+    /**
+     * Gets the payload key for the first value of an enum property that is an entity instance.
+     *
+     * @param {Property} property The property to get the payload key for.
+     * @returns {string} The payload key for the first value of the property, or an empty string if the property is not an enum property or is not an entity instance.
+     */
     getEnumEntityInstancePayloadKey(property: Property) {
-        if (this.isEnumProperty(property) && property.effectiveDataType instanceof DefaultEntity) {
-            return ((property.characteristic as DefaultEnumeration).values[0] as DefaultEntityInstance).valuePayloadKey;
+        if (!(this.isEnumProperty(property) && property.effectiveDataType instanceof DefaultEntity)) {
+            return '';
         }
 
-        return '';
+        return ((property.characteristic as DefaultEnumeration).values[0] as DefaultEntityInstance).valuePayloadKey;
     }
 
-    /**
-     * Gets a flat list of properties. A property with a complex type will be resolved to
-     * the chosen property of the underlying element.
-     */
-    getAllProperties(options: Schema) {
-        const properties = this.getProperties(options);
-        const resolvedProperties: Array<Property> = [];
-        properties
-            .filter(prop => prop.effectiveDataType?.isComplex && prop.characteristic instanceof DefaultSingleEntity)
-            .forEach(prop => {
-                resolvedProperties.push(...this.getComplexProperties(prop, options).properties);
-            });
-
-        return [
-            ...properties.filter(prop => !(prop.effectiveDataType?.isComplex && prop.characteristic instanceof DefaultSingleEntity)),
-            ...resolvedProperties,
-        ];
-    }
 
     /**
-     * Gets a list of properties for the selected model element.
+     * Gets the properties for the selected model element.
+     *
+     * @param {Schema | any} options The options for the operation.
+     * @param {boolean} generateLabelsForExcludedProps Whether to generate labels for excluded properties.
+     * @returns {Array<Property>} The properties for the model element.
      */
     getProperties(options: Schema | any, generateLabelsForExcludedProps = false): Array<Property> {
         if (!generateLabelsForExcludedProps) {
@@ -226,7 +424,11 @@ export class TemplateHelper {
     }
 
     /**
-     * Gets the resolved properties of the complex object.
+     * Gets the properties of a complex property.
+     *
+     * @param {Property} complexProp The complex property.
+     * @param {Schema} options The schema options.
+     * @returns {Object} An object with the complex property name and the properties.
      */
     getComplexProperties(complexProp: Property, options: Schema): { complexProp: string; properties: Property[] } {
         const propsToShow = options.complexProps.find(cp => cp.prop === complexProp.name)?.propsToShow;
@@ -238,6 +440,12 @@ export class TemplateHelper {
         return {complexProp: complexProp.name, properties: properties};
     }
 
+    /**
+     * Recursively resolves all language codes from the given aspect model element.
+     *
+     * @param {Aspect | Entity} modelElement The aspect model element to start the resolution from.
+     * @returns {Set<string>} The set of all language codes found.
+     */
     resolveAllLanguageCodes(modelElement: Aspect | Entity): Set<string> {
         const allLanguageCodes: Set<string> = new Set();
 
@@ -274,12 +482,12 @@ export class TemplateHelper {
         return allLanguageCodes;
     }
 
-    addLocalized(languages: Set<string>): string[] {
-        return Array.from(languages)
-            .map(languageCode => locale.getByTag(languageCode).tag)
-            .filter(e => !!e);
-    }
-
+    /**
+     * Resolves the type of the given aspect model element.
+     *
+     * @param {Aspect | Entity} modelElement - The aspect model element to resolve the type of.
+     * @returns {Aspect | Entity} - The resolved type of the model element.
+     */
     resolveType(modelElement: Aspect | Entity): Aspect | Entity {
         if (modelElement instanceof DefaultAspect && modelElement.isCollectionAspect) {
             const collectionProperty = modelElement.properties.find(prop => prop.characteristic instanceof DefaultCollection);
@@ -290,20 +498,21 @@ export class TemplateHelper {
         return modelElement;
     }
 
-    getTypesPath(aspectModelVersionSupport: boolean, version: string, aspectModel: Aspect): string {
-        if (aspectModelVersionSupport) {
-            return `../../../types/${dasherize(aspectModel.name)}/v${version.split('.').join('')}/${dasherize(aspectModel.name)}.types`;
-        }
-        return `../../types/${dasherize(aspectModel.name)}/${dasherize(aspectModel.name)}.types`;
-    }
-
+    /**
+     * Replaces all dots in the version string with empty strings.
+     *
+     * @param {string} version The version string.
+     * @returns {string} The version string with all dots replaced.
+     */
     formatAspectModelVersion(version: string): string {
         return version.replace(/\./g, '');
     }
 
     /**
-     * Gets prefix for accessing the i18n properties e.g. 'movement.v321.edit.customCommandBarAction'.
-     * In this example the prefix is 'movement.v321'.
+     * Returns the versioned access prefix for the given options.
+     *
+     * @param {Schema} options The options for the getVersionedAccessPrefix function.
+     * @returns {string} The versioned access prefix.
      */
     getVersionedAccessPrefix(options: Schema): string {
         if (!options.enableVersionSupport) {
@@ -312,48 +521,42 @@ export class TemplateHelper {
         return `${options.selectedModelElement.name.toLowerCase()}.v${this.formatAspectModelVersion(options.aspectModelVersion)}.`;
     }
 
+    /**
+     * Converts a string to spinal case.
+     *
+     * @param text The string to convert.
+     * @returns The converted string.
+     */
     spinalCase(text: string): string {
         const regex = /\.[^/.]+$/;
         return text.replace(regex, '').replace(regex, '-').toLowerCase();
     }
 
-    getGenerationDisclaimerText(): string {
-        return 'Generated from ESMF JS SDK Angular Schematics - PLEASE DO NOT CHANGE IT';
-    }
-
-    getLocalStoragePrefix(): string {
-        return `KEY_LOCAL_STORAGE_`;
-    }
-
-    getLocalStorageKeyColumns(options: Schema): string {
-        return `${this.getLocalStoragePrefix()}${underscore(options.name)}${
-            options.enableVersionSupport ? `_${'v' + options.aspectModelVersion.replace(/\./g, '')}` : ''
-        }_columns`.toUpperCase();
-    }
-
-    getLocalStorageKeyConfig(options: Schema): string {
-        return `${this.getLocalStoragePrefix()}${underscore(options.name)}${
-            options.enableVersionSupport ? `_${'v' + options.aspectModelVersion.replace(/\./g, '')}` : ''
-        }_config`.toUpperCase();
-    }
-
+    /**
+     * Returns the path to the shared module.
+     *
+     * @returns The path to the shared module.
+     */
     getSharedModulePath(): string {
         return 'src/app/shared/app-shared.module.ts';
     }
 
-    getTranslationPath(options: Schema): string {
-        const translationPath = `${this.getVersionedAccessPrefix(options)}${this.isAspectSelected(options) ? options.jsonAccessPath : ''}`;
-        return `${translationPath.length ? translationPath : ''}`;
-    }
-
-    private isDefaultScalarProperty(property: Property) {
-        return property.effectiveDataType && property.effectiveDataType?.isScalar && property.effectiveDataType instanceof DefaultScalar;
-    }
-
+    /**
+     * Returns whether the schema has a search bar.
+     *
+     * @param options The schema options.
+     * @returns Whether the schema has a search bar.
+     */
     hasSearchBar(options: Schema): boolean {
         return this.isAddCommandBarFunctionSearch(options.enabledCommandBarFunctions);
     }
 
+    /**
+     * Returns whether the schema has filters.
+     *
+     * @param options The schema options.
+     * @returns Whether the schema has filters.
+     */
     hasFilters(options: Schema): boolean {
         return this.isAddCommandBarFunctionSearch(options.enabledCommandBarFunctions) ||
             this.isAddDateQuickFilters(options.enabledCommandBarFunctions) ||
