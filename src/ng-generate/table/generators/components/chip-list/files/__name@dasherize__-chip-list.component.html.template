@@ -15,9 +15,9 @@
                     [removable]="filter.removable"
                     (removed)="triggerRemoveFilter(filter)"
             >
-                <div data-test="chip-text" class="chip-text"
-                     matTooltip="{{ filter.filterValue }}: {{ filter.label }}">
-                    <b>{{filter.filterValue}}</b> {{ filter.label }}</div>
+                <div data-test="chip-text" class="chip-text" matTooltip="{{ chipListValue(filter) }}">
+                    {{ chipListValue(filter) }}
+                </div>
                 <button *ngIf="filter.removable" matChipRemove data-test="mat-chip-remove">
                     <mat-icon class="material-icons" data-test="remove-chip">cancel</mat-icon>
                 </button>

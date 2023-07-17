@@ -1,0 +1,12 @@
+/** <%= options.generationDisclaimerText %> **/
+:host ::ng-deep .mat-chip-list-wrapper {
+  margin: 0;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+
+  .mat-chip {
+    flex: 0 0 auto;
+  }
+}

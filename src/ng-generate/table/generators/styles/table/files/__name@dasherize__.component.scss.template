@@ -135,6 +135,7 @@ $gray-300: #e0e0e0;
     display: flex;
     align-content: center;
     position: relative;
+    overflow-x: auto;
 
     .chip-list-container {
       display: flex;

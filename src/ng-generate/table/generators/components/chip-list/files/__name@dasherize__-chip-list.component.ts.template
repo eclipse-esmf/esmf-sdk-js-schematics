@@ -1,11 +1,11 @@
 /** <%= options.enerationDisclaimerText %> **/
 import {Component, EventEmitter, Output} from '@angular/core';
-import {<%= classify(name) %>FilterService} from './<%= dasherize(name) %>-filter.service';
+import {FilterEnums, FilterType, <%= classify(name) %>FilterService} from './<%= dasherize(name) %>-filter.service';
 
 @Component({
     selector: 'chip-list',
     templateUrl: './<%= dasherize(name) %>-chip-list.component.html',
-    styleUrls: []
+    styleUrls: ['./<%= dasherize(name) %>-chip-list.component.scss']
 })
 export class <%= classify(name) %>ChipListComponent {
     @Output() removeFilter = new EventEmitter<any>();
@@ -16,4 +16,16 @@ export class <%= classify(name) %>ChipListComponent {
     triggerRemoveFilter(filter: any): void {
       this.removeFilter.emit(filter);
     }
+
+   chipListValue(filter: FilterType): string {
+     if (filter.type === FilterEnums.Search) {
+       return `${filter.filterValue}: ${filter.label}`;
+     }
+
+     if (filter.type === FilterEnums.Date) {
+       return filter.label;
+     }
+
+     return `${filter.prop}: ${filter.label}`;
+   }
 }
