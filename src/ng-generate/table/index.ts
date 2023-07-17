@@ -80,10 +80,12 @@ export function generate(options: Schema): Rule {
     options.spinner = ora().start();
 
     const defaultOptions = {
-        configFile: options.configFile !== WIZARD_CONFIG_FILE ? WIZARD_CONFIG_FILE : options.configFile,
-        templateHelper: new TemplateHelper(),
-        skipImport: false
+        skipImport: false,
     };
+
+    if (options.configFile !== WIZARD_CONFIG_FILE) {
+        options.configFile = WIZARD_CONFIG_FILE;
+    }
 
     options = {
         ...defaultOptions,
@@ -95,6 +97,8 @@ export function generate(options: Schema): Rule {
     if (options.aspectModelTFilesString) {
         options.aspectModelTFiles = options.aspectModelTFilesString.split(',');
     }
+
+    options.templateHelper = new TemplateHelper();
 
     validateUrns(options);
 

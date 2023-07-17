@@ -145,8 +145,8 @@ export function updateSharedModule(options: Schema) {
 
         ['horizontal-overflow', 'resize-column', 'validate-input'].forEach(directive => processItem('directive', directive));
 
-        const pipes = ['show-description', 'search-string'];
-        if (options.enabledCommandBarFunctions.includes('addSearchBar')) {
+        const pipes = ['show-description'];
+        if (options.templateHelper.hasSearchBar(options)) {
             pipes.push('search-string');
         }
         pipes.forEach(pipe => processItem('pipe', pipe));
