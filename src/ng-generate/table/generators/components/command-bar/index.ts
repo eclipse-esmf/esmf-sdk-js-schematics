@@ -48,7 +48,7 @@ export function generateCommandBar(options: any, allProps: Array<Property>): Rul
                 }),
                 move(options.path),
             ]),
-            options.overwrite? MergeStrategy.Overwrite : MergeStrategy.Error
+            options.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error
         );
     };
 }
@@ -63,9 +63,7 @@ function getPropertiesToCreateFilters(options: any, allProps: Array<Property>): 
         if (property.effectiveDataType?.isComplex && property.characteristic instanceof DefaultSingleEntity) {
             const complexPropObj = options.templateHelper.getComplexProperties(property, options);
             complexPropObj.properties.forEach((complexProp: Property) => {
-                if (
-                    options.options.templateHelper.isEnumProperty(complexProp) ||
-                    options.options.templateHelper.isDateTimeProperty(complexProp)) {
+                if (options.templateHelper.isEnumProperty(complexProp) || options.templateHelper.isDateTimeProperty(complexProp)) {
                     propertyValues.push({
                         propertyName: `${complexPropObj.complexProp}${classify(complexProp.name)}`,
                         propertyValue: `${complexPropObj.complexProp}.${complexProp.name}`,

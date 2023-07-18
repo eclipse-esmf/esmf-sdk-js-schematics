@@ -64,22 +64,22 @@
 
         <% for(let value of tableColumValues) { %>
             <%
-                let language = templateHelper.isMultiStringProperty(value.property) ? '[currentLanguage]' : '';
-                let propertyName = templateHelper.isEnumPropertyWithEntityValues(value.property)
-                    ? value.property.name + '?.' + templateHelper.getEnumEntityInstancePayloadKey(value.property)
+                let language = options.templateHelper.isMultiStringProperty(value.property) ? '[currentLanguage]' : '';
+                let propertyName = options.templateHelper.isEnumPropertyWithEntityValues(value.property)
+                    ? value.property.name + '?.' + options.templateHelper.getEnumEntityInstancePayloadKey(value.property)
                     : value.property.name;
                 let cellPropertyPath = `${options.jsonAccessPath}${value.complexPrefix}${propertyName}`;
                 let isEmptyValue = `row.${cellPropertyPath} === null || row.${cellPropertyPath} === undefined`;
-                let propertyLocaleKeyPath = `${templateHelper.getVersionedAccessPrefix(options)}${options.isAspectSelected ? options.jsonAccessPath : ''}${value.complexPrefix}${value.property.name}`;
-                let datePipe = templateHelper.isDateTimeProperty(value.property) ? `| date: ${resolveDateTimeFormat(value.property)}` : '';
-                let descriptionPipe = templateHelper.isEnumPropertyWithEntityValues(value.property) ? ` | showDescription:get${classify(value.property.name)}Value` : '';
+                let propertyLocaleKeyPath = `${options.templateHelper.getVersionedAccessPrefix(options)}${options.isAspectSelected ? options.jsonAccessPath : ''}${value.complexPrefix}${value.property.name}`;
+                let datePipe = options.templateHelper.isDateTimeProperty(value.property) ? `| date: ${resolveDateTimeFormat(value.property)}` : '';
+                let descriptionPipe = options.templateHelper.isEnumPropertyWithEntityValues(value.property) ? ` | showDescription:get${classify(value.property.name)}Value` : '';
                 let cellContent = `!(${isEmptyValue}) ? (row.${cellPropertyPath}${descriptionPipe}${language}${datePipe})  : '-'`;
             %>
             <!-- <%= cellPropertyPath %> Column -->
             <ng-container data-test="table-column" matColumnDef="<%= cellPropertyPath %>">
                 <th data-test="table-header" mat-header-cell *matHeaderCellDef
                     mat-sort-header="<%= cellPropertyPath %>"
-                    <%= templateHelper.isNumberProperty(value.property) ? `class="table-header-number"` : '' %>
+                    <%= options.templateHelper.isNumberProperty(value.property) ? `class="table-header-number"` : '' %>
                     <% if (tableColumValues.length - 1 > value.index) { %>
                         [resizeColumn]="true" [index]="<%= value.index %>" (dragging)='dragging = $event'
                     <% } %>
@@ -93,11 +93,11 @@
                 </th>
 
                 <td data-test="table-cell"
-                    <% if(templateHelper.isEnumPropertyWithEntityValues(value.property)) { %>
+                    <% if(options.templateHelper.isEnumPropertyWithEntityValues(value.property)) { %>
                         [matTooltip]="!('<%= isEmptyValue %>') ? (row.<%= cellPropertyPath %><%= descriptionPipe %>:true<%= language %>) : ''" [matTooltipDisabled]="'<%= isEmptyValue %>'"
                     <% } %>
                         mat-cell *matCellDef="let row"
-                    <% if(templateHelper.isNumberProperty(value.property)) { %>
+                    <% if(options.templateHelper.isNumberProperty(value.property)) { %>
                         class="table-cell-number"
                     <% } %>
                 >

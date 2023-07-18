@@ -34,21 +34,21 @@ let sharedOptions: any = {};
 let allProps: Array<Property> = [];
 
 export function generateTable(options: any): Rule {
-    sharedOptions = options;
-
     return (tree: Tree, _context: SchematicContext) => {
-        allProps = sharedOptions.listAllProperties;
+        allProps = options.listAllProperties;
 
         return chain([
-            ...(sharedOptions.hasFilters ? [generateChipList(sharedOptions)] : []),
-            ...(sharedOptions.addCommandBar ? [generateCommandBar(sharedOptions, allProps)] : []),
-            generateHtml(),
+            ...(options.hasFilters ? [generateChipList(options)] : []),
+            ...(options.addCommandBar ? [generateCommandBar(options, allProps)] : []),
+            generateHtml(options),
         ])(tree, _context);
     };
 }
 
 
-function generateHtml(): Rule {
+function generateHtml(options: any): Rule {
+    sharedOptions = options;
+
     return mergeWith(
         apply(url('./generators/components/table/files'), [
             applyTemplates({
@@ -56,7 +56,6 @@ function generateHtml(): Rule {
                 dasherize: strings.dasherize,
                 camelize: strings.camelize,
                 options: sharedOptions,
-                templateHelper: sharedOptions.templateHelper,
                 name: sharedOptions.name,
                 selectedModelElementUrn: sharedOptions.selectedModelElement.aspectModelUrn,
                 aspectModelElementUrn: sharedOptions.aspectModel.aspectModelUrn,
