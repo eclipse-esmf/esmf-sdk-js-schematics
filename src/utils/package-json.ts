@@ -23,12 +23,12 @@ interface NodeScript {
 }
 
 export const DEFAULT_DEPENDENCIES = [
-    {type: NodeDependencyType.Dev, version: '~14.2.6', name: '@angular/cdk', overwrite: false},
-    {type: NodeDependencyType.Dev, version: '^5.3.1', name: '@types/papaparse', overwrite: false},
-    {type: NodeDependencyType.Default, version: '~14.2.6', name: '@angular/material', overwrite: false},
-    {type: NodeDependencyType.Default, version: '~14.0.0', name: '@ngx-translate/core', overwrite: false},
-    {type: NodeDependencyType.Default, version: '~7.0.0', name: '@ngx-translate/http-loader', overwrite: false},
-    {type: NodeDependencyType.Default, version: '^5.3.1', name: 'papaparse', overwrite: false},
+    {type: NodeDependencyType.Dev, version: '^16.1.0', name: '@angular/cdk', overwrite: false},
+    {type: NodeDependencyType.Dev, version: '^5.3.7', name: '@types/papaparse', overwrite: false},
+    {type: NodeDependencyType.Default, version: '^16.1.0', name: '@angular/material', overwrite: false},
+    {type: NodeDependencyType.Default, version: '~15.0.0', name: '@ngx-translate/core', overwrite: false},
+    {type: NodeDependencyType.Default, version: '~8.0.0', name: '@ngx-translate/http-loader', overwrite: false},
+    {type: NodeDependencyType.Default, version: '^5.4.1', name: 'papaparse', overwrite: false},
 ];
 
 export const REMOTE_HANDLING_DEPENDENCIES = [
@@ -38,7 +38,7 @@ export const REMOTE_HANDLING_DEPENDENCIES = [
 
 export const DATE_QUICK_FILTER_DEPENDENCIES = [
     {type: NodeDependencyType.Default, version: '~2.29.4', name: 'moment', overwrite: false},
-    {type: NodeDependencyType.Default, version: '~14.2.6', name: '@angular/material-moment-adapter', overwrite: false}
+    {type: NodeDependencyType.Default, version: '^16.1.0', name: '@angular/material-moment-adapter', overwrite: false}
 ];
 
 export function addPackageJsonDependencies(skipImport: boolean, spinner: Ora, dependencies: NodeDependency[] = []): Rule {

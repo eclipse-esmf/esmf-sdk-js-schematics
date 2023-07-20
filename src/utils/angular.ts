@@ -20,7 +20,7 @@ import {
     findModuleFromOptions,
     parseSourceFile,
 } from '@angular/cdk/schematics';
-import {ModuleOptions} from '@schematics/angular/utility/find-module';
+import {MODULE_EXT, ModuleOptions} from '@schematics/angular/utility/find-module';
 import {Schema} from '../ng-generate/table/schema';
 import {dasherize} from '@angular-devkit/core/src/utils/strings';
 import {InsertChange} from "@schematics/angular/utility/change";
@@ -56,16 +56,15 @@ export function addToComponentModule(skipImport: SkipHandler | boolean, options:
 }
 
 export function addToAppModule(skipImport: SkipHandler | boolean, modules: Array<ModuleDefinition> = []): Rule {
-    const appModule: ModuleOptions = {name: 'AppModule', module: 'app.module.ts', path: '/src/app'};
+    const appModule = {project: 'esmf', name: 'AppModule', module: `app${MODULE_EXT}`, path: '/src/app'};
     return addToModule(appModule, skipImport, modules);
 }
-
 export function addToAppSharedModule(skipImport: SkipHandler | boolean, modules: Array<ModuleDefinition> = []): Rule {
-    const appModule: ModuleOptions = {name: 'AppSharedModule', module: 'app-shared.module.ts', path: '/src/app/shared'};
+    const appModule = {project: 'esmf', name: 'AppSharedModule', module: `app-shared${MODULE_EXT}`, path: '/src/app/shared'};
     return addToModule(appModule, skipImport, modules);
 }
 
-function addToModule(appModule: ModuleOptions, skipImport: SkipHandler | boolean, modules: Array<ModuleDefinition> = []): Rule {
+function addToModule(appModule: any, skipImport: SkipHandler | boolean, modules: Array<ModuleDefinition> = []): Rule {
     return async (tree: Tree) => {
         if (skipImport !== undefined && (skipImport === true || (skipImport !== false && (skipImport as SkipHandler).skip()))) {
             return;

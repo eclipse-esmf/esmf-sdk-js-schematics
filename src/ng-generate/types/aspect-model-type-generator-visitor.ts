@@ -347,7 +347,7 @@ export class AspectModelTypeGeneratorVisitor extends DefaultAspectModelVisitor<B
     private sanitizeVariableName(name: string): string {
         // Convert the first character to upper case
         if (name.length > 1) {
-            name = name[0].toUpperCase() + name.substr(1);
+            name = name[0].toUpperCase() + name.substring(1);
         } else {
             name = name.toUpperCase();
         }
