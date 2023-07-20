@@ -190,7 +190,7 @@ function getTtlPaths(promptSubj: Subject<any>, allAnswers: Schema, subscriber: S
     // listener
     const process = inquirer.prompt(promptSubj as any).ui.process;
     process.subscribe(
-        (singleAnswer: {name: string; answer: any}) => {
+        (singleAnswer: { name: string; answer: any }) => {
             switch (true) {
                 case singleAnswer.name === createOrImport.name: {
                     if (singleAnswer.answer) {
@@ -255,7 +255,8 @@ function getTtlPaths(promptSubj: Subject<any>, allAnswers: Schema, subscriber: S
         err => {
             console.log('Error: ', err);
         },
-        () => {}
+        () => {
+        }
     );
 
     promptSubj.next(createOrImport);
@@ -357,7 +358,7 @@ function loadSourceProcessResult(allAnswers: any, tree: Tree, options: Schema, p
                     .then(aspect => {
                         resolve(
                             !aspect.isCollectionAspect &&
-                                loader.filterElements((entry: DefaultEntity) => entry instanceof DefaultEntity).length >= 1
+                            loader.filterElements((entry: DefaultEntity) => entry instanceof DefaultEntity).length >= 1
                         );
                     })
                     .catch(error => reject(error));
@@ -641,19 +642,19 @@ function getUserConfigQuestions(allAnswers: any, tree: Tree, options: Schema): Q
                                 value: 'addCustomCommandBarActions',
                             },
                         ];
-                        if (templateHelper.getStringProperties(options).length > 0) {
+                        if (templateHelper.getStringProperties(options as Schema).length > 0) {
                             choices.push({
                                 name: 'Search for string properties',
                                 value: 'addSearchBar',
                             });
                         }
-                        if (templateHelper.getDateProperties(options).length > 0) {
+                        if (templateHelper.getDateProperties(options as Schema).length > 0) {
                             choices.push({
                                 name: 'Quick filters for properties of type date',
                                 value: 'addDateQuickFilters',
                             });
                         }
-                        if (templateHelper.getEnumProperties(options).length > 0) {
+                        if (templateHelper.getEnumProperties(options as Schema).length > 0) {
                             choices.push({
                                 name: 'Quick filters for properties of type enumeration',
                                 value: 'addEnumQuickFilters',
@@ -672,25 +673,29 @@ function getUserConfigQuestions(allAnswers: any, tree: Tree, options: Schema): Q
         name: 'chooseLanguageForSearch',
         message: 'Which language should be used for the search functionality?',
         when: (answers: any) =>
-            answers.addCommandBar && new TemplateHelper().isAddCommandBarFunctionSearch(answers.enabledCommandBarFunctions),
+            answers.addCommandBar && new TemplateHelper().hasSearchBar(answers),
         choices: () => {
-            loadAspect(allAnswers, tree).then(aspect => {
-                const templateHelper = new TemplateHelper();
-                let selectedElement: Aspect | Entity = aspect;
-                if (allAnswers.selectedModelElementUrn && allAnswers.selectedModelElementUrn.length > 0) {
-                    selectedElement = loader.findByUrn(allAnswers.selectedModelElementUrn) as Aspect | Entity;
-                }
+            return new Promise<any>((resolve, reject) => {
+                loadAspect(allAnswers, tree)
+                    .then(aspect => {
+                        const templateHelper = new TemplateHelper();
+                        let selectedElement: Aspect | Entity = aspect;
+                        if (allAnswers.selectedModelElementUrn && allAnswers.selectedModelElementUrn.length > 0) {
+                            selectedElement = loader.findByUrn(allAnswers.selectedModelElementUrn) as Aspect | Entity;
+                        }
 
-                const languageCodes = templateHelper.resolveAllLanguageCodes(selectedElement);
-                const choices = [{name: 'English', value: 'en'}];
+                        const languageCodes = templateHelper.resolveAllLanguageCodes(selectedElement);
+                        const choices = [{name: 'English', value: 'en'}];
 
-                languageCodes.forEach(code => {
-                    if (code !== 'en') {
-                        choices.push({name: locale.getByTag(code).name, value: code});
-                    }
-                });
+                        languageCodes.forEach(code => {
+                            if (code !== 'en') {
+                                choices.push({name: locale.getByTag(code).name, value: code});
+                            }
+                        });
 
-                return choices;
+                        resolve(choices);
+                    })
+                    .catch(error => reject(error));
             });
         },
         default: 'en',

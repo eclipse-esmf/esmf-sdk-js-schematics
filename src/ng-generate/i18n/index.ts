@@ -15,10 +15,10 @@ import {chain, Rule} from '@angular-devkit/schematics';
 import {Schema} from './schema';
 import {addPackageJsonDependencies, addPackageJsonScripts} from '../../utils/package-json';
 import {NodeDependencyType} from '@schematics/angular/utility/dependencies';
-import {generateTranslationModule} from '../../utils/aspect-model';
 import {TemplateHelper} from '../../utils/template-helper';
 import {formatGeneratedFiles} from '../../utils/file';
 import ora from 'ora';
+import {generateTranslationModule} from "../table/generators/modules/translation/index";
 
 /**
  * generates translation files for aspect model.

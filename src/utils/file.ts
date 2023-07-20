@@ -28,7 +28,7 @@ export function loadAndApplyConfigFile(configFile: string, options: any): void {
             Object.assign(options, JSON.parse(data));
         }
     } catch (error) {
-        // nothing to do. the file is missing.
+        console.error('File cannot be found: ' + configFile, error);
     }
 }
 
@@ -42,37 +42,21 @@ export interface FolderPathProvider {
 /**
  * Trigger the formation of the file in the given folder.
  * @param folderProvider Function which returns the path to the folder which includes the files
+ * @param options Default schema operations
  * @param fileFilter name of files to format
  */
 export function formatGeneratedFiles(folderProvider: FolderPathProvider, options: DefaultSchema, fileFilter?: Array<string>): Rule {
     return async (tree: Tree, context: SchematicContext) => {
         try {
             const folderPath = folderProvider.getPath(options);
-            const workingDir = process.cwd();
-            let prettierConfigPath = `${workingDir}/.prettierrc`;
-            if (!fs.existsSync(prettierConfigPath)) {
-                options.spinner.info('Using the prettier config file .prettierrc from the schematics project.');
-                prettierConfigPath = defaultPrettierConfigPath;
-            }
+            const prettierConfigPath = resolvePrettierConfigPath(options);
+            const prettierOptions = await resolvePrettierOptions(prettierConfigPath, options);
 
-            await prettier.resolveConfig(prettierConfigPath).then((prettierOptions: {filepath?: any}) => {
-                // Options may be null if no file was found
-                if (!prettierOptions) {
-                    prettierOptions = {};
-                    options.spinner.info('No prettier config file .prettierrc found. Using defaults.');
+            tree.getDir(folderPath).visit(visitor => {
+                const fileEntry = tree.get(visitor);
+                if (fileEntry && (fileFilter === undefined || fileFilter.find(fileName => fileEntry.path.includes(fileName)))) {
+                    formatFile(fileEntry, visitor, prettierOptions, options, tree);
                 }
-
-                const dir = tree.getDir(folderPath);
-                dir.visit(visitor => {
-                    const fileEntry = tree.get(visitor);
-                    if (fileEntry && (fileFilter === undefined || fileFilter.find(fileName => fileEntry.path.includes(fileName)))) {
-                        prettierOptions.filepath = visitor; // Infer the parser from the file extension
-                        const srcFile = fileEntry.content.toString();
-                        const dstFile = prettier.format(srcFile, prettierOptions);
-                        tree.overwrite(visitor, dstFile);
-                        options.spinner.succeed(`Prettier ${visitor}`);
-                    }
-                });
             });
         } catch (err) {
             options.spinner.fail(`Error error while trying to format the generated files (${err})`);
@@ -80,13 +64,31 @@ export function formatGeneratedFiles(folderProvider: FolderPathProvider, options
     };
 }
 
-/**
- * Used to handle a specific generation file. If it exists and overwrite is active the file is only updated.
- */
-export function createOrOverwrite(tree: Tree, path: string, isOverWrite: boolean, content: string) {
-    if (tree.exists(path) && isOverWrite) {
-        tree.overwrite(path, content);
-    } else {
-        tree.create(path, content);
+function resolvePrettierConfigPath(options: DefaultSchema) {
+    let prettierConfigPath = `${process.cwd()}/.prettierrc`;
+
+    if (!fs.existsSync(prettierConfigPath)) {
+        options.spinner.info('Using the prettier config file .prettierrc from the schematics project.');
+        prettierConfigPath = defaultPrettierConfigPath;
     }
+    return prettierConfigPath;
+}
+
+async function resolvePrettierOptions(prettierConfigPath: string, options: DefaultSchema) {
+    let prettierOptions = await prettier.resolveConfig(prettierConfigPath);
+
+    if (!prettierOptions) {
+        prettierOptions = {};
+        options.spinner.info('No prettier config file .prettierrc found. Using defaults.');
+    }
+
+    return prettierOptions;
+}
+
+function formatFile(fileEntry: any, visitor: any, prettierOptions: any, options: DefaultSchema, tree: Tree) {
+    prettierOptions.filepath = visitor; // Infer the parser from the file extension
+    const srcFile = fileEntry.content.toString();
+    const dstFile = prettier.format(srcFile, prettierOptions);
+    tree.overwrite(visitor, dstFile);
+    options.spinner.succeed(`Prettier ${visitor}`);
 }

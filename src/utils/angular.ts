@@ -11,7 +11,7 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-import {Rule, SchematicContext, SchematicsException, Tree} from '@angular-devkit/schematics';
+import {Rule, SchematicContext, Tree} from '@angular-devkit/schematics';
 import {
     addDeclarationToModule,
     addExportToModule,
@@ -20,7 +20,6 @@ import {
     findModuleFromOptions,
     parseSourceFile,
 } from '@angular/cdk/schematics';
-import * as ts from 'typescript';
 import {ModuleOptions} from '@schematics/angular/utility/find-module';
 import {Schema} from '../ng-generate/table/schema';
 import {dasherize} from '@angular-devkit/core/src/utils/strings';
@@ -29,6 +28,7 @@ import {InsertChange} from "@schematics/angular/utility/change";
 declare interface ModuleDefinition {
     name: string;
     fromLib: string;
+    skip?: () => boolean;
 }
 
 declare interface SkipHandler {
@@ -40,15 +40,18 @@ export function addToComponentModule(skipImport: SkipHandler | boolean, options:
         if (skipImport !== undefined && (skipImport === true || (skipImport !== false && (skipImport as SkipHandler).skip()))) {
             return;
         }
+
         const componentModuleFile = `${options.path}/${dasherize(options.name)}.module.ts`;
         const moduleFileEntry = tree.get(componentModuleFile);
-        if (moduleFileEntry !== null) {
-            modules.forEach(moduleDef => {
-                addModuleImportToModule(tree, moduleFileEntry.path, moduleDef.name, moduleDef.fromLib);
-            });
-        } else {
+
+        if (moduleFileEntry === null) {
             throw new Error(`Module ${componentModuleFile}.`);
         }
+
+        modules
+            .filter(module => !module.skip || !module.skip())
+            .forEach(moduleDef => addModuleImportToModule(tree, moduleFileEntry.path, moduleDef.name, moduleDef.fromLib));
+
     };
 }
 
@@ -67,21 +70,20 @@ function addToModule(appModule: ModuleOptions, skipImport: SkipHandler | boolean
         if (skipImport !== undefined && (skipImport === true || (skipImport !== false && (skipImport as SkipHandler).skip()))) {
             return;
         }
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        const modulePath = (await findModuleFromOptions(tree, appModule))!;
+
+        const modulePath = await findModuleFromOptions(tree, appModule);
+
+        if (!modulePath) {
+            throw new Error('Module path could not be found.');
+        }
+
         modules.forEach(moduleDef => {
             addModuleImportToModule(tree, modulePath, moduleDef.name, moduleDef.fromLib);
         });
     };
 }
 
-export async function addToDeclarationsArray(
-    options: Schema,
-    tree: Tree,
-    declarationName: string,
-    declarationPath: string,
-    modulePath?: string
-): Promise<Tree> {
+export async function addToDeclarationsArray(options: Schema, tree: Tree, declarationName: string, declarationPath: string, modulePath?: string): Promise<Tree> {
     modulePath = modulePath || (await findModuleFromOptions(tree, options)) || '';
     const sourceFile = parseSourceFile(tree, modulePath);
     const declarationChanges = addDeclarationToModule(sourceFile, modulePath, declarationName, declarationPath);
@@ -97,13 +99,7 @@ export async function addToDeclarationsArray(
     return tree;
 }
 
-export async function addToExportsArray(
-    options: Schema,
-    tree: Tree,
-    exportName: string,
-    exportPath: string,
-    modulePath?: string
-): Promise<Tree> {
+export async function addToExportsArray(options: Schema, tree: Tree, exportName: string, exportPath: string, modulePath?: string): Promise<Tree> {
     modulePath = modulePath || (await findModuleFromOptions(tree, options)) || '';
     const sourceFile = parseSourceFile(tree, modulePath);
     const exportChanges = addExportToModule(sourceFile, modulePath, exportName, exportPath);
@@ -117,15 +113,6 @@ export async function addToExportsArray(
     tree.commitUpdate(exportRecorder);
 
     return tree;
-}
-
-export function getSourceFile(host: Tree, path: string): ts.SourceFile {
-    const buffer = host.read(path);
-    if (!buffer) {
-        throw new SchematicsException(`Could not read file (${path}).`);
-    }
-    const content = buffer.toString();
-    return ts.createSourceFile(path, content, ts.ScriptTarget.Latest, true);
 }
 
 // wrap the execution to avoid raise conditions e.g. the path will

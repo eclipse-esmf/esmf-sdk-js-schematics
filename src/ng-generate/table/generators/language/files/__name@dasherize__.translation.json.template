@@ -1,0 +1,109 @@
+{
+    <% if (!options.isAspectSelected) { %>
+        <% if (options.enableVersionSupport) { %>
+            "<%= aspectModelName.toLowerCase() %>.v<%= options.formatedAspectModelVersion %>": {
+        <% } %>
+
+        "preferredName": "<%= preferredName %>",
+        "description": "<%= description %>"
+
+        <% if (options.enableVersionSupport) { %>
+            },
+        <% } %>
+    <% } %>
+
+    <% if (options.enableVersionSupport) { %>
+        "<%= selectedModelElementName.toLowerCase() %>.v<%= options.formatedAspectModelVersion %>": {
+    <% } %>
+
+    <%= properties %>
+    <%= blockTransCustomColumns %>
+    <%= blockTransRowActions %>
+    <%= blockCustomCommandBarActions %>
+
+    "customRowActions.preferredName": "Actions", "customRowActions.description": "Custom row actions"
+
+    <% if (options.isAspectSelected) { %>
+        ,
+        "preferredName": "<%= preferredName %>",
+        "description": "<%= description %>"
+    <% } %>
+
+    <% if (options.enableVersionSupport) { %>
+        }
+    <% } %>
+
+    <% if (options.hasSearchBar) { %>
+        ,
+        "search": "Search",
+        "advancedSearch": "Advanced Search",
+        "allTextFields": "All Text Fields"
+    <% } %>
+
+    <% if (options.isEnumQuickFilter || options.isDateQuickFilter) { %>
+        ,
+        "date": {
+            "start": "Start date",
+            "end": "End date"
+        }
+    <% } %>
+
+    ,
+    "exportData": {
+        "title": "Export data",
+        "description": {
+            "caseOne": "Export the maximum of {{maxExportRows}} rows from all {{allColumns}} columns.",
+            "caseTwo": {
+                "singular": "Export the maximum of {{maxExportRows}} rows from the displayed {{displayedColumns}} column.",
+                    "plural": "Export the maximum of {{maxExportRows}} rows from the displayed {{displayedColumns}} columns."
+            },
+            "caseThree": {
+                "singular": "Export all data from the selected {{displayedColumns}} column of the current page.",
+                "plural": "Export all data from the selected {{displayedColumns}} columns of the current page."
+            },
+            "caseFour": "Export all data from all {{allColumns}} columns of the current page.",
+            "default": "Export data."
+        },
+        "exportAllPages": "export the maximum of {{maxExportRows}} rows",
+        "exportAllColumns": "export all data from all {{allColumns}} columns"
+    }
+
+    ,
+    "validation": {
+        "invalidInput": "Input can only contain",
+        "blankSpace": "Input can only contain blank space between characters",
+        "empty_string_columns_array": "You have to select at least one column to search in",
+        "min_char_no": "Minimum number of characters is",
+        "max_char_no": "Maximum number of characters is"
+    }
+
+    ,
+    "tableActions": {
+        "openColumnsMenu": "Open columns menu",
+        "refreshData": "Refresh data",
+        "exportData": "Export data",
+        "openConfig": "Open configuration"
+    }
+
+    ,
+    "scroll": {
+        "left": "Scroll left",
+        "right": "Scroll right"
+    }
+
+    <% if (options.hasSearchBar) { %>
+        ,
+        "settings": {
+            "title": "Settings",
+            "highlight.name": "Highlight",
+            "highlight.desc": "The search term will be highlighted"
+        }
+    <% } %>
+
+    ,
+    "cancel": "Cancel",
+    "apply": "Apply",
+    "restoreDefaults": "Restore Defaults",
+    "columns": "Columns",
+    "export": "Export"
+}

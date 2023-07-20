@@ -1,0 +1,91 @@
+/** <%= options.generationDisclaimerText %> **/
+import {HttpClient} from '@angular/common/http';
+import {Observable} from 'rxjs';
+import {<%= classify(options.aspectModelTypeName) %>} from '<%= options.typePath %>';
+import {Injectable} from '@angular/core';
+import {TranslateService} from "@ngx-translate/core";
+
+export interface <%= classify(aspectModelName) %>Response {
+    items: <%= classify(options.aspectModelTypeName) %>[];
+    totalItems?: number;
+}
+
+export interface Generic<%= classify(aspectModelName) %>Payload {
+    [key: string]: string | number | boolean;
+}
+
+export type <%= classify(aspectModelName) %>Payload<T extends Generic<%= classify(aspectModelName) %>Payload = Generic<%= classify(aspectModelName) %>Payload> = T & {
+    query: string
+}
+
+@Injectable({
+    providedIn: 'root'
+})
+export class <%= classify(options.name) %>Service {
+
+    constructor(protected http: HttpClient, private translateService: TranslateService) {
+        this.http.get(`<%= assetsPath %>/<%= dasherize(options.name) %><% if (options.enableVersionSupport) { %>/v<%= options.formatedAspectModelVersion %><% } %>/${this.translateService.currentLang}.<%= dasherize(options.name) %>.translation.json`)
+          .subscribe(translations => {
+            this.translateService.setTranslation(this.translateService.currentLang, translations, true);
+          });
+    }
+
+    <% if (options.enableRemoteDataHandling) { %>
+        requestData(remoteAPI: string, body: <%= classify(aspectModelName) %>Payload): Observable<<%= classify(aspectModelName) %>Response> {
+            const strippedUrlParts: string[] = remoteAPI.split('?');
+            if (strippedUrlParts && strippedUrlParts.length === 2) {
+        const queryParams = new URLSearchParams(strippedUrlParts[1]);
+        queryParams.forEach((value, key) => {
+            body[key] = value;
+        });
+            }
+            return this.http.post<<%= classify(aspectModelName) %>Response>(strippedUrlParts[0], body);
+        }
+    <% } %>
+
+    <% if (options.addCommandBar) { %>
+        downloadCsv(csvArray: any): void {
+            if (!csvArray.length) {
+                throw new Error('Empty file. Please try again with data.');
+            }
+            const a = document.createElement('a');
+            const blob = new Blob([csvArray], {type: 'text/csv'});
+            const url = window.URL.createObjectURL(blob);
+
+            a.href = url;
+            a.download = '<%= classify(aspectModelName) %>.csv';
+            a.click();
+            window.URL.revokeObjectURL(url);
+            a.remove();
+        }
+
+    flatten(csvArray: <%= classify(options.aspectModelTypeName) %>[]): <%= classify(options.aspectModelTypeName) %>[] {
+        return csvArray.map((item: <%= classify(options.aspectModelTypeName) %>): <%= classify(options.aspectModelTypeName) %> => {
+            return this.flattenObj(item);
+        });
+    }
+
+        private flattenObj(obj: any): any {
+            const result: any = {};
+
+            for (let key in obj) {
+              if (typeof obj[key].constructor.isEnumeration === 'function' && obj[key]?.constructor?.isEnumeration()) {
+                const enumerationValues = obj[key].constructor.values().find((v: any) =>
+                  Object.keys(v).every(k => v[k] === obj[key][k])
+                )
+
+                result[key] = Object.values(enumerationValues).join('-');
+              } else if (typeof obj[key] === 'object' && !(obj[key] instanceof Date)) {
+                    const childObj = this.flattenObj(obj[key]);
+
+                    for (let childObjKey in childObj) {
+                        result[`${key}.${childObjKey}`] = childObj[childObjKey];
+                    }
+                } else {
+                    result[key] = obj[key];
+                }
+            }
+            return result;
+        }
+    <% } %>
+}

@@ -1,0 +1,145 @@
+<mat-toolbar data-test="toolbar" class="toolbar">
+    <div *ngIf="isMultipleSelectionEnabled" data-test="toolbar-number-of-items" class="command-bar-number-of-items">{{ selection.selected.length > 0 ? (selection.selected.length + ' / ') : '' }}{{ totalItems }}</div>
+    <% if (options.hasSearchBar) { %>
+        <mat-form-field data-test="search-form-field" appearance="fill" floatLabel="never" class="search-input">
+          <mat-label data-test="search-label">{{ 'search' | translate }}</mat-label>
+          <input
+            #searchInput
+            data-test="search-input"
+            matInput
+            [formControl]="filterService.searchString"
+            type="text"
+            (keyup.enter)="triggerReloadFilter()"
+            (focus)="searchFocused = true"
+            (blur)="searchFocused = false"/>
+          <mat-error *ngIf="filterService.searchString.errors && filterService.searchString.errors['blankSpace']">
+            {{ 'validation.blankSpace' | translate }}
+          </mat-error>
+          <mat-error *ngIf="filterService.searchString.errors && filterService.searchString.errors['invalidInput']">
+            {{ 'validation.invalidInput' | translate }} {{ allowedCharacters }}
+          </mat-error>
+          <mat-error *ngIf="!filterService.stringColumns || !filterService.stringColumns.length">
+            {{'validation.empty_string_columns_array' | translate }}
+          </mat-error>
+          <mat-error *ngIf="filterService.searchString.errors && filterService.searchString.errors['minCharNo']">
+            {{'validation.min_char_no' | translate }} {{ minNumberCharacters }}
+          </mat-error>
+          <mat-error *ngIf="filterService.searchString.errors && filterService.searchString.errors['maxCharNo']">
+            {{'validation.max_char_no' | translate }} {{ maxNumberCharacters }}
+          </mat-error>
+          <mat-hint *ngIf="!searchFocused && !!searchHint">{{ searchHint }}</mat-hint>
+          <button data-test="search-button" mat-icon-button matSuffix aria-label="search" (click)="triggerReloadFilter()">
+            <mat-icon data-test="search-icon" class="material-icons">search</mat-icon>
+          </button>
+        </mat-form-field>
+        <ng-container *ngIf="hasAdvancedSearch">
+          <mat-form-field data-test="form-field-select" appearance="fill" floatLabel="never">
+            <mat-label data-test="select-label">{{ 'advancedSearch' | translate }}</mat-label>
+            <mat-select data-test="select" [formControl]="filterService.selectedStringColumn">
+              <mat-option [value]="filterService.advancedSearchAllValue">{{ 'allTextFields' | translate }}</mat-option>
+              <mat-option *ngFor="let searchField of filterService.stringColumns" [value]="searchField">
+                <span>{{ '<%= options.translationPath %>' + searchField + '.preferredName' | translate }}</span>
+                <span class="advanced-search-option-description">{{ '<%= options.translationPath %>' + searchField + '.description' | translate }}</span>
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </ng-container>
+    <% } %>
+
+    <% for(let property of propValues) { %>
+        <% if (options.isDateQuickFilter && property.isDate) { %>
+            <mat-form-field data-test="form-field-date-time" appearance="fill" floatLabel="never">
+              <mat-label
+                data-test="date-time-label">{{ '<%= options.versionedAccessPrefix %><%= property.propertyValue %>.preferredName' | translate }}</mat-label>
+              <mat-date-range-input data-test="date-range-input" [rangePicker]="<%= property.propertyName %>Picker"
+                                    [formGroup]="filterService.<%= property.propertyName %>Group">
+                <input data-test="start-date-input" matStartDate [placeholder]="'date.start' | translate" formControlName="start">
+                <input data-test="end-date-input" matEndDate [placeholder]="'date.end' | translate" formControlName="end"
+                       (dateChange)="triggerReloadFilter()">
+              </mat-date-range-input>
+              <mat-datepicker-toggle data-test="datepicker-toggle" matSuffix [for]="<%= property.propertyName %>Picker"></mat-datepicker-toggle>
+              <mat-date-range-picker data-test="date-range-picker" #<%= property.propertyName %>Picker>
+                <mat-date-range-picker-actions data-test="date-range-picker-actions">
+                  <button data-test="date-picker-cancel-button" mat-button
+                          matDateRangePickerCancel>{{ 'cancel' | translate }}</button>
+                  <button data-test="date-picker-apply-button" mat-raised-button color="primary"
+                          matDateRangePickerApply>{{ 'apply' | translate }}</button>
+                </mat-date-range-picker-actions>
+              </mat-date-range-picker>
+            </mat-form-field>
+        <% } %>
+        <% if (options.isEnumQuickFilter && property.isEnum) { %>
+            <mat-form-field data-test="form-field-select" appearance="fill" floatLabel="never">
+                <mat-label data-test="select-label">{{ '<%= options.versionedAccessPrefix %><%= property.propertyValue %>.preferredName' | translate }}</mat-label>
+                    <mat-select data-test="select" [(value)]="filterService.<%= property.propertyName %>Selected" #<%= property.propertyName %>Select multiple>
+                        <div class="filter-options-container">
+                        <% if (property.enumWithEntities) { %>
+                            <mat-option data-test="select-option" *ngFor="let <%= property.propertyName %>Option of filterService.<%= property.propertyName %>Options" [value]="<%= property.propertyName %>Option.value">
+                                {{ <%= property.propertyName %>Option.value }} - {{ <%= property.propertyName %>Option.translationKey | translate }}
+                            </mat-option>
+                        <% } else { %>
+                            <mat-option data-test="select-option" *ngFor="let <%= property.propertyName %>Option of filterService.<%= property.propertyName %>Options" [value]="<%= property.propertyName %>Option">
+                                {{<%= property.propertyName %>Option}}
+                            </mat-option>
+                        <% } %>
+                </div>
+                <div data-test="filter-actions-container" class="filter-actions-container">
+
+                  <button data-test="filter-cancel-button" mat-button (click)="<%= property.propertyName %>Select.close();">
+                    <span data-test="filter-cancel-text">{{ 'cancel' | translate }}</span>
+                  </button>
+
+                  <button
+                    data-test="filter-apply-button"
+                    mat-raised-button
+                    color="primary"
+                    class="filter-apply-btn"
+                    (click)="triggerReloadFilter(); <%= property.propertyName %>Select.close();">
+                    <span data-test="filter-apply-text">{{ 'apply' | translate }}</span>
+                  </button>
+                </div>
+                </mat-select>
+            </mat-form-field>
+        <% } %>
+    <% } %>
+    <span data-test="spacer" class="spacer"></span>
+
+    <% if (options.customCommandBarActions.length > 0) { %>
+        <% for(let action of options.customCommandBarActions) { %>
+            <button data-test="toolbar-custom-action-button" mat-icon-button (click)="executeCustomCommandBarAction($event, '<%= spinalCaseFunc(action) %>')" attr.aria-label="{{ '<%= options.versionedAccessPrefix %><%= spinalCaseFunc(action) %>.customCommandBarAction' | translate }}">
+                <mat-icon data-test="toolbar-custom-action-icon" matTooltip="{{'<%= options.versionedAccessPrefix %><%= spinalCaseFunc(action) %>.customCommandBarAction' | translate }}" aria-hidden="false"
+                    <% if (action.lastIndexOf(".") > -1) { %>
+                        svgIcon="<%= spinalCaseFunc(action) %>
+                    <% } %>
+                    <% if (action.lastIndexOf(".") === -1) { %>
+                        class='material-icons'>
+                        <%= action %>
+                    <% } %>
+                </mat-icon>
+            </button>
+        <% } %>
+    <% } %>
+
+    <button data-test="refresh-data-button" mat-icon-button aria-label="Refresh table" (click)="triggerApplyFilters()">
+      <mat-icon data-test="refresh-data-icon" class="material-icons" [matTooltip]="'tableActions.refreshData' | translate">autorenew</mat-icon>
+    </button>
+
+    <button data-test="export-data-button" mat-icon-button aria-label="Download data as CSV" (click)="triggerExportToCsv()">
+      <mat-icon data-test="export-data-icon" class="material-icons" [matTooltip]="'tableActions.exportData' | translate">file_download</mat-icon>
+    </button>
+
+    <% if (options.hasSearchBar) { %>
+        <button data-test="open-configuration" mat-icon-button aria-label="Open configuration" [matMenuTriggerFor]="configurationMenu" (menuOpened)="triggerInitOpenedConfigurationDialog()">
+            <mat-icon data-test="open-configuration-icon" class="material-icons"[matTooltip]="'tableActions.openConfig' | translate">settings </mat-icon>
+        </button>
+    <% } %>
+</mat-toolbar>
+
+<% if (options.hasSearchBar) { %>
+    <mat-menu data-test="column-menu" #configurationMenu="matMenu" class="column-menu">
+      <<%= dasherize(name) %>-config-menu
+        #configurationMenuComponent
+        (configChangedEvent)="triggerSetConfiguration($event)"
+      ></<%= dasherize(name) %>-config-menu>
+    </mat-menu>
+<% } %>

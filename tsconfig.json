@@ -23,6 +23,7 @@
         "sourceMap": true,
         "strictNullChecks": true,
         "target": "es6",
+        "experimentalDecorators": true,
         "types": ["node", "jest"]
     },
     "include": ["src/**/*", "src/**/*.json"],
