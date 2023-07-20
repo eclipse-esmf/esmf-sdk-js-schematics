@@ -250,3 +250,7 @@ $gray-300: #e0e0e0;
     margin-left: 10px;
   }
 }
+
+.mat-mdc-menu-panel {
+  max-width: max-content !important;
+}
