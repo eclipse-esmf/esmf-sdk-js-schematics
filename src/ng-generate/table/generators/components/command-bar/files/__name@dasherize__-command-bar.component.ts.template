@@ -19,6 +19,9 @@ import {SelectionModel} from "@angular/cdk/collections";
 })
 export class <%= classify(name) %>CommandBarComponent {
     @Input() isMultipleSelectionEnabled = true;
+    @Input() selection = new SelectionModel<any>(this.isMultipleSelectionEnabled, []);
+    @Input() totalItems = 0;
+    @Input() searchFocused = false;
     @Input() allowedCharacters: string = '';
     @Input() minNumberCharacters: number = 2;
     @Input() maxNumberCharacters: number = 50;
@@ -43,10 +46,6 @@ export class <%= classify(name) %>CommandBarComponent {
         @Output() setConfiguration = new EventEmitter<Array<Config>>();
         @ViewChild(<%= classify(name) %>ConfigMenuComponent) private configurationComponent!: <%= classify(name) %>ConfigMenuComponent;
     <% } %>
-
-    selection = new SelectionModel<any>(this.isMultipleSelectionEnabled, []);
-    totalItems: number = 0;
-    searchFocused: boolean = false;
 
     constructor(<% if (options.hasFilters) { %>public filterService: <%= classify(name) %>FilterService<% } %>) {
     }

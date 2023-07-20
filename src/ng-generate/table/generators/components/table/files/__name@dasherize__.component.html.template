@@ -15,6 +15,9 @@
   <% if (options.addCommandBar) { %>
     <command-bar
         [isMultipleSelectionEnabled]="isMultipleSelectionEnabled"
+        [selection]="selection"
+        [totalItems]="totalItems"
+        [searchFocused]="searchFocused"
         [allowedCharacters]="allowedCharacters"
         [minNumberCharacters]="minNumberCharacters"
         [maxNumberCharacters]="maxNumberCharacters"
@@ -57,7 +60,7 @@
                     <mat-checkbox data-test="header-checkbox" (change)="$event ? toggleSelectAll() : null" [checked]="selection.hasValue() && isAllSelected()" [indeterminate]="selection.hasValue() && !isAllSelected()"></mat-checkbox>
                 </th>
                 <td mat-cell *matCellDef="let row" data-test="table-cell-checkbox">
-                    <mat-checkbox data-test="cell-checkbox" (click)="$event.stopPropagation()" (change)="$event ? checkboxClicked(row) : null" [checked]="selection.isSelected(row)"></mat-checkbox>
+                    <mat-checkbox data-test="cell-checkbox" (click)="$event.stopPropagation()" (mousedown)="$event.preventDefault()" (change)="$event ? checkboxClicked(row) : null" [checked]="selection.isSelected(row)"></mat-checkbox>
                 </td>
             </ng-container>
         <% } %>
@@ -110,12 +113,10 @@
                     {{<%= cellContent %>}}
                 <% } %>
 
-                    <button data-test="copy-to-clipboard-button"
-                        *ngIf="!(<%= isEmptyValue %>)"
-                        mat-icon-button class="copy-to-clipboard"
-                        (click)="copyToClipboard(row.<%= cellPropertyPath %><%= language %>, $event)">
-                        <mat-icon data-test="copy-to-clipboard-icon" class="material-icons">content_copy</mat-icon>
-                    </button>
+                <mat-icon data-test="copy-to-clipboard-icon" *ngIf="!(<%= isEmptyValue %>)" class="material-icons copy-to-clipboard"
+                    (click)="copyToClipboard(row.<%= cellPropertyPath %><%= language %>, $event)">
+                        content_copy
+                 </mat-icon>
                 </td>
             </ng-container>
         <% } %>
@@ -143,7 +144,7 @@
         <%= customRowActions %>
 
         <ng-container data-test="columns-menu-button-header" matColumnDef="columnsMenu" stickyEnd>
-          <th data-test="columns-menu-button-header" mat-header-cell *matHeaderCellDef>
+          <th style="text-align: right;justify-content: flex-end;" data-test="columns-menu-button-header" mat-header-cell *matHeaderCellDef>
             <button data-test="mat-table-menu-button"
                     mat-icon-button
                     [matMenuTriggerFor]="columnMenu"
@@ -161,17 +162,17 @@
       </table>
 
       <mat-menu data-test="column-menu" #columnMenu="matMenu" class="column-menu">
-        <<%= dasherize(name) %>-column-menu #columMenuComponent (columnsChangedEvent)="setDisplayedColumns($event)"></<%= dasherize(name) %>-column-menu>
+        <<%= dasherize(name) %>-column-menu (columnsChangedEvent)="setDisplayedColumns($event)"></<%= dasherize(name) %>-column-menu>
       </mat-menu>
 
       <% if (options.hasSearchBar) { %>
-          <mat-menu data-test="column-menu" #configurationMenu="matMenu" class="column-menu">
-            <<%= dasherize(name) %>-config-menu #configurationMenuComponent (configChangedEvent)="setConfiguration($event)"></<%= dasherize(name) %>-config-menu>
+          <mat-menu data-test="column-menu" class="column-menu">
+            <<%= dasherize(name) %>-config-menu (configChangedEvent)="setConfiguration($event)"></<%= dasherize(name) %>-config-menu>
           </mat-menu>
       <% } %>
 
     </div>
-    <mat-paginator data-test="paginator" #paginator
+    <mat-paginator data-test="paginator"
                    [length]="<%= remoteDataHandling %>"
                    [pageIndex]="0"
                    [pageSize]="pageSize"

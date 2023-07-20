@@ -1,29 +1,44 @@
 /** <%= options.generationDisclaimerText %> **/
-.export-dialog-button-container {
-  float: right;
+
+.dialog-button-container {
+  justify-content: flex-end;
 }
 
-.export-dialog-title {
-  display: flex;
+.dialog-title {
   justify-content: space-between;
+  display: flex;
+  align-items: center;
+  margin-top: 1rem;
   margin-bottom: 1rem;
   font-weight: bold;
 }
 
-.export-dialog-close-button {
+.close-dialog-icon {
   background: none;
   border: none;
   font-size: 1.3rem;
   cursor: pointer;
+  margin-left: auto;
 }
 
-.export-dialog-description-container {
+.dialog-description {
   font-size: 1.2rem;
   height: 3rem;
   margin-right: 2rem;
   margin-bottom: 1.5rem;
+  float: left;
 }
 
-.export-dialog-checkbox-wrapper {
-  margin: 0.5rem 0;
+.checkbox-container {
+  margin: -20px 0 0.5rem -11px;
+}
+
+export-button {
+  &[data-test="exportData"] {
+    &.primary {
+      span {
+        // Add styles for span here, if any.
+      }
+    }
+  }
 }

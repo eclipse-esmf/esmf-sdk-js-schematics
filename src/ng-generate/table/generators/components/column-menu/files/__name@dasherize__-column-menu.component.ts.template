@@ -6,7 +6,7 @@ import {JSSdkLocalStorageService} from "<% if (options.enableVersionSupport) { %
 
 @Component({
     selector: '<%= dasherize(name) %>-column-menu',
-    styleUrls: ['./<%= dasherize(name) %>.component.scss'],
+    styleUrls: ['./<%= dasherize(name) %>-column-menu.component.scss'],
     templateUrl: './<%= dasherize(name) %>-column-menu.component.html',
 })
 export class <%= classify(name) %>ColumnMenuComponent {
@@ -21,6 +21,7 @@ export class <%= classify(name) %>ColumnMenuComponent {
     constructor(private storageService: JSSdkLocalStorageService) {}
 
     closeMenu(): void {
+        this.resetStoredColumns();
         this.closeColumnMenu = true;
     }
 
@@ -44,11 +45,11 @@ export class <%= classify(name) %>ColumnMenuComponent {
     resetStoredColumns(event?: MouseEvent): void {
         event?.preventDefault();
         event?.stopPropagation();
-        this.columns = [...this.columnsDefault];
+        this.columns = JSON.parse(JSON.stringify(this.columnsDefault));
     }
 
     /**
-     * Store columns locally and update displayed columns afterwards
+     * Store columns locally and update displayed columns afterward
      */
     storeColumns(): void {
         this.closeColumnMenu = true;

@@ -28,7 +28,7 @@ import { MatTable } from '@angular/material/table';
 import {Clipboard} from '@angular/cdk/clipboard';
 import {unparse} from 'papaparse';
 <% if (options.addCommandBar) { %>
-    import {ExportConfirmationDialogComponent} from '<% if (options.enableVersionSupport) { %>../<% } %>../export-confirmation-dialog/export-confirmation-dialog.component';
+    import {Action, ExportConfirmationDialogComponent} from '<% if (options.enableVersionSupport) { %>../<% } %>../export-confirmation-dialog/export-confirmation-dialog.component';
 <% } %>
 import {MatDialog} from '@angular/material/dialog';
 import {
@@ -43,7 +43,7 @@ import {
 import {<%= classify(name) %>DataSource} from './<%= dasherize(name) %>-datasource';
 
 <% if (options.isDateQuickFilter) { %>
-    import {DateAdapter, MatDateFormats, MAT_DATE_FORMATS} from '@angular/material/core';
+    import {DateAdapter, MAT_DATE_FORMATS, MatDateFormats} from '@angular/material/core';
 <% } %>
 
 <% if ([...options.customRowActions, ...options.customCommandBarActions].findIndex(element => element.includes('.')) !== -1) { %>
@@ -528,19 +528,24 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
                 maxWidth: 478,
             });
 
-            dialogRef.afterClosed().pipe(filter(e => !!e)).subscribe((exportEvent: {exportAllPages: boolean, exportAllColumns: boolean}): void => {
-                const { exportAllPages, exportAllColumns } = exportEvent;
+            dialogRef.afterClosed()
+                .pipe(filter(e => !!e))
+                .subscribe((event: { action: Action, exportAllPages: boolean; exportAllColumns: boolean }): void => {
+                    if (event.action === Action.cancel) {
+                        return;
+                    }
 
-                if (exportAllPages && this.data.length > this.maxExportRows) {
-                    this.data.length = this.maxExportRows;
-                }
-                <% if (options.enableRemoteDataHandling) { %>
-                    const columns = exportAllColumns ? this.columns.map(c => c.name) : this.displayedColumns;
-                    this.extendedCsvExporter?.export(columns, this.rqlString);
-                <% } else { %>
-                    this.prepareCsv(this.<%= (camelize((options.enableRemoteDataHandling && options.customRemoteService ? 'custom' : '') + name)) %>Service.flatten(this.data), exportAllColumns,exportAllPages,this.paginator.pageSize);
-                <% } %>
-            });
+                    if (event.exportAllPages && this.data.length > this.maxExportRows) {
+                        this.data.length = this.maxExportRows;
+                    }
+
+                    <% if (options.enableRemoteDataHandling) { %>
+                        const columns = exportAllColumns ? this.columns.map(c => c.name) : this.displayedColumns;
+                        this.extendedCsvExporter?.export(columns, this.rqlString);
+                    <% } else { %>
+                        this.prepareCsv(this.<%= (camelize((options.enableRemoteDataHandling && options.customRemoteService ? 'custom' : '') + name)) %>Service.flatten(this.data), event.exportAllColumns, event.exportAllPages,this.paginator.pageSize);
+                    <% } %>
+                });
         }
     <% } %>
 

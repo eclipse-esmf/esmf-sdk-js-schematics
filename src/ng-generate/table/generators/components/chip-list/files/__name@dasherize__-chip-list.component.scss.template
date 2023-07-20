@@ -6,7 +6,7 @@
   flex-wrap: nowrap;
   align-items: center;
 
-  .mat-chip {
+  .mat-mdc-chip {
     flex: 0 0 auto;
   }
 }

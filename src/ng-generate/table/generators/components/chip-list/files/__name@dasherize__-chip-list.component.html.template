@@ -8,8 +8,8 @@
     </button>
     <div class="chip-list-container" data-test="chip-list-container" horizontalOverflow
          #chipsScrollEl="horizontalOverflow" #chipList [chipsObj]="chips">
-        <mat-chip-list data-test="chip-list" #chips>
-            <mat-chip
+        <mat-chip-listbox data-test="chip-list" #chips>
+            <mat-chip-option
                     data-test="chip"
                     *ngFor="let filter of filterService.activeFilters"
                     [removable]="filter.removable"
@@ -21,8 +21,8 @@
                 <button *ngIf="filter.removable" matChipRemove data-test="mat-chip-remove">
                     <mat-icon class="material-icons" data-test="remove-chip">cancel</mat-icon>
                 </button>
-            </mat-chip>
-        </mat-chip-list>
+            </mat-chip-option>
+        </mat-chip-listbox>
     </div>
     <button data-test="scroll-right-button" mat-mini-fab class="mat-elevation-z0"
             [disabled]="chipsScrollEl.disableRightBtn" (click)="chipsScrollEl.scrollChipList('right')"

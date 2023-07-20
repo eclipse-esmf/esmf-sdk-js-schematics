@@ -14,10 +14,14 @@ export class <%= classify(name) %>ConfigMenuComponent {
     keyLocalStorage: string = '';
     closeConfigMenu: boolean = false;
     configs: Array<Config> = [];
+    configsDefault: Array<Config> = [];
 
-    constructor(private storageService: JSSdkLocalStorageService) {}
+    constructor(private storageService: JSSdkLocalStorageService) {
+        this.configsDefault = JSON.parse(JSON.stringify(this.configs));
+    }
 
     closeMenu(): void {
+        this.configs = JSON.parse(JSON.stringify(this.configsDefault));
         this.closeConfigMenu = true;
     }
 

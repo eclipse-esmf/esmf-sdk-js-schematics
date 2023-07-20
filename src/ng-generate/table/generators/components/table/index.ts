@@ -340,17 +340,21 @@ function getApplyFilters() {
                     this.rqlString = rqlStringTemp;
 
                     try{
-                      this.${camelize((sharedOptions.customRemoteService ? 'custom' : '') + '-' + sharedOptions.name)}Service.requestData(this.remoteAPI, {query: rqlStringTemp}).subscribe((response: ${classify(sharedOptions.aspectModel.name)}Response): void => {
-                          this.dataSource.setData(response.items);
-                          this.filteredData = response.items;
-                          this.totalItems = this.data.length;
-                          this.maxExportRows = this.totalItems;
-                          this.cd.detectChanges();
-                          this.totalItems = (response.totalItems !== null && response.totalItems !== undefined) ? response.totalItems : response.items.length;
-                          this.tableUpdateFinishedEvent.emit();
-                      }, error => {
-                        this.tableUpdateFinishedEvent.emit(error);
-                      });
+                      this.${camelize((sharedOptions.customRemoteService ? 'custom' : '') + '-' + sharedOptions.name)}Service.requestData(this.remoteAPI, {query: rqlStringTemp})
+                        .subscribe({
+                            next: (response: ${classify(sharedOptions.aspectModel.name)}Response): void => {
+                                this.dataSource.setData(response.items);
+                                this.filteredData = response.items;
+                                this.totalItems = this.data.length;
+                                this.maxExportRows = this.totalItems;
+                                this.cd.detectChanges();
+                                this.totalItems = (response.totalItems !== null && response.totalItems !== undefined) ? response.totalItems : response.items.length;
+                                this.tableUpdateFinishedEvent.emit();
+                            }, 
+                          error: err => {
+                            this.tableUpdateFinishedEvent.emit(err);
+                          }
+                        });
                     } catch (error) {
                         this.tableUpdateFinishedEvent.emit(error)
                     }
