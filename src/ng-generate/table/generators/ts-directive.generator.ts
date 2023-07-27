@@ -362,7 +362,7 @@ export class TsDirectiveGenerator {
             }
 
             private canHighlightText(): boolean {
-                return this.el?.nativeElement && this._highlight.length > 0 && typeof this.highlightSource === 'string' && this.highlightSource.length > 0 && !!this._color;
+                return this.el?.nativeElement && this._highlight && typeof this.highlightSource === 'string' && this.highlightSource.length > 0 && !!this._color;
             }
 
             private calcRangesToReplace(): HighlightRange[] {
