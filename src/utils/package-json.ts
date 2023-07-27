@@ -23,7 +23,7 @@ interface NodeScript {
 }
 
 export const DEFAULT_DEPENDENCIES = [
-    {type: NodeDependencyType.Dev, version: '^16.1.0', name: '@angular/cdk', overwrite: false},
+    {type: NodeDependencyType.Default, version: '^16.1.0', name: '@angular/cdk', overwrite: false},
     {type: NodeDependencyType.Dev, version: '^5.3.7', name: '@types/papaparse', overwrite: false},
     {type: NodeDependencyType.Default, version: '^16.1.0', name: '@angular/material', overwrite: false},
     {type: NodeDependencyType.Default, version: '~15.0.0', name: '@ngx-translate/core', overwrite: false},

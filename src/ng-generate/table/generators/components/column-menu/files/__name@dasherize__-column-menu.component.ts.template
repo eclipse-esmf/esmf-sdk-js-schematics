@@ -49,7 +49,7 @@ export class <%= classify(name) %>ColumnMenuComponent {
     }
 
     /**
-     * Store columns locally and update displayed columns afterward
+     * Store columns locally and update displayed columns afterwards
      */
     storeColumns(): void {
         this.closeColumnMenu = true;
