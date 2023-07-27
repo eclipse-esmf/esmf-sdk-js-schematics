@@ -1,7 +1,7 @@
 <mat-toolbar data-test="toolbar" class="toolbar">
     <div *ngIf="isMultipleSelectionEnabled" data-test="toolbar-number-of-items" class="command-bar-number-of-items">{{ selection.selected.length > 0 ? (selection.selected.length + ' / ') : '' }}{{ totalItems }}</div>
     <% if (options.hasSearchBar) { %>
-        <mat-form-field data-test="search-form-field" appearance="fill" floatLabel="never" class="search-input">
+        <mat-form-field data-test="search-form-field" appearance="fill">
           <mat-label data-test="search-label">{{ 'search' | translate }}</mat-label>
           <input
             #searchInput
@@ -33,7 +33,7 @@
           </button>
         </mat-form-field>
         <ng-container *ngIf="hasAdvancedSearch">
-          <mat-form-field data-test="form-field-select" appearance="fill" floatLabel="never">
+          <mat-form-field data-test="form-field-select" appearance="fill">
             <mat-label data-test="select-label">{{ 'advancedSearch' | translate }}</mat-label>
             <mat-select data-test="select" [formControl]="filterService.selectedStringColumn">
               <mat-option [value]="filterService.advancedSearchAllValue">{{ 'allTextFields' | translate }}</mat-option>
@@ -48,7 +48,7 @@
 
     <% for(let property of propValues) { %>
         <% if (options.isDateQuickFilter && property.isDate) { %>
-            <mat-form-field data-test="form-field-date-time" appearance="fill" floatLabel="never">
+            <mat-form-field data-test="form-field-date-time" appearance="fill">
               <mat-label
                 data-test="date-time-label">{{ '<%= options.versionedAccessPrefix %><%= property.propertyValue %>.preferredName' | translate }}</mat-label>
               <mat-date-range-input data-test="date-range-input" [rangePicker]="<%= property.propertyName %>Picker"
@@ -69,7 +69,7 @@
             </mat-form-field>
         <% } %>
         <% if (options.isEnumQuickFilter && property.isEnum) { %>
-            <mat-form-field data-test="form-field-select" appearance="fill" floatLabel="never">
+            <mat-form-field data-test="form-field-select" appearance="fill">
                 <mat-label data-test="select-label">{{ '<%= options.versionedAccessPrefix %><%= property.propertyValue %>.preferredName' | translate }}</mat-label>
                     <mat-select data-test="select" [(value)]="filterService.<%= property.propertyName %>Selected" #<%= property.propertyName %>Select multiple>
                         <div class="filter-options-container">

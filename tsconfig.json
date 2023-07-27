@@ -17,7 +17,6 @@
         "noImplicitThis": true,
         "noUnusedParameters": false,
         "noUnusedLocals": false,
-        "noImplicitUseStrict": true,
         "skipDefaultLibCheck": true,
         "skipLibCheck": true,
         "sourceMap": true,

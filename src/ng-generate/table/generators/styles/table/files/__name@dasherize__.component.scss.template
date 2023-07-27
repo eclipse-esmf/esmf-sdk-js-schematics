@@ -18,7 +18,7 @@ $gray-300: #e0e0e0;
     .full-width-table {
       width: 100%;
 
-      .mat-row:not([data-test='no-data-table-row']):not(.selected-row):hover {
+      .mat-mdc-row:not([data-test='no-data-table-row']):not(.selected-row):hover {
         background: $gray-100;
       }
 
@@ -26,7 +26,7 @@ $gray-300: #e0e0e0;
         background: var(--selected-row-highlight-color, $gray-300);
       }
 
-      .mat-cell {
+      .mat-mdc-cell {
         overflow: hidden;
         text-overflow: ellipsis;
         max-width: 100px;
@@ -43,7 +43,7 @@ $gray-300: #e0e0e0;
         }
       }
 
-      .mat-header-cell {
+      .mat-mdc-header-cell {
         position: relative;
 
         &.table-header-number {
@@ -67,7 +67,7 @@ $gray-300: #e0e0e0;
         width: 35px;
         padding-right: 0;
 
-        .mat-table-menu-button {
+        .mat-mdc-table-menu-button {
           height: 40px;
           width: 35px;
         }
@@ -85,13 +85,8 @@ $gray-300: #e0e0e0;
     align-items: center;
     margin-bottom: 20px;
 
-    .mat-form-field {
-      height: 100%;
-      padding-top: 10px;
-      margin-right: 8px;
-    }
-
-    .search-input {
+    .mat-mdc-form-field {
+      padding-top: 20px;
       margin-right: 8px;
     }
 
@@ -101,14 +96,13 @@ $gray-300: #e0e0e0;
   }
 
   .copy-to-clipboard {
-    position: absolute;
-    right: 0;
-    top: -5px;
+    cursor: pointer;
+    font-size: 15px;
     opacity: 0;
     transition: all 0.2s ease-in;
 
-    mat-icon {
-      font-size: 12px;
+    &:hover {
+      opacity: 1;
     }
   }
 
@@ -126,7 +120,7 @@ $gray-300: #e0e0e0;
     flex-wrap: nowrap;
     align-items: center;
 
-    .mat-chip {
+    .mat-mdc-chip {
       flex: 0 0 auto;
     }
   }
@@ -183,7 +177,7 @@ $gray-300: #e0e0e0;
     }
   }
 
-  .mat-menu-panel {
+  .mat-mdc-menu-panel {
     max-width: max-content !important;
   }
 
@@ -242,7 +236,6 @@ $gray-300: #e0e0e0;
   background: initial;
 }
 
-
 .filter-options-container {
   overflow-y: auto;
   min-height: 100px;
@@ -256,4 +249,8 @@ $gray-300: #e0e0e0;
   .filter-apply-btn {
     margin-left: 10px;
   }
+}
+
+.mat-mdc-menu-panel {
+  max-width: max-content !important;
 }

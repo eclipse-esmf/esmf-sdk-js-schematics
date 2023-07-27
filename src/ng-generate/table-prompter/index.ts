@@ -60,8 +60,8 @@ export default function (options: Schema): Rule {
 
             // use .next(...) on this subject to add questions to prompter dynamically
             const promptSubj = new Subject();
-            getTtlPaths(promptSubj, allAnswers, subscriber, tree).subscribe(
-                (answer: Answers) => {
+            getTtlPaths(promptSubj, allAnswers, subscriber, tree).subscribe({
+                next: (answer: Answers) => {
                     if (answer.name.includes('anotherFile') && !answer.answer) {
                         // adding files is completed, start questions flow ...
                         loadSourceProcessResult(allAnswers, tree, options, promptSubj);
@@ -101,17 +101,17 @@ export default function (options: Schema): Rule {
                         allAnswers[answer.name] = answer.answer;
                     }
                 },
-                (err: Error) => {
+                error: (err: Error) => {
                     console.log('Error: ', err);
                 },
-                () => {
+                complete: () => {
                     cleanUpOptionsObject(allAnswers);
                     Object.assign(options, allAnswers);
                     if (!fromImport) {
                         writeConfigAndExit(subscriber, tree, allAnswers);
                     }
                 }
-            );
+            });
         });
     };
 
@@ -189,8 +189,8 @@ function getTtlPaths(promptSubj: Subject<any>, allAnswers: Schema, subscriber: S
     };
     // listener
     const process = inquirer.prompt(promptSubj as any).ui.process;
-    process.subscribe(
-        (singleAnswer: { name: string; answer: any }) => {
+    process.subscribe({
+        next: (singleAnswer: { name: string; answer: any }) => {
             switch (true) {
                 case singleAnswer.name === createOrImport.name: {
                     if (singleAnswer.answer) {
@@ -252,12 +252,10 @@ function getTtlPaths(promptSubj: Subject<any>, allAnswers: Schema, subscriber: S
                 }
             }
         },
-        err => {
+        error: err => {
             console.log('Error: ', err);
-        },
-        () => {
         }
-    );
+    });
 
     promptSubj.next(createOrImport);
     return process as any;
@@ -299,21 +297,22 @@ function loadAspect(allAnswers: any, tree: Tree): Promise<Aspect> {
             }
         });
         if (ttlContent.length > 1) {
-            loader.load(allAnswers.aspectModelUrnToLoad, ...ttlContent).subscribe(
-                loadedAspect => {
+            loader.load(allAnswers.aspectModelUrnToLoad, ...ttlContent).subscribe({
+                next: loadedAspect => {
                     aspect = loadedAspect;
                     resolve(loadedAspect);
                 },
-                error => reject(error)
-            );
+                error: err => reject(err)
+            });
         } else {
-            loader.loadSelfContainedModel(ttlContent[0]).subscribe(
-                loadedAspect => {
+            loader.loadSelfContainedModel(ttlContent[0]).subscribe({
+                next: loadedAspect => {
                     aspect = loadedAspect;
                     resolve(loadedAspect);
-                },
-                error => reject(error)
-            );
+                }
+                ,
+                error: err => reject(err)
+            });
         }
     });
 }
