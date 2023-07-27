@@ -107,7 +107,7 @@
 
                 <% if(options.hasSearchBar) { %>
                     <ng-container
-                        [ngTemplateOutlet]="highlightConfig?.selected && ((<%= cellContent %>) | searchString: highlightString) ? searchedWordExists : normal"
+                        [ngTemplateOutlet]="highlightCell"
                         [ngTemplateOutletContext]="{ value: <%= cellContent %> }"></ng-container>
                 <% } else { %>
                     {{<%= cellContent %>}}
@@ -185,15 +185,9 @@
 
 <% if (options.hasSearchBar) { %>
     <!-- Highlighting search values -->
-    <ng-template #normal let-value="value">{{ value === null ? '-' : value }}</ng-template>
-    <ng-template #searchedWordExists let-value="value">
-      <ng-container *ngFor="let letter of value.toString().split(''); let i = index">
-        <ng-container [ngTemplateOutlet]="shouldHighlight(value, letter) ? highlight : notHighlighted"
-                      [ngTemplateOutletContext]="{ $implicit: letter }"></ng-container>
-      </ng-container>
+    <ng-template #highlightCell let-value="value">
+        <span [highlight]="highlightString" [highlightSource]="value" [highlightColor]="highlightConfig?.color">
+            {{ value === null ? '-' : value }}
+        </span>
     </ng-template>
-    <ng-template #highlight let-letter>
-      <mark [style.background-color]="highlightConfig?.color">{{ letter }}</mark>
-    </ng-template>
-    <ng-template #notHighlighted let-letter>{{ letter }}</ng-template>
 <% } %>

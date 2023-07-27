@@ -11,6 +11,7 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
+import { strings } from "@angular-devkit/core";
 import {
     apply,
     applyTemplates,
@@ -19,27 +20,24 @@ import {
     move,
     noop,
     Rule,
-    SchematicContext,
-    Tree,
     url
 } from '@angular-devkit/schematics';
-import {strings} from "@angular-devkit/core";
 
-export function generateSearchStringPipe(options: any): Rule {
-    return (tree: Tree, _context: SchematicContext) => {
+export function generateHighlightDirective(options: any): Rule {
+    return () => {
         if (!options.hasSearchBar) {
             return noop;
         }
-
+        
         return mergeWith(
-            apply(url('./generators/pipes/search-string/files'), [
+            apply(url('./generators/directives/highlight/files'), [
                 applyTemplates({
                     classify: strings.classify,
                     dasherize: strings.dasherize,
                     options: options,
-                    name: 'search-string',
+                    name: 'highlight',
                 }),
-                move('src/app/shared/pipes'),
+                move('src/app/shared/directives'),
             ]),
             options.overwrite? MergeStrategy.Overwrite : MergeStrategy.Error
         );

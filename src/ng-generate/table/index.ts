@@ -46,8 +46,8 @@ import {generateCustomService} from "./generators/services/custom/index";
 import {generateResizeDirective} from "./generators/directives/resize/index";
 import {generateValidateInputDirective} from "./generators/directives/validate-input/index";
 import {generateHorizontalOverflowDirective} from "./generators/directives/horizontal-overflow/index";
+import {generateHighlightDirective} from "./generators/directives/highlight/index";
 import {generateShowDescriptionPipe} from "./generators/pipes/show-description/index";
-import {generateSearchStringPipe} from "./generators/pipes/search-string/index";
 import {generateStorageService} from "./generators/services/storage/index";
 import {genrateTableStyle} from "./generators/styles/table/index";
 import {APP_SHARED_MODULES, COMPONENT_MODULES, updateSharedModule} from "../../utils/modules";
@@ -141,8 +141,8 @@ export function generate(options: Schema): Rule {
         generateResizeDirective(options),
         generateValidateInputDirective(options),
         generateHorizontalOverflowDirective(options),
+        generateHighlightDirective(options),
         generateShowDescriptionPipe(options),
-        generateSearchStringPipe(options),
         updateSharedModule(options),
         formatAllFiles(options)
     ]);
