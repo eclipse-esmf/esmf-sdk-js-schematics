@@ -144,12 +144,11 @@ export function updateSharedModule(options: Schema) {
         processItem('component', 'export-confirmation-dialog');
 
         ['horizontal-overflow', 'resize-column', 'validate-input'].forEach(directive => processItem('directive', directive));
-
-        const pipes = ['show-description'];
         if (options.templateHelper.hasSearchBar(options)) {
-            pipes.push('search-string');
+            processItem('directive', 'highlight');
         }
-        pipes.forEach(pipe => processItem('pipe', pipe));
+
+        processItem('pipe', 'show-description');
 
         return tree;
     }
