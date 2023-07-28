@@ -522,7 +522,7 @@ function getUserConfigQuestions(allAnswers: any, tree: Tree, options: Schema): Q
         type: 'confirm',
         name: 'getExcludedPropLabels',
         message: 'Do you want to generate translation labels for excluded properties?',
-        when: (answers: any) => answers.excludedProperties.length > 0,
+        when: (answers: any) => answers.excludedProperties?.length > 0,
         default: false,
     };
 
