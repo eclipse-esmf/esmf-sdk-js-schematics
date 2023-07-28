@@ -27,8 +27,8 @@
     -   [Pre-load config file](#pre-load-config-file)
     -   [Skip Installation](#skip-install)
     -   [Overwrite](#overwrite)
-    -   [Add material css theme](#Add material css theme)
-    -   [Set View Encapsulation strategy](#Set View Encapsulation strategy)
+    -   [Add material css theme](#Add-material-css-theme)
+    -   [Set View Encapsulation strategy](#Set-View-Encapsulation-strategy)
 -   [Documentation](#documentation)
 -   [License](#license)
 
@@ -75,9 +75,9 @@ In order to generate code based on the available schematics, the following steps
 1. Install [node](https://nodejs.org/en/) (LTS version).
 
 2. Schematics are part of the Angular ecosystem so angular-cli must be installed by running this command in a terminal:
-   `npm install -g @angular/cli@14`
+   `npm install -g @angular/cli@16`
 
-3. Run `npm install -g @angular-devkit/schematics-cli@14` in a terminal.
+3. Run `npm install -g @angular-devkit/schematics-cli@16` in a terminal.
 
 For more info on schematics, use the following command:
 
@@ -101,7 +101,7 @@ cd demo-schematic
 3. run (if not already installed):
 
 ```bash
-npm install -g @angular-devkit/schematics-cli@14
+npm install -g @angular-devkit/schematics-cli@16
 ```
 
 4. Optionally add some .ttl files in the same folder in order to use in the schema generation process. The schematic
