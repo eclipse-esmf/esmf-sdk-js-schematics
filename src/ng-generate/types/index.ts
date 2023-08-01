@@ -19,7 +19,7 @@ import {formatGeneratedFiles, loadAndApplyConfigFile} from '../../utils/file';
 import {TemplateHelper} from '../../utils/template-helper';
 import {visitAspectModel} from './aspect-model-type-generator-visitor';
 import {Schema} from './schema';
-import {WIZARD_CONFIG_FILE} from "../table-prompter/index";
+import {WIZARD_CONFIG_FILE} from "../prompter/index";
 
 export default function (options: Schema): Rule {
     const spinner = ora().start();

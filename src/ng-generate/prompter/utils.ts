@@ -4,8 +4,8 @@ import {Tree} from "@angular-devkit/schematics/src/tree/interface";
 import {TemplateHelper} from "../../utils/template-helper";
 import {lastValueFrom, Subscriber} from "rxjs";
 import fs from "fs";
-import {WIZARD_CONFIG_FILE} from "./index";
 import {virtualFs} from "@angular-devkit/core";
+import {WIZARD_CONFIG_FILE} from "./index";
 
 export const loader = new AspectModelLoader();
 export let aspect: Aspect;
@@ -94,22 +94,5 @@ export function writeConfigAndExit(subscriber: Subscriber<Tree>, tree: Tree, con
 
         subscriber.next(tree);
         subscriber.complete();
-    });
-}
-
-/**
- * Removes all temporary entries e.g. paths<xyz> or anotherFile<xyz> from the
- * answers object
- */
-export function cleanUpOptionsObject(allAnswers: any) {
-    Object.keys(allAnswers).forEach((objectKey: any) => {
-        if (
-            objectKey.startsWith('paths') ||
-            objectKey.startsWith('anotherFile') ||
-            objectKey.startsWith('createOrImport') ||
-            objectKey.startsWith('importConfigFile')
-        ) {
-            delete allAnswers[objectKey];
-        }
     });
 }

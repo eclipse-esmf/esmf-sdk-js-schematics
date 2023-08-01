@@ -32,7 +32,6 @@ import {
 import {TemplateHelper} from '../../utils/template-helper';
 import {Schema, Values} from './schema';
 import ora from 'ora';
-import {WIZARD_CONFIG_FILE} from '../table-prompter/index';
 import {generateTable} from "./generators/components/table/index";
 import {generateExportDialog} from "./generators/components/export-dialog/index";
 import {generateSharedModule} from "./generators/modules/shared";
@@ -51,6 +50,7 @@ import {generateShowDescriptionPipe} from "./generators/pipes/show-description/i
 import {generateStorageService} from "./generators/services/storage/index";
 import {genrateTableStyle} from "./generators/styles/table/index";
 import {APP_SHARED_MODULES, COMPONENT_MODULES, updateSharedModule} from "../../utils/modules";
+import {WIZARD_CONFIG_FILE} from "../prompter/index";
 
 export default function (options: Schema): Rule {
     return (tree: Tree, context: SchematicContext): void => {

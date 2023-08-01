@@ -12,7 +12,7 @@
     },
     "table-prompter": {
       "description": "generate custom prompter",
-      "factory": "./ng-generate/table-prompter/index"
+      "factory": "./ng-generate/prompter/table/index"
     },
     "table-generation": {
       "description": "Executes the table generation",
@@ -26,7 +26,7 @@
     },
     "card-prompter": {
       "description": "generate custom prompter",
-      "factory": "./ng-generate/card-prompter/index"
+      "factory": "./ng-generate/prompter/card/index"
     },
     "card-generation": {
       "description": "Executes the card generation",

@@ -11,27 +11,29 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-import {Rule, SchematicContext} from '@angular-devkit/schematics';
+import {Rule} from '@angular-devkit/schematics';
 import {Tree} from '@angular-devkit/schematics/src/tree/interface';
 import {DefaultSingleEntity,} from '@esmf/aspect-model-loader';
 import * as fs from 'fs';
 import path from 'path';
 import inquirer from 'inquirer';
-import {Observable, Subscriber} from 'rxjs';
+import {Subscriber} from 'rxjs';
 import {TemplateHelper} from '../../utils/template-helper';
 import {Schema} from '../table/schema';
 import {
     pathDecision,
     requestAspectModelUrnToLoad,
     requestChooseLanguageForSearchAction,
-    requestCustomCommandBarActions, requestCustomRowActions,
+    requestCustomCommandBarActions,
+    requestCustomRowActions,
     requestDefaultSortingCol,
     requestEnableCommandBarFunctions,
     requestExcludedProperties,
     requestGenerateLabelsForExcludedProps,
     requestJSONPathSelectedModelElement,
     requestOptionalMaterialTheme,
-    requestOverwriteFiles, requestRowCheckboxes,
+    requestOverwriteFiles,
+    requestRowCheckboxes,
     requestSelectedModelElement,
     requestSelectedPropertyElement,
 } from "./prompts-with-function";
@@ -60,7 +62,7 @@ inquirer.registerPrompt('search-list', require('inquirer-search-list'));
 
 export let WIZARD_CONFIG_FILE = 'wizard.config.json';
 
-const type = 'card';
+let generationType: string = '';
 
 let fromImport = false;
 let index = 1;
@@ -70,6 +72,8 @@ let allAnswers: any;
  * Returns a Rule for a schematic which prompts the user for input,
  * loads existing configurations, and writes the configuration to a file.
  *
+ * @param {Subscriber<Tree>} subscriber - The subscriber to notify about the progress of the generation.
+ * @param {Tree} tree - Represents the structure of the resources (files, modules, etc.).
  * @param {Schema} options - The options Schema object for the schematic.
  *
  * @returns {Rule} - Returns a Rule that creates an Observable
@@ -77,25 +81,59 @@ let allAnswers: any;
  *
  * @throws {Error} - Will throw an error if an error occurs during execution.
  */
-export default function (options: Schema): Rule {
-    return (tree: Tree, context: SchematicContext) => {
-        return new Observable<Tree>((subscriber: Subscriber<Tree>) => {
-            console.log('\x1b[33m%s\x1b[0m', 'Welcome to the TTL schematic UI generator, answer some questions to get you started:');
+export function generate(subscriber: Subscriber<Tree>, tree: Tree, options: Schema, type: string ) {
+    console.log('\x1b[33m%s\x1b[0m', 'Welcome to the TTL schematic UI generator, answer some questions to get you started:');
 
-            initAnswers();
+    generationType = type;
+    initAnswers();
 
-            runPrompts(subscriber, tree, new TemplateHelper(), options)
-                .finally(() => {
-                    cleanUpOptionsObject(allAnswers);
-                    Object.assign(options, allAnswers);
+    runPrompts(subscriber, tree, new TemplateHelper(), options)
+        .finally(() => {
+            cleanUpOptionsObject(allAnswers);
+            Object.assign(options, allAnswers);
 
-                    if (!fromImport) {
-                        WIZARD_CONFIG_FILE = allAnswers.configFile;
-                        writeConfigAndExit(subscriber, tree, allAnswers);
-                    }
-                });
+            if (!fromImport) {
+                WIZARD_CONFIG_FILE = allAnswers.configFile;
+                writeConfigAndExit(subscriber, tree, allAnswers);
+            }
         });
-    };
+
+    // TODO: should be included ... when needed ...
+    // if (answer.name === 'aspectModelUrnToLoad') {
+    //     // add answers to the allAnswers object
+    //     const itemIndex = allAnswers.aspectModelTFiles.indexOf(answer.answer);
+    //     if (itemIndex) {
+    //         // move the selected item to be the first element
+    //         allAnswers.aspectModelTFiles.splice(itemIndex, 1);
+    //         allAnswers.aspectModelTFiles.unshift(answer.answer);
+    //     }
+    //     waitUntilAspectLoaded(allAnswers, tree).then((aspect: Aspect) => {
+    //         allAnswers[answer.name] = aspect.aspectModelUrn;
+    //     });
+    // } else if ((answer.name as string).includes('complexPropList')) {
+    //     // handles complex property decision
+    //     const newEntry = {
+    //         prop: answer.name.replace('complexPropList', '').split(',')[0],
+    //         entityUrn: answer.name.replace('entityUrn', '').split(',')[1],
+    //         propsToShow: answer.answer.map((answer: any) => {
+    //             const property = loader.findByUrn(answer);
+    //             const name = !property ? answer.split('#')[1] : property.name;
+    //             const aspectModelUrn = !property ? answer : property.aspectModelUrn;
+    //             return {
+    //                 name: name,
+    //                 aspectModelUrn: aspectModelUrn,
+    //             };
+    //         }),
+    //     };
+    //     allAnswers.complexProps.push(newEntry);
+    // } else {
+    //     if (answer.name === 'selectedModelElementUrn' && answer.answer === '') {
+    //         answer.answer = new TemplateHelper().resolveType(aspect);
+    //     }
+    //
+    //     // copy the answer into the answers object
+    //     allAnswers[answer.name] = answer.answer;
+    // }
 }
 
 /**
@@ -255,7 +293,7 @@ async function getAspectModel(tree: Tree): Promise<any> {
  * @returns {Promise} The selected model element.
  */
 async function getSelectedModelElement() {
-    return await inquirer.prompt([requestSelectedModelElement(type, aspect)]);
+    return await inquirer.prompt([requestSelectedModelElement(generationType, aspect)]);
 }
 
 /**
@@ -276,7 +314,7 @@ async function getPropertyElement(templateHelper: TemplateHelper) {
         excludedProperties: []
     })) {
         if (property.effectiveDataType?.isComplex && property.characteristic instanceof DefaultSingleEntity) {
-            await inquirer.prompt([requestSelectedPropertyElement(type, property)]);
+            await inquirer.prompt([requestSelectedPropertyElement(generationType, property)]);
         }
     }
 
@@ -296,15 +334,15 @@ async function getPropertyElement(templateHelper: TemplateHelper) {
 async function getUserSpecificConfigs(tree: Tree, templateHelper: TemplateHelper, options: Schema) {
     const firstBatchAnswers = await inquirer.prompt([
         requestJSONPathSelectedModelElement(aspect, allAnswers, tree),
-        requestExcludedProperties(type, aspect, allAnswers, templateHelper),
+        requestExcludedProperties(generationType, aspect, allAnswers, templateHelper),
     ]);
 
     const secondBatchAnswers = await inquirer.prompt([
         requestGenerateLabelsForExcludedProps(firstBatchAnswers),
         requestDefaultSortingCol(aspect, allAnswers, templateHelper),
         requestCustomColumnNames,
-        requestRowCheckboxes(type),
-        requestCustomRowActions(type),
+        requestRowCheckboxes(generationType),
+        requestCustomRowActions(generationType),
         requestAddCommandBar,
         requestEnableCommandBarFunctions(aspect, allAnswers, templateHelper),
         requestChooseLanguageForSearchAction(aspect, allAnswers, templateHelper),
