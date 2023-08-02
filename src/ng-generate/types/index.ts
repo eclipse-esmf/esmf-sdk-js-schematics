@@ -22,8 +22,7 @@ import {Schema} from './schema';
 import {WIZARD_CONFIG_FILE} from "../prompter/index";
 
 export default function (options: Schema): Rule {
-    const spinner = ora().start();
-    options.spinner = spinner;
+    options.spinner = ora().start();
     options.templateHelper = new TemplateHelper();
 
     if(options.configFile !== WIZARD_CONFIG_FILE) {

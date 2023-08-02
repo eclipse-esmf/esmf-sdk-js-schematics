@@ -24,9 +24,10 @@ import {
     Property
 } from '@esmf/aspect-model-loader';
 import {Observable, Subscriber} from 'rxjs';
-import {Schema, Schema as tableSchema} from '../ng-generate/table/schema';
+// TODO change this ...
+import {Schema, Schema as tableSchema} from '../ng-generate/components/table/schema';
 import {Schema as typeSchema} from '../ng-generate/types/schema';
-import {generateLanguageTranslationAsset} from "../ng-generate/table/generators/language/index";
+import {generateLanguageTranslationAsset} from "../ng-generate/components/shared/generators/language/index";
 
 export type PropValue = {
     propertyValue: string;

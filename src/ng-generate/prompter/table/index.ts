@@ -11,7 +11,7 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-import {Schema} from "../../table/schema";
+import {Schema} from "../../components/table/schema";
 import {Rule, SchematicContext} from "@angular-devkit/schematics";
 import {Tree} from "@angular-devkit/schematics/src/tree/interface";
 import {Observable, Subscriber} from "rxjs";

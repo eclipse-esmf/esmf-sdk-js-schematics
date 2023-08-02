@@ -1,2 +1,0 @@
-/** <%= options.generationDisclaimerText %> **/
-@import 'table.component';

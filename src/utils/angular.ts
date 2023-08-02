@@ -20,8 +20,9 @@ import {
     findModuleFromOptions,
     parseSourceFile,
 } from '@angular/cdk/schematics';
-import {MODULE_EXT, ModuleOptions} from '@schematics/angular/utility/find-module';
-import {Schema} from '../ng-generate/table/schema';
+import {MODULE_EXT} from '@schematics/angular/utility/find-module';
+// TODO change this ...
+import {Schema} from '../ng-generate/components/table/schema';
 import {dasherize} from '@angular-devkit/core/src/utils/strings';
 import {InsertChange} from "@schematics/angular/utility/change";
 
@@ -59,8 +60,14 @@ export function addToAppModule(skipImport: SkipHandler | boolean, modules: Array
     const appModule = {project: 'esmf', name: 'AppModule', module: `app${MODULE_EXT}`, path: '/src/app'};
     return addToModule(appModule, skipImport, modules);
 }
+
 export function addToAppSharedModule(skipImport: SkipHandler | boolean, modules: Array<ModuleDefinition> = []): Rule {
-    const appModule = {project: 'esmf', name: 'AppSharedModule', module: `app-shared${MODULE_EXT}`, path: '/src/app/shared'};
+    const appModule = {
+        project: 'esmf',
+        name: 'AppSharedModule',
+        module: `app-shared${MODULE_EXT}`,
+        path: '/src/app/shared'
+    };
     return addToModule(appModule, skipImport, modules);
 }
 

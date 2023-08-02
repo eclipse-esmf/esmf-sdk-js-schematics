@@ -276,7 +276,7 @@ Files which are also automatically generated, but not included in the component'
 
 1. `resize-column.directive.ts` under `src/app/shared/directives`
 2. `storage.service.ts` under `src/app/shared/services`
-3. `table.component.<style-extension>` under `src/assets/scss`
+3. `general.component.<style-extension>` under `src/assets/scss`
 
 To be able to view corectly the material icons add the following
 link: <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons"> in the <head> section of

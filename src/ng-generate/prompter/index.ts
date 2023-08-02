@@ -19,7 +19,8 @@ import path from 'path';
 import inquirer from 'inquirer';
 import {lastValueFrom, Subscriber} from 'rxjs';
 import {TemplateHelper} from '../../utils/template-helper';
-import {Schema} from '../table/schema';
+// TODO change this ...
+import {Schema} from '../components/table/schema';
 import {
     pathDecision,
     requestAspectModelUrnToLoad,

@@ -18,7 +18,7 @@ import {NodeDependencyType} from '@schematics/angular/utility/dependencies';
 import {TemplateHelper} from '../../utils/template-helper';
 import {formatGeneratedFiles} from '../../utils/file';
 import ora from 'ora';
-import {generateTranslationModule} from "../table/generators/modules/translation/index";
+import {generateTranslationModule} from "../components/shared/generators";
 
 /**
  * Updates the project with dependencies, scripts, and modules required for translation functionality.
