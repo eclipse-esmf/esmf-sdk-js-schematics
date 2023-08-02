@@ -24,9 +24,7 @@ import {
     Property
 } from '@esmf/aspect-model-loader';
 import {Observable, Subscriber} from 'rxjs';
-// TODO change this ...
-import {Schema, Schema as tableSchema} from '../ng-generate/components/table/schema';
-import {Schema as typeSchema} from '../ng-generate/types/schema';
+import {Schema} from '../ng-generate/components/shared/schema';
 import {generateLanguageTranslationAsset} from "../ng-generate/components/shared/generators/language/index";
 
 export type PropValue = {
@@ -45,7 +43,7 @@ export const baseAssetsPath = `src/${assetsPath}`;
  * A rule that reads the comma-separated list of files specified as options.aspectModelTFiles
  * and provides them as strings in array options.ttl.
  */
-export function loadRDF(options: tableSchema | typeSchema): Rule {
+export function loadRDF(options: Schema): Rule {
     return (tree: Tree, context: SchematicContext) => {
         const aspectModelTFiles = Array.isArray(options.aspectModelTFiles)
             ? options.aspectModelTFiles
@@ -79,7 +77,7 @@ export function loadRDF(options: tableSchema | typeSchema): Rule {
  * A rule that interprets the provided strings in array options.ttl as RDF and
  * provides the aspect in options.aspectModel.
  */
-export function loadAspectModel(options: tableSchema | typeSchema): Rule {
+export function loadAspectModel(options: Schema): Rule {
     const func = (tree: Tree, context: SchematicContext) => {
         return new Observable<Tree>((subscriber: Subscriber<Tree>) => {
             const loader = new AspectModelLoader();
@@ -127,7 +125,7 @@ export function validateUrns(options: Schema): void {
     }
 }
 
-export function getSelectedModelElement(loader: AspectModelLoader, aspect: Aspect, options: tableSchema | typeSchema): Aspect | Entity {
+export function getSelectedModelElement(loader: AspectModelLoader, aspect: Aspect, options: Schema): Aspect | Entity {
     const element = loader.findByUrn(options.selectedModelElementUrn) || findCollectionElement(aspect);
 
     return (element instanceof DefaultEntity) ? element as Entity : element as Aspect;
@@ -139,7 +137,7 @@ function findCollectionElement(aspect: Aspect): Aspect | Entity | undefined {
     return collectionElement?.effectiveDataType?.isComplex ? collectionElement.effectiveDataType as Entity : aspect;
 }
 
-export function generateTranslationFiles(options: tableSchema): Rule {
+export function generateTranslationFiles(options: Schema): Rule {
     return (tree: Tree, _context: SchematicContext) => {
         const element = options.selectedModelElement as Aspect | Entity;
 

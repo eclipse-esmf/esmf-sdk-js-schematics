@@ -27,12 +27,13 @@ import {strings} from '@angular-devkit/core';
 import {DefaultSingleEntity, Property} from "@esmf/aspect-model-loader";
 import {camelize, classify, dasherize} from "@angular-devkit/core/src/utils/strings";
 import {getAllEnumProps} from "../../../../../../utils/aspect-model";
-import {generateChipList, generateCommandBar} from "../../../../shared/generators/components";
+import {generateChipList, generateCommandBar} from "../../../../shared/generators";
+import {TableSchema} from "../../../schema";
 
 let sharedOptions: any = {};
 let allProps: Array<Property> = [];
 
-export function generateTable(options: any): Rule {
+export function generateMainComponent(options: any): Rule {
     return (tree: Tree, _context: SchematicContext) => {
         allProps = options.listAllProperties;
 

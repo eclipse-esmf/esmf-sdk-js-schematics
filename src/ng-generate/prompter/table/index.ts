@@ -11,13 +11,13 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-import {Schema} from "../../components/table/schema";
+import {TableSchema} from "../../components/table/schema";
 import {Rule, SchematicContext} from "@angular-devkit/schematics";
 import {Tree} from "@angular-devkit/schematics/src/tree/interface";
 import {Observable, Subscriber} from "rxjs";
 import {generate} from "../index";
 
-export default function (options: Schema): Rule {
+export default function (options: TableSchema): Rule {
     return (tree: Tree, context: SchematicContext) => {
         return new Observable<Tree>((subscriber: Subscriber<Tree>) => {
             generate(subscriber, tree, options, 'table');

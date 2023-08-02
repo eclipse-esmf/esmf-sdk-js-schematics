@@ -25,7 +25,6 @@ import {
 import {strings} from '@angular-devkit/core';
 import {classify, dasherize} from "@angular-devkit/core/src/utils/strings";
 import {addModuleImportToModule} from "@angular/cdk/schematics";
-import {Values} from "../../../../table/schema";
 
 export function generateSharedModule(options: any): Rule {
     return (tree: Tree, _context: SchematicContext) => {

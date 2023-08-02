@@ -16,7 +16,7 @@
     },
     "table-generation": {
       "description": "Executes the table generation",
-      "factory": "./ng-generate/components/table/index#generate",
+      "factory": "./ng-generate/components/table/index#generateTable",
       "schema": "./ng-generate/components/table/schema.json"
     },
     "card": {

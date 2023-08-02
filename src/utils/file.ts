@@ -23,7 +23,7 @@ const defaultPrettierConfigPath = require.resolve('../../.prettierrc');
 
 export function loadAndApplyConfigFile(configFile: string, options: any): void {
     try {
-        if (options.configFile && options.configFile !== '') {
+        if (configFile && configFile !== '') {
             const data = fs.readFileSync(configFile, 'utf8');
             Object.assign(options, JSON.parse(data));
         }

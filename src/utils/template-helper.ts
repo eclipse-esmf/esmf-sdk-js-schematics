@@ -28,8 +28,9 @@ import {
 } from '@esmf/aspect-model-loader';
 import {classify, dasherize, underscore} from '@angular-devkit/core/src/utils/strings';
 // TODO change this ...
-import {ExcludedProperty, Schema, Values} from '../ng-generate/components/table/schema';
+import {ExcludedProperty, Schema, Values} from '../ng-generate/components/shared/schema';
 import * as locale from 'locale-codes';
+import {TableSchema} from "../ng-generate/components/table/schema";
 
 export class TemplateHelper {
     /**

@@ -21,8 +21,7 @@ import {
     parseSourceFile,
 } from '@angular/cdk/schematics';
 import {MODULE_EXT} from '@schematics/angular/utility/find-module';
-// TODO change this ...
-import {Schema} from '../ng-generate/components/table/schema';
+import {Schema} from '../ng-generate/components/shared/schema';
 import {dasherize} from '@angular-devkit/core/src/utils/strings';
 import {InsertChange} from "@schematics/angular/utility/change";
 

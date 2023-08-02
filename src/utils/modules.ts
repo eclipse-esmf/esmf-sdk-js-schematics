@@ -13,8 +13,7 @@
 
 import {SchematicContext, Tree} from '@angular-devkit/schematics';
 import {classify, dasherize} from "@angular-devkit/core/src/utils/strings";
-// TODO change this ...
-import {Schema} from "../ng-generate/components/table/schema";
+import {Schema} from "../ng-generate/components/shared/schema";
 import {addToDeclarationsArray, addToExportsArray} from "./angular";
 
 

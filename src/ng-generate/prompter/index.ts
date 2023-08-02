@@ -19,8 +19,7 @@ import path from 'path';
 import inquirer from 'inquirer';
 import {lastValueFrom, Subscriber} from 'rxjs';
 import {TemplateHelper} from '../../utils/template-helper';
-// TODO change this ...
-import {Schema} from '../components/table/schema';
+import {Schema} from '../components/shared/schema';
 import {
     pathDecision,
     requestAspectModelUrnToLoad,
@@ -78,6 +77,7 @@ export let aspect: Aspect;
  * @param {Subscriber<Tree>} subscriber - The subscriber to notify about the progress of the generation.
  * @param {Tree} tree - Represents the structure of the resources (files, modules, etc.).
  * @param {Schema} options - The options Schema object for the schematic.
+ * @param {string} type - The type of the generated component.
  *
  * @returns {Rule} - Returns a Rule that creates an Observable
  * that executes the prompting and writing of configurations.

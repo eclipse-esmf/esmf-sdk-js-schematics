@@ -18,10 +18,10 @@ import {loadAspectModel, loadRDF} from '../../utils/aspect-model';
 import {formatGeneratedFiles, loadAndApplyConfigFile} from '../../utils/file';
 import {TemplateHelper} from '../../utils/template-helper';
 import {visitAspectModel} from './aspect-model-type-generator-visitor';
-import {Schema} from './schema';
 import {WIZARD_CONFIG_FILE} from "../prompter/index";
+import {TypesSchema} from "./schema";
 
-export default function (options: Schema): Rule {
+export default function (options: TypesSchema): Rule {
     options.spinner = ora().start();
     options.templateHelper = new TemplateHelper();
 
@@ -41,7 +41,7 @@ export default function (options: Schema): Rule {
         visitAspectModel(options),
         formatGeneratedFiles(
             {
-                getPath(options: Schema) {
+                getPath(options: TypesSchema) {
                     return `src/app/shared/types/${dasherize(options.aspectModel.name).toLowerCase()}`;
                 },
             },

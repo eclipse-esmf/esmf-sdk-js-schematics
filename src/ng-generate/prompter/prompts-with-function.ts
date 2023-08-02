@@ -23,8 +23,8 @@ import {
     Property
 } from "@esmf/aspect-model-loader";
 import {TemplateHelper} from "../../utils/template-helper";
-import {Schema} from "../cards/schema";
 import * as locale from "locale-codes";
+import {Schema} from "../components/shared/schema";
 
 export const pathDecision: any = (configFile: string, anotherFile: boolean = false) => ({
     type: 'fuzzypath',
