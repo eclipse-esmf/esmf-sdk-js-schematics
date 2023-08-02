@@ -21,7 +21,11 @@ import ora from 'ora';
 import {generateTranslationModule} from "../table/generators/modules/translation/index";
 
 /**
- * generates translation files for aspect model.
+ * Updates the project with dependencies, scripts, and modules required for translation functionality.
+ *
+ * @param {Schema} options - The options configured for the schematics command.
+ *
+ * @returns {Rule} - The rule to be applied to the Tree.
  */
 export default function (options: Schema): Rule {
     const spinner = ora().start();
@@ -29,20 +33,10 @@ export default function (options: Schema): Rule {
     (options as any).templateHelper = new TemplateHelper();
 
     return chain([
-        addPackageJsonDependencies(options.skipImport, spinner, [
-            {type: NodeDependencyType.Default, version: '~13.0.0', name: '@ngx-translate/core', overwrite: false},
-            {type: NodeDependencyType.Default, version: '~6.0.0', name: '@ngx-translate/http-loader', overwrite: true},
-            {type: NodeDependencyType.Default, version: '~1.1.0', name: 'ngx-i18n-combine', overwrite: false},
-        ]),
-        addPackageJsonScripts([
-            {
-                name: 'combine-i18n',
-                command: 'ngx-i18n-combine -i ./src/**/i18n/shared/components/**/*.translation.json -o ./src/assets/i18n/{en,de}.json',
-            },
-        ]),
+        addPackageJsonDependencies(options.skipImport, spinner, dependencies),
+        addPackageJsonScripts(scripts),
         generateTranslationModule(options),
-        formatGeneratedFiles(
-            {
+        formatGeneratedFiles({
                 getPath() {
                     return `src/app/shared`;
                 },
@@ -52,3 +46,16 @@ export default function (options: Schema): Rule {
         ),
     ]);
 }
+
+const dependencies = [
+    {type: NodeDependencyType.Default, version: '~13.0.0', name: '@ngx-translate/core', overwrite: false},
+    {type: NodeDependencyType.Default, version: '~6.0.0', name: '@ngx-translate/http-loader', overwrite: true},
+    {type: NodeDependencyType.Default, version: '~1.1.0', name: 'ngx-i18n-combine', overwrite: false},
+];
+
+const scripts = [
+    {
+        name: 'combine-i18n',
+        command: 'ngx-i18n-combine -i ./src/**/i18n/shared/components/**/*.translation.json -o ./src/assets/i18n/{en,de}.json',
+    },
+];

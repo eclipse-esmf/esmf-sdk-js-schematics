@@ -1,85 +1,89 @@
-import {Answers} from "inquirer";
-import {Aspect, AspectModelLoader} from "@esmf/aspect-model-loader";
+/*
+ * Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH
+ *
+ * See the AUTHORS file(s) distributed with this work for
+ * additional information regarding authorship.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ *
+ * SPDX-License-Identifier: MPL-2.0
+ */
+
+import {AspectModelLoader, DefaultEntity, Property} from "@esmf/aspect-model-loader";
 import {Tree} from "@angular-devkit/schematics/src/tree/interface";
-import {TemplateHelper} from "../../utils/template-helper";
-import {lastValueFrom, Subscriber} from "rxjs";
+import {Subscriber} from "rxjs";
 import fs from "fs";
-import {virtualFs} from "@angular-devkit/core";
 import {WIZARD_CONFIG_FILE} from "./index";
 
+interface PropertyDetail {
+    name: string;
+    aspectModelUrn: string;
+}
+
+interface ComplexProperty {
+    prop: string;
+    entityUrn: string;
+    propsToShow: PropertyDetail[];
+}
+
 export const loader = new AspectModelLoader();
-export let aspect: Aspect;
 
-export function handleAspectModelUrnToLoad(allAnswers: any, tree: any, answer: Answers) {
-    const itemIndex = allAnswers.aspectModelTFiles.indexOf(answer.answer);
-    if (itemIndex) {
-        allAnswers.aspectModelTFiles.splice(itemIndex, 1);
-        allAnswers.aspectModelTFiles.unshift(answer.answer);
+/**
+ * Reorders the array of TTL files, placing the specified TTL file (aspectModelUrnToLoad) at the beginning.
+ * If aspectModelUrnToLoad does not exist in the array, the original array is returned.
+ *
+ * @param {Array<string>} aspectModelTFiles - The array of TTL file URNs.
+ * @param {string} aspectModelUrnToLoad - The URN of the TTL file to be moved to the beginning of the array.
+ * @param {any} tree - A tree data structure (not currently used in this function).
+ *
+ * @returns {Array<string>} The reordered array of TTL file URNs.
+ */
+export function reorderAspectModelUrnToLoad(aspectModelTFiles: Array<string>, aspectModelUrnToLoad: string, tree: any): Array<string> {
+    if (aspectModelTFiles.includes(aspectModelUrnToLoad)) {
+        return [
+            aspectModelUrnToLoad,
+            ...aspectModelTFiles.filter((item: string) => item !== aspectModelUrnToLoad)
+        ];
     }
 
-    waitForAspectLoad(allAnswers, tree).then((aspect: Aspect) => {
-        allAnswers[answer.name] = aspect.aspectModelUrn;
-    });
+    return aspectModelTFiles;
 }
 
-export async function waitForAspectLoad(allUserResponses: any, treeStructure: Tree): Promise<Aspect> {
-    return loadAspectModel(allUserResponses, treeStructure);
-}
-
-export async function loadAspectModel(allUserResponses: any, treeStructure: Tree): Promise<Aspect> {
-    if (aspect) {
-        return aspect;
-    }
-
-    const ttlFileContents: Array<string> = [];
-    allUserResponses.aspectModelTFiles.forEach((ttlFile: any) => {
-        if (typeof ttlFile === 'string' && ttlFile.endsWith('.ttl')) {
-            const filePath = `${treeStructure.root.path}${ttlFile.trim()}`;
-            const fileData: any = treeStructure.read(filePath);
-            ttlFileContents.push(virtualFs.fileBufferToString(fileData));
-        }
-    });
-
-    try {
-        if (ttlFileContents.length > 1) {
-            aspect = await lastValueFrom<Aspect>(loader.load(allUserResponses.aspectModelUrnToLoad, ...ttlFileContents));
-        } else {
-            aspect = await lastValueFrom(loader.loadSelfContainedModel(ttlFileContents[0]));
-        }
-
-        return aspect;
-    } catch (error) {
-        console.error(error);
-        throw error;
-    }
-}
-
-
-export function handleComplexPropList(allAnswers: any, answer: Answers) {
-    const newEntry = {
-        prop: answer.name.replace('complexPropList', '').split(',')[0],
-        entityUrn: answer.name.replace('entityUrn', '').split(',')[1],
-        propsToShow: answer.answer.map((answer: any) => {
-            const property = loader.findByUrn(answer);
-            const name = !property ? answer.split('#')[1] : property.name;
-            const aspectModelUrn = !property ? answer : property.aspectModelUrn;
-            return {
-                name: name,
-                aspectModelUrn: aspectModelUrn,
-            };
+/**
+ * Takes a property and a list of complex properties, and returns an object
+ * containing the property's name, its entity URN, and an array of properties
+ * to show. Each of these properties to show is an object with name and aspectModelUrn properties.
+ *
+ * @param {Property} property - The property to handle.
+ * @param {Array<string>} complexPropList - The list of complex properties.
+ *
+ * @returns {Object} The object with prop, entityUrn and propsToShow properties.
+ */
+export function handleComplexPropList(property: Property, complexPropList: Array<ComplexProperty>) {
+    return {
+        prop: property.name,
+        entityUrn: (property.effectiveDataType as DefaultEntity).aspectModelUrn,
+        propsToShow: complexPropList.map((property: any) => {
+            const findByUrn = loader.findByUrn(property);
+            const name = findByUrn ? findByUrn.name : property.split('#')[1];
+            const aspectModelUrn = findByUrn ? findByUrn.aspectModelUrn : property;
+            return {name, aspectModelUrn} as PropertyDetail;
         }),
-    };
-
-    allAnswers.complexProps.push(newEntry);
+    } as ComplexProperty;
 }
 
-export function updateAnswer(aspect: Aspect, allAnswers: any, answer: Answers) {
-    if (answer.name === 'selectedModelElementUrn' && answer.answer === '') {
-        answer.answer = new TemplateHelper().resolveType(aspect);
-    }
-    allAnswers[answer.name] = answer.answer;
-}
-
+/**
+ * Writes a configuration to a file and then exits. If an error occurs during
+ * the file writing process, it is thrown. Upon successful write, a message
+ * is logged to the console and the subscriber are notified of completion.
+ *
+ * @param {Subscriber<Tree>} subscriber - The subscriber to notify of completion.
+ * @param {Tree} tree - The tree to pass to the subscriber.
+ * @param {any} config - The configuration to write to the file.
+ * @param {boolean} [fromImport=false] - A flag to indicate if the operation is from an import.
+ */
 export function writeConfigAndExit(subscriber: Subscriber<Tree>, tree: Tree, config: any, fromImport = false) {
     fs.writeFile(WIZARD_CONFIG_FILE, JSON.stringify(config), 'utf8', error => {
         if (error) {

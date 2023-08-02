@@ -1,18 +1,17 @@
+/*
+ * Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH
+ *
+ * See the AUTHORS file(s) distributed with this work for
+ * additional information regarding authorship.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ *
+ * SPDX-License-Identifier: MPL-2.0
+ */
+
 import {Question} from "inquirer";
-import {loader} from "./utils";
-import {Tree} from "@angular-devkit/schematics";
-import {
-    Aspect,
-    DefaultAspect,
-    DefaultEntity,
-    DefaultProperty,
-    DefaultSingleEntity,
-    Entity,
-    Property
-} from "@esmf/aspect-model-loader";
-import {TemplateHelper} from "../../utils/template-helper";
-import {Schema} from "../cards/schema";
-import * as locale from "locale-codes";
 import {ViewEncapsulation} from "@schematics/angular/component/schema";
 
 interface FuzzyPathQuestion extends Question {

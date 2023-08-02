@@ -13,17 +13,18 @@
 
 import {Rule} from '@angular-devkit/schematics';
 import {Tree} from '@angular-devkit/schematics/src/tree/interface';
-import {DefaultSingleEntity,} from '@esmf/aspect-model-loader';
+import {Aspect, DefaultSingleEntity,} from '@esmf/aspect-model-loader';
 import * as fs from 'fs';
 import path from 'path';
 import inquirer from 'inquirer';
-import {Subscriber} from 'rxjs';
+import {lastValueFrom, Subscriber} from 'rxjs';
 import {TemplateHelper} from '../../utils/template-helper';
 import {Schema} from '../table/schema';
 import {
     pathDecision,
     requestAspectModelUrnToLoad,
     requestChooseLanguageForSearchAction,
+    requestComplexPropertyElements,
     requestCustomCommandBarActions,
     requestCustomRowActions,
     requestDefaultSortingCol,
@@ -35,10 +36,9 @@ import {
     requestOverwriteFiles,
     requestRowCheckboxes,
     requestSelectedModelElement,
-    requestSelectedPropertyElement,
 } from "./prompts-with-function";
 
-import {aspect, loadAspectModel, loader, writeConfigAndExit} from "./utils";
+import {handleComplexPropList, loader, reorderAspectModelUrnToLoad, writeConfigAndExit} from "./utils";
 import {
     anotherFile,
     configFileName,
@@ -52,6 +52,7 @@ import {
     requestEnableRemoteDataHandling,
     requestSetViewEncapsulation
 } from "./prompts-without-function";
+import {virtualFs} from "@angular-devkit/core";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 inquirer.registerPrompt('fuzzypath', require('inquirer-fuzzy-path'));
@@ -67,6 +68,7 @@ let generationType: string = '';
 let fromImport = false;
 let index = 1;
 let allAnswers: any;
+export let aspect: Aspect;
 
 /**
  * Returns a Rule for a schematic which prompts the user for input,
@@ -81,7 +83,7 @@ let allAnswers: any;
  *
  * @throws {Error} - Will throw an error if an error occurs during execution.
  */
-export function generate(subscriber: Subscriber<Tree>, tree: Tree, options: Schema, type: string ) {
+export function generate(subscriber: Subscriber<Tree>, tree: Tree, options: Schema, type: string) {
     console.log('\x1b[33m%s\x1b[0m', 'Welcome to the TTL schematic UI generator, answer some questions to get you started:');
 
     generationType = type;
@@ -97,43 +99,6 @@ export function generate(subscriber: Subscriber<Tree>, tree: Tree, options: Sche
                 writeConfigAndExit(subscriber, tree, allAnswers);
             }
         });
-
-    // TODO: should be included ... when needed ...
-    // if (answer.name === 'aspectModelUrnToLoad') {
-    //     // add answers to the allAnswers object
-    //     const itemIndex = allAnswers.aspectModelTFiles.indexOf(answer.answer);
-    //     if (itemIndex) {
-    //         // move the selected item to be the first element
-    //         allAnswers.aspectModelTFiles.splice(itemIndex, 1);
-    //         allAnswers.aspectModelTFiles.unshift(answer.answer);
-    //     }
-    //     waitUntilAspectLoaded(allAnswers, tree).then((aspect: Aspect) => {
-    //         allAnswers[answer.name] = aspect.aspectModelUrn;
-    //     });
-    // } else if ((answer.name as string).includes('complexPropList')) {
-    //     // handles complex property decision
-    //     const newEntry = {
-    //         prop: answer.name.replace('complexPropList', '').split(',')[0],
-    //         entityUrn: answer.name.replace('entityUrn', '').split(',')[1],
-    //         propsToShow: answer.answer.map((answer: any) => {
-    //             const property = loader.findByUrn(answer);
-    //             const name = !property ? answer.split('#')[1] : property.name;
-    //             const aspectModelUrn = !property ? answer : property.aspectModelUrn;
-    //             return {
-    //                 name: name,
-    //                 aspectModelUrn: aspectModelUrn,
-    //             };
-    //         }),
-    //     };
-    //     allAnswers.complexProps.push(newEntry);
-    // } else {
-    //     if (answer.name === 'selectedModelElementUrn' && answer.answer === '') {
-    //         answer.answer = new TemplateHelper().resolveType(aspect);
-    //     }
-    //
-    //     // copy the answer into the answers object
-    //     allAnswers[answer.name] = answer.answer;
-    // }
 }
 
 /**
@@ -168,12 +133,19 @@ function initAnswers() {
 async function runPrompts(subscriber: Subscriber<Tree>, tree: Tree, templateHelper: TemplateHelper, options: Schema) {
     try {
         const answerConfigurationFileConfig = await getConfigurationFileConfig(subscriber, tree);
-        const answerAspectModel = await getAspectModel(tree);
+        const answerAspectModel = await getAspectModelUrnToLoad();
+        aspect = await loadAspectModel(answerAspectModel.aspectModelUrnToLoad, tree);
         const answerSelectedModelElement = await getSelectedModelElement();
-        const answerPropertyElement = await getPropertyElement(templateHelper);
+        const answerComplexPropertyElements = await getComplexPropertyElements(templateHelper);
         const answerUserSpecificConfig = await getUserSpecificConfigs(tree, templateHelper, options);
 
-        combineAnswers(answerConfigurationFileConfig, answerAspectModel, answerSelectedModelElement, answerPropertyElement, answerUserSpecificConfig);
+        combineAnswers(
+            answerConfigurationFileConfig,
+            answerAspectModel,
+            answerSelectedModelElement,
+            answerComplexPropertyElements,
+            answerUserSpecificConfig
+        );
     } catch (error) {
         console.error('An error occurred:', error);
         subscriber.error(error);
@@ -277,13 +249,48 @@ async function askAnotherFile() {
 /**
  * Prompts the user for the Aspect Model URN and then loads the Aspect Model.
  *
- * @param {Tree} tree - The worktree of files in the current project.
  * @returns {Promise<any>} - A Promise that resolves with the user's answer to the Aspect Model URN prompt.
  */
-async function getAspectModel(tree: Tree): Promise<any> {
-    const answerAspectModel = await inquirer.prompt([requestAspectModelUrnToLoad(allAnswers)]);
-    await loadAspectModel(allAnswers, tree);
-    return answerAspectModel;
+async function getAspectModelUrnToLoad(): Promise<any> {
+    return await inquirer.prompt([requestAspectModelUrnToLoad(allAnswers)]);
+}
+
+/**
+ * Loads the aspect model.
+ *
+ * @param {string} aspectModelUrnToLoad - The aspect model URN to load.
+ * @param {Tree} tree - The tree of files.
+ *
+ * @returns {Promise<Aspect>} Returns a Promise that resolves to an Aspect.
+ * If aspect model has already been loaded, it is returned as is.
+ * If not, it tries to load it from TTL files, taking into account the possibility of having multiple TTL files.
+ * It throws an error if loading fails.
+ *
+ * @throws Will throw an error if loading the aspect model fails.
+ */
+async function loadAspectModel(aspectModelUrnToLoad: string, tree: Tree): Promise<Aspect> {
+    if (aspect) return aspect;
+
+    allAnswers.aspectModelTFiles = reorderAspectModelUrnToLoad(allAnswers.aspectModelTFiles, aspectModelUrnToLoad, tree);
+
+    try {
+        const ttlFileContents: string[] = allAnswers.aspectModelTFiles
+            .filter((ttlFile: string) => ttlFile.endsWith('.ttl'))
+            .map((ttlFile: string) => {
+                const filePath = `${tree.root.path}${ttlFile.trim()}`;
+                const fileData: any = tree.read(filePath);
+                return virtualFs.fileBufferToString(fileData);
+            });
+
+        if (ttlFileContents.length > 1) {
+            return await lastValueFrom<Aspect>(loader.load(aspectModelUrnToLoad, ...ttlFileContents));
+        }
+
+        return await lastValueFrom(loader.loadSelfContainedModel(ttlFileContents[0]));
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
 }
 
 /**
@@ -297,30 +304,34 @@ async function getSelectedModelElement() {
 }
 
 /**
- * This function retrieves a property element based on a model element selection.
- * If a complex property is detected, it prompts the user to select from the complex properties
- * associated with the selected model element.
+ * Generates a list of complex property elements.
  *
- * @param {TemplateHelper} templateHelper - The helper class to provide methods related to the template.
+ * @param {TemplateHelper} templateHelper - The helper object to resolve types and get properties.
  *
- * @returns {Promise<Object>} An empty object after all prompts have been completed.
+ * @returns {Promise<Object>} - Returns a Promise that resolves to an object containing complex property elements.
  */
-async function getPropertyElement(templateHelper: TemplateHelper) {
-    if (!allAnswers.selectedModelElementUrn || allAnswers.selectedModelElementUrn === '') {
-        allAnswers.selectedModelElementUrn = templateHelper.resolveType(aspect).aspectModelUrn;
-    }
-    for (const property of templateHelper.getProperties({
+async function getComplexPropertyElements(templateHelper: TemplateHelper): Promise<any> {
+    allAnswers.selectedModelElementUrn = allAnswers.selectedModelElementUrn || templateHelper.resolveType(aspect).aspectModelUrn;
+
+    const properties = templateHelper.getProperties({
         selectedModelElement: loader.findByUrn(allAnswers.selectedModelElementUrn),
         excludedProperties: []
-    })) {
-        if (property.effectiveDataType?.isComplex && property.characteristic instanceof DefaultSingleEntity) {
-            await inquirer.prompt([requestSelectedPropertyElement(generationType, property)]);
-        }
-    }
+    });
 
-    return {};
+    const complexPropertyList = await Promise.all(properties
+        .filter(property =>
+            property.effectiveDataType?.isComplex &&
+            property.characteristic instanceof DefaultSingleEntity
+        )
+        .map(async property => {
+            const {complexPropertyList: complexPropList} = await inquirer.prompt([requestComplexPropertyElements(generationType, property)]);
+
+            return handleComplexPropList(property, complexPropList);
+        })
+    );
+
+    return {complexProps: complexPropertyList};
 }
-
 
 /**
  * This function fetches user specific configurations by prompting a set of questions.

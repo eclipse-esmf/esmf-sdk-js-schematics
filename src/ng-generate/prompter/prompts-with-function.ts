@@ -1,3 +1,16 @@
+/*
+ * Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH
+ *
+ * See the AUTHORS file(s) distributed with this work for
+ * additional information regarding authorship.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ *
+ * SPDX-License-Identifier: MPL-2.0
+ */
+
 import {loader} from "./utils";
 import {Tree} from "@angular-devkit/schematics";
 import {
@@ -62,9 +75,9 @@ export const requestSelectedModelElement = (type: string, aspect: Aspect) => ({
     default: '',
 });
 
-export const requestSelectedPropertyElement = (type: string, property: Property) => ({
+export const requestComplexPropertyElements = (type: string, property: Property) => ({
     type: 'checkbox',
-    name: `complexPropList${property.name},entityUrn${(property.effectiveDataType as DefaultEntity).aspectModelUrn}`,
+    name: 'complexPropertyList',
     message: `Property ${property.name} has a complex value(${property.effectiveDataType?.shortUrn}). Choose which object properties to display in the ${type}:`,
     choices: (property.effectiveDataType as DefaultEntity).properties.map(innerProp => innerProp.aspectModelUrn),
     default: [],
