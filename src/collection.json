@@ -30,7 +30,7 @@
     },
     "card-generation": {
       "description": "Executes the card generation",
-      "factory": "./ng-generate/components/card/index#generate",
+      "factory": "./ng-generate/components/card/index#generateCard",
       "schema": "./ng-generate/components/card/schema.json"
     },
     "i18n": {

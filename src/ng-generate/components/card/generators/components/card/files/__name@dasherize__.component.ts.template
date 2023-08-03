@@ -1,0 +1,253 @@
+/** <%= options.generationDisclaimerText %> **/
+import {
+  Component,
+  ElementRef,
+  EventEmitter,
+  Input,
+  <% if (options.enableRemoteDataHandling || options.hasSearchBar) { %>OnDestroy,<% } %>
+  OnInit,
+  Output,
+  ViewChild,
+  ViewEncapsulation,
+} from '@angular/core';
+import {TranslateService} from "@ngx-translate/core";
+
+import {
+    <%= classify(options.selectedModelTypeName) %>
+    <% if (selectedModelElementUrn !== aspectModelElementUrn && !isCollectionAspect) { %>
+        , <%= classify(options.aspectModelTypeName) %>
+    <% } %>
+    <% if (options.isEnumQuickFilter) { %>
+        , <%= enumProperties %>
+    <% } %>
+} from '<%= options.typePath %>';
+
+<% if (options.hasFilters || options.hasSearchBar) { %>
+    import {<%= options.filterServiceName %>, SortCard} from './<%= dasherize(name) %>-filter.service'
+<% } %>
+
+<% if (options.hasSearchBar || options.enableRemoteDataHandling) { %>
+    import {takeUntil} from "rxjs/operators";
+    import {Subject} from "rxjs";
+<% } %>
+
+<% if (options.addCommandBar) { %>
+    import {unparse} from "papaparse";
+<% } %>
+
+import {MatPaginator} from "@angular/material/paginator";
+import {MatTableDataSource} from "@angular/material/table";
+
+<% if (options.enableRemoteDataHandling) { %>
+    import {<% if (options.customRemoteService) { %>Custom<% } %><%= classify(name) %>Service} from './<% if (options.customRemoteService) { %>custom<% } %>-<%= dasherize(name) %>.service';
+<% } else { %>
+    import {<%= classify(name) %>Service} from './<%= dasherize(name) %>.service';
+<% } %>
+
+export enum <%= classify(name) %>CardValues {
+    MOVING = 'moving',
+    SPEED_LIMIT_WARNING = 'speedLimitWarning',
+    START_DATE = 'startDate',
+    END_DATE = 'endDate',
+}
+
+@Component({
+    selector: '<%= options.selector %>',
+    templateUrl: './<%= dasherize(name) %>.component.html',
+    styleUrls: ['./<%= dasherize(name) %>.component.<%= options.style %>']
+    <% if (options.viewEncapsulation) { %>,encapsulation: ViewEncapsulation.<%= options.viewEncapsulation %><% } else { %>,encapsulation: ViewEncapsulation.None<% } %>
+})
+export class <%= classify(name) %>Component implements OnInit <% if (options.hasSearchBar || options.enableRemoteDataHandling) { %>, OnDestroy<% } %> {
+    @Input() data: Array<Movement> = [];
+
+    <% if (options.hasSearchBar) { %>
+        @Input() initialSearchString = '';
+        @Input() regexValidator: string = '';
+    <% } %>
+
+    @Input() minNumberCharacters: number = 2;
+    @Input() maxNumberCharacters: number = 50;
+    @Input() maxExportRows: number = 0;
+
+    @Output() cardUpdateStartEvent = new EventEmitter<any>();
+    @Output() cardUpdateFinishedEvent = new EventEmitter<any>();
+
+    <% if (options.addCommandBar) { %>
+        @Output() downloadEvent = new EventEmitter<{ error: boolean; success: boolean; inProgress: boolean }>();
+    <% } %>
+
+    @Output() detail = new EventEmitter<any>();
+
+    <% if (options.addCommandBar) { %>
+        @ViewChild('searchInput') searchInput!: ElementRef;
+    <% } %>
+
+    @ViewChild(MatPaginator, {static: true}) paginator!: MatPaginator;
+
+    currentLanguage: string;
+
+    dataSource: MatTableDataSource<Movement> =  new MatTableDataSource<Movement>();
+
+    dataToShow: Array<Movement> = [];
+    totalItems: number = 0;
+    <%= camelize(name) %>CardValues = Object.values(<%= classify(name) %>CardValues);
+
+    <% if (options.hasSearchBar || options.enableRemoteDataHandling) { %>
+        private readonly destroy$ = new Subject<void>();
+    <% } %>
+
+    <% if (options.enableRemoteDataHandling) { %>
+        constructor(private translateService: TranslateService,
+                    private <% if (options.customRemoteService) { %>custom<% } %><%= classify(name) %>Service: <% if (options.customRemoteService) { %>Custom<% } %><%= classify(name) %>Service) {
+            this.currentLanguage = this.translateService.currentLang;
+        }
+    <% } else { %>
+        constructor(private translateService: TranslateService,
+                    private <%= camelize(name) %>Service: <%= classify(name) %>Service
+                    <% if (options.hasFilters) { %>
+                        , private filterService: <%= classify(name) %>FilterService
+                    <% } %>) {
+            this.currentLanguage = this.translateService.currentLang;
+        }
+     <% } %>
+
+    ngOnInit() {
+      this.dataToShow = [...this.data];
+      this.totalItems = this.dataToShow.length;
+      this.dataSource.data = this.dataToShow;
+      this.dataSource.paginator = this.paginator;
+      this.paginator.length = this.dataToShow.length;
+
+      <% if (options.hasSearchBar) { %>
+          this.filterService.searchStringInit(this.initialSearchString, this.regexValidator, this.minNumberCharacters, this.maxNumberCharacters);
+          this.subscribeToSelectedStringColumn();
+      <% } %>
+    }
+
+    <% if (options.hasFilters) { %>
+        removeFilter(filterData: any): void {
+            this.filterService.removeFilter(filterData);
+            this.filterService.searchString.reset();
+            this.applyFilters();
+        }
+    <% } %>
+
+
+  reloadFilter(): void {
+    this.applyFilters();
+  }
+
+    applyFilters(): void {
+        <% if (options.hasSearchBar) { %>
+            if (this.filterService.searchString.errors) {
+              return;
+            }
+       <% } %>
+
+      this.cardUpdateStartEvent.emit();
+      this.dataToShow = this.applyAllFilters(this.data);
+      this.totalItems = this.dataToShow.length;
+      this.maxExportRows = this.totalItems;
+      this.cardUpdateFinishedEvent.emit();
+    }
+
+    private applyAllFilters(data: any[]): any[] {
+      let dataTemp = [...data];
+
+      <% if (options.isEnumQuickFilter) { %>
+          dataTemp = this.filterService.applyEnumFilter(dataTemp);
+      <% } %>
+
+      <% if (options.hasSearchBar) { %>
+          dataTemp = this.filterService.applyStringSearchFilter(dataTemp);
+      <% } %>
+
+      <% if (options.isDateQuickFilter) { %>
+          dataTemp = this.filterService.applyDateFilter(dataTemp);
+      <% } %>
+
+      return dataTemp;
+    }
+
+    <% if (options.hasSearchBar) { %>
+        private subscribeToSelectedStringColumn() {
+        this.filterService.selectedStringColumn.valueChanges
+            .pipe(takeUntil(this.destroy$))
+            .subscribe(() => {
+                if (this.searchInput) {
+                    this.searchInput.nativeElement.focus();
+                }
+            });
+        }
+    <% } %>
+
+    <% if (options.addCommandBar) { %>
+        exportToCsv() {
+            const headersCSV = unparse({
+                fields: this.<%= camelize(name) %>CardValues.map(columnName => {
+                    const translatedHeader = this.translateService.instant(`movement.${columnName}.preferredName`);
+                    return translatedHeader !== `movement.${columnName}.preferredName` ? translatedHeader : columnName;
+                }),
+                data: [],
+            });
+
+            this.downloadCsv(`${headersCSV}${unparse(this.data, {header: false, columns: this.<%= camelize(name) %>CardValues})}`);
+        }
+
+        downloadCsv(csvArray: string): void {
+            this.downloadEvent.emit({error: false, success: false, inProgress: true});
+            try {
+                this.<%= (camelize((options.enableRemoteDataHandling && options.customRemoteService ? 'custom' : '') + name)) %>Service.downloadCsv(csvArray);
+                this.downloadEvent.emit({error: false, success: true, inProgress: false});
+            } catch (error: any) {
+                this.downloadEvent.emit({error: true, success: false, inProgress: false});
+            }
+        }
+    <% } %>
+
+    <% if (options.addCommandBar) { %>
+        sorting() {
+            this.data.sort((a, b) => {
+                let aValue = (a as any)[this.filterService.sortedProperty];
+                let bValue = (b as any)[this.filterService.sortedProperty];
+
+                if (typeof aValue === 'boolean') {
+                    aValue = aValue ? 1 : 0;
+                    bValue = bValue ? 1 : 0;
+                }
+
+                if (Date.parse(aValue)) {
+                  aValue = new Date(aValue);
+                  bValue = new Date(bValue);
+                }
+
+                 if (this.filterService.sortCard === SortCard.ASCENDING) {
+                 if (aValue < bValue) return -1;
+                  if (aValue > bValue) return 1;
+                 return 0;
+                 } else {
+                    if (aValue < bValue) return 1;
+                    if (aValue > bValue) return -1;
+                    return 0;
+                }
+            });
+
+            this.applyFilters();
+        }
+    <% } %>
+
+    detailInformation(data: Movement) {
+      this.detail.emit(data);
+    }
+
+    <% if (options.hasSearchBar || options.enableRemoteDataHandling) { %>
+        ngOnDestroy() {
+            <% if (options.hasSearchBar) { %>
+                this.filterService.searchString.setValue('');
+            <% } %>
+
+            this.destroy$.next();
+            this.destroy$.complete();
+        }
+    <% } %>
+}

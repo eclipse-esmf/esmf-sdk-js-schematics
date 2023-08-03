@@ -5,23 +5,26 @@ import {<%= classify(name) %>Component} from './<%= dasherize(name) %>.component
 <% if (options.addCommandBar) { %>
     import {<%= classify(name) %>CommandBarComponent} from './<%= dasherize(name) %>-command-bar.component';
 
-    <% if (options.hasFilters) { %>
-        import {<%= classify(name) %>ChipListComponent} from './<%= dasherize(name) %>-chip-list.component';
-    <% } %>
+        <% if (options.hasFilters) { %>
+            import {<%= classify(name) %>ChipListComponent} from './<%= dasherize(name) %>-chip-list.component';
+        <% } %>
 
-    <% if (options.hasSearchBar) { %>
-        import {<%= classify(name) %>ConfigMenuComponent} from './<%= dasherize(name) %>-config-menu.component';
+    <% if (options.componentType === 'table') { %>
+        <% if (options.hasSearchBar) { %>
+            import {<%= classify(name) %>ConfigMenuComponent} from './<%= dasherize(name) %>-config-menu.component';
+        <% } %>
     <% } %>
 <% } %>
 
-import {<%= classify(name) %>ColumnMenuComponent} from './<%= dasherize(name) %>-column-menu.component';
+<% if (options.componentType === 'table') { %>
+    import {<%= classify(name) %>ColumnMenuComponent} from './<%= dasherize(name) %>-column-menu.component';
+<% } %>
 
 import {AppSharedModule} from 'src/app/shared/app-shared.module';
 
 @NgModule({
     declarations: [
-        <%= classify(name) %>Component,
-        <%= classify(name) %>ColumnMenuComponent
+        <%= classify(name) %>Component
 
         <% if (options.addCommandBar) { %>
             , <%= classify(name) %>CommandBarComponent
@@ -30,8 +33,13 @@ import {AppSharedModule} from 'src/app/shared/app-shared.module';
                 , <%= classify(name) %>ChipListComponent
             <% } %>
 
-            <% if (options.hasSearchBar) { %>
-                , <%= classify(name) %>ConfigMenuComponent
+            <% if (options.componentType === 'table') { %>
+                , <%= classify(name) %>ColumnMenuComponent
+
+                <% if (options.hasSearchBar) { %>
+                    , <%= classify(name) %>ConfigMenuComponent
+                <% } %>
+
             <% } %>
         <% } %>
     ],

@@ -28,12 +28,12 @@ import {DefaultSingleEntity, Property} from "@esmf/aspect-model-loader";
 import {camelize, classify, dasherize} from "@angular-devkit/core/src/utils/strings";
 import {getAllEnumProps} from "../../../../../../utils/aspect-model";
 import {generateChipList, generateCommandBar} from "../../../../shared/generators";
-import {TableSchema} from "../../../schema";
+import {getEnumProperties} from "../../../../shared/utils";
 
 let sharedOptions: any = {};
 let allProps: Array<Property> = [];
 
-export function generateMainComponent(options: any): Rule {
+export function generateTableComponent(options: any): Rule {
     return (tree: Tree, _context: SchematicContext) => {
         allProps = options.listAllProperties;
 
@@ -66,7 +66,7 @@ function generateHtml(options: any): Rule {
                 enumPropertyColumns: getEnumPropertyColumns(),
                 enumCustomColumns: getEnumCustomColumns(),
                 customRowActions: getCustomRowActions(),
-                enumProperties: getEnumProperties(),
+                enumProperties: getEnumProperties(sharedOptions),
                 customRowActionInput: getCustomRowActionInput(),
                 customColumnsInput: getCustomColumnsInput(),
                 byValueFunction: getByValueFunction(),
@@ -170,11 +170,6 @@ function getCustomRowActions(): string {
       </td>
     </ng-container>`
         : '';
-}
-
-function getEnumProperties(): string {
-    return sharedOptions.templateHelper.getEnumProperties(sharedOptions)
-        .map((property: Property) => classify(property.characteristic.name)).join(',')
 }
 
 function getEnumPropertyColumns(): string {

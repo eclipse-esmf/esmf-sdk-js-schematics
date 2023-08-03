@@ -30,7 +30,7 @@ import {
     REMOTE_HANDLING_DEPENDENCIES
 } from '../../../utils/package-json';
 import {TemplateHelper} from '../../../utils/template-helper';
-import {Schema, Values} from './schema';
+import {ComponentType, Schema, Values} from './schema';
 import ora from 'ora';
 import {
     generateCustomService,
@@ -56,16 +56,17 @@ export let options: Schema;
  * creates several tasks related to the component generation process,
  * and adds a package installation task if `skipInstall` is not set.
  *
- * @param context - Context of the schematics project.
- * @param schema - Schema options for component generation.
- * @param componentType - Component type to generate.
+ * @param {SchematicContext} context - Context of the schematics project.
+ * @param {Schema} schema - Schema options for component generation.
+ * @param {ComponentType} componentType - Component type to generate.
  * Can include a config file path, and a flag to skip package installation.
  *
  * @returns Rule - A rule function that manipulates the original tree.
  * In this case, it performs the component generation and related tasks.
  */
-export function generateComponent(context: SchematicContext, schema: Schema, componentType: string) {
+export function generateComponent(context: SchematicContext, schema: Schema, componentType: ComponentType) {
     options = schema;
+    options.componentType = componentType;
 
     const {configFile, skipInstall} = options;
 
@@ -153,9 +154,7 @@ export function loadAspectModelRule(): Rule {
  */
 export function setCustomActionsAndFiltersRule(): Rule {
     return () => {
-        if (!options.addCommandBar) {
-            return;
-        }
+        if (!options.addCommandBar) return;
 
         const propertiesCheck = [
             {properties: options.templateHelper.getStringProperties(options), function: 'addSearchBar'},
@@ -163,27 +162,26 @@ export function setCustomActionsAndFiltersRule(): Rule {
             {properties: options.templateHelper.getEnumProperties(options), function: 'addEnumQuickFilters'}
         ];
 
-        propertiesCheck.forEach(item => {
-            if (item.properties.length <= 0) {
-                options.enabledCommandBarFunctions = options.enabledCommandBarFunctions.filter(func => func !== item.function);
-            }
-        });
+        options.enabledCommandBarFunctions = options.enabledCommandBarFunctions
+            .filter(func =>
+                propertiesCheck.some(item => item.function === func && item.properties.length > 0)
+            );
     };
 }
 
 /**
  * Sets the component name if it equals the specified type.
- * @param {string} type - The type to compare the component name to.
+ * @param {ComponentType} componentType - The type to compare the component name to.
  *
  * @returns {Rule} - The rule for setting the component name.
  */
-export function setComponentNameRule(type: string): Rule {
-  return (tree: Tree, context: SchematicContext) => {
-    if (options.name === type) {
-      options.name = `${options.selectedModelElement?.name}-${options.name}`;
-      context.logger.info('Option name set.');
-    }
-  };
+export function setComponentNameRule(componentType: ComponentType): Rule {
+    return (tree: Tree, context: SchematicContext) => {
+        if (options.name === componentType) {
+            options.name = `${options.selectedModelElement?.name}-${options.name}`;
+            context.logger.info('Option name set.');
+        }
+    };
 }
 
 
@@ -194,9 +192,10 @@ export function setComponentNameRule(type: string): Rule {
  */
 export function insertVersionIntoSelectorRule(): Rule {
     return (tree: Tree) => {
-        const prefixPart = options.prefix ? `${options.prefix}-` : '';
-        const namePart = dasherize(options.name).toLowerCase();
-        const versionPart = options.enableVersionSupport ? `-v${options.aspectModelVersion.replace(/\./g, '')}` : '';
+        const {prefix, name, enableVersionSupport, aspectModelVersion} = options;
+        const prefixPart = prefix ? `${prefix}-` : '';
+        const namePart = dasherize(name).toLowerCase();
+        const versionPart = enableVersionSupport ? `-v${aspectModelVersion.replace(/\./g, '')}` : '';
 
         options.selector = `${prefixPart}${namePart}${versionPart}`;
 
@@ -214,8 +213,7 @@ export function insertVersionIntoPathRule(): Rule {
         let pathSuffix = `/${dasherize(options.name).toLowerCase()}`;
 
         if (options.enableVersionSupport) {
-            const aspectModelVersion = 'v' + options.aspectModelVersion.replace(/\./g, '');
-            pathSuffix += `/${aspectModelVersion}`;
+            pathSuffix += `/v${options.aspectModelVersion.replace(/\./g, '')}`;
         }
 
         options.path += pathSuffix;

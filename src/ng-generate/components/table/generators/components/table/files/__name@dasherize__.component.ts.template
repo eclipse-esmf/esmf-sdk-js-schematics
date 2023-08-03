@@ -286,7 +286,8 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
     <% } %>
 
     <% if (options.enableRemoteDataHandling) { %>
-        constructor(<%= commonImports %> private <% if (options.customRemoteService) { %>custom<% } %><%= classify(name) %>Service: <% if (options.customRemoteService) { %>Custom<% } %><%= classify(name) %>Service, private cd: ChangeDetectorRef) {
+        constructor(<%= commonImports %>
+        private <% if (options.customRemoteService) { %>custom<% } %><%= classify(name) %>Service: <% if (options.customRemoteService) { %>Custom<% } %><%= classify(name) %>Service, private cd: ChangeDetectorRef) {
             this.dataSource = new <%= classify(name) %>DataSource();
             <%= sharedCustomRows %>
         }

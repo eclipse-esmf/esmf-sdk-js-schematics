@@ -15,6 +15,10 @@ import {Schema as ComponentSchema} from '@schematics/angular/component/schema';
 import {DefaultSchema} from '../../default-schema';
 import {Property} from "@esmf/aspect-model-loader";
 
+export enum ComponentType {
+    TABLE = 'table',
+    CARD = 'card',
+}
 export interface ExcludedProperty {
     /**
      * Name of the parent property which include the child property. Empty if the property
@@ -62,6 +66,7 @@ export interface Schema extends ComponentSchema, DefaultSchema {
     skipInstall: boolean;
     getOptionalMaterialTheme: boolean;
     skipImport: boolean;
+    componentType: ComponentType;
 }
 
 export interface Values extends Schema {

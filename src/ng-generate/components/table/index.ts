@@ -11,7 +11,6 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-import {CardSchema} from "../card/schema";
 import {chain, Rule, SchematicContext} from "@angular-devkit/schematics";
 import {Tree} from "@angular-devkit/schematics/src/tree/interface";
 import {
@@ -29,30 +28,30 @@ import {
     setCustomActionsAndFiltersRule,
     setTemplateOptionValuesRule
 } from "../shared";
-import {Schema} from "../shared/schema";
+import {ComponentType} from "../shared/schema";
 import {generateStorageService} from "./generators/services/storage/index";
 import {generateColumnMenu} from "./generators/components/column-menu/index";
 import {generateConfigMenu} from "./generators/components/config-menu/index";
 import {generateResizeDirective} from "./generators/directives/resize/index";
 import {generateHighlightDirective} from "./generators/directives/highlight/index";
-import {generateMainComponent} from "./generators/components/table/index";
+import {generateTableComponent} from "./generators/components/table/index";
 import {generateDataSource} from "./generators/data-source/index";
+import {TableSchema} from "./schema";
 
-const type = 'table';
-export default function (cardSchema: CardSchema): Rule {
+export default function (tableSchema: TableSchema): Rule {
     return (tree: Tree, context: SchematicContext) => {
-        generateComponent(context, cardSchema, type);
+        generateComponent(context, tableSchema, ComponentType.TABLE);
     };
 }
 
-export function generateTable(cardSchema: Schema): Rule {
-    prepareOptions(options);
+export function generateTable(tableSchema: TableSchema): Rule {
+    prepareOptions(tableSchema);
 
     return chain([
         loadRdfRule(),
         loadAspectModelRule(),
         setCustomActionsAndFiltersRule(),
-        setComponentNameRule(type),
+        setComponentNameRule(ComponentType.TABLE),
         insertVersionIntoSelectorRule(),
         insertVersionIntoPathRule(),
         setTemplateOptionValuesRule(),
@@ -65,7 +64,7 @@ export function generateTable(cardSchema: Schema): Rule {
 
 function tableSpecificGeneration(): Array<Rule> {
     return [
-        generateMainComponent(options),
+        generateTableComponent(options),
         generateDataSource(options),
         generateStorageService(options),
         generateColumnMenu(options),
