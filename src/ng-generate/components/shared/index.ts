@@ -44,7 +44,7 @@ import {
     generateTranslationModule,
     generateValidateInputDirective
 } from "./generators";
-import {APP_SHARED_MODULES, COMPONENT_MODULES, updateSharedModule} from "../../../utils/modules";
+import {APP_SHARED_MODULES, cardModules, tableModules, updateSharedModule} from "../../../utils/modules";
 import {WIZARD_CONFIG_FILE} from "../../prompter/index";
 
 export let options: Schema;
@@ -263,6 +263,9 @@ export function generateGeneralFilesRules(): Array<Rule> {
  * @returns {Array<Rule>} - The rules for adding and updating configuration files.
  */
 export function addAndUpdateConfigurationFilesRule() {
+    const componentModule = options.componentType === ComponentType.TABLE ? addToComponentModule(options.skipImport, options, tableModules(options)) :
+        addToComponentModule(options.skipImport, options, cardModules(options));
+
     return [
         addPackageJsonDependencies(options.skipImport, options.spinner, loadDependencies()),
         updateConfigFiles(options),
@@ -270,7 +273,7 @@ export function addAndUpdateConfigurationFilesRule() {
             name: 'BrowserAnimationsModule',
             fromLib: '@angular/platform-browser/animations'
         }]),
-        addToComponentModule(options.skipImport, options, COMPONENT_MODULES(options)),
+        componentModule,
         addToAppSharedModule(false, APP_SHARED_MODULES),
         updateSharedModule(options)
     ]

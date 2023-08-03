@@ -27,6 +27,7 @@ import {strings} from "@angular-devkit/core";
 import {DefaultSingleEntity, Property} from "@esmf/aspect-model-loader";
 import {classify} from "@angular-devkit/core/src/utils/strings";
 import {getAllEnumProps, PropValue} from "../../../../../../utils/aspect-model";
+import {ComponentType} from "../../../schema";
 
 let sharedOptions: any = {};
 
@@ -34,7 +35,7 @@ export function generateFilterService(options: any): Rule {
     sharedOptions = options;
 
     return (tree: Tree, _context: SchematicContext) => {
-        if (!sharedOptions.hasFilters) {
+        if (!sharedOptions.addCommandBar || (sharedOptions.componentType === ComponentType.TABLE && !sharedOptions.hasFilters)) {
             return noop;
         }
 

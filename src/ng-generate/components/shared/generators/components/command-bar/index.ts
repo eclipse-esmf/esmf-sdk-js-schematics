@@ -41,6 +41,7 @@ export function generateCommandBar(options: any, allProps: Array<Property>): Rul
                 applyTemplates({
                     classify: strings.classify,
                     dasherize: strings.dasherize,
+                    camelize: strings.camelize,
                     options: options,
                     name: options.name,
                     spinalCaseFunc: options.templateHelper.spinalCase,

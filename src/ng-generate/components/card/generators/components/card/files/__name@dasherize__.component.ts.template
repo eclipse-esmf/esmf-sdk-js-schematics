@@ -22,7 +22,7 @@ import {
     <% } %>
 } from '<%= options.typePath %>';
 
-<% if (options.hasFilters || options.hasSearchBar) { %>
+<% if (options.addCommandBar) { %>
     import {<%= options.filterServiceName %>, SortCard} from './<%= dasherize(name) %>-filter.service'
 <% } %>
 
@@ -90,6 +90,7 @@ export class <%= classify(name) %>Component implements OnInit <% if (options.has
 
     dataToShow: Array<Movement> = [];
     totalItems: number = 0;
+
     <%= camelize(name) %>CardValues = Object.values(<%= classify(name) %>CardValues);
 
     <% if (options.hasSearchBar || options.enableRemoteDataHandling) { %>
@@ -104,7 +105,7 @@ export class <%= classify(name) %>Component implements OnInit <% if (options.has
     <% } else { %>
         constructor(private translateService: TranslateService,
                     private <%= camelize(name) %>Service: <%= classify(name) %>Service
-                    <% if (options.hasFilters) { %>
+                    <% if (options.addCommandBar) { %>
                         , private filterService: <%= classify(name) %>FilterService
                     <% } %>) {
             this.currentLanguage = this.translateService.currentLang;
@@ -127,7 +128,9 @@ export class <%= classify(name) %>Component implements OnInit <% if (options.has
     <% if (options.hasFilters) { %>
         removeFilter(filterData: any): void {
             this.filterService.removeFilter(filterData);
-            this.filterService.searchString.reset();
+            <% if (options.hasSearchBar) { %>
+                this.filterService.searchString.reset();
+            <% } %>
             this.applyFilters();
         }
     <% } %>

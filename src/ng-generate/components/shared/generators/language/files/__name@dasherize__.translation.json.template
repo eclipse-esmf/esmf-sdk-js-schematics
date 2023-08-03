@@ -106,4 +106,13 @@
     "restoreDefaults": "Restore Defaults",
     "columns": "Columns",
     "export": "Export"
+
+    <% if (options.componentType === 'card' && options.hasSearchBar) { %>
+        ,
+        "toolbar.sorted_tooltip": "Sort data by property",
+        "toolbar.sort_dir_tooltip": "Sort data direction",
+        "toolbar.sort_by": "Sorted by",
+        "toolbar.sort_asc": "Ascending",
+        "toolbar.sort_desc": "Descending"
+    <% } %>
 }

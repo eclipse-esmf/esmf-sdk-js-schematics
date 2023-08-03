@@ -1,6 +1,10 @@
 /** <%= options.generationDisclaimerText %> **/
 import {HttpClient} from '@angular/common/http';
-import {Observable} from 'rxjs';
+
+<% if (options.enableRemoteDataHandling) { %>
+    import {Observable} from 'rxjs';
+<% } %>
+
 import {<%= classify(options.aspectModelTypeName) %>} from '<%= options.typePath %>';
 import {Injectable} from '@angular/core';
 import {TranslateService} from "@ngx-translate/core";

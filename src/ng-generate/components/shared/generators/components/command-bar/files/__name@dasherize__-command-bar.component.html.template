@@ -32,18 +32,21 @@
             <mat-icon data-test="search-icon" class="material-icons">search</mat-icon>
           </button>
         </mat-form-field>
-        <ng-container *ngIf="hasAdvancedSearch">
-          <mat-form-field data-test="form-field-select" appearance="fill">
-            <mat-label data-test="select-label">{{ 'advancedSearch' | translate }}</mat-label>
-            <mat-select data-test="select" [formControl]="filterService.selectedStringColumn">
-              <mat-option [value]="filterService.advancedSearchAllValue">{{ 'allTextFields' | translate }}</mat-option>
-              <mat-option *ngFor="let searchField of filterService.stringColumns" [value]="searchField">
-                <span>{{ '<%= options.translationPath %>' + searchField + '.preferredName' | translate }}</span>
-                <span class="advanced-search-option-description">{{ '<%= options.translationPath %>' + searchField + '.description' | translate }}</span>
-              </mat-option>
-            </mat-select>
-          </mat-form-field>
-        </ng-container>
+
+        <% if (options.componentType === 'table' && options.hasSearchBar) { %>
+            <ng-container *ngIf="hasAdvancedSearch">
+              <mat-form-field data-test="form-field-select" appearance="fill">
+                <mat-label data-test="select-label">{{ 'advancedSearch' | translate }}</mat-label>
+                <mat-select data-test="select" [formControl]="filterService.selectedStringColumn">
+                  <mat-option [value]="filterService.advancedSearchAllValue">{{ 'allTextFields' | translate }}</mat-option>
+                  <mat-option *ngFor="let searchField of filterService.stringColumns" [value]="searchField">
+                    <span>{{ '<%= options.translationPath %>' + searchField + '.preferredName' | translate }}</span>
+                    <span class="advanced-search-option-description">{{ '<%= options.translationPath %>' + searchField + '.description' | translate }}</span>
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+            </ng-container>
+        <% } %>
     <% } %>
 
     <% for(let property of propValues) { %>
@@ -102,6 +105,23 @@
             </mat-form-field>
         <% } %>
     <% } %>
+
+    <% if (options.componentType === 'card' && options.addCommandBar) { %>
+        <div class="sorting-content" [matTooltip]="'toolbar.sorted_tooltip' | translate" matTooltipPosition="above" [matMenuTriggerFor]="sortBy">
+            <button data-test="sort-data-by-button" mat-icon-button>
+                <mat-icon data-test="sort-data-by-icon">sort_by_alpha</mat-icon>
+            </button>
+            <span>{{ 'toolbar.sort_by' | translate }} {{ filterService.sortedProperty }}</span>
+        </div>
+
+        <div class="sorting-content" [matTooltip]="'toolbar.sort_dir_tooltip' | translate" matTooltipPosition="above" (click)="setSortingDir()">
+            <button data-test="sort-data-button" mat-icon-button>
+                <mat-icon data-test="sort-data-icon" fontIcon="{{ filterService.sortCard === SortCard.ASCENDING ? 'arrow_upward' : 'arrow_downward' }}"></mat-icon>
+            </button>
+            <span>{{ filterService.sortCard === SortCard.ASCENDING ? ('toolbar.sort_asc' | translate) : ('toolbar.sort_desc' | translate) }}</span>
+        </div>
+    <% } %>
+
     <span data-test="spacer" class="spacer"></span>
 
     <% if (options.customCommandBarActions.length > 0) { %>
@@ -128,18 +148,26 @@
       <mat-icon data-test="export-data-icon" class="material-icons" [matTooltip]="'tableActions.exportData' | translate">file_download</mat-icon>
     </button>
 
-    <% if (options.hasSearchBar) { %>
+    <% if (options.componentType === 'table' && options.hasSearchBar) { %>
         <button data-test="open-configuration" mat-icon-button aria-label="Open configuration" [matMenuTriggerFor]="configurationMenu" (menuOpened)="triggerInitOpenedConfigurationDialog()">
             <mat-icon data-test="open-configuration-icon" class="material-icons"[matTooltip]="'tableActions.openConfig' | translate">settings </mat-icon>
         </button>
     <% } %>
 </mat-toolbar>
 
-<% if (options.hasSearchBar) { %>
+<% if (options.componentType === 'table' && options.hasSearchBar) { %>
     <mat-menu data-test="column-menu" #configurationMenu="matMenu" class="column-menu">
       <<%= dasherize(name) %>-config-menu
         #configurationMenuComponent
         (configChangedEvent)="triggerSetConfiguration($event)"
       ></<%= dasherize(name) %>-config-menu>
+    </mat-menu>
+<% } %>
+
+<% if (options.componentType === 'card' && options.addCommandBar) { %>
+    <mat-menu #sortBy="matMenu">
+      <button mat-menu-item *ngFor="let value of <%= camelize(name) %>CardValues" (click)="setSortingProperty(value)">
+        {{ value }}
+      </button>
     </mat-menu>
 <% } %>

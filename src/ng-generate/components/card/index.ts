@@ -15,22 +15,21 @@ import {CardSchema} from "./schema";
 import {chain, Rule, SchematicContext} from "@angular-devkit/schematics";
 import {Tree} from "@angular-devkit/schematics/src/tree/interface";
 import {
-    addAndUpdateConfigurationFilesRule, formatAllFilesRule,
-    generateComponent, generateGeneralFilesRules, insertVersionIntoPathRule, insertVersionIntoSelectorRule,
+    addAndUpdateConfigurationFilesRule,
+    formatAllFilesRule,
+    generateComponent,
+    generateGeneralFilesRules,
+    insertVersionIntoPathRule,
+    insertVersionIntoSelectorRule,
     loadAspectModelRule,
     loadRdfRule,
     options,
-    prepareOptions, setComponentNameRule,
-    setCustomActionsAndFiltersRule, setTemplateOptionValuesRule
+    prepareOptions,
+    setComponentNameRule,
+    setCustomActionsAndFiltersRule,
+    setTemplateOptionValuesRule
 } from "../shared/index";
 import {ComponentType, Schema} from "../shared/schema";
-import {generateTableComponent} from "../table/generators/components/table/index";
-import {generateDataSource} from "../table/generators/data-source/index";
-import {generateStorageService} from "../table/generators/services/storage/index";
-import {generateColumnMenu} from "../table/generators/components/column-menu/index";
-import {generateConfigMenu} from "../table/generators/components/config-menu/index";
-import {generateResizeDirective} from "../table/generators/directives/resize/index";
-import {generateHighlightDirective} from "../table/generators/directives/highlight/index";
 import {generateCardComponent} from "./generators/components/card";
 
 export default function (cardSchema: CardSchema): Rule {

@@ -39,19 +39,28 @@ import {<%= classify(options.selectedModelTypeName) %>
 
 } from '<%= options.typePath %>';
 
-export enum FilterEnums {
-    Date,
-    Search,
-    Enum,
-}
+<% if (options.hasSearchBar || options.isEnumQuickFilter || options.isDateQuickFilter) { %>
+    export enum FilterEnums {
+        Date,
+        Search,
+        Enum,
+    }
 
-export type FilterType = {
-    type: FilterEnums;
-    label: string;
-    prop: string|null;
-    filterValue?:string;
-    removable?: boolean;
-};
+    export type FilterType = {
+        type: FilterEnums;
+        label: string;
+        prop: string|null;
+        filterValue?:string;
+        removable?: boolean;
+    };
+<% } %>
+
+<% if (options.componentType === 'card' && options.addCommandBar) { %>
+    export enum SortCard {
+      ASCENDING,
+      DESCENDING,
+    }
+<% } %>
 
 <% if (options.hasSearchBar) { %>
     export const validateInputsValidator = (pattern: string): ValidatorFn => {
@@ -120,22 +129,28 @@ export type FilterType = {
 })
 export class <%= classify(name) %>FilterService {
 
-    /** Array of active filters */
-    activeFilters: FilterType[] = [];
+    <% if (options.hasSearchBar || options.isEnumQuickFilter || options.isDateQuickFilter) { %>
+        /** Array of active filters */
+        activeFilters: FilterType[] = [];
 
-    <% if (options.hasSearchBar) { %>
-        searchString = new FormControl<string | null>('');
-        <%= setStringColumns %>
+        <% if (options.hasSearchBar) { %>
+            searchString = new FormControl<string | null>('');
+            <%= setStringColumns %>
+        <% } %>
+
+        <% if (options.isEnumQuickFilter) { %>
+            <%= setEnumQuickFilter %>
+        <% } %>
+
+        <% if (options.isDateQuickFilter) { %>
+            <%= setDataQuickFilter %>
+        <% } %>
     <% } %>
 
-    <% if (options.isEnumQuickFilter) { %>
-        <%= setEnumQuickFilter %>
+    <% if (options.componentType === 'card' && options.addCommandBar) { %>
+        sortCard = SortCard.ASCENDING;
+        sortedProperty = '';
     <% } %>
-
-    <% if (options.isDateQuickFilter) { %>
-        <%= setDataQuickFilter %>
-    <% } %>
-
 
     constructor(
         <% if (options.isDateQuickFilter) { %>
@@ -153,27 +168,28 @@ export class <%= classify(name) %>FilterService {
         }
     <% } %>
 
+    <% if (options.hasSearchBar || options.isEnumQuickFilter || options.isDateQuickFilter) { %>
+        /** Removes a specific filter. */
+        removeFilter(filter:FilterType) {
+            switch(filter.type) {
+                <% if (options.hasSearchBar) { %>
+                    case FilterEnums.Search:
+                        const removedFilter = this.activeFilters.findIndex(elem => elem.filterValue === filter.filterValue && elem.prop === filter.prop);
+                        this.activeFilters.splice(removedFilter, 1);
+                        this.searchString.setValue('');
+                        break;
+                <% } %>
 
-    /** Removes a specific filter. */
-    removeFilter(filter:FilterType) {
-        switch(filter.type) {
-            <% if (options.hasSearchBar) { %>
-                case FilterEnums.Search:
-                    const removedFilter = this.activeFilters.findIndex(elem => elem.filterValue === filter.filterValue && elem.prop === filter.prop);
-                    this.activeFilters.splice(removedFilter, 1);
-                    this.searchString.setValue('');
-                    break;
-            <% } %>
+                <% if (options.isEnumQuickFilter) { %>
+                    <%= setEnumRemoveFilter %>
+                <% } %>
 
-            <% if (options.isEnumQuickFilter) { %>
-                <%= setEnumRemoveFilter %>
-            <% } %>
-
-            <% if (options.isDateQuickFilter) { %>
-                <%= setDataRemoveFilter %>
-            <% } %>
+                <% if (options.isDateQuickFilter) { %>
+                    <%= setDataRemoveFilter %>
+                <% } %>
+            }
         }
-    }
+    <% } %>
 
     <% if (options.hasSearchBar) { %>
         /**
@@ -192,39 +208,50 @@ export class <%= classify(name) %>FilterService {
 
         <% if (!options.enableRemoteDataHandling) { %>
             applyStringSearchFilter(data: Array<<%= classify(options.aspectModelTypeName) %>>): Array<<%= classify(options.aspectModelTypeName) %>> {
-                if (this.searchString.value && this.searchString.value !== '' && !this.activeFilters.find(elem => elem.prop === this.selectedStringColumn.value && elem.filterValue === this.searchString.value)) {
-                    const label = `in ${ this.selectedStringColumn.value === this.advancedSearchAllValue ?
-                    this.translateService.instant('allTextFields') :
-                        this.translateService.instant(`<%= options.translationPath %>` + this.selectedStringColumn.value + '.preferredName')}`;
-                        this.activeFilters.push(<FilterType> {
-                            removable: true,
-                            type:FilterEnums.Search,
-                            label,
-                            prop: this.selectedStringColumn.value,
-                            filterValue:this.searchString.value
-                        });
-                }
-
+                this.isSearchStringValidAndUnique() && this.activeFilters.push(this.createNewFilter());
                 const searchFilters = this.activeFilters.filter(elem => elem.type === FilterEnums.Search);
 
-                return (searchFilters.length === 0) ? data : data.filter((item: any): boolean => {
-                    let foundSearchStringInProperty = false;
-                    searchFilters.forEach((filter: any): void => {
-                        if (filter.prop === this.advancedSearchAllValue) {
-                            this.stringColumns.forEach(elem => {
-                                if (this.getValueByAccessPath(elem, item).toLocaleLowerCase().includes(filter.filterValue.toLocaleLowerCase())) {
-                                    foundSearchStringInProperty = true;
-                                }
-                            });
-                        } else {
-                            if (this.getValueByAccessPath(filter.prop, <%= itemKey %>).toLocaleLowerCase().includes(filter.filterValue.toLocaleLowerCase())) {
-                                foundSearchStringInProperty = true;
-                            }
-                        }
-                    });
+                return searchFilters.length ? this.filterData(data, searchFilters) : data;
+            }
 
-                    return foundSearchStringInProperty;
-                });
+            private isSearchStringValidAndUnique(): boolean {
+                if (!this.searchString.value || this.searchString?.value === '') {
+                    return false;
+                }
+
+                return !this.activeFilters.some(
+                    elem => elem.prop === this.selectedStringColumn.value && elem.filterValue === this.searchString.value);
+            }
+
+            private createNewFilter(): FilterType {
+                return {
+                    removable: true,
+                    type: FilterEnums.Search,
+                    label: `in ${this.getFilterContext()}`,
+                    prop: this.selectedStringColumn.value,
+                    filterValue: this.searchString.value? this.searchString.value : '',
+                };
+            }
+
+            private getFilterContext(): string {
+                return this.selectedStringColumn.value === this.advancedSearchAllValue
+                    ? this.translateService.instant('allTextFields')
+                    : this.translateService.instant(`<%= options.translationPath %>` + this.selectedStringColumn.value + '.preferredName');
+            }
+
+            private filterData(data: Array<Movement>, searchFilters: FilterType[]): Array<Movement> {
+                return data.filter(item => searchFilters.some(filter => this.itemMatchesFilter(item, filter)));
+            }
+
+            private itemMatchesFilter(item: Movement, filter: FilterType): boolean {
+                return (filter.prop === this.advancedSearchAllValue ? this.stringColumns : [filter.prop]).some(
+                    prop => {
+                        if(!prop || !filter.filterValue) {
+                            return false;
+                        }
+
+                    return this.getValueByAccessPath(prop, <%= itemKey %>).toLowerCase().includes(filter.filterValue.toLowerCase())
+                    });
             }
         <% } else { %>
             applyStringSearchFilter(query: AbstractLogicalNode): void {
@@ -234,7 +261,7 @@ export class <%= classify(name) %>FilterService {
                         this.translateService.instant(`<%= options.translationPath %>` + this.selectedStringColumn.value + '.preferredName')}`;
                          this.activeFilters.push(<FilterType> {
                             removable: true,
-                            type:FilterEnums.Search,
+                            type: FilterEnums.Search,
                             label,
                             prop: this.selectedStringColumn.value,
                             filterValue:this.searchString.value

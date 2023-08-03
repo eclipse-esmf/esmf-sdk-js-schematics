@@ -26,13 +26,13 @@
         <chip-list (removeFilter)="removeFilter($event)"></chip-list>
     <% } %>
 
-  <mat-card class="data-card" style="margin: 15px 0 10px 0"
+  <mat-card class="data-card"
             *ngFor="let data of dataToShow | slice:(paginator.pageIndex * paginator.pageSize):(paginator.pageIndex * paginator.pageSize + paginator.pageSize)">
-    <div class="data-card-header" style="display:flex; justify-content: space-between; border-top: 5px solid black;">
+    <div class="data-card-header">
       <div class="data-card-content">
         <mat-card-content>
           <div class="data-card-element" *ngFor="let element of <%= camelize(name) %>CardValues">
-            <b>{{ '<%= options.templateHelper.getVersionedAccessPrefix(options) %>element' + '.preferredName' | translate }}</b>: {{ data[element] }}
+            <b>{{ '<%= options.templateHelper.getVersionedAccessPrefix(options) %>' + element + '.preferredName' | translate }}</b>: {{ data[element] }}
           </div>
         </mat-card-content>
       </div>

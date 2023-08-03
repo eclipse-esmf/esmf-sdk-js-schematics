@@ -1,13 +1,20 @@
 /** <%= options.generationDisclaimerText %> **/
 import {Component, EventEmitter, Input, Output, ViewChild} from '@angular/core';
-
-<% if (options.hasFilters) { %>
-    import {<%= classify(name) %>FilterService} from './<%= dasherize(name) %>-filter.service';
-<% } %>
-
 import {SelectionModel} from "@angular/cdk/collections";
 
-<% if (options.hasSearchBar) { %>
+<% if (options.hasFilters || (options.componentType === 'card' && options.addCommandBar)) { %>
+    import {<%= classify(name) %>FilterService
+        <% if (options.componentType === 'card') { %>
+            , SortCard
+        <% } %>
+    } from './<%= dasherize(name) %>-filter.service';
+<% } %>
+
+<% if (options.componentType === 'card') { %>
+    import {<%= classify(name) %>CardValues} from './<%= dasherize(name) %>.component';
+<% } %>
+
+<% if (options.componentType === 'table' && options.hasSearchBar) { %>
     import {Config} from "./<%= dasherize(name) %>.component";
     import {<%= classify(name) %>ConfigMenuComponent} from './<%= dasherize(name) %>-config-menu.component';
 <% } %>
@@ -15,7 +22,7 @@ import {SelectionModel} from "@angular/cdk/collections";
 @Component({
     selector: 'command-bar',
     templateUrl: './<%= dasherize(name) %>-command-bar.component.html',
-    styleUrls: []
+    styleUrls: ['./<%= dasherize(name) %>-command-bar.component.scss']
 })
 export class <%= classify(name) %>CommandBarComponent {
     @Input() isMultipleSelectionEnabled = true;
@@ -28,7 +35,7 @@ export class <%= classify(name) %>CommandBarComponent {
     @Input() searchHint?: string;
     @Input() <%= options.localStorageKeyConfig %>: string = '';
 
-    <% if (options.hasSearchBar) { %>
+    <% if (options.componentType === 'table' && options.hasSearchBar) { %>
         @Input() configs: Array<Config> = [];
         @Input() hasAdvancedSearch: boolean = this.filterService.stringColumns.length > 1;
     <% } %>
@@ -41,13 +48,22 @@ export class <%= classify(name) %>CommandBarComponent {
         @Output() customCommandBarActionEvent = new EventEmitter<any>();
     <% } %>
 
-
-    <% if (options.hasSearchBar) { %>
+    <% if (options.componentType === 'table' && options.hasSearchBar) { %>
         @Output() setConfiguration = new EventEmitter<Array<Config>>();
         @ViewChild(<%= classify(name) %>ConfigMenuComponent) private configurationComponent!: <%= classify(name) %>ConfigMenuComponent;
     <% } %>
 
-    constructor(<% if (options.hasFilters) { %>public filterService: <%= classify(name) %>FilterService<% } %>) {
+    <% if (options.componentType === 'card') { %>
+        @Output() sorting = new EventEmitter<void>();
+
+        <%= camelize(name) %>CardValues = Object.values(<%= classify(name) %>CardValues);
+        protected readonly SortCard = SortCard;
+    <% } %>
+
+    constructor(<% if (options.hasFilters || (options.componentType === 'card' && options.addCommandBar)) { %>public filterService: <%= classify(name) %>FilterService<% } %>) {
+        <% if (options.componentType === 'card') { %>
+            this.filterService.sortedProperty = this.<%= camelize(name) %>CardValues[0];
+        <% } %>
     }
 
     triggerApplyFilters(): void {
@@ -62,7 +78,19 @@ export class <%= classify(name) %>CommandBarComponent {
         this.reloadFilter.emit();
     }
 
-    <% if (options.hasSearchBar) { %>
+    <% if (options.componentType === 'card') { %>
+        setSortingProperty(value: string) {
+            this.filterService.sortedProperty = value;
+            this.sorting.emit();
+        }
+
+        setSortingDir() {
+            this.filterService.sortCard = this.filterService.sortCard === SortCard.ASCENDING ? SortCard.DESCENDING : SortCard.ASCENDING;
+            this.sorting.emit();
+        }
+    <% } %>
+
+    <% if (options.componentType === 'table' && options.hasSearchBar) { %>
         triggerInitOpenedConfigurationDialog(): void {
             this.configurationComponent.keyLocalStorage = this.<%= options.localStorageKeyConfig %>;
             this.configurationComponent.configs.splice(0, this.configurationComponent.configs.length);

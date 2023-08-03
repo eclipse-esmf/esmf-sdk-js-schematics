@@ -15,35 +15,19 @@ import {SchematicContext, Tree} from '@angular-devkit/schematics';
 import {classify, dasherize} from "@angular-devkit/core/src/utils/strings";
 import {Schema} from "../ng-generate/components/shared/schema";
 import {addToDeclarationsArray, addToExportsArray} from "./angular";
+import {TableSchema} from "../ng-generate/components/table/schema";
 
-
-export const COMPONENT_MODULES = (options: any) => [
-    {name: 'MatTableModule', fromLib: '@angular/material/table'},
+const generalComponentsModules = (options: Schema) => [
     {name: 'MatPaginatorModule', fromLib: '@angular/material/paginator'},
-    {name: 'MatSortModule', fromLib: '@angular/material/sort'},
     {name: 'MatButtonModule', fromLib: '@angular/material/button'},
     {name: 'MatMenuModule', fromLib: '@angular/material/menu'},
     {name: 'HttpClientModule', fromLib: '@angular/common/http'},
-    {name: 'ClipboardModule', fromLib: '@angular/cdk/clipboard'},
     {name: 'MatIconModule', fromLib: '@angular/material/icon'},
     {name: 'MatTooltipModule', fromLib: '@angular/material/tooltip'},
-    {name: 'MatListModule', fromLib: '@angular/material/list'},
-    {name: 'DragDropModule', fromLib: '@angular/cdk/drag-drop'},
-    {name: 'NgTemplateOutlet', fromLib: '@angular/common'},
-    {name: 'DatePipe', fromLib: '@angular/common'},
     {name: 'NgIf', fromLib: '@angular/common'},
     {name: 'NgFor', fromLib: '@angular/common'},
     {name: 'NgClass', fromLib: '@angular/common'},
-    {
-        name: 'MatCheckboxModule',
-        fromLib: '@angular/material/checkbox',
-        skip: () => !options.addRowCheckboxes || options.skipImport
-    },
-    {
-        name: 'MatDialogModule',
-        fromLib: '@angular/material/dialog',
-        skip: () => !options.addRowCheckboxes || options.skipImport
-    },
+    {name: 'MatDialogModule', fromLib: '@angular/material/dialog'},
     {
         name: 'MatToolbarModule',
         fromLib: '@angular/material/toolbar',
@@ -54,55 +38,66 @@ export const COMPONENT_MODULES = (options: any) => [
         fromLib: '@angular/material/form-field',
         skip: () => !options.addCommandBar || options.skipImport
     },
-    {name: 'FormsModule', fromLib: '@angular/forms', skip: () => !options.addCommandBar || options.skipImport},
     {
         name: 'MatInputModule',
         fromLib: '@angular/material/input',
         skip: () => !options.addCommandBar || options.skipImport
     },
-    {name: 'ReactiveFormsModule', fromLib: '@angular/forms', skip: () => !options.addCommandBar || options.skipImport},
     {
         name: 'MatChipsModule',
         fromLib: '@angular/material/chips',
         skip: () => !options.addCommandBar || options.skipImport
     },
     {
-        name: 'MatCheckboxModule',
-        fromLib: '@angular/material/checkbox',
+        name: 'ReactiveFormsModule',
+        fromLib: '@angular/forms',
         skip: () => !options.addCommandBar || options.skipImport
     },
     {
         name: 'MatSelectModule',
         fromLib: '@angular/material/select',
         skip: () => !options.addCommandBar || options.skipImport
+    },
+    {
+        name: 'MatOptionModule',
+        fromLib: '@angular/material/core',
+        skip: () => !options.enabledCommandBarFunctions?.includes('addEnumQuickFilters') || options.skipImport
+    },
+    {
+        name: 'MatDatepickerModule',
+        fromLib: '@angular/material/datepicker',
+        skip: () => !options.enabledCommandBarFunctions?.includes('addDateQuickFilters') || options.skipImport
+    }
+];
+
+
+export const tableModules = (options: Schema) => [
+    ...generalComponentsModules(options),
+    {name: 'MatTableModule', fromLib: '@angular/material/table'},
+    {name: 'MatSortModule', fromLib: '@angular/material/sort'},
+    {name: 'ClipboardModule', fromLib: '@angular/cdk/clipboard'},
+    {name: 'MatListModule', fromLib: '@angular/material/list'},
+    {name: 'DragDropModule', fromLib: '@angular/cdk/drag-drop'},
+    {name: 'NgTemplateOutlet', fromLib: '@angular/common'},
+    {name: 'DatePipe', fromLib: '@angular/common'},
+    {
+        name: 'MatCheckboxModule',
+        fromLib: '@angular/material/checkbox',
+        skip: () => !(options as TableSchema).addRowCheckboxes || options.skipImport
     },
     {
         name: 'MatMomentDateModule',
         fromLib: '@angular/material-moment-adapter',
         skip: () => options.templateHelper.getDateProperties(options).length < 1 || options.skipImport
     },
-    {
-        name: 'MatDatepickerModule',
-        fromLib: '@angular/material/datepicker',
-        skip: () => !options.enabledCommandBarFunctions?.includes('addDateQuickFilters') || options.skipImport
-    },
-    {
-        name: 'ReactiveFormsModule',
-        fromLib: '@angular/forms',
-        skip: () => !options.enabledCommandBarFunctions?.includes('addDateQuickFilters') || options.skipImport
-    },
-    {
-        name: 'MatSelectModule',
-        fromLib: '@angular/material/select',
-        skip: () => !options.enabledCommandBarFunctions?.includes('addEnumQuickFilters') || options.skipImport
-    },
-    {
-        name: 'MatOptionModule',
-        fromLib: '@angular/material/core',
-        skip: () => !options.enabledCommandBarFunctions?.includes('addEnumQuickFilters') || options.skipImport
-    }
 ];
 
+export const cardModules = (options: Schema) => [
+    ...generalComponentsModules(options),
+    {name: 'MatCardModule', fromLib: '@angular/material/card'},
+    {name: 'NgForOf', fromLib: '@angular/common'},
+    {name: 'SlicePipe', fromLib: '@angular/common'},
+];
 
 export const APP_SHARED_MODULES = [
     {name: 'MatButtonModule', fromLib: '@angular/material/button'},
