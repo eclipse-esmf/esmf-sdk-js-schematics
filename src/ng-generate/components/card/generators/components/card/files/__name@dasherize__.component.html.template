@@ -32,7 +32,7 @@
       <div class="data-card-content">
         <mat-card-content>
           <div class="data-card-element" *ngFor="let element of <%= camelize(name) %>CardValues">
-            <b>{{ '<%= options.templateHelper.getVersionedAccessPrefix(options) %>' + element + '.preferredName' | translate }}</b>: {{ data[element] }}
+            <b>{{ '<%= options.templateHelper.getVersionedAccessPrefix(options) %>' + element + '.preferredName' | translate }}</b>: {{ getElementValue(data, element) }}
           </div>
         </mat-card-content>
       </div>

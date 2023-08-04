@@ -28,7 +28,7 @@ import {DefaultSingleEntity, Property} from "@esmf/aspect-model-loader";
 import {camelize, classify, dasherize} from "@angular-devkit/core/src/utils/strings";
 import {getAllEnumProps} from "../../../../../../utils/aspect-model";
 import {generateChipList, generateCommandBar} from "../../../../shared/generators";
-import {getEnumProperties} from "../../../../shared/utils";
+import {getEnumProperties, getEnumPropertyDefinitions} from "../../../../shared/utils";
 
 let sharedOptions: any = {};
 let allProps: Array<Property> = [];
@@ -63,7 +63,7 @@ function generateHtml(options: any): Rule {
                 aspectModelName: sharedOptions.aspectModel.name,
                 remoteDataHandling: !sharedOptions.enableRemoteDataHandling ? ` dataSource.length` : `totalItems`,
                 tableColumValues: getTableColumValues(),
-                enumPropertyColumns: getEnumPropertyColumns(),
+                enumPropertyDefinitions: getEnumPropertyDefinitions(options, allProps),
                 enumCustomColumns: getEnumCustomColumns(),
                 customRowActions: getCustomRowActions(),
                 enumProperties: getEnumProperties(sharedOptions),
@@ -170,25 +170,6 @@ function getCustomRowActions(): string {
       </td>
     </ng-container>`
         : '';
-}
-
-function getEnumPropertyColumns(): string {
-    return allProps.map((property: Property, index: number, arr: Property[]) => {
-        let complexEnumProperties = ``;
-        if (property.effectiveDataType?.isComplex && property.characteristic instanceof DefaultSingleEntity) {
-            const complexProps = sharedOptions.templateHelper.getComplexProperties(property, sharedOptions);
-            complexProps.properties.map((complexProp: Property, i: number, complexPropsArr: Property[]) => {
-                complexEnumProperties = `${complexEnumProperties}${dasherize(`${complexProps.complexProp}_${complexProp.name}`)
-                    .replace(/-/g, '_')
-                    .toUpperCase()} = '${complexProps.complexProp}.${complexProp.name}',`;
-                return complexProp;
-            });
-        }
-
-        return `${!(property.effectiveDataType?.isComplex && property.characteristic instanceof DefaultSingleEntity)
-            ? `${dasherize(property.name).replace(/-/g, '_').toUpperCase()} = '${sharedOptions.jsonAccessPath}${property.name.trim()}'${index <= arr.length - 1 ? `,` : ``}`
-            : `${complexEnumProperties}`}`;
-    }).join('')
 }
 
 function getEnumCustomColumns(): string {

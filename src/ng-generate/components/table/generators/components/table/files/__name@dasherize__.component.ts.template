@@ -155,7 +155,7 @@ export interface Column {
  */
 export enum <%= classify(name) %>Column {
     <% if (options.addRowCheckboxes) { %>CHECKBOX = 'checkboxes',<% } %>
-    <%= enumPropertyColumns %>
+    <%= enumPropertyDefinitions %>
     <%= enumCustomColumns %>
     <% if (options.customRowActions.length > 0) { %>CUSTOM_ROW_ACTIONS = 'customRowActions',<% } %>
     COLUMNS_MENU = 'columnsMenu'
@@ -576,7 +576,11 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
         downloadCsv(csvArray: any): void {
             this.downloadEvent.emit({error: false, success: false, inProgress: true});
             try {
-                this.<%= (camelize((options.enableRemoteDataHandling && options.customRemoteService ? 'custom' : '') + name)) %>Service.downloadCsv(csvArray);
+                <% if (options.enableRemoteDataHandling && options.customRemoteService) { %>
+                    this.<%= ((options.customRemoteService ? 'custom' : '') + classify(name)) %>Service.downloadCsv(csvArray);
+                <% } else { %>
+                    this.<%= camelize(name) %>Service.downloadCsv(csvArray);
+                <% } %>
                 this.downloadEvent.emit({error: false, success: true, inProgress: false});
             } catch(error: any) {
                 this.downloadEvent.emit({error: true, success: false, inProgress: false});

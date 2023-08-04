@@ -5,7 +5,10 @@ import {
   EventEmitter,
   Input,
   <% if (options.enableRemoteDataHandling || options.hasSearchBar) { %>OnDestroy,<% } %>
+  <% if (options.enableRemoteDataHandling) { %>ChangeDetectorRef,<% } %>
+  <% if (options.changeDetection !== 'Default') { %>ChangeDetectionStrategy,<% } %>
   OnInit,
+  AfterViewInit,
   Output,
   ViewChild,
   ViewEncapsulation,
@@ -28,7 +31,7 @@ import {
 
 <% if (options.hasSearchBar || options.enableRemoteDataHandling) { %>
     import {takeUntil} from "rxjs/operators";
-    import {Subject} from "rxjs";
+    import {<% if (options.enableRemoteDataHandling) { %>catchError, finalize, tap, <% } %>Subject} from 'rxjs';
 <% } %>
 
 <% if (options.addCommandBar) { %>
@@ -40,24 +43,60 @@ import {MatTableDataSource} from "@angular/material/table";
 
 <% if (options.enableRemoteDataHandling) { %>
     import {<% if (options.customRemoteService) { %>Custom<% } %><%= classify(name) %>Service} from './<% if (options.customRemoteService) { %>custom<% } %>-<%= dasherize(name) %>.service';
+    import {<%= options.aspectModelTypeName %>Response} from './<%= dasherize(name) %>.service';
+    import {AbstractArrayNode, AbstractNode, And, Eq, Limit, Query, QueryStringifier, Sort} from 'rollun-ts-rql';
+    import {SortOptions} from "rollun-ts-rql/dist/nodes/Sort";
+
+    /**
+     * Interface of a CustomRQLFilterExtension which will be used to
+     * modify the RQL query before the API service will be called to query
+     * the backend.
+     */
+    export interface CustomRQLFilterExtension {
+      /**
+       * Apply modification to the given RQL query
+       */
+      apply(query: And): void;
+    }
+
+    /**
+     * Interface of a CustomRQLOptionExtension which will be used to
+     * modify the RQL query before the API service will be called to query
+     * the backend.
+     */
+    export interface CustomRQLOptionExtension {
+      /**
+       * Apply modification to the given RQL query
+       */
+      apply(query: Query): void;
+    }
+
+    /**
+     * Interface of ExtendedCsvExporter which will used to export data
+     * from a remote backend.
+     */
+    export interface ExtendedCsvExporter {
+      /**
+       * Exports the all data
+       */
+      export(displayedColumns: string[], rqlQuery: string): void;
+    }
 <% } else { %>
     import {<%= classify(name) %>Service} from './<%= dasherize(name) %>.service';
 <% } %>
 
 export enum <%= classify(name) %>CardValues {
-    MOVING = 'moving',
-    SPEED_LIMIT_WARNING = 'speedLimitWarning',
-    START_DATE = 'startDate',
-    END_DATE = 'endDate',
+    <%= enumPropertyDefinitions %>
 }
 
 @Component({
     selector: '<%= options.selector %>',
     templateUrl: './<%= dasherize(name) %>.component.html',
     styleUrls: ['./<%= dasherize(name) %>.component.<%= options.style %>']
+    <% if (options.changeDetection) { %>, changeDetection: ChangeDetectionStrategy.<%= options.changeDetection %><% } %>
     <% if (options.viewEncapsulation) { %>,encapsulation: ViewEncapsulation.<%= options.viewEncapsulation %><% } else { %>,encapsulation: ViewEncapsulation.None<% } %>
 })
-export class <%= classify(name) %>Component implements OnInit <% if (options.hasSearchBar || options.enableRemoteDataHandling) { %>, OnDestroy<% } %> {
+export class <%= classify(name) %>Component implements OnInit, AfterViewInit<% if (options.hasSearchBar || options.enableRemoteDataHandling) { %>, OnDestroy<% } %> {
     @Input() data: Array<Movement> = [];
 
     <% if (options.hasSearchBar) { %>
@@ -67,7 +106,16 @@ export class <%= classify(name) %>Component implements OnInit <% if (options.has
 
     @Input() minNumberCharacters: number = 2;
     @Input() maxNumberCharacters: number = 50;
-    @Input() maxExportRows: number = 0;
+
+    <% if (options.enableRemoteDataHandling) { %>
+        @Input() maxExportRows: number = 5000;
+        @Input() customFilterExtension: CustomRQLFilterExtension | undefined;
+        @Input() customOptionsExtension: CustomRQLOptionExtension | undefined;
+        @Input() extendedCsvExporter: ExtendedCsvExporter | undefined;
+        @Input() remoteAPI: string = '';
+    <% } else { %>
+        @Input() maxExportRows: number = 0;
+    <% } %>
 
     @Output() cardUpdateStartEvent = new EventEmitter<any>();
     @Output() cardUpdateFinishedEvent = new EventEmitter<any>();
@@ -91,6 +139,10 @@ export class <%= classify(name) %>Component implements OnInit <% if (options.has
     dataToShow: Array<Movement> = [];
     totalItems: number = 0;
 
+    <% if (options.enableRemoteDataHandling) { %>
+        rqlString: string = '';
+    <% } %>
+
     <%= camelize(name) %>CardValues = Object.values(<%= classify(name) %>CardValues);
 
     <% if (options.hasSearchBar || options.enableRemoteDataHandling) { %>
@@ -99,6 +151,9 @@ export class <%= classify(name) %>Component implements OnInit <% if (options.has
 
     <% if (options.enableRemoteDataHandling) { %>
         constructor(private translateService: TranslateService,
+                    <% if (options.addCommandBar) { %>
+                        private filterService: <%= classify(name) %>FilterService,
+                    <% } %>
                     private <% if (options.customRemoteService) { %>custom<% } %><%= classify(name) %>Service: <% if (options.customRemoteService) { %>Custom<% } %><%= classify(name) %>Service) {
             this.currentLanguage = this.translateService.currentLang;
         }
@@ -113,32 +168,57 @@ export class <%= classify(name) %>Component implements OnInit <% if (options.has
      <% } %>
 
     ngOnInit() {
-      this.dataToShow = [...this.data];
-      this.totalItems = this.dataToShow.length;
-      this.dataSource.data = this.dataToShow;
-      this.dataSource.paginator = this.paginator;
-      this.paginator.length = this.dataToShow.length;
-
-      <% if (options.hasSearchBar) { %>
-          this.filterService.searchStringInit(this.initialSearchString, this.regexValidator, this.minNumberCharacters, this.maxNumberCharacters);
-          this.subscribeToSelectedStringColumn();
-      <% } %>
+        <% if (options.hasSearchBar) { %>
+            this.filterService.searchStringInit(this.initialSearchString, this.regexValidator, this.minNumberCharacters, this.maxNumberCharacters);
+            this.subscribeToSelectedStringColumn();
+        <% } %>
     }
 
+    ngAfterViewInit() {
+        <% if (options.defaultSortingCol) { %>
+            this.defaultSorting();
+        <% } %>
+
+        <% if (options.enableRemoteDataHandling) { %>
+            this.requestData();
+        <% } else { %>
+            this.dataToShow = [...this.data];
+            this.totalItems = this.dataToShow.length;
+            this.dataSource.data = this.dataToShow;
+            this.dataSource.paginator = this.paginator;
+            this.paginator.length = this.dataToShow.length;
+        <% } %>
+    }
+
+    <% if (options.defaultSortingCol) { %>
+        private defaultSorting() {
+            this.filterService.sortedProperty = '<%= options.defaultSortingCol %>';
+            <% if (!options.enableRemoteDataHandling) { %>
+                this.sorting();
+            <% } %>
+        }
+    <% } %>
+
     <% if (options.hasFilters) { %>
-        removeFilter(filterData: any): void {
-            this.filterService.removeFilter(filterData);
+        removeFilter(filterData: any) {
+            <% if (options.hasFilters) { %>
+                this.filterService.removeFilter(filterData);
+            <% } %>
+
+            this.paginator.firstPage();
+
             <% if (options.hasSearchBar) { %>
                 this.filterService.searchString.reset();
             <% } %>
+
             this.applyFilters();
         }
     <% } %>
 
 
-  reloadFilter(): void {
-    this.applyFilters();
-  }
+    reloadFilter(): void {
+        this.applyFilters();
+    }
 
     applyFilters(): void {
         <% if (options.hasSearchBar) { %>
@@ -148,67 +228,129 @@ export class <%= classify(name) %>Component implements OnInit <% if (options.has
        <% } %>
 
       this.cardUpdateStartEvent.emit();
-      this.dataToShow = this.applyAllFilters(this.data);
-      this.totalItems = this.dataToShow.length;
-      this.maxExportRows = this.totalItems;
+
+      <% if (options.enableRemoteDataHandling) { %>
+          this.requestData();
+      <% } else { %>
+          this.dataToShow = this.applyAllFilters(this.data);
+          this.totalItems = this.dataToShow.length;
+          this.maxExportRows = this.totalItems;
+      <% } %>
+
       this.cardUpdateFinishedEvent.emit();
     }
 
-    private applyAllFilters(data: any[]): any[] {
-      let dataTemp = [...data];
-
-      <% if (options.isEnumQuickFilter) { %>
-          dataTemp = this.filterService.applyEnumFilter(dataTemp);
-      <% } %>
-
-      <% if (options.hasSearchBar) { %>
-          dataTemp = this.filterService.applyStringSearchFilter(dataTemp);
-      <% } %>
-
-      <% if (options.isDateQuickFilter) { %>
-          dataTemp = this.filterService.applyDateFilter(dataTemp);
-      <% } %>
-
-      return dataTemp;
-    }
-
-    <% if (options.hasSearchBar) { %>
-        private subscribeToSelectedStringColumn() {
-        this.filterService.selectedStringColumn.valueChanges
-            .pipe(takeUntil(this.destroy$))
-            .subscribe(() => {
-                if (this.searchInput) {
-                    this.searchInput.nativeElement.focus();
+    <% if (options.enableRemoteDataHandling) { %>
+        private requestData() {
+            <% if (options.hasSearchBar) { %>
+                if (this.filterService.searchString.errors) {
+                    return;
                 }
-            });
-        }
-    <% } %>
+            <% } %>
 
-    <% if (options.addCommandBar) { %>
-        exportToCsv() {
-            const headersCSV = unparse({
-                fields: this.<%= camelize(name) %>CardValues.map(columnName => {
-                    const translatedHeader = this.translateService.instant(`movement.${columnName}.preferredName`);
-                    return translatedHeader !== `movement.${columnName}.preferredName` ? translatedHeader : columnName;
-                }),
-                data: [],
-            });
+            const query = new And();
 
-            this.downloadCsv(`${headersCSV}${unparse(this.data, {header: false, columns: this.<%= camelize(name) %>CardValues})}`);
-        }
+            <% if (options.isEnumQuickFilter) { %>
+                this.filterService.applyEnumFilter(query);
+            <% } %>
 
-        downloadCsv(csvArray: string): void {
-            this.downloadEvent.emit({error: false, success: false, inProgress: true});
-            try {
-                this.<%= (camelize((options.enableRemoteDataHandling && options.customRemoteService ? 'custom' : '') + name)) %>Service.downloadCsv(csvArray);
-                this.downloadEvent.emit({error: false, success: true, inProgress: false});
-            } catch (error: any) {
-                this.downloadEvent.emit({error: true, success: false, inProgress: false});
+            <% if (options.hasSearchBar) { %>
+                this.filterService.applyStringSearchFilter(query);
+            <% } %>
+
+            <% if (options.isDateQuickFilter) { %>
+                this.filterService.applyDateFilter(query);
+            <% } %>
+
+            if (this.customFilterExtension) this.customFilterExtension.apply(query);
+
+            const queryFilter = new Query({query: query});
+
+            const queryOption = new Query();
+
+            const sortDirection = this.filterService.sortCard === SortCard.ASCENDING ? 1 : -1;
+
+            queryOption.setSort(new Sort(<SortOptions>{[this.filterService.sortedProperty]: sortDirection}));
+            queryOption.setLimit(new Limit(this.paginator.pageIndex * this.paginator.pageSize, this.paginator.pageSize));
+
+            if (this.customOptionsExtension) this.customOptionsExtension.apply(queryOption);
+
+            const additionalCondition = new Eq('local', <% if (options.chooseLanguageForSearch) { %>'<%= options.chooseLanguageForSearch.toUpperCase() %>'<% } else { %>'EN'<% } %>);
+            queryFilter?.queryNode.subNodes.push(additionalCondition);
+
+            const filterRQLQuery = queryFilter ? QueryStringifier.stringify(queryFilter) : '';
+            const optionsRQLQuery = QueryStringifier.stringify(queryOption).replace(/&/g, ',');
+
+            let rqlStringTemp = '';
+            if (filterRQLQuery.length > 0) {
+                rqlStringTemp = `filter=${filterRQLQuery}`;
             }
-        }
+
+            if (optionsRQLQuery.length > 0) {
+                rqlStringTemp = `${rqlStringTemp}${rqlStringTemp !== '' ? '&' : ''}option=${optionsRQLQuery}`;
+            }
+
+            if (!(QueryStringifier as any)['superParseQueryNode']) {
+                (QueryStringifier as any)['superParseQueryNode'] = QueryStringifier['parseQueryNode'];
+            }
+
+            QueryStringifier['parseQueryNode'] = (node?: AbstractNode): string => {
+                let result = (QueryStringifier as any)['superParseQueryNode'](node);
+                if (node instanceof AbstractArrayNode) {
+                    const arrayNode = <AbstractArrayNode>node;
+                    const encodedValues = arrayNode.values.map(value => QueryStringifier['withType'](QueryStringifier['withEncoding'](value)));
+
+                    // ensure outer brackets are not used. valid query ..in(<name>, "value1", "value2", ...)..
+                    result = `${QueryStringifier['withEncoding'](arrayNode.name, {isField: true})}(${QueryStringifier['withEncoding'](arrayNode.field, {
+                        isField: true,
+                    })}, ${encodedValues.join(',')})`;
+                }
+                return result;
+            };
+
+            this.rqlString = rqlStringTemp;
+
+            this.<%= camelize((options.customRemoteService ? 'custom' : '') + '-' + options.name) %>Service.requestData(this.remoteAPI, {query: rqlStringTemp})
+                  .pipe(
+                      tap((movementResponse: <%= classify(options.aspectModel.name) %>Response) => {
+                          this.totalItems =
+                            movementResponse.totalItems !== null && movementResponse.totalItems !== undefined
+                                ? movementResponse.totalItems
+                                : movementResponse.items.length;
+                            this.maxExportRows = this.totalItems;
+                            this.dataToShow = movementResponse.items;
+                            this.dataSource.data = this.dataToShow;
+                            this.dataSource.paginator = this.paginator;
+                            this.paginator.length = this.dataToShow.length;
+                      }),
+                      catchError((error: any) => {
+                          throw new Error(error.message);
+                      }),
+                      finalize(() => this.cardUpdateFinishedEvent.emit())
+                  ).subscribe();
+                }
     <% } %>
 
-    <% if (options.addCommandBar) { %>
+
+    <% if (!options.enableRemoteDataHandling && options.addCommandBar) { %>
+        private applyAllFilters(data: any[]): any[] {
+            let dataTemp = [...data];
+
+            <% if (options.isEnumQuickFilter) { %>
+                dataTemp = this.filterService.applyEnumFilter(dataTemp);
+            <% } %>
+
+             <% if (options.hasSearchBar) { %>
+                 dataTemp = this.filterService.applyStringSearchFilter(dataTemp);
+             <% } %>
+
+             <% if (options.isDateQuickFilter) { %>
+                 dataTemp = this.filterService.applyDateFilter(dataTemp);
+              <% } %>
+
+              return dataTemp;
+        }
+
         sorting() {
             this.data.sort((a, b) => {
                 let aValue = (a as any)[this.filterService.sortedProperty];
@@ -239,11 +381,69 @@ export class <%= classify(name) %>Component implements OnInit <% if (options.has
         }
     <% } %>
 
+    <% if (options.enableRemoteDataHandling && options.addCommandBar) { %>
+        sorting() {
+            this.applyFilters();
+        }
+    <% } %>
+
+    <% if (options.hasSearchBar) { %>
+        private subscribeToSelectedStringColumn() {
+        this.filterService.selectedStringColumn.valueChanges
+            .pipe(takeUntil(this.destroy$))
+            .subscribe(() => {
+                if (this.searchInput) {
+                    this.searchInput.nativeElement.focus();
+                }
+            });
+        }
+    <% } %>
+
+    <% if (options.addCommandBar) { %>
+        exportToCsv() {
+            const headersCSV = unparse({
+                fields: this.<%= camelize(name) %>CardValues.map(columnName => {
+                    const translatedHeader = this.translateService.instant(`movement.${columnName}.preferredName`);
+                    return translatedHeader !== `movement.${columnName}.preferredName` ? translatedHeader : columnName;
+                }),
+                data: [],
+            });
+
+            this.downloadCsv(`${headersCSV}${unparse(this.data, {header: false, columns: this.<%= camelize(name) %>CardValues})}`);
+        }
+
+        downloadCsv(csvArray: string): void {
+            this.downloadEvent.emit({error: false, success: false, inProgress: true});
+            try {
+                <% if (options.enableRemoteDataHandling && options.customRemoteService) { %>
+                    this.<%= ((options.customRemoteService ? 'custom' : '') + classify(name)) %>Service.downloadCsv(csvArray);
+                <% } else { %>
+                    this.<%= camelize(name) %>Service.downloadCsv(csvArray);
+                <% } %>
+                this.downloadEvent.emit({error: false, success: true, inProgress: false});
+            } catch (error: any) {
+                this.downloadEvent.emit({error: true, success: false, inProgress: false});
+            }
+        }
+    <% } %>
+
     detailInformation(data: Movement) {
       this.detail.emit(data);
     }
 
-    <% if (options.hasSearchBar || options.enableRemoteDataHandling) { %>
+    getElementValue(data: any, element: string) {
+        const properties = element.split('.');
+
+        return properties.reduce((currentValue, property) => {
+            if (currentValue && currentValue.hasOwnProperty(property)) {
+                return currentValue[property];
+            } else {
+                return undefined;
+            }
+        }, data);
+    }
+
+    <% if (options.enableRemoteDataHandling || options.hasSearchBar ) { %>
         ngOnDestroy() {
             <% if (options.hasSearchBar) { %>
                 this.filterService.searchString.setValue('');

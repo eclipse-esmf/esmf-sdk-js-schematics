@@ -27,7 +27,7 @@ import {strings} from '@angular-devkit/core';
 import {Property} from "@esmf/aspect-model-loader";
 import {generateChipList, generateCommandBar} from "../../../../shared/generators";
 import {classify} from "@angular-devkit/core/src/utils/strings";
-import {getEnumProperties} from "../../../../shared/utils";
+import {getEnumProperties, getEnumPropertyDefinitions} from "../../../../shared/utils";
 
 let sharedOptions: any = {};
 let allProps: Array<Property> = [];
@@ -59,6 +59,7 @@ function generateCard(options: any): Rule {
                 selectedModelElementUrn: sharedOptions.selectedModelElement.aspectModelUrn,
                 aspectModelElementUrn: sharedOptions.aspectModel.aspectModelUrn,
                 enumProperties: getEnumProperties(sharedOptions),
+                enumPropertyDefinitions: getEnumPropertyDefinitions(options, allProps),
             }),
             move(sharedOptions.path),
         ]),
