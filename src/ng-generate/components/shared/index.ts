@@ -34,7 +34,6 @@ import {ComponentType, Schema, Values} from './schema';
 import ora from 'ora';
 import {
     generateCustomService,
-    generateExportDialog,
     generateFilterService,
     generateGeneralService,
     generateGeneralStyle,
@@ -244,7 +243,6 @@ export function generateGeneralFilesRules(): Array<Rule> {
     return [
         generateSharedModule(options),
         generateTranslationModule(options),
-        generateExportDialog(options),
         generateFilterService(options),
         generateGeneralStyle(options),
         generateTranslationFiles(options),

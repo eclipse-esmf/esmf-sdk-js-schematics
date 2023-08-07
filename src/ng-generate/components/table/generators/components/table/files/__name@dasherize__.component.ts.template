@@ -22,14 +22,18 @@ import {
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort, SortDirection } from '@angular/material/sort';
 import { MatTable } from '@angular/material/table';
+
 <% if (options.hasFilters || options.hasSearchBar) { %>
     import { FilterEnums, <%= options.filterServiceName %>} from './<%= dasherize(name) %>-filter.service'
 <% } %>
+
 import {Clipboard} from '@angular/cdk/clipboard';
-import {unparse} from 'papaparse';
+
 <% if (options.addCommandBar) { %>
-    import {Action, ExportConfirmationDialogComponent} from '<% if (options.enableVersionSupport) { %>../<% } %>../export-confirmation-dialog/export-confirmation-dialog.component';
+    import {unparse} from 'papaparse';
+    import {Action, ExportTableDialogComponent} from '<% if (options.enableVersionSupport) { %>../<% } %>../export-confirmation-dialog/export-table-dialog.component';
 <% } %>
+
 import {MatDialog} from '@angular/material/dialog';
 import {
     <%= classify(options.selectedModelTypeName) %>
@@ -347,10 +351,6 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
         this.applyFilters();
     }
 
-    trackBy(index:number): number {
-        return index;
-    }
-
     rowClicked(row: any, $event: MouseEvent): boolean {
         if (this.highlightSelectedRow) {
             this.checkboxClicked(row);
@@ -521,7 +521,7 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
         openExportConfirmationDialog() {
             const reduce = this.displayedColumns.filter(col => col === 'checkboxes' || col === 'columnsMenu').length;
 
-            const dialogRef = this.dialog.open(ExportConfirmationDialogComponent, {
+            const dialogRef = this.dialog.open(ExportTableDialogComponent, {
                 data: {
                     <% if (options.enableRemoteDataHandling) { %>extendedCsvExporter: this.extendedCsvExporter,<% } %>
                     allColumns: this.columns.length,

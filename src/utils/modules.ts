@@ -115,7 +115,15 @@ export function updateSharedModule(options: Schema) {
             let base = '';
             switch (type) {
                 case 'component':
-                    base = `./components/${name}`;
+                    let pathName =  '';
+
+                    if (name.includes('card')) {
+                        pathName = name.replace('card', 'confirmation')
+                    } else if (name.includes('table')) {
+                        pathName = name.replace('table', 'confirmation')
+                    }
+
+                    base = `./components/${pathName}`;
                     break;
                 case 'directive':
                     base = './directives';
@@ -136,7 +144,13 @@ export function updateSharedModule(options: Schema) {
             await addToExportsArray(options, tree, className, path, options.templateHelper.getSharedModulePath());
         };
 
-        processItem('component', 'export-confirmation-dialog');
+        if (options.componentType === 'table') {
+            processItem('component', 'export-table-dialog');
+        }
+
+        if (options.componentType === 'card') {
+            processItem('component', 'export-card-dialog');
+        }
 
         ['horizontal-overflow', 'resize-column', 'validate-input'].forEach(directive => processItem('directive', directive));
         if (options.templateHelper.hasSearchBar(options)) {

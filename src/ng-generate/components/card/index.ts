@@ -31,6 +31,7 @@ import {
 } from "../shared/index";
 import {ComponentType, Schema} from "../shared/schema";
 import {generateCardComponent} from "./generators/components/card";
+import {generateExportCardDialog} from "./generators/components/export-dialog/index";
 
 export default function (cardSchema: CardSchema): Rule {
     return (tree: Tree, context: SchematicContext) => {
@@ -59,7 +60,7 @@ export function generateCard(cardSchema: Schema): Rule {
 function cardSpecificGeneration(): Array<Rule> {
     return [
         generateCardComponent(options),
-        // generateHighlightDirective(options)
+        generateExportCardDialog(options)
     ]
 }
 

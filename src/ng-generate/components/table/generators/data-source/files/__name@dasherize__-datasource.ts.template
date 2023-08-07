@@ -60,7 +60,10 @@ export class <%= classify(name) %>DataSource extends DataSource<<%= options.aspe
   }
 
   addData(data: Array<<%= options.aspectModelTypeName %>>) {
-    this._data.push(...data);
+    data.forEach(item => {
+      this._data.push(JSON.parse(JSON.stringify(item)));
+    });
+
     this.setDataSubject(
         <% if (!options.enableRemoteDataHandling) { %>
             this.getPagedData(this.sortData(this._data))

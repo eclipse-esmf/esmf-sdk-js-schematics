@@ -26,16 +26,17 @@ import {
 } from '<%= options.typePath %>';
 
 <% if (options.addCommandBar) { %>
+    import {filter} from "rxjs/operators";
     import {<%= options.filterServiceName %>, SortCard} from './<%= dasherize(name) %>-filter.service'
+    import {MatDialog} from '@angular/material/dialog';
+    import {unparse} from "papaparse";
+    import {Action, ExportCardDialogComponent} from '<% if (options.enableVersionSupport) { %>../<% } %>../export-confirmation-dialog/export-card-dialog.component';
+
 <% } %>
 
 <% if (options.hasSearchBar || options.enableRemoteDataHandling) { %>
     import {takeUntil} from "rxjs/operators";
     import {<% if (options.enableRemoteDataHandling) { %>catchError, finalize, tap, <% } %>Subject} from 'rxjs';
-<% } %>
-
-<% if (options.addCommandBar) { %>
-    import {unparse} from "papaparse";
 <% } %>
 
 import {MatPaginator} from "@angular/material/paginator";
@@ -115,6 +116,7 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit<% i
     <% if (options.enableRemoteDataHandling) { %>
         constructor(private translateService: TranslateService,
                     <% if (options.addCommandBar) { %>
+                        public dialog: MatDialog,
                         private filterService: <%= classify(name) %>FilterService,
                     <% } %>
                     private <% if (options.customRemoteService) { %>custom<% } %><%= classify(name) %>Service: <% if (options.customRemoteService) { %>Custom<% } %><%= classify(name) %>Service) {
@@ -122,9 +124,10 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit<% i
         }
     <% } else { %>
         constructor(private translateService: TranslateService,
-                    private <%= camelize(name) %>Service: <%= classify(name) %>Service
+                    private <%= camelize(name) %>Service: <%= classify(name) %>Service,
                     <% if (options.addCommandBar) { %>
-                        , private filterService: <%= classify(name) %>FilterService
+                        public dialog: MatDialog,
+                        private filterService: <%= classify(name) %>FilterService
                     <% } %>) {
             this.currentLanguage = this.translateService.currentLang;
         }
@@ -278,7 +281,32 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit<% i
     <% } %>
 
     <% if (options.addCommandBar) { %>
-        exportToCsv() {
+        openExportConfirmationDialog() {
+            const dialogRef = this.dialog.open(ExportCardDialogComponent, {
+                data: {maxExportRows: this.maxExportRows},
+                maxWidth: 478,
+            }).afterClosed()
+                .pipe(filter(e => !!e))
+                .subscribe((event: { action: Action; exportFirstPage: boolean }) => {
+                    if (event.action === Action.cancel) {
+                        return;
+                    }
+
+                    const exportData = JSON.parse(JSON.stringify(this.data));
+
+                    if(event.exportFirstPage && exportData.length > this.paginator.pageSize) {
+                        exportData.length = this.paginator.pageSize;
+                    }
+
+                    if (!event.exportFirstPage && this.data.length > this.maxExportRows) {
+                        exportData.length = this.maxExportRows;
+                    }
+
+                    this.exportToCsv(exportData);
+            });
+        }
+
+        private exportToCsv(exportData: Array<Movement>) {
             const headersCSV = unparse({
                 fields: this.<%= camelize(name) %>CardValues.map(columnName => {
                     const translatedHeader = this.translateService.instant(`movement.${columnName}.preferredName`);
@@ -287,10 +315,10 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit<% i
                 data: [],
             });
 
-            this.downloadCsv(`${headersCSV}${unparse(this.data, {header: false, columns: this.<%= camelize(name) %>CardValues})}`);
+            this.downloadCsv(`${headersCSV}${unparse(exportData, {header: false, columns: this.<%= camelize(name) %>CardValues})}`);
         }
 
-        downloadCsv(csvArray: string): void {
+        private downloadCsv(csvArray: string) {
             this.downloadEvent.emit({error: false, success: false, inProgress: true});
             try {
                 <% if (options.enableRemoteDataHandling && options.customRemoteService) { %>

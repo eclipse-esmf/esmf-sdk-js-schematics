@@ -17,7 +17,7 @@
         [totalItems]="totalItems"
         (applyFilters)="applyFilters()"
         (reloadFilter)="reloadFilter()"
-        (exportToCsv)="exportToCsv()"
+        (exportToCsv)="openExportConfirmationDialog()"
         (sorting)="sorting()">
       </command-bar>
     <% } %>

@@ -45,7 +45,7 @@
     <div data-test="table-container" class="mat-table-container">
       <table data-test="table" mat-table class="full-width-table" matSortDisableClear="true" matSort (matSortChange)="sortData()"
              [matSortActive]="columnToSort.sortColumnName" [matSortDirection]="columnToSort.sortDirection" [ngClass]="customTableClass"
-             [dataSource]="dataSource" [trackBy]="trackBy" aria-label="Elements" [matSortDisabled]="dragging">
+             [dataSource]="dataSource" aria-label="Elements" [matSortDisabled]="dragging">
 
         <!-- Row shown when there is no matching data that will be provided to the wrapper table. -->
         <tr data-test="no-data-table-row" class="mat-row" *matNoDataRow>

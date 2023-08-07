@@ -37,6 +37,7 @@ import {generateHighlightDirective} from "./generators/directives/highlight/inde
 import {generateTableComponent} from "./generators/components/table/index";
 import {generateDataSource} from "./generators/data-source/index";
 import {TableSchema} from "./schema";
+import {generateExportTableDialog} from "./generators/components/export-dialog/index";
 
 export default function (tableSchema: TableSchema): Rule {
     return (tree: Tree, context: SchematicContext) => {
@@ -69,6 +70,7 @@ function tableSpecificGeneration(): Array<Rule> {
         generateStorageService(options),
         generateColumnMenu(options),
         generateConfigMenu(options),
+        generateExportTableDialog(options),
         generateResizeDirective(options),
         generateHighlightDirective(options)
     ]

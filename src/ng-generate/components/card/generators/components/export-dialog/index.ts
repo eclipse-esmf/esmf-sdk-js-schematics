@@ -25,9 +25,9 @@ import {
 } from '@angular-devkit/schematics';
 import {strings} from '@angular-devkit/core';
 
-export function generateExportDialog(options: any): Rule {
+export function generateExportCardDialog(options: any): Rule {
     return (tree: Tree, _context: SchematicContext) => {
-        const filePath = 'src/app/shared/components/export-confirmation-dialog/export-confirmation-dialog.component'
+        const filePath = 'src/app/shared/components/export-confirmation-dialog/export-card-dialog.component'
         const htmlPath = `${filePath}.html`;
         const scssPath = `${filePath}.scss`;
         const tsPath = `${filePath}.ts`;
@@ -37,12 +37,12 @@ export function generateExportDialog(options: any): Rule {
         }
 
         return mergeWith(
-            apply(url('../shared/generators/components/export-dialog/files'), [
+            apply(url('./generators/components/export-dialog/files'), [
                 applyTemplates({
                     classify: strings.classify,
                     dasherize: strings.dasherize,
                     options: options,
-                    name: 'export-confirmation-dialog',
+                    name: 'export-card-dialog',
                 }),
                 move('src/app/shared/components/export-confirmation-dialog'),
             ]),

@@ -52,20 +52,34 @@
     "exportData": {
         "title": "Export data",
         "description": {
-            "caseOne": "Export the maximum of {{maxExportRows}} rows from all {{allColumns}} columns.",
-            "caseTwo": {
-                "singular": "Export the maximum of {{maxExportRows}} rows from the displayed {{displayedColumns}} column.",
-                    "plural": "Export the maximum of {{maxExportRows}} rows from the displayed {{displayedColumns}} columns."
-            },
-            "caseThree": {
-                "singular": "Export all data from the selected {{displayedColumns}} column of the current page.",
-                "plural": "Export all data from the selected {{displayedColumns}} columns of the current page."
-            },
-            "caseFour": "Export all data from all {{allColumns}} columns of the current page.",
-            "default": "Export data."
+            <% if (options.componentType == "card") { %>
+                "exportOnlyFirstPage": "Export only the first page of data.",
+            <% } %>
+
+            <% if (options.componentType == "table") { %>
+                "caseOne": "Export the maximum of {{maxExportRows}} rows from all {{allColumns}} columns.",
+                "caseTwo": {
+                    "singular": "Export the maximum of {{maxExportRows}} rows from the displayed {{displayedColumns}} column.",
+                        "plural": "Export the maximum of {{maxExportRows}} rows from the displayed {{displayedColumns}} columns."
+                },
+                "caseThree": {
+                    "singular": "Export all data from the selected {{displayedColumns}} column of the current page.",
+                    "plural": "Export all data from the selected {{displayedColumns}} columns of the current page."
+                },
+                "caseFour": "Export all data from all {{allColumns}} columns of the current page.",
+            <% } %>
+
+            "default": "Export entire datasource."
         },
-        "exportAllPages": "export the maximum of {{maxExportRows}} rows",
-        "exportAllColumns": "export all data from all {{allColumns}} columns"
+
+        <% if (options.componentType == "table") { %>
+            "exportAllPages": "export the maximum of {{maxExportRows}} rows",
+            "exportAllColumns": "export all data from all {{allColumns}} columns"
+        <% } %>
+
+        <% if (options.componentType == "card") { %>
+            "exportFirstPage": "export the first page of data"
+        <% } %>
     }
 
     ,

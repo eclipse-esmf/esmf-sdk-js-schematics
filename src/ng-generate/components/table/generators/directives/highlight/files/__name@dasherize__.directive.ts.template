@@ -79,11 +79,9 @@ export class <%= classify(name) %>Directive implements OnChanges, OnInit {
                     return [];
                 }
 
-                const matchIndexes = [...matches]
+                return [...matches]
                     .filter((a: RegExpMatchArray) => a && a.index !== undefined)
                     .map<HighlightRange>(a => ({from: a.index!, to: a.index! + len}));
-
-                return matchIndexes;
             })
             .filter(match => match.length > 0)
             .flat()
