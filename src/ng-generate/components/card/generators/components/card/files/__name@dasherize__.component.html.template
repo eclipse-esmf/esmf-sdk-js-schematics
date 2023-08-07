@@ -31,9 +31,7 @@
     <div class="data-card-header">
       <div class="data-card-content">
         <mat-card-content>
-          <div class="data-card-element" *ngFor="let element of <%= camelize(name) %>CardValues">
-            <b>{{ '<%= options.templateHelper.getVersionedAccessPrefix(options) %>' + element + '.preferredName' | translate }}</b>: {{ getElementValue(data, element) }}
-          </div>
+            <ng-container *ngTemplateOutlet="cardTemplate; context: getContext(data)"></ng-container>
         </mat-card-content>
       </div>
       <button class="more-button" data-test="card-more-button" mat-icon-button (click)="detailInformation(data)">

@@ -96,6 +96,7 @@ export const cardModules = (options: Schema) => [
     ...generalComponentsModules(options),
     {name: 'MatCardModule', fromLib: '@angular/material/card'},
     {name: 'NgForOf', fromLib: '@angular/common'},
+    {name: 'NgTemplateOutlet', fromLib: '@angular/common'},
     {name: 'SlicePipe', fromLib: '@angular/common'},
 ];
 
@@ -113,10 +114,10 @@ export function updateSharedModule(options: Schema) {
 
         const generatePath = (type: string, name: string, extraPath = '') => {
             let base = '';
+            let pathName =  '';
+
             switch (type) {
                 case 'component':
-                    let pathName =  '';
-
                     if (name.includes('card')) {
                         pathName = name.replace('card', 'confirmation')
                     } else if (name.includes('table')) {

@@ -12,6 +12,8 @@ import {
   Output,
   ViewChild,
   ViewEncapsulation,
+  ContentChild,
+  TemplateRef
 } from '@angular/core';
 import {TranslateService} from "@ngx-translate/core";
 
@@ -31,7 +33,6 @@ import {
     import {MatDialog} from '@angular/material/dialog';
     import {unparse} from "papaparse";
     import {Action, ExportCardDialogComponent} from '<% if (options.enableVersionSupport) { %>../<% } %>../export-confirmation-dialog/export-card-dialog.component';
-
 <% } %>
 
 <% if (options.hasSearchBar || options.enableRemoteDataHandling) { %>
@@ -61,6 +62,8 @@ export enum <%= classify(name) %>CardValues {
     <% if (options.viewEncapsulation) { %>,encapsulation: ViewEncapsulation.<%= options.viewEncapsulation %><% } else { %>,encapsulation: ViewEncapsulation.None<% } %>
 })
 export class <%= classify(name) %>Component implements OnInit, AfterViewInit<% if (options.hasSearchBar || options.enableRemoteDataHandling) { %>, OnDestroy<% } %> {
+    @ContentChild('cardTemplate') cardTemplate!: TemplateRef<any>;
+
     @Input() data: Array<Movement> = [];
 
     <% if (options.hasSearchBar) { %>
@@ -132,6 +135,15 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit<% i
             this.currentLanguage = this.translateService.currentLang;
         }
      <% } %>
+
+    getContext(data: Movement) {
+        return {
+            versionSupportCardValues: this.versionSupportCardValues,
+            $implicit: data,
+            getElementValue: this.getElementValue.bind(this),
+            translateService: this.translateService,
+        };
+    }
 
     ngOnInit() {
         <% if (options.hasSearchBar) { %>
