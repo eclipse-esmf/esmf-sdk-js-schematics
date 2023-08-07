@@ -68,27 +68,13 @@ import {<%= classify(name) %>ColumnMenuComponent} from './<%= dasherize(name) %>
     import {filter, takeUntil} from 'rxjs/operators';
 <% } %>
 
-import {Subject} from 'rxjs';
+import {<% if (options.enableRemoteDataHandling) { %>catchError, finalize, tap, <% } %>Subject} from 'rxjs';
 
 <% if (options.enableRemoteDataHandling) { %>
     import {<% if (options.customRemoteService) { %>Custom<% } %><%= classify(name) %>Service} from './<% if (options.customRemoteService) { %>custom<% } %>-<%= dasherize(name) %>.service';
     import {<%= options.aspectModelTypeName %>Response} from './<%= dasherize(name) %>.service';
-    import {
-        AbstractArrayNode,
-        AbstractLogicalNode,
-        AbstractNode,
-        And,
-        Eq,
-        Ge,
-        In,
-        Le,
-        Like,
-        Limit,
-        Or,
-        Query,
-        QueryStringifier,
-        Sort
-    } from 'rollun-ts-rql';
+    import {AbstractArrayNode, AbstractNode, And, Eq, Limit, Query, QueryStringifier, Sort} from 'rollun-ts-rql';
+    import {SortOptions} from "rollun-ts-rql/dist/nodes/Sort";
 
     /**
      * Interface of a CustomRQLFilterExtension which will be used to
@@ -314,11 +300,11 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
     }
 
     <% if (!options.enableRemoteDataHandling) { %>
-     ngOnChanges(changes: SimpleChanges): void {
-        if (this.table) {
-            this.applyFilters();
-        }
-     }
+       ngOnChanges(changes: SimpleChanges): void {
+          if (this.table) {
+              this.applyFilters();
+          }
+       }
     <% } %>
 
     <% if (options.hasSearchBar || options.enableRemoteDataHandling) { %>
@@ -504,12 +490,81 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
         }
     <% } %>
 
+    <% if (options.hasFilters) { %>
+        removeFilter(filterData: any) {
+            <% if (options.hasFilters) { %>
+                this.filterService.removeFilter(filterData);
+            <% } %>
+
+            this.paginator.firstPage();
+
+            <% if (options.hasSearchBar) { %>
+                this.filterService.searchString.reset();
+            <% } %>
+
+            this.applyFilters();
+        }
+    <% } %>
+
     reloadFilter(): void {
         this.paginator.firstPage();
         this.applyFilters();
     }
 
-    <%= applyFilters %>
+    <% if (options.enableRemoteDataHandling) { %>
+        <%= options.include('requestData.ts.template') %>
+    <% } %>
+
+
+    applyFilters() {
+        <% if (options.hasSearchBar) { %>
+            if (this.filterService.searchString.errors) {
+              return;
+            }
+       <% } %>
+
+      this.tableUpdateStartEvent.emit();
+
+      <% if (options.enableRemoteDataHandling) { %>
+          this.requestData();
+      <% } else { %>
+          const dataToShow = this.applyAllFilters(this.data);
+          this.dataSource.setData(dataToShow);
+          this.filteredData = dataToShow;
+          this.totalItems = this.data.length;
+          this.maxExportRows = this.totalItems;
+          this.checkIfOnValidPage();
+
+          <% if (options.addRowCheckboxes) { %>
+              this.trimSelectionToCurrentPage();
+          <% } %>
+      <% } %>
+
+      this.tableUpdateFinishedEvent.emit();
+    }
+
+    <% if (!options.enableRemoteDataHandling && options.addCommandBar) { %>
+        private applyAllFilters(data: any[]): any[] {
+            let dataTemp = [...data];
+
+            <% if (options.isEnumQuickFilter) { %>
+                dataTemp = this.filterService.applyEnumFilter(dataTemp);
+            <% } %>
+
+             <% if (options.hasSearchBar) { %>
+                 dataTemp = this.filterService.applyStringSearchFilter(dataTemp);
+                this.highlightString = this.filterService.activeFilters
+                    .filter(elem => elem.type === FilterEnums.Search && elem.filterValue !== undefined)
+                    .map(elem => elem.filterValue as string);
+             <% } %>
+
+             <% if (options.isDateQuickFilter) { %>
+                 dataTemp = this.filterService.applyDateFilter(dataTemp);
+              <% } %>
+
+              return dataTemp;
+        }
+    <% } %>
 
     <% if (options.addCommandBar) { %>
         exportToCsv() {
@@ -541,7 +596,7 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
                     }
 
                     <% if (options.enableRemoteDataHandling) { %>
-                        const columns = exportAllColumns ? this.columns.map(c => c.name) : this.displayedColumns;
+                        const columns = event.exportAllColumns ? this.columns.map(c => c.name) : this.displayedColumns;
                         this.extendedCsvExporter?.export(columns, this.rqlString);
                     <% } else { %>
                         this.prepareCsv(this.<%= (camelize((options.enableRemoteDataHandling && options.customRemoteService ? 'custom' : '') + name)) %>Service.flatten(this.data), event.exportAllColumns, event.exportAllPages,this.paginator.pageSize);

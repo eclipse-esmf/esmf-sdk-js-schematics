@@ -29,6 +29,8 @@ import {camelize, classify, dasherize} from "@angular-devkit/core/src/utils/stri
 import {getAllEnumProps} from "../../../../../../utils/aspect-model";
 import {generateChipList, generateCommandBar} from "../../../../shared/generators";
 import {getEnumProperties, getEnumPropertyDefinitions} from "../../../../shared/utils";
+import {templateInclude} from "../../../../shared/include";
+import {Schema} from "../../../../shared/schema";
 
 let sharedOptions: any = {};
 let allProps: Array<Property> = [];
@@ -40,48 +42,51 @@ export function generateTableComponent(options: any): Rule {
         return chain([
             ...(options.hasFilters ? [generateChipList(options)] : []),
             ...(options.addCommandBar ? [generateCommandBar(options, allProps)] : []),
-            generateHtml(options),
+            generateHtml(options, _context),
         ])(tree, _context);
     };
 }
 
 
-function generateHtml(options: any): Rule {
+function generateHtml(options: Schema, _context: SchematicContext): Rule {
     sharedOptions = options;
 
     return mergeWith(
         apply(url('./generators/components/table/files'), [
-            applyTemplates({
-                classify: strings.classify,
-                dasherize: strings.dasherize,
-                camelize: strings.camelize,
-                options: sharedOptions,
-                name: sharedOptions.name,
-                selectedModelElementUrn: sharedOptions.selectedModelElement.aspectModelUrn,
-                aspectModelElementUrn: sharedOptions.aspectModel.aspectModelUrn,
-                isCollectionAspect: sharedOptions.aspectModel.isCollectionAspect,
-                aspectModelName: sharedOptions.aspectModel.name,
-                remoteDataHandling: !sharedOptions.enableRemoteDataHandling ? ` dataSource.length` : `totalItems`,
-                tableColumValues: getTableColumValues(),
-                enumPropertyDefinitions: getEnumPropertyDefinitions(options, allProps),
-                enumCustomColumns: getEnumCustomColumns(),
-                customRowActions: getCustomRowActions(),
-                enumProperties: getEnumProperties(sharedOptions),
-                customRowActionInput: getCustomRowActionInput(),
-                customColumnsInput: getCustomColumnsInput(),
-                byValueFunction: getByValueFunction(),
-                commonImports: commonImports(),
-                sharedCustomRows: getSharedCustomRows(),
-                customColumn: getCustomColumn(),
-                applyFilters: getApplyFilters(),
-                columnTransKeyPrefix: getColumnTransKeyPrefix(),
-                blockHeaderToExport: getBlockHeaderToExport(),
-                resolveDateTimeFormat: resolveDateTimeFormat,
-            }),
+            templateInclude(_context, applyTemplate, options, '../shared/methods'),
             move(sharedOptions.path),
         ]),
         sharedOptions.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error
     );
+}
+
+function applyTemplate(): Rule {
+    return applyTemplates({
+        classify: strings.classify,
+        dasherize: strings.dasherize,
+        camelize: strings.camelize,
+        options: sharedOptions,
+        name: sharedOptions.name,
+        selectedModelElementUrn: sharedOptions.selectedModelElement.aspectModelUrn,
+        aspectModelElementUrn: sharedOptions.aspectModel.aspectModelUrn,
+        isCollectionAspect: sharedOptions.aspectModel.isCollectionAspect,
+        aspectModelName: sharedOptions.aspectModel.name,
+        remoteDataHandling: !sharedOptions.enableRemoteDataHandling ? ` dataSource.length` : `totalItems`,
+        tableColumValues: getTableColumValues(),
+        enumPropertyDefinitions: getEnumPropertyDefinitions(sharedOptions, allProps),
+        enumCustomColumns: getEnumCustomColumns(),
+        customRowActions: getCustomRowActions(),
+        enumProperties: getEnumProperties(sharedOptions),
+        customRowActionInput: getCustomRowActionInput(),
+        customColumnsInput: getCustomColumnsInput(),
+        byValueFunction: getByValueFunction(),
+        commonImports: commonImports(),
+        sharedCustomRows: getSharedCustomRows(),
+        customColumn: getCustomColumn(),
+        columnTransKeyPrefix: getColumnTransKeyPrefix(),
+        blockHeaderToExport: getBlockHeaderToExport(),
+        resolveDateTimeFormat: resolveDateTimeFormat,
+    })
 }
 
 function getTableColumValues(): Array<{ property: Property, index: number, complexPrefix: string }> {
@@ -224,147 +229,6 @@ function commonImports(): string {
             private storageService: JSSdkLocalStorageService,
             ${sharedOptions.hasFilters ? `public filterService: ${sharedOptions.filterServiceName},` : ''}
             ${sharedOptions.isDateQuickFilter ? 'private dateAdapter: DateAdapter<any>,@Inject(MAT_DATE_FORMATS) private dateFormats: MatDateFormats,' : ''}`;
-}
-
-function getApplyFilters() {
-    const removeFilterFn = `removeFilter(filterData:any):void {
-                                    ${sharedOptions.hasFilters ? `this.filterService.removeFilter(filterData)` : ''};
-                                    this.paginator.firstPage();
-                                    ${sharedOptions.hasSearchBar ? `this.filterService.searchString.reset();` : ''}
-                                    this.applyFilters();
-                                }`;
-
-    if (sharedOptions.enableRemoteDataHandling) {
-        return `
-                applyFilters(): void {
-                    ${sharedOptions.hasSearchBar ? `
-                        if(this.filterService.searchString.errors) {
-                            return;
-                        }` : ``}
-                    
-                    this.tableUpdateStartEvent.emit();
-                    ${sharedOptions.addRowCheckboxes ? `this.selection.clear();
-                    this.rowSelectionEvent.emit(this.selection.selected);` : ``}
-                    const query = new And();
-                    ${sharedOptions.isEnumQuickFilter ? `this.filterService.applyEnumFilter(query);` : ``}
-                    ${sharedOptions.hasSearchBar ? `this.filterService.applyStringSearchFilter(query);
-                        this.highlightString = this.filterService.activeFilters
-                            .filter(elem => elem.type === FilterEnums.Search && elem.filterValue !== undefined)
-                            .map(elem => elem.filterValue as string);` : ``}
-                    ${sharedOptions.isDateQuickFilter ? `this.filterService.applyDateFilter(query);` : ``}
-
-                    if (this.customFilterExtension) {
-                        this.customFilterExtension.apply(query);
-                    }
-
-                    const queryFilter = new Query({query: query});
-
-                    const queryOption = new Query();
-                    if (this.sort.active) {
-                        queryOption.setSort(
-                            new Sort(<any>{
-                                [this.sort.active]: this.sort.direction === 'asc' ? 1 : -1,
-                            })
-                        );
-                    }
-
-                    queryOption.setLimit(new Limit(this.paginator.pageIndex * this.paginator.pageSize, this.paginator.pageSize));
-
-                    if (this.customOptionsExtension) {
-                        this.customOptionsExtension.apply(queryOption);
-                    }
-
-                    // override function to ensure to create supported RQL
-                    QueryStringifier['withType'] = (value: any) => {
-                        return typeof value === 'string' && value !== 'null()' && value !== '' ? '"' + value + '"' : value;
-                    };
-                    QueryStringifier['encodeRql'] = (value: any) => {
-                        return value;
-                    };
-                    
-                    const additionalCondition = new Eq('local', '${sharedOptions.chooseLanguageForSearch ? sharedOptions.chooseLanguageForSearch.toUpperCase() : 'EN'}');
-                    queryFilter?.queryNode.subNodes.push(additionalCondition);
-
-                    const filterRQLQuery = queryFilter ? QueryStringifier.stringify(queryFilter) : '';
-                    const optionsRQLQuery = QueryStringifier.stringify(queryOption).replace(/&/g, ',');
-
-                    let rqlStringTemp = '';
-                    if(filterRQLQuery.length > 0) {
-                        rqlStringTemp = \`filter=\${filterRQLQuery}\`;
-                    }
-                    if (optionsRQLQuery.length > 0) {
-                        rqlStringTemp = \`\${rqlStringTemp}\${rqlStringTemp !== '' ? '&' : ''}option=\${optionsRQLQuery}\`;
-                    }
-                    if (!(QueryStringifier as any)['superParseQueryNode']) {
-                        (QueryStringifier as any)['superParseQueryNode'] = QueryStringifier['parseQueryNode'];
-                    }
-                    QueryStringifier['parseQueryNode'] = (node?: AbstractNode): string => {
-                        let result = (QueryStringifier as any)['superParseQueryNode'](node);
-                        if (node instanceof AbstractArrayNode) {
-                            const arrayNode = <AbstractArrayNode>node;
-                            const encodedValues = arrayNode.values.map(value => QueryStringifier['withType'](QueryStringifier['withEncoding'](value)));
-
-                            // ensure outer brackets are not used. valid query ..in(<name>, "value1", "value2", ...)..
-                            result = \`\${QueryStringifier['withEncoding'](arrayNode.name, {isField: true})}(\${QueryStringifier['withEncoding'](
-                                 arrayNode.field,
-                                 {isField: true}
-                             )},\${encodedValues.join(',')})\`;
-                        }
-                        return result;
-                    };
-                    
-                    this.rqlString = rqlStringTemp;
-
-                    try{
-                      this.${camelize((sharedOptions.customRemoteService ? 'custom' : '') + '-' + sharedOptions.name)}Service.requestData(this.remoteAPI, {query: rqlStringTemp})
-                        .subscribe({
-                            next: (response: ${classify(sharedOptions.aspectModel.name)}Response): void => {
-                                this.dataSource.setData(response.items);
-                                this.filteredData = response.items;
-                                this.totalItems = this.data.length;
-                                this.maxExportRows = this.totalItems;
-                                this.cd.detectChanges();
-                                this.totalItems = (response.totalItems !== null && response.totalItems !== undefined) ? response.totalItems : response.items.length;
-                                this.tableUpdateFinishedEvent.emit();
-                            }, 
-                          error: err => {
-                            this.tableUpdateFinishedEvent.emit(err);
-                          }
-                        });
-                    } catch (error) {
-                        this.tableUpdateFinishedEvent.emit(error)
-                    }
-                }
-
-                ${removeFilterFn}`;
-    } else {
-        return `
-                applyFilters(): void {
-                ${sharedOptions.hasSearchBar ? `
-                    if(this.filterService.searchString.errors){
-                        return;
-                    }` : ``}
-                    
-                    this.tableUpdateStartEvent.emit();
-                    let dataTemp = [...this.data];
-                    ${sharedOptions.isEnumQuickFilter ? `dataTemp = this.filterService.applyEnumFilter(dataTemp);` : ``}
-                    ${sharedOptions.hasSearchBar ? `dataTemp = this.filterService.applyStringSearchFilter(dataTemp);
-                    this.highlightString = this.filterService.activeFilters
-                    .filter(elem => elem.type === FilterEnums.Search && elem.filterValue !== undefined)
-                    .map(elem => elem.filterValue as string);` : ``}
-                    
-                    ${sharedOptions.isDateQuickFilter ? `dataTemp = this.filterService.applyDateFilter(dataTemp); ` : ``}
-                        this.dataSource.setData(dataTemp);
-                          this.filteredData = dataTemp;
-                          this.totalItems = this.data.length;
-                          this.maxExportRows = this.totalItems;
-                          this.checkIfOnValidPage();
-                          ${sharedOptions.addRowCheckboxes && !sharedOptions.enableRemoteDataHandling ? `this.trimSelectionToCurrentPage();` : ``}
-                          this.tableUpdateFinishedEvent.emit();
-                       }
-                    ${removeFilterFn}
-                 `;
-    }
 }
 
 function getColumnTransKeyPrefix(): string {

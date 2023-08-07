@@ -241,94 +241,7 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit<% i
     }
 
     <% if (options.enableRemoteDataHandling) { %>
-        private requestData() {
-            <% if (options.hasSearchBar) { %>
-                if (this.filterService.searchString.errors) {
-                    return;
-                }
-            <% } %>
-
-            const query = new And();
-
-            <% if (options.isEnumQuickFilter) { %>
-                this.filterService.applyEnumFilter(query);
-            <% } %>
-
-            <% if (options.hasSearchBar) { %>
-                this.filterService.applyStringSearchFilter(query);
-            <% } %>
-
-            <% if (options.isDateQuickFilter) { %>
-                this.filterService.applyDateFilter(query);
-            <% } %>
-
-            if (this.customFilterExtension) this.customFilterExtension.apply(query);
-
-            const queryFilter = new Query({query: query});
-
-            const queryOption = new Query();
-
-            const sortDirection = this.filterService.sortCard === SortCard.ASCENDING ? 1 : -1;
-
-            queryOption.setSort(new Sort(<SortOptions>{[this.filterService.sortedProperty]: sortDirection}));
-            queryOption.setLimit(new Limit(this.paginator.pageIndex * this.paginator.pageSize, this.paginator.pageSize));
-
-            if (this.customOptionsExtension) this.customOptionsExtension.apply(queryOption);
-
-            const additionalCondition = new Eq('local', <% if (options.chooseLanguageForSearch) { %>'<%= options.chooseLanguageForSearch.toUpperCase() %>'<% } else { %>'EN'<% } %>);
-            queryFilter?.queryNode.subNodes.push(additionalCondition);
-
-            const filterRQLQuery = queryFilter ? QueryStringifier.stringify(queryFilter) : '';
-            const optionsRQLQuery = QueryStringifier.stringify(queryOption).replace(/&/g, ',');
-
-            let rqlStringTemp = '';
-            if (filterRQLQuery.length > 0) {
-                rqlStringTemp = `filter=${filterRQLQuery}`;
-            }
-
-            if (optionsRQLQuery.length > 0) {
-                rqlStringTemp = `${rqlStringTemp}${rqlStringTemp !== '' ? '&' : ''}option=${optionsRQLQuery}`;
-            }
-
-            if (!(QueryStringifier as any)['superParseQueryNode']) {
-                (QueryStringifier as any)['superParseQueryNode'] = QueryStringifier['parseQueryNode'];
-            }
-
-            QueryStringifier['parseQueryNode'] = (node?: AbstractNode): string => {
-                let result = (QueryStringifier as any)['superParseQueryNode'](node);
-                if (node instanceof AbstractArrayNode) {
-                    const arrayNode = <AbstractArrayNode>node;
-                    const encodedValues = arrayNode.values.map(value => QueryStringifier['withType'](QueryStringifier['withEncoding'](value)));
-
-                    // ensure outer brackets are not used. valid query ..in(<name>, "value1", "value2", ...)..
-                    result = `${QueryStringifier['withEncoding'](arrayNode.name, {isField: true})}(${QueryStringifier['withEncoding'](arrayNode.field, {
-                        isField: true,
-                    })}, ${encodedValues.join(',')})`;
-                }
-                return result;
-            };
-
-            this.rqlString = rqlStringTemp;
-
-            this.<%= camelize((options.customRemoteService ? 'custom' : '') + '-' + options.name) %>Service.requestData(this.remoteAPI, {query: rqlStringTemp})
-                  .pipe(
-                      tap((movementResponse: <%= classify(options.aspectModel.name) %>Response) => {
-                          this.totalItems =
-                            movementResponse.totalItems !== null && movementResponse.totalItems !== undefined
-                                ? movementResponse.totalItems
-                                : movementResponse.items.length;
-                            this.maxExportRows = this.totalItems;
-                            this.dataToShow = movementResponse.items;
-                            this.dataSource.data = this.dataToShow;
-                            this.dataSource.paginator = this.paginator;
-                            this.paginator.length = this.dataToShow.length;
-                      }),
-                      catchError((error: any) => {
-                          throw new Error(error.message);
-                      }),
-                      finalize(() => this.cardUpdateFinishedEvent.emit())
-                  ).subscribe();
-                }
+        <%= options.include('requestData.ts.template') %>
     <% } %>
 
 
@@ -362,18 +275,20 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit<% i
                 }
 
                 if (Date.parse(aValue)) {
-                  aValue = new Date(aValue);
-                  bValue = new Date(bValue);
+                    aValue = new Date(aValue);
+                    bValue = new Date(bValue);
                 }
 
                  if (this.filterService.sortCard === SortCard.ASCENDING) {
-                 if (aValue < bValue) return -1;
-                  if (aValue > bValue) return 1;
+                     if (aValue < bValue) return -1;
+                         if (aValue > bValue) return 1;
+
                  return 0;
                  } else {
-                    if (aValue < bValue) return 1;
-                    if (aValue > bValue) return -1;
-                    return 0;
+                     if (aValue < bValue) return 1;
+                     if (aValue > bValue) return -1;
+
+                     return 0;
                 }
             });
 

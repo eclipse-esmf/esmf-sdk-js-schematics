@@ -26,8 +26,9 @@ import {
 import {strings} from '@angular-devkit/core';
 import {Property} from "@esmf/aspect-model-loader";
 import {generateChipList, generateCommandBar} from "../../../../shared/generators";
-import {classify} from "@angular-devkit/core/src/utils/strings";
 import {getEnumProperties, getEnumPropertyDefinitions} from "../../../../shared/utils";
+import {Schema} from "../../../../shared/schema";
+import {templateInclude} from "../../../../shared/include";
 
 let sharedOptions: any = {};
 let allProps: Array<Property> = [];
@@ -39,30 +40,34 @@ export function generateCardComponent(options: any): Rule {
         return chain([
             ...(options.hasFilters ? [generateChipList(options)] : []),
             ...(options.addCommandBar ? [generateCommandBar(options, allProps)] : []),
-            generateCard(options),
+            generateCard(options, _context),
         ])(tree, _context);
     };
 }
 
 
-function generateCard(options: any): Rule {
+function generateCard(options: Schema, _context: SchematicContext): Rule {
     sharedOptions = options;
 
     return mergeWith(
         apply(url('./generators/components/card/files'), [
-            applyTemplates({
-                classify: strings.classify,
-                dasherize: strings.dasherize,
-                camelize: strings.camelize,
-                options: sharedOptions,
-                name: sharedOptions.name,
-                selectedModelElementUrn: sharedOptions.selectedModelElement.aspectModelUrn,
-                aspectModelElementUrn: sharedOptions.aspectModel.aspectModelUrn,
-                enumProperties: getEnumProperties(sharedOptions),
-                enumPropertyDefinitions: getEnumPropertyDefinitions(options, allProps),
-            }),
+            templateInclude(_context, applyTemplate, options, '../shared/methods'),
             move(sharedOptions.path),
         ]),
         sharedOptions.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error
     );
+}
+
+function applyTemplate(): Rule {
+    return applyTemplates({
+        classify: strings.classify,
+        dasherize: strings.dasherize,
+        camelize: strings.camelize,
+        options: sharedOptions,
+        name: sharedOptions.name,
+        selectedModelElementUrn: sharedOptions.selectedModelElement.aspectModelUrn,
+        aspectModelElementUrn: sharedOptions.aspectModel.aspectModelUrn,
+        enumProperties: getEnumProperties(sharedOptions),
+        enumPropertyDefinitions: getEnumPropertyDefinitions(sharedOptions, allProps),
+    })
 }
