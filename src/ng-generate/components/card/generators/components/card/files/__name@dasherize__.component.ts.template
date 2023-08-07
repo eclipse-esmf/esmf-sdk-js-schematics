@@ -42,45 +42,8 @@ import {MatPaginator} from "@angular/material/paginator";
 import {MatTableDataSource} from "@angular/material/table";
 
 <% if (options.enableRemoteDataHandling) { %>
-    import {<% if (options.customRemoteService) { %>Custom<% } %><%= classify(name) %>Service} from './<% if (options.customRemoteService) { %>custom<% } %>-<%= dasherize(name) %>.service';
-    import {<%= options.aspectModelTypeName %>Response} from './<%= dasherize(name) %>.service';
-    import {AbstractArrayNode, AbstractNode, And, Eq, Limit, Query, QueryStringifier, Sort} from 'rollun-ts-rql';
-    import {SortOptions} from "rollun-ts-rql/dist/nodes/Sort";
-
-    /**
-     * Interface of a CustomRQLFilterExtension which will be used to
-     * modify the RQL query before the API service will be called to query
-     * the backend.
-     */
-    export interface CustomRQLFilterExtension {
-      /**
-       * Apply modification to the given RQL query
-       */
-      apply(query: And): void;
-    }
-
-    /**
-     * Interface of a CustomRQLOptionExtension which will be used to
-     * modify the RQL query before the API service will be called to query
-     * the backend.
-     */
-    export interface CustomRQLOptionExtension {
-      /**
-       * Apply modification to the given RQL query
-       */
-      apply(query: Query): void;
-    }
-
-    /**
-     * Interface of ExtendedCsvExporter which will used to export data
-     * from a remote backend.
-     */
-    export interface ExtendedCsvExporter {
-      /**
-       * Exports the all data
-       */
-      export(displayedColumns: string[], rqlQuery: string): void;
-    }
+    <%= options.include('/remote-handling/imports.ts.template') %>
+    <%= options.include('/remote-handling/custom-rql-filter-extensions.ts.template') %>
 <% } else { %>
     import {<%= classify(name) %>Service} from './<%= dasherize(name) %>.service';
 <% } %>
@@ -241,7 +204,7 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit<% i
     }
 
     <% if (options.enableRemoteDataHandling) { %>
-        <%= options.include('requestData.ts.template') %>
+        <%= options.include('/remote-handling/requestData.ts.template') %>
     <% } %>
 
 

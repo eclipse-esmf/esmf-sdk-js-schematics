@@ -71,70 +71,17 @@ import {<%= classify(name) %>ColumnMenuComponent} from './<%= dasherize(name) %>
 import {<% if (options.enableRemoteDataHandling) { %>catchError, finalize, tap, <% } %>Subject} from 'rxjs';
 
 <% if (options.enableRemoteDataHandling) { %>
-    import {<% if (options.customRemoteService) { %>Custom<% } %><%= classify(name) %>Service} from './<% if (options.customRemoteService) { %>custom<% } %>-<%= dasherize(name) %>.service';
-    import {<%= options.aspectModelTypeName %>Response} from './<%= dasherize(name) %>.service';
-    import {AbstractArrayNode, AbstractNode, And, Eq, Limit, Query, QueryStringifier, Sort} from 'rollun-ts-rql';
-    import {SortOptions} from "rollun-ts-rql/dist/nodes/Sort";
-
-    /**
-     * Interface of a CustomRQLFilterExtension which will be used to
-     * modify the RQL query before the API service will be called to query
-     * the backend.
-     */
-    export interface CustomRQLFilterExtension {
-      /**
-       * Apply modification to the given RQL query
-       */
-      apply(query: And): void;
-    }
-
-    /**
-     * Interface of a CustomRQLOptionExtension which will be used to
-     * modify the RQL query before the API service will be called to query
-     * the backend.
-     */
-    export interface CustomRQLOptionExtension {
-      /**
-       * Apply modification to the given RQL query
-       */
-      apply(query: Query): void;
-    }
-
-    /**
-     * Interface of ExtendedCsvExporter which will used to export data
-     * from a remote backend.
-     */
-    export interface ExtendedCsvExporter {
-      /**
-       * Exports the all data
-       */
-      export(displayedColumns: string[], rqlQuery: string): void;
-    }
+    <%= options.include('/remote-handling/imports.ts.template') %>
+    <%= options.include('/remote-handling/custom-rql-filter-extensions.ts.template') %>
 <% } else { %>
     import {<%= classify(name) %>Service, <%= classify(aspectModelName) %>Response} from './<%= dasherize(name) %>.service';
 <% } %>
 
 <% if (options.hasSearchBar) { %>
-export interface Config {
-    /** Column name **/
-    name: string;
-    /** Desc of the config **/
-    desc: string;
-    /** State if the column is selected **/
-    selected: boolean;
-    /** Color for the highlighted configuration **/
-    color?: string;
-}
+    <%= options.include('/interfaces/config.ts.template') %>
 <% } %>
 
-export interface Column {
-    /** Column name **/
-    name: string;
-    /** State if the column is selected **/
-    selected: boolean;
-}
-
-
+<%= options.include('/interfaces/column.ts.template') %>
 
 /**
  * Enumeration of all available columns which can be shown/hide in the table.
@@ -512,7 +459,7 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
     }
 
     <% if (options.enableRemoteDataHandling) { %>
-        <%= options.include('requestData.ts.template') %>
+        <%= options.include('/remote-handling/requestData.ts.template') %>
     <% } %>
 
 
