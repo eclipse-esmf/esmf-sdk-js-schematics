@@ -92,14 +92,14 @@ function getBlockEntityInstance(property: Property, lang: string, parentProperty
 }
 
 function getBlockTransCustomColumns(): string {
-    const customColumns = sharedOptions.customColumns.map((cc: string) => `"customColumn.${cc}": "${cc}"`).join(', ');
+    const customColumns = sharedOptions.customColumns?.map((cc: string) => `"customColumn.${cc}": "${cc}"`).join(', ');
 
-    return customColumns.length > 0 ? `${customColumns},` : '';
+    return customColumns?.length > 0 ? `${customColumns},` : '';
 }
 
 function getBlockTransRowActions(): string {
     const customRowActions = sharedOptions.customRowActions
-        .map((cr: string, i: number, arr: string[]) => {
+        ?.map((cr: string, i: number, arr: string[]) => {
             const crReplaced = cr
                 .replace(/\.[^/.]+$/, '')
                 .replace(/\s+/g, '-')
@@ -108,7 +108,7 @@ function getBlockTransRowActions(): string {
         })
         .join(', ');
 
-    return customRowActions.length > 0 ? `${customRowActions},` : '';
+    return customRowActions?.length > 0 ? `${customRowActions},` : '';
 }
 
 function getBlockCustomCommandBarActions(): string {

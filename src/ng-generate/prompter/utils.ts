@@ -15,6 +15,7 @@ import {AspectModelLoader, DefaultEntity, Property} from '@esmf/aspect-model-loa
 import {Tree} from '@angular-devkit/schematics/src/tree/interface';
 import {Subscriber} from 'rxjs';
 import fs from 'fs';
+import util from 'util';
 import {WIZARD_CONFIG_FILE} from './index';
 
 interface PropertyDetail {
@@ -81,21 +82,17 @@ export function handleComplexPropList(property: Property, complexPropList: Array
  * @param {any} config - The configuration to write to the file.
  * @param {boolean} [fromImport=false] - A flag to indicate if the operation is from an import.
  */
-export function writeConfigAndExit(subscriber: Subscriber<Tree>, tree: Tree, config: any, fromImport = false) {
-    fs.writeFile(WIZARD_CONFIG_FILE, JSON.stringify(config), 'utf8', error => {
-        if (error) {
-            console.log('Error during serialization process');
-            throw error;
-        }
+export async function writeConfigAndExit(subscriber: Subscriber<Tree>, tree: Tree, config: any, fromImport = false) {
+    const writeFileAsync = util.promisify(fs.writeFile);
+    await writeFileAsync(WIZARD_CONFIG_FILE, JSON.stringify(config), 'utf8');
 
-        console.log(
-            '\x1b[33m%s\x1b[0m',
-            fromImport
-                ? `The import was successful, the config used for your generation can be found here: ${WIZARD_CONFIG_FILE}`
-                : `New config file was generated based on your choices, it can be found here: ${WIZARD_CONFIG_FILE}`
-        );
+    console.log(
+        '\x1b[33m%s\x1b[0m',
+        fromImport
+            ? `The import was successful, the config used for your generation can be found here: ${WIZARD_CONFIG_FILE}`
+            : `New config file was generated based on your choices, it can be found here: ${WIZARD_CONFIG_FILE}`
+    );
 
-        subscriber.next(tree);
-        subscriber.complete();
-    });
+    subscriber.next(tree);
+    subscriber.complete();
 }

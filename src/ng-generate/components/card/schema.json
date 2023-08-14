@@ -16,7 +16,7 @@
         "name": {
             "type": "string",
             "description": "The name of the Component.",
-            "default": "table"
+            "default": "card"
         },
         "project": {
             "type": "string",

@@ -133,19 +133,21 @@ function initAnswers() {
 async function runPrompts(subscriber: Subscriber<Tree>, tree: Tree, templateHelper: TemplateHelper, options: Schema) {
     try {
         const answerConfigurationFileConfig = await getConfigurationFileConfig(subscriber, tree);
-        const answerAspectModel = await getAspectModelUrnToLoad();
-        aspect = await loadAspectModel(answerAspectModel.aspectModelUrnToLoad, tree);
-        const answerSelectedModelElement = await getSelectedModelElement();
-        const answerComplexPropertyElements = await getComplexPropertyElements(templateHelper);
-        const answerUserSpecificConfig = await getUserSpecificConfigs(tree, templateHelper, options);
+        if (!answerConfigurationFileConfig.importConfigFile) {
+            const answerAspectModel = await getAspectModelUrnToLoad();
+            aspect = await loadAspectModel(answerAspectModel.aspectModelUrnToLoad, tree);
+            const answerSelectedModelElement = await getSelectedModelElement();
+            const answerComplexPropertyElements = await getComplexPropertyElements(templateHelper);
+            const answerUserSpecificConfig = await getUserSpecificConfigs(tree, templateHelper, options);
 
-        combineAnswers(
-            answerConfigurationFileConfig,
-            answerAspectModel,
-            answerSelectedModelElement,
-            answerComplexPropertyElements,
-            answerUserSpecificConfig
-        );
+            combineAnswers(
+                answerConfigurationFileConfig,
+                answerAspectModel,
+                answerSelectedModelElement,
+                answerComplexPropertyElements,
+                answerUserSpecificConfig
+            );
+        }
     } catch (error) {
         console.error('An error occurred:', error);
         subscriber.error(error);
@@ -168,7 +170,11 @@ async function runPrompts(subscriber: Subscriber<Tree>, tree: Tree, templateHelp
  */
 async function getConfigurationFileConfig(subscriber: Subscriber<Tree>, tree: Tree) {
     const answerGeneralConfig = await inquirer.prompt([createOrImport, configFileName, importConfigFile, pathDecision(WIZARD_CONFIG_FILE)]);
-    if (answerGeneralConfig.importConfigFile) importFileConfig(answerGeneralConfig.importConfigFile, subscriber, tree);
+
+    if (answerGeneralConfig.importConfigFile) {
+        importFileConfig(answerGeneralConfig.importConfigFile, subscriber, tree);
+    }
+
     if (answerGeneralConfig.paths) {
         addFileToConfig(answerGeneralConfig.paths, allAnswers);
         await askAnotherFile();
@@ -208,9 +214,9 @@ function addFileToConfig(aspectModel: string, allAnswers: any) {
  *
  * @throws {Error} If an error occurs while loading the config file, an error will be thrown.
  */
-function importFileConfig(configFilePath: string, subscriber: Subscriber<Tree>, tree: Tree) {
+async function importFileConfig(configFilePath: string, subscriber: Subscriber<Tree>, tree: Tree) {
     if (!configFilePath) {
-        console.log('Error loading config file. Try again with a different file ! ');
+        console.log('Error loading config file. Try again with a different file!');
         throw new Error('EndPrompting');
     }
 
@@ -218,7 +224,7 @@ function importFileConfig(configFilePath: string, subscriber: Subscriber<Tree>, 
         const data = fs.readFileSync(configFilePath, 'utf8');
         WIZARD_CONFIG_FILE = path.basename(configFilePath);
         fromImport = true;
-        writeConfigAndExit(subscriber, tree, JSON.parse(data), true);
+        await writeConfigAndExit(subscriber, tree, JSON.parse(data), true);
     } catch (err) {
         console.log('Error loading config file. Try again with a different file!');
         throw new Error('Error loading config file. Try again with a different file!');

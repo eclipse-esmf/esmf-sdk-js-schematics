@@ -15,12 +15,7 @@ import {dasherize} from '@angular-devkit/core/src/utils/strings';
 import {chain, Rule, SchematicContext, Tree} from '@angular-devkit/schematics';
 import {NodePackageInstallTask, RunSchematicTask} from '@angular-devkit/schematics/tasks';
 import {JSONFile} from '@schematics/angular/utility/json-file';
-import {
-    addToAppModule,
-    addToAppSharedModule,
-    addToComponentModule,
-    wrapBuildComponentExecution
-} from '../../../utils/angular';
+import {addToAppModule, addToAppSharedModule, addToComponentModule, wrapBuildComponentExecution} from '../../../utils/angular';
 import {generateTranslationFiles, loadAspectModel, loadRDF, validateUrns} from '../../../utils/aspect-model';
 import {formatGeneratedFiles, loadAndApplyConfigFile} from '../../../utils/file';
 import {
