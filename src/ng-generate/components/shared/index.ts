@@ -15,7 +15,12 @@ import {dasherize} from '@angular-devkit/core/src/utils/strings';
 import {chain, Rule, SchematicContext, Tree} from '@angular-devkit/schematics';
 import {NodePackageInstallTask, RunSchematicTask} from '@angular-devkit/schematics/tasks';
 import {JSONFile} from '@schematics/angular/utility/json-file';
-import {addToAppModule, addToAppSharedModule, addToComponentModule, wrapBuildComponentExecution} from '../../../utils/angular';
+import {
+    addToAppModule,
+    addToAppSharedModule,
+    addToComponentModule,
+    wrapBuildComponentExecution
+} from '../../../utils/angular';
 import {generateTranslationFiles, loadAspectModel, loadRDF, validateUrns} from '../../../utils/aspect-model';
 import {formatGeneratedFiles, loadAndApplyConfigFile} from '../../../utils/file';
 import {
@@ -60,22 +65,12 @@ export let options: Schema;
  */
 export function generateComponent(context: SchematicContext, schema: Schema, componentType: ComponentType) {
     options = schema;
-    options.componentType = componentType;
 
-    const {configFile, skipInstall} = options;
-
-    loadAndApplyConfigFile(configFile, options);
-
-    let prompterTaskId = null;
-    if (!configFile && configFile === '') {
-        options.configFile = WIZARD_CONFIG_FILE;
-        prompterTaskId = context.addTask(new RunSchematicTask(`${componentType}-prompter`, options));
-    }
-
+    const prompterTaskId = context.addTask(new RunSchematicTask(`${componentType}-prompter`, options));
     const generateTypesTaskId = context.addTask(new RunSchematicTask('types', options), prompterTaskId ? [prompterTaskId] : []);
     const tableGenId = context.addTask(new RunSchematicTask(`${componentType}-generation`, options), [generateTypesTaskId]);
 
-    if (!skipInstall) {
+    if (!options.skipInstall) {
         context.addTask(new NodePackageInstallTask(), [tableGenId]);
     }
 }
@@ -84,11 +79,13 @@ export function generateComponent(context: SchematicContext, schema: Schema, com
  * Prepares the options for the schema, applying defaults where necessary,
  * and loading and applying the configuration file.
  * @param {Schema} schema - The options to prepare.
+ * @param {ComponentType} componentType - Component type to generate.
  *
  * @returns {Schema} - The prepared options.
  */
-export function prepareOptions(schema: Schema): Schema {
+export function prepareOptions(schema: Schema, componentType: ComponentType): Schema {
     options = schema;
+    options.componentType = componentType;
 
     options.spinner = ora().start();
     options.templateHelper = new TemplateHelper();

@@ -40,7 +40,7 @@ export default function (cardSchema: CardSchema): Rule {
 }
 
 export function generateCard(cardSchema: Schema): Rule {
-    prepareOptions(cardSchema);
+    prepareOptions(cardSchema, ComponentType.CARD);
 
     return chain([
         loadRdfRule(),

@@ -46,7 +46,7 @@ export default function (tableSchema: TableSchema): Rule {
 }
 
 export function generateTable(tableSchema: TableSchema): Rule {
-    prepareOptions(tableSchema);
+    prepareOptions(tableSchema, ComponentType.TABLE);
 
     return chain([
         loadRdfRule(),
