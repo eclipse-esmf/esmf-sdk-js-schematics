@@ -13,7 +13,7 @@
 
 import {Rule} from '@angular-devkit/schematics';
 import {Tree} from '@angular-devkit/schematics/src/tree/interface';
-import {Aspect, DefaultSingleEntity,} from '@esmf/aspect-model-loader';
+import {Aspect, DefaultSingleEntity} from '@esmf/aspect-model-loader';
 import * as fs from 'fs';
 import path from 'path';
 import inquirer from 'inquirer';
@@ -36,9 +36,9 @@ import {
     requestOverwriteFiles,
     requestRowCheckboxes,
     requestSelectedModelElement,
-} from "./prompts-with-function";
+} from './prompts-with-function';
 
-import {handleComplexPropList, loader, reorderAspectModelUrnToLoad, writeConfigAndExit} from "./utils";
+import {handleComplexPropList, loader, reorderAspectModelUrnToLoad, writeConfigAndExit} from './utils';
 import {
     anotherFile,
     configFileName,
@@ -50,9 +50,9 @@ import {
     requestCustomService,
     requestCustomStyleImports,
     requestEnableRemoteDataHandling,
-    requestSetViewEncapsulation
-} from "./prompts-without-function";
-import {virtualFs} from "@angular-devkit/core";
+    requestSetViewEncapsulation,
+} from './prompts-without-function';
+import {virtualFs} from '@angular-devkit/core';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 inquirer.registerPrompt('fuzzypath', require('inquirer-fuzzy-path'));
@@ -90,16 +90,15 @@ export function generate(subscriber: Subscriber<Tree>, tree: Tree, options: Sche
     generationType = type;
     initAnswers();
 
-    runPrompts(subscriber, tree, new TemplateHelper(), options)
-        .finally(() => {
-            cleanUpOptionsObject(allAnswers);
-            Object.assign(options, allAnswers);
+    runPrompts(subscriber, tree, new TemplateHelper(), options).finally(() => {
+        cleanUpOptionsObject(allAnswers);
+        Object.assign(options, allAnswers);
 
-            if (!fromImport) {
-                WIZARD_CONFIG_FILE = allAnswers.configFile;
-                writeConfigAndExit(subscriber, tree, allAnswers);
-            }
-        });
+        if (!fromImport) {
+            WIZARD_CONFIG_FILE = allAnswers.configFile;
+            writeConfigAndExit(subscriber, tree, allAnswers);
+        }
+    });
 }
 
 /**
@@ -237,10 +236,9 @@ async function askAnotherFile() {
     const anotherFileAnswer = await inquirer.prompt([anotherFile]);
 
     if (anotherFileAnswer[`anotherFile${index}`]) {
-        await inquirer.prompt([pathDecision(WIZARD_CONFIG_FILE, true)])
-            .then(answer => {
-                if (answer.paths) addFileToConfig(answer.paths, allAnswers);
-            });
+        await inquirer.prompt([pathDecision(WIZARD_CONFIG_FILE, true)]).then(answer => {
+            if (answer.paths) addFileToConfig(answer.paths, allAnswers);
+        });
 
         // Recursive call to ask another file
         await askAnotherFile();
@@ -316,19 +314,19 @@ async function getComplexPropertyElements(templateHelper: TemplateHelper): Promi
 
     const properties = templateHelper.getProperties({
         selectedModelElement: loader.findByUrn(allAnswers.selectedModelElementUrn),
-        excludedProperties: []
+        excludedProperties: [],
     });
 
-    const complexPropertyList = await Promise.all(properties
-        .filter(property =>
-            property.effectiveDataType?.isComplex &&
-            property.characteristic instanceof DefaultSingleEntity
-        )
-        .map(async property => {
-            const {complexPropertyList: complexPropList} = await inquirer.prompt([requestComplexPropertyElements(generationType, property)]);
+    const complexPropertyList = await Promise.all(
+        properties
+            .filter(property => property.effectiveDataType?.isComplex && property.characteristic instanceof DefaultSingleEntity)
+            .map(async property => {
+                const {complexPropertyList: complexPropList} = await inquirer.prompt([
+                    requestComplexPropertyElements(generationType, property),
+                ]);
 
-            return handleComplexPropList(property, complexPropList);
-        })
+                return handleComplexPropList(property, complexPropList);
+            })
     );
 
     return {complexProps: complexPropertyList};
@@ -381,9 +379,8 @@ function combineAnswers(...answers: any[]) {
     const assign = Object.assign({}, ...answers);
     Object.keys(assign).forEach(key => {
         allAnswers[key] = assign[key];
-    })
+    });
 }
-
 
 /**
  * Removes all temporary entries e.g. paths<xyz> or anotherFile<xyz> from the answers object

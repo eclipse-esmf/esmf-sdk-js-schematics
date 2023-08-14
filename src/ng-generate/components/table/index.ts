@@ -11,8 +11,8 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-import {chain, Rule, SchematicContext} from "@angular-devkit/schematics";
-import {Tree} from "@angular-devkit/schematics/src/tree/interface";
+import {chain, Rule, SchematicContext} from '@angular-devkit/schematics';
+import {Tree} from '@angular-devkit/schematics/src/tree/interface';
 import {
     addAndUpdateConfigurationFilesRule,
     formatAllFilesRule,
@@ -26,18 +26,18 @@ import {
     prepareOptions,
     setComponentNameRule,
     setCustomActionsAndFiltersRule,
-    setTemplateOptionValuesRule
-} from "../shared";
-import {ComponentType} from "../shared/schema";
-import {generateStorageService} from "./generators/services/storage/index";
-import {generateColumnMenu} from "./generators/components/column-menu/index";
-import {generateConfigMenu} from "./generators/components/config-menu/index";
-import {generateResizeDirective} from "./generators/directives/resize/index";
-import {generateHighlightDirective} from "./generators/directives/highlight/index";
-import {generateTableComponent} from "./generators/components/table/index";
-import {generateDataSource} from "./generators/data-source/index";
-import {TableSchema} from "./schema";
-import {generateExportTableDialog} from "./generators/components/export-dialog/index";
+    setTemplateOptionValuesRule,
+} from '../shared';
+import {ComponentType} from '../shared/schema';
+import {generateStorageService} from './generators/services/storage/index';
+import {generateColumnMenu} from './generators/components/column-menu/index';
+import {generateConfigMenu} from './generators/components/config-menu/index';
+import {generateResizeDirective} from './generators/directives/resize/index';
+import {generateHighlightDirective} from './generators/directives/highlight/index';
+import {generateTableComponent} from './generators/components/table/index';
+import {generateDataSource} from './generators/data-source/index';
+import {TableSchema} from './schema';
+import {generateExportTableDialog} from './generators/components/export-dialog/index';
 
 export default function (tableSchema: TableSchema): Rule {
     return (tree: Tree, context: SchematicContext) => {
@@ -59,7 +59,7 @@ export function generateTable(tableSchema: TableSchema): Rule {
         ...generateGeneralFilesRules(),
         ...tableSpecificGeneration(),
         ...addAndUpdateConfigurationFilesRule(),
-        formatAllFilesRule()
+        formatAllFilesRule(),
     ]);
 }
 
@@ -72,6 +72,6 @@ function tableSpecificGeneration(): Array<Rule> {
         generateConfigMenu(options),
         generateExportTableDialog(options),
         generateResizeDirective(options),
-        generateHighlightDirective(options)
-    ]
+        generateHighlightDirective(options),
+    ];
 }

@@ -11,9 +11,9 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-import {CardSchema} from "./schema";
-import {chain, Rule, SchematicContext} from "@angular-devkit/schematics";
-import {Tree} from "@angular-devkit/schematics/src/tree/interface";
+import {CardSchema} from './schema';
+import {chain, Rule, SchematicContext} from '@angular-devkit/schematics';
+import {Tree} from '@angular-devkit/schematics/src/tree/interface';
 import {
     addAndUpdateConfigurationFilesRule,
     formatAllFilesRule,
@@ -27,11 +27,11 @@ import {
     prepareOptions,
     setComponentNameRule,
     setCustomActionsAndFiltersRule,
-    setTemplateOptionValuesRule
-} from "../shared/index";
-import {ComponentType, Schema} from "../shared/schema";
-import {generateCardComponent} from "./generators/components/card";
-import {generateExportCardDialog} from "./generators/components/export-dialog/index";
+    setTemplateOptionValuesRule,
+} from '../shared/index';
+import {ComponentType, Schema} from '../shared/schema';
+import {generateCardComponent} from './generators/components/card';
+import {generateExportCardDialog} from './generators/components/export-dialog/index';
 
 export default function (cardSchema: CardSchema): Rule {
     return (tree: Tree, context: SchematicContext) => {
@@ -53,14 +53,10 @@ export function generateCard(cardSchema: Schema): Rule {
         ...generateGeneralFilesRules(),
         ...cardSpecificGeneration(),
         ...addAndUpdateConfigurationFilesRule(),
-        formatAllFilesRule()
+        formatAllFilesRule(),
     ]);
 }
 
 function cardSpecificGeneration(): Array<Rule> {
-    return [
-        generateCardComponent(options),
-        generateExportCardDialog(options)
-    ]
+    return [generateCardComponent(options), generateExportCardDialog(options)];
 }
-

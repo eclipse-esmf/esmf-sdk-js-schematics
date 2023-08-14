@@ -11,23 +11,12 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-import {
-    apply,
-    applyTemplates,
-    MergeStrategy,
-    mergeWith,
-    move,
-    noop,
-    Rule,
-    SchematicContext,
-    Tree,
-    url
-} from '@angular-devkit/schematics';
+import {apply, applyTemplates, MergeStrategy, mergeWith, move, noop, Rule, SchematicContext, Tree, url} from '@angular-devkit/schematics';
 import {strings} from '@angular-devkit/core';
 
 export function generateExportTableDialog(options: any): Rule {
     return (tree: Tree, _context: SchematicContext) => {
-        const filePath = 'src/app/shared/components/export-confirmation-dialog/export-table-dialog.component'
+        const filePath = 'src/app/shared/components/export-confirmation-dialog/export-table-dialog.component';
         const htmlPath = `${filePath}.html`;
         const scssPath = `${filePath}.scss`;
         const tsPath = `${filePath}.ts`;

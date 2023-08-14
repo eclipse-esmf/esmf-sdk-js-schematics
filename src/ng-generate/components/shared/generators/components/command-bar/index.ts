@@ -11,20 +11,10 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-import {
-    apply,
-    applyTemplates,
-    MergeStrategy,
-    mergeWith,
-    move,
-    Rule,
-    SchematicContext,
-    Tree,
-    url
-} from '@angular-devkit/schematics';
+import {apply, applyTemplates, MergeStrategy, mergeWith, move, Rule, SchematicContext, Tree, url} from '@angular-devkit/schematics';
 import {strings} from '@angular-devkit/core';
-import {DefaultSingleEntity, Property} from "@esmf/aspect-model-loader";
-import {classify} from "@angular-devkit/core/src/utils/strings";
+import {DefaultSingleEntity, Property} from '@esmf/aspect-model-loader';
+import {classify} from '@angular-devkit/core/src/utils/strings';
 
 type PropValue = {
     propertyValue: string;
@@ -55,7 +45,10 @@ export function generateCommandBar(options: any, allProps: Array<Property>): Rul
 }
 
 function getPropertiesToCreateFilters(options: any, allProps: Array<Property>): PropValue[] {
-    if (!options.templateHelper.isAddEnumQuickFilters(options.enabledCommandBarFunctions) && !options.templateHelper.isAddDateQuickFilters(options.enabledCommandBarFunctions)) {
+    if (
+        !options.templateHelper.isAddEnumQuickFilters(options.enabledCommandBarFunctions) &&
+        !options.templateHelper.isAddDateQuickFilters(options.enabledCommandBarFunctions)
+    ) {
         return [];
     }
 

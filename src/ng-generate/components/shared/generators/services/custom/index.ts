@@ -11,24 +11,13 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-import {
-    apply,
-    applyTemplates,
-    MergeStrategy,
-    mergeWith,
-    move,
-    noop,
-    Rule,
-    SchematicContext,
-    Tree,
-    url
-} from '@angular-devkit/schematics';
-import {strings} from "@angular-devkit/core";
-import {dasherize} from "@angular-devkit/core/src/utils/strings";
+import {apply, applyTemplates, MergeStrategy, mergeWith, move, noop, Rule, SchematicContext, Tree, url} from '@angular-devkit/schematics';
+import {strings} from '@angular-devkit/core';
+import {dasherize} from '@angular-devkit/core/src/utils/strings';
 
 export function generateCustomService(options: any): Rule {
     return (tree: Tree, _context: SchematicContext) => {
-        const targetPath = `${options.path}/custom-${dasherize(options.name)}.service.ts`
+        const targetPath = `${options.path}/custom-${dasherize(options.name)}.service.ts`;
 
         if (tree.exists(targetPath) || !(options.enableRemoteDataHandling && options.customRemoteService)) {
             return noop();

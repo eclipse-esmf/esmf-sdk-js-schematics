@@ -11,23 +11,15 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-import {
-    apply,
-    applyTemplates,
-    MergeStrategy,
-    mergeWith,
-    move,
-    Rule,
-    SchematicContext,
-    Tree,
-    url
-} from '@angular-devkit/schematics';
+import {apply, applyTemplates, MergeStrategy, mergeWith, move, Rule, SchematicContext, Tree, url} from '@angular-devkit/schematics';
 import {strings} from '@angular-devkit/core';
 
 export function generateGeneralStyle(options: any): Rule {
     return (tree: Tree, _context: SchematicContext) => {
         const globalStylePath = 'src/styles.scss';
-        tree.exists(globalStylePath) ? tree.overwrite(globalStylePath, contentForGlobalStyles()) : tree.create(globalStylePath, contentForGlobalStyles());
+        tree.exists(globalStylePath)
+            ? tree.overwrite(globalStylePath, contentForGlobalStyles())
+            : tree.create(globalStylePath, contentForGlobalStyles());
 
         return mergeWith(
             apply(url('../shared/generators/styles/general/files'), [
@@ -50,5 +42,5 @@ function contentForGlobalStyles() {
             html,
             body {
                 margin: 0;
-            }`
+            }`;
 }

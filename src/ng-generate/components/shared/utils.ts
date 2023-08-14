@@ -11,10 +11,9 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-import {DefaultSingleEntity, Property} from "@esmf/aspect-model-loader";
-import {classify, dasherize} from "@angular-devkit/core/src/utils/strings";
-import {Schema} from "./schema";
-
+import {DefaultSingleEntity, Property} from '@esmf/aspect-model-loader';
+import {classify, dasherize} from '@angular-devkit/core/src/utils/strings';
+import {Schema} from './schema';
 
 /**
  * Gets enum properties from provided options and converts them into a string.
@@ -23,8 +22,10 @@ import {Schema} from "./schema";
  * @returns {string} - A string of comma-separated, classified enum property names.
  */
 export function getEnumProperties(options: Schema): string {
-    return options.templateHelper.getEnumProperties(options)
-        .map((property: Property) => classify(property.characteristic.name)).join(',')
+    return options.templateHelper
+        .getEnumProperties(options)
+        .map((property: Property) => classify(property.characteristic.name))
+        .join(',');
 }
 
 /**
@@ -35,13 +36,15 @@ export function getEnumProperties(options: Schema): string {
  * @return {string} The enum property definitions string.
  */
 export function getEnumPropertyDefinitions(options: Schema, allProps: Array<Property>): string {
-    return allProps.map((property: Property) => {
-        if (property.effectiveDataType?.isComplex && property.characteristic instanceof DefaultSingleEntity) {
-            return generateComplexEnumDef(options, property);
-        } else {
-            return generateSimpleEnumDef(options, property);
-        }
-    }).join('')
+    return allProps
+        .map((property: Property) => {
+            if (property.effectiveDataType?.isComplex && property.characteristic instanceof DefaultSingleEntity) {
+                return generateComplexEnumDef(options, property);
+            } else {
+                return generateSimpleEnumDef(options, property);
+            }
+        })
+        .join('');
 }
 
 /**
@@ -53,10 +56,12 @@ export function getEnumPropertyDefinitions(options: Schema, allProps: Array<Prop
  */
 function generateComplexEnumDef(options: Schema, property: Property): string {
     const complexProps = options.templateHelper.getComplexProperties(property, options);
-    return complexProps.properties.map((complexProp: Property) => {
-        const propKey = generateKey(`${complexProps.complexProp}_${complexProp.name}`);
-        return `${propKey} = '${complexProps.complexProp}.${complexProp.name}',`;
-    }).join('');
+    return complexProps.properties
+        .map((complexProp: Property) => {
+            const propKey = generateKey(`${complexProps.complexProp}_${complexProp.name}`);
+            return `${propKey} = '${complexProps.complexProp}.${complexProp.name}',`;
+        })
+        .join('');
 }
 
 /**

@@ -11,24 +11,13 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-import {
-    apply,
-    applyTemplates,
-    chain,
-    MergeStrategy,
-    mergeWith,
-    move,
-    Rule,
-    SchematicContext,
-    Tree,
-    url
-} from '@angular-devkit/schematics';
+import {apply, applyTemplates, chain, MergeStrategy, mergeWith, move, Rule, SchematicContext, Tree, url} from '@angular-devkit/schematics';
 import {strings} from '@angular-devkit/core';
-import {Property} from "@esmf/aspect-model-loader";
-import {generateChipList, generateCommandBar} from "../../../../shared/generators";
-import {getEnumProperties, getEnumPropertyDefinitions} from "../../../../shared/utils";
-import {Schema} from "../../../../shared/schema";
-import {templateInclude} from "../../../../shared/include";
+import {Property} from '@esmf/aspect-model-loader';
+import {generateChipList, generateCommandBar} from '../../../../shared/generators';
+import {getEnumProperties, getEnumPropertyDefinitions} from '../../../../shared/utils';
+import {Schema} from '../../../../shared/schema';
+import {templateInclude} from '../../../../shared/include';
 
 let sharedOptions: any = {};
 let allProps: Array<Property> = [];
@@ -44,7 +33,6 @@ export function generateCardComponent(options: any): Rule {
         ])(tree, _context);
     };
 }
-
 
 function generateCard(options: Schema, _context: SchematicContext): Rule {
     sharedOptions = options;
@@ -69,5 +57,5 @@ function applyTemplate(): Rule {
         aspectModelElementUrn: sharedOptions.aspectModel.aspectModelUrn,
         enumProperties: getEnumProperties(sharedOptions),
         enumPropertyDefinitions: getEnumPropertyDefinitions(sharedOptions, allProps),
-    })
+    });
 }

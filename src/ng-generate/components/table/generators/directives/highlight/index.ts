@@ -11,24 +11,15 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-import { strings } from "@angular-devkit/core";
-import {
-    apply,
-    applyTemplates,
-    MergeStrategy,
-    mergeWith,
-    move,
-    noop,
-    Rule,
-    url
-} from '@angular-devkit/schematics';
+import {strings} from '@angular-devkit/core';
+import {apply, applyTemplates, MergeStrategy, mergeWith, move, noop, Rule, url} from '@angular-devkit/schematics';
 
 export function generateHighlightDirective(options: any): Rule {
     return () => {
         if (!options.hasSearchBar) {
             return noop;
         }
-        
+
         return mergeWith(
             apply(url('./generators/directives/highlight/files'), [
                 applyTemplates({
@@ -39,7 +30,7 @@ export function generateHighlightDirective(options: any): Rule {
                 }),
                 move('src/app/shared/directives'),
             ]),
-            options.overwrite? MergeStrategy.Overwrite : MergeStrategy.Error
+            options.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error
         );
     };
 }

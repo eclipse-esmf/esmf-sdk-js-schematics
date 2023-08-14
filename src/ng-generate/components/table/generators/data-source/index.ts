@@ -11,19 +11,9 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-import {
-    apply,
-    applyTemplates,
-    MergeStrategy,
-    mergeWith,
-    move,
-    Rule,
-    SchematicContext,
-    Tree,
-    url
-} from '@angular-devkit/schematics';
-import {strings} from "@angular-devkit/core";
-import {DefaultSingleEntity, Property} from "@esmf/aspect-model-loader";
+import {apply, applyTemplates, MergeStrategy, mergeWith, move, Rule, SchematicContext, Tree, url} from '@angular-devkit/schematics';
+import {strings} from '@angular-devkit/core';
+import {DefaultSingleEntity, Property} from '@esmf/aspect-model-loader';
 
 let sharedOptions: any = {};
 
@@ -42,14 +32,16 @@ export function generateDataSource(options: any): Rule {
                 }),
                 move(sharedOptions.path),
             ]),
-            options.overwrite? MergeStrategy.Overwrite : MergeStrategy.Error
+            options.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error
         );
     };
 }
 
 function getSorting(): string {
-   return sharedOptions.templateHelper.getProperties(sharedOptions)
-        .flatMap((prop: Property) => getSortingProperties(prop)). join('');
+    return sharedOptions.templateHelper
+        .getProperties(sharedOptions)
+        .flatMap((prop: Property) => getSortingProperties(prop))
+        .join('');
 }
 
 function getSortingProperties(prop: Property): string[] {
@@ -57,9 +49,10 @@ function getSortingProperties(prop: Property): string[] {
 
     if (prop.effectiveDataType?.isComplex && prop.characteristic instanceof DefaultSingleEntity) {
         const complexProps = sharedOptions.templateHelper.getComplexProperties(prop, sharedOptions);
-        properties.push(...complexProps.properties
-            .filter(isNotExcludedAndScalarOrEnum)
-            .map((complexProp: Property) => getCompareLogicForProperty(complexProp, `${complexProps.complexProp}.${complexProp.name}`))
+        properties.push(
+            ...complexProps.properties
+                .filter(isNotExcludedAndScalarOrEnum)
+                .map((complexProp: Property) => getCompareLogicForProperty(complexProp, `${complexProps.complexProp}.${complexProp.name}`))
         );
     }
 
@@ -71,14 +64,21 @@ function getSortingProperties(prop: Property): string[] {
 }
 
 function isNotExcludedAndScalarOrEnum(prop: Property): boolean {
-    const isExcluded = sharedOptions.excludedProperties.some((excludedProp: any) => excludedProp.propToExcludeAspectModelUrn === prop.aspectModelUrn);
-    const isScalarOrEnumWithEntityValues = (prop.effectiveDataType && prop.effectiveDataType.isScalar) ||
-        sharedOptions.templateHelper.isEnumPropertyWithEntityValues(prop);
+    const isExcluded = sharedOptions.excludedProperties.some(
+        (excludedProp: any) => excludedProp.propToExcludeAspectModelUrn === prop.aspectModelUrn
+    );
+    const isScalarOrEnumWithEntityValues =
+        (prop.effectiveDataType && prop.effectiveDataType.isScalar) || sharedOptions.templateHelper.isEnumPropertyWithEntityValues(prop);
 
     return !isExcluded && isScalarOrEnumWithEntityValues;
 }
 
-function getCompareLogicForProperty(prop: Property, propName: string = !sharedOptions.templateHelper.isAspectSelected(sharedOptions) ? `${sharedOptions.jsonAccessPath}${prop.name}` : prop.name) {
+function getCompareLogicForProperty(
+    prop: Property,
+    propName: string = !sharedOptions.templateHelper.isAspectSelected(sharedOptions)
+        ? `${sharedOptions.jsonAccessPath}${prop.name}`
+        : prop.name
+) {
     const isEnumPropertyWithEntityValues = sharedOptions.templateHelper.isEnumPropertyWithEntityValues(prop);
     const isEnumProperty = sharedOptions.templateHelper.isEnumProperty(prop);
     const isStringProperty = sharedOptions.templateHelper.isStringProperty(prop);

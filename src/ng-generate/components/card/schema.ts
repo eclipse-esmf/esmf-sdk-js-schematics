@@ -11,7 +11,6 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-import {Values} from "../shared/schema";
+import {Values} from '../shared/schema';
 
-export interface CardSchema extends Values {
-}
+export interface CardSchema extends Values {}

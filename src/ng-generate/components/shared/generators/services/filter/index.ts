@@ -11,23 +11,12 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-import {
-    apply,
-    applyTemplates,
-    MergeStrategy,
-    mergeWith,
-    move,
-    noop,
-    Rule,
-    SchematicContext,
-    Tree,
-    url
-} from '@angular-devkit/schematics';
-import {strings} from "@angular-devkit/core";
-import {DefaultSingleEntity, Property} from "@esmf/aspect-model-loader";
-import {classify} from "@angular-devkit/core/src/utils/strings";
-import {getAllEnumProps, PropValue} from "../../../../../../utils/aspect-model";
-import {ComponentType} from "../../../schema";
+import {apply, applyTemplates, MergeStrategy, mergeWith, move, noop, Rule, SchematicContext, Tree, url} from '@angular-devkit/schematics';
+import {strings} from '@angular-devkit/core';
+import {DefaultSingleEntity, Property} from '@esmf/aspect-model-loader';
+import {classify} from '@angular-devkit/core/src/utils/strings';
+import {getAllEnumProps, PropValue} from '../../../../../../utils/aspect-model';
+import {ComponentType} from '../../../schema';
 
 let sharedOptions: any = {};
 
@@ -77,18 +66,24 @@ function getAllStringProps(allProps: Property[]): string[] {
         if (property.effectiveDataType?.isComplex && property.characteristic instanceof DefaultSingleEntity) {
             const complexProps = sharedOptions.templateHelper.getComplexProperties(property, sharedOptions);
             return complexProps.properties
-                .filter((complexProp: Property) =>
-                    sharedOptions.templateHelper.isStringProperty(complexProp) ||
-                    sharedOptions.templateHelper.isMultiStringProperty(complexProp))
+                .filter(
+                    (complexProp: Property) =>
+                        sharedOptions.templateHelper.isStringProperty(complexProp) ||
+                        sharedOptions.templateHelper.isMultiStringProperty(complexProp)
+                )
                 .map((complexProp: Property) => `'${complexProps.complexProp}.${complexProp.name}'`);
         }
-        return (sharedOptions.templateHelper.isStringProperty(property) || sharedOptions.templateHelper.isMultiStringProperty(property)) ? [`'${property.name}'`] : [];
+        return sharedOptions.templateHelper.isStringProperty(property) || sharedOptions.templateHelper.isMultiStringProperty(property)
+            ? [`'${property.name}'`]
+            : [];
     });
 }
 
 function getEnumProperties(): string {
-    return sharedOptions.templateHelper.getEnumProperties(sharedOptions)
-        .map((property: Property) => classify(property.characteristic.name)).join(', ')
+    return sharedOptions.templateHelper
+        .getEnumProperties(sharedOptions)
+        .map((property: Property) => classify(property.characteristic.name))
+        .join(', ');
 }
 
 function getAllDateProps(allProps: Property[]) {
@@ -105,11 +100,13 @@ function getAllDateProps(allProps: Property[]) {
         if (property.effectiveDataType?.isComplex && property.characteristic instanceof DefaultSingleEntity) {
             const complexPropObj = sharedOptions.templateHelper.getComplexProperties(property, sharedOptions);
             return complexPropObj.properties
-                .filter((complexProp: any) =>
-                    sharedOptions.templateHelper.isDateTimeProperty(complexProp) &&
-                    !sharedOptions.excludedProperties.some(
-                        (excludedProperty: any) => excludedProperty.propToExcludeAspectModelUrn === complexProp.aspectModelUrn
-                    ))
+                .filter(
+                    (complexProp: any) =>
+                        sharedOptions.templateHelper.isDateTimeProperty(complexProp) &&
+                        !sharedOptions.excludedProperties.some(
+                            (excludedProperty: any) => excludedProperty.propToExcludeAspectModelUrn === complexProp.aspectModelUrn
+                        )
+                )
                 .map((complexProp: any) => getPropValue(complexProp, complexPropObj));
         } else if (sharedOptions.templateHelper.isDateTimeProperty(property)) {
             return getPropValue(property);
@@ -119,7 +116,7 @@ function getAllDateProps(allProps: Property[]) {
 }
 
 function setStringColumns(allProps: Property[]) {
-    const stringColumnsArr = `stringColumns: string[] = [${getAllStringProps(allProps).join(", ")}];\n`;
+    const stringColumnsArr = `stringColumns: string[] = [${getAllStringProps(allProps).join(', ')}];\n`;
     return `${stringColumnsArr}readonly advancedSearchAllValue = 'allTextFields';\nselectedStringColumn: FormControl<string | null> = new FormControl(this.advancedSearchAllValue);`;
 }
 
@@ -129,8 +126,8 @@ function setEnumQuickFilter(values: PropValue[]) {
         ${value.propertyName}Options: Array<any> = ${
         value.enumWithEntities
             ? `${classify(value.characteristic)}.getValueDescriptionList('${
-                value.complexPropObj ? value.complexPropObj.complexProp + '.' : ''
-            }${value.property.name}')`
+                  value.complexPropObj ? value.complexPropObj.complexProp + '.' : ''
+              }${value.property.name}')`
             : `Object.values(${classify(value.characteristic)})`
     };`;
 
@@ -144,7 +141,8 @@ function setEnumRemoveFilter(values: PropValue[]) {
         }`;
 
     const filterStatements = values.map(template).join('');
-    const filterRemovalStatement = 'this.activeFilters = this.activeFilters.filter(af => af.filterValue !== filter.filterValue && af.label !== filter.label );';
+    const filterRemovalStatement =
+        'this.activeFilters = this.activeFilters.filter(af => af.filterValue !== filter.filterValue && af.label !== filter.label );';
     const endStatement = 'break;';
 
     return `case FilterEnums.Enum: ${filterStatements} ${filterRemovalStatement} ${endStatement}`;
@@ -255,7 +253,7 @@ const getChipLabelEnum = (filterProp: PropValue) => {
     const templateWithoutEntities = `\`${'${selected}'}\``;
 
     return filterProp.enumWithEntities ? templateWithEntities(filterProp.propertyName) : templateWithoutEntities;
-}
+};
 
 function getDateRemote(values: PropValue[]): string {
     const template = (value: any) => `
@@ -327,4 +325,3 @@ function getDateNotRemote(values: PropValue[]): string {
           }
         }`;
 }
-

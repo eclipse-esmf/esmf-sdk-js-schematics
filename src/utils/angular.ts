@@ -23,7 +23,7 @@ import {
 import {MODULE_EXT} from '@schematics/angular/utility/find-module';
 import {Schema} from '../ng-generate/components/shared/schema';
 import {dasherize} from '@angular-devkit/core/src/utils/strings';
-import {InsertChange} from "@schematics/angular/utility/change";
+import {InsertChange} from '@schematics/angular/utility/change';
 
 declare interface ModuleDefinition {
     name: string;
@@ -51,7 +51,6 @@ export function addToComponentModule(skipImport: SkipHandler | boolean, options:
         modules
             .filter(module => !module.skip || !module.skip())
             .forEach(moduleDef => addModuleImportToModule(tree, moduleFileEntry.path, moduleDef.name, moduleDef.fromLib));
-
     };
 }
 
@@ -65,7 +64,7 @@ export function addToAppSharedModule(skipImport: SkipHandler | boolean, modules:
         project: 'esmf',
         name: 'AppSharedModule',
         module: `app-shared${MODULE_EXT}`,
-        path: '/src/app/shared'
+        path: '/src/app/shared',
     };
     return addToModule(appModule, skipImport, modules);
 }
@@ -88,7 +87,13 @@ function addToModule(appModule: any, skipImport: SkipHandler | boolean, modules:
     };
 }
 
-export async function addToDeclarationsArray(options: Schema, tree: Tree, declarationName: string, declarationPath: string, modulePath?: string): Promise<Tree> {
+export async function addToDeclarationsArray(
+    options: Schema,
+    tree: Tree,
+    declarationName: string,
+    declarationPath: string,
+    modulePath?: string
+): Promise<Tree> {
     modulePath = modulePath || (await findModuleFromOptions(tree, options)) || '';
     const sourceFile = parseSourceFile(tree, modulePath);
     const declarationChanges = addDeclarationToModule(sourceFile, modulePath, declarationName, declarationPath);
@@ -104,7 +109,13 @@ export async function addToDeclarationsArray(options: Schema, tree: Tree, declar
     return tree;
 }
 
-export async function addToExportsArray(options: Schema, tree: Tree, exportName: string, exportPath: string, modulePath?: string): Promise<Tree> {
+export async function addToExportsArray(
+    options: Schema,
+    tree: Tree,
+    exportName: string,
+    exportPath: string,
+    modulePath?: string
+): Promise<Tree> {
     modulePath = modulePath || (await findModuleFromOptions(tree, options)) || '';
     const sourceFile = parseSourceFile(tree, modulePath);
     const exportChanges = addExportToModule(sourceFile, modulePath, exportName, exportPath);

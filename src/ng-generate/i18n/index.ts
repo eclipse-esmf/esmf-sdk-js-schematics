@@ -18,7 +18,7 @@ import {NodeDependencyType} from '@schematics/angular/utility/dependencies';
 import {TemplateHelper} from '../../utils/template-helper';
 import {formatGeneratedFiles} from '../../utils/file';
 import ora from 'ora';
-import {generateTranslationModule} from "../components/shared/generators";
+import {generateTranslationModule} from '../components/shared/generators';
 
 /**
  * Updates the project with dependencies, scripts, and modules required for translation functionality.
@@ -36,7 +36,8 @@ export default function (options: Schema): Rule {
         addPackageJsonDependencies(options.skipImport, spinner, dependencies),
         addPackageJsonScripts(scripts),
         generateTranslationModule(options),
-        formatGeneratedFiles({
+        formatGeneratedFiles(
+            {
                 getPath() {
                     return `src/app/shared`;
                 },

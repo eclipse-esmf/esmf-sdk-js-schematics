@@ -11,18 +11,8 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-import {
-    apply,
-    applyTemplates,
-    MergeStrategy,
-    mergeWith,
-    move,
-    Rule,
-    SchematicContext,
-    Tree,
-    url
-} from '@angular-devkit/schematics';
-import {strings} from "@angular-devkit/core";
+import {apply, applyTemplates, MergeStrategy, mergeWith, move, Rule, SchematicContext, Tree, url} from '@angular-devkit/schematics';
+import {strings} from '@angular-devkit/core';
 
 export function generateHorizontalOverflowDirective(options: any): Rule {
     return (tree: Tree, _context: SchematicContext) => {
@@ -36,7 +26,7 @@ export function generateHorizontalOverflowDirective(options: any): Rule {
                 }),
                 move('src/app/shared/directives'),
             ]),
-            options.overwrite? MergeStrategy.Overwrite : MergeStrategy.Error
+            options.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error
         );
     };
 }

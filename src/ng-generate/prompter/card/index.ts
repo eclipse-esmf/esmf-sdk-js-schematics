@@ -11,16 +11,16 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-import {CardSchema} from "../../components/card/schema";
-import {Rule, SchematicContext} from "@angular-devkit/schematics";
-import {Tree} from "@angular-devkit/schematics/src/tree/interface";
-import {Observable, Subscriber} from "rxjs";
-import {generate} from "../index";
+import {CardSchema} from '../../components/card/schema';
+import {Rule, SchematicContext} from '@angular-devkit/schematics';
+import {Tree} from '@angular-devkit/schematics/src/tree/interface';
+import {Observable, Subscriber} from 'rxjs';
+import {generate} from '../index';
 
 export default function (options: CardSchema): Rule {
     return (tree: Tree, context: SchematicContext) => {
         return new Observable<Tree>((subscriber: Subscriber<Tree>) => {
-           generate(subscriber, tree, options, 'card');
+            generate(subscriber, tree, options, 'card');
         });
     };
 }

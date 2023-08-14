@@ -11,17 +11,7 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-import {
-    apply,
-    applyTemplates,
-    MergeStrategy,
-    mergeWith,
-    move,
-    Rule,
-    SchematicContext,
-    Tree,
-    url
-} from '@angular-devkit/schematics';
+import {apply, applyTemplates, MergeStrategy, mergeWith, move, Rule, SchematicContext, Tree, url} from '@angular-devkit/schematics';
 import {strings} from '@angular-devkit/core';
 
 export function generateChipList(options: any): Rule {
@@ -36,7 +26,7 @@ export function generateChipList(options: any): Rule {
                 }),
                 move(options.path),
             ]),
-            options.overwrite? MergeStrategy.Overwrite : MergeStrategy.Error
+            options.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error
         );
     };
 }

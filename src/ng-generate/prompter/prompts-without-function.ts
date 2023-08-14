@@ -11,8 +11,8 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-import {Question} from "inquirer";
-import {ViewEncapsulation} from "@schematics/angular/component/schema";
+import {Question} from 'inquirer';
+import {ViewEncapsulation} from '@schematics/angular/component/schema';
 
 interface FuzzyPathQuestion extends Question {
     excludeFilter?: (nodePath: string) => boolean;
@@ -28,14 +28,14 @@ export const createOrImport = {
     name: 'createOrImport',
     message: 'Do you want to create a new config (No for loading a pre-existing config file)?',
     default: false,
-}
+};
 
 export const configFileName: Question = {
     type: 'input',
     name: 'configFileName',
     message: 'Please enter a name for your config file. It will be automatically appended to (<config-file-name>-wizard.config.json):',
     validate: (input: string) => (input.length === 0 ? 'The config file name cannot be empty. Please provide a valid name.' : true),
-    when: answer => answer.createOrImport
+    when: answer => answer.createOrImport,
 };
 
 export const importConfigFile: FuzzyPathQuestion = {
@@ -44,11 +44,12 @@ export const importConfigFile: FuzzyPathQuestion = {
     excludeFilter: (nodePath: string) => !nodePath.endsWith('wizard.config.json'),
     excludePath: (nodePath: string) => nodePath.startsWith('node_modules'),
     itemType: 'file',
-    message: 'Choose the path to an existing wizard config file which ends with "wizard.config.json". Start writing file name for suggestions:',
+    message:
+        'Choose the path to an existing wizard config file which ends with "wizard.config.json". Start writing file name for suggestions:',
     rootPath: './',
     suggestOnly: false,
     depthLimit: 5,
-    when: answer => !answer.createOrImport
+    when: answer => !answer.createOrImport,
 };
 
 export const anotherFile: Question = {
@@ -61,7 +62,8 @@ export const anotherFile: Question = {
 export const requestCustomColumnNames = {
     type: 'suggest',
     name: 'customColumns',
-    message: "To add custom columns to show individual content. Use keys and adapt column naming in the translation files afterwards. Use ','  to enter multiple (e.g. special-chart, slider):",
+    message:
+        "To add custom columns to show individual content. Use keys and adapt column naming in the translation files afterwards. Use ','  to enter multiple (e.g. special-chart, slider):",
     suggestions: ['chart', 'slider'],
     filter: (input: string) => (input ? Array.from(new Set(input.split(','))) : []),
 };

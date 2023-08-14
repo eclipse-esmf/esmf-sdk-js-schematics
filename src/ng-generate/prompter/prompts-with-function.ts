@@ -11,20 +11,12 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-import {loader} from "./utils";
-import {Tree} from "@angular-devkit/schematics";
-import {
-    Aspect,
-    DefaultAspect,
-    DefaultEntity,
-    DefaultProperty,
-    DefaultSingleEntity,
-    Entity,
-    Property
-} from "@esmf/aspect-model-loader";
-import {TemplateHelper} from "../../utils/template-helper";
-import * as locale from "locale-codes";
-import {Schema} from "../components/shared/schema";
+import {loader} from './utils';
+import {Tree} from '@angular-devkit/schematics';
+import {Aspect, DefaultAspect, DefaultEntity, DefaultProperty, DefaultSingleEntity, Entity, Property} from '@esmf/aspect-model-loader';
+import {TemplateHelper} from '../../utils/template-helper';
+import * as locale from 'locale-codes';
+import {Schema} from '../components/shared/schema';
 
 export const pathDecision: any = (configFile: string, anotherFile: boolean = false) => ({
     type: 'fuzzypath',
@@ -46,7 +38,7 @@ export const pathDecision: any = (configFile: string, anotherFile: boolean = fal
         }
 
         return anotherFile;
-    }
+    },
 });
 
 export const requestAspectModelUrnToLoad = (allAnswers: any) => ({
@@ -70,8 +62,7 @@ export const requestSelectedModelElement = (type: string, aspect: Aspect) => ({
             .sort(),
     ],
     size: 5,
-    when: () => !aspect.isCollectionAspect &&
-        loader.filterElements(entry => entry instanceof DefaultEntity).length >= 1,
+    when: () => !aspect.isCollectionAspect && loader.filterElements(entry => entry instanceof DefaultEntity).length >= 1,
     default: '',
 });
 
@@ -87,10 +78,12 @@ export const requestJSONPathSelectedModelElement = (aspect: Aspect, allAnswers: 
     type: 'list',
     name: 'jsonAccessPath',
     message: `Choose the access path in the JSON payload to show data for ${allAnswers.selectedModelElementUrn}`,
-    choices: () => loader.determineAccessPath((loader.findByUrn(allAnswers.selectedModelElementUrn) as Entity | Aspect).properties[0])
-        .map((pathSegments: Array<string>) => pathSegments.length > 1 ? pathSegments.slice(0, pathSegments.length - 1) : pathSegments)
-        .map((pathSegments: Array<string>) => pathSegments.join('.'))
-        .sort(),
+    choices: () =>
+        loader
+            .determineAccessPath((loader.findByUrn(allAnswers.selectedModelElementUrn) as Entity | Aspect).properties[0])
+            .map((pathSegments: Array<string>) => (pathSegments.length > 1 ? pathSegments.slice(0, pathSegments.length - 1) : pathSegments))
+            .map((pathSegments: Array<string>) => pathSegments.join('.'))
+            .sort(),
     when: () => {
         const isAspect = loader.findByUrn(allAnswers.selectedModelElementUrn) instanceof DefaultAspect;
         const elementsPathSegments: Array<Array<string>> = loader.determineAccessPath(loader.findByUrn(allAnswers.selectedModelElementUrn));
@@ -124,32 +117,34 @@ export const requestExcludedProperties = (type: string, aspect: Aspect, allAnswe
         }
 
         const allProperties: Array<any> = [];
-        templateHelper.getProperties({
-            selectedModelElement: selectedElement,
-            excludedProperties: [],
-            complexProps: allAnswers.complexProps,
-        }).forEach((property: DefaultProperty) => {
-            if (property.effectiveDataType?.isComplex && property.characteristic instanceof DefaultSingleEntity) {
-                const complexProperties = templateHelper.getComplexProperties(property, allAnswers);
-                complexProperties.properties.forEach((complexProp: Property) => {
+        templateHelper
+            .getProperties({
+                selectedModelElement: selectedElement,
+                excludedProperties: [],
+                complexProps: allAnswers.complexProps,
+            })
+            .forEach((property: DefaultProperty) => {
+                if (property.effectiveDataType?.isComplex && property.characteristic instanceof DefaultSingleEntity) {
+                    const complexProperties = templateHelper.getComplexProperties(property, allAnswers);
+                    complexProperties.properties.forEach((complexProp: Property) => {
+                        allProperties.push({
+                            name: `${complexProp.aspectModelUrn}`,
+                            value: {
+                                prop: `${complexProperties.complexProp}`,
+                                propToExcludeAspectModelUrn: `${complexProp.aspectModelUrn}`,
+                            },
+                        });
+                    });
+                } else {
                     allProperties.push({
-                        name: `${complexProp.aspectModelUrn}`,
+                        name: `${property.aspectModelUrn}`,
                         value: {
-                            prop: `${complexProperties.complexProp}`,
-                            propToExcludeAspectModelUrn: `${complexProp.aspectModelUrn}`,
+                            prop: '',
+                            propToExcludeAspectModelUrn: `${property.aspectModelUrn}`,
                         },
                     });
-                });
-            } else {
-                allProperties.push({
-                    name: `${property.aspectModelUrn}`,
-                    value: {
-                        prop: '',
-                        propToExcludeAspectModelUrn: `${property.aspectModelUrn}`,
-                    },
-                });
-            }
-        });
+                }
+            });
         return allProperties;
     },
 });
@@ -303,13 +298,13 @@ export const requestCustomRowActions = (type: string) => ({
     message: `To add custom action buttons for each table row, enter the names of SVG-files or style classes. SVG files will be looked for in ./assets/icons directory. Use ',' to enter multiple (e.g. edit.svg,fa fa-edit):`,
     suggestions: ['edit', 'delete', 'add', 'remove'],
     filter: (input: string) => (input ? Array.from(new Set(input.split(','))) : []),
-    when: () => (type === 'table'),
+    when: () => type === 'table',
 });
 
 export const requestRowCheckboxes = (type: string) => ({
     type: 'confirm',
     name: 'addRowCheckboxes',
     message: 'Do you want to add multi-selection checkboxes for selecting table rows?',
-    when: () => (type === 'table'),
+    when: () => type === 'table',
     default: false,
 });

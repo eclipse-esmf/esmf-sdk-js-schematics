@@ -11,18 +11,10 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-import {
-    applyContentTemplate,
-    FileEntry,
-    Rule,
-    SchematicContext,
-    SchematicsException,
-    Tree,
-    url
-} from "@angular-devkit/schematics";
-import {basename, dirname} from "path";
-import {strings} from "@angular-devkit/core";
-import {Schema} from "./schema";
+import {applyContentTemplate, FileEntry, Rule, SchematicContext, SchematicsException, Tree, url} from '@angular-devkit/schematics';
+import {basename, dirname} from 'path';
+import {strings} from '@angular-devkit/core';
+import {Schema} from './schema';
 
 /**
  * Type definition for the function to include a template.
@@ -48,12 +40,7 @@ interface IncludeContext {
  * @param {string} [includeBaseDirectory] - Base directory for includes.
  * @returns {Rule} Bound template rule.
  */
-export function templateInclude(
-    context: SchematicContext,
-    applyTemplate: Rule,
-    options: Schema,
-    includeBaseDirectory?: string
-): Rule {
+export function templateInclude(context: SchematicContext, applyTemplate: Rule, options: Schema, includeBaseDirectory?: string): Rule {
     const includeContext = createIncludeContext(context, options, includeBaseDirectory);
     (options as any).include = includeContext.include;
 
@@ -69,7 +56,7 @@ export function templateInclude(
  * @returns {IncludeContext} Formed include context.
  */
 function createIncludeContext(context: SchematicContext, data: Schema, includeBaseDirectory?: string): IncludeContext {
-    const includeContext: Partial<IncludeContext> = { context, data };
+    const includeContext: Partial<IncludeContext> = {context, data};
 
     includeContext.includeBaseDirectory = includeBaseDirectory;
     includeContext.include = include.bind(includeContext);
@@ -86,7 +73,7 @@ function createIncludeContext(context: SchematicContext, data: Schema, includeBa
  * @returns {string} Processed template content.
  */
 export function include(this: IncludeContext, filepath: string, templateData: Schema = this.data): string {
-    const { directory, filename } = getDirectoryAndFilename(filepath, this.includeBaseDirectory);
+    const {directory, filename} = getDirectoryAndFilename(filepath, this.includeBaseDirectory);
     const tree = createTreeFromSource(this.context, directory);
 
     validateTreeContainsFile(tree, filename);
@@ -103,10 +90,10 @@ export function include(this: IncludeContext, filepath: string, templateData: Sc
  * @param {string} [includeBaseDirectory] - Base directory for includes.
  * @returns {Object} Directory and filename details.
  */
-function getDirectoryAndFilename(filepath: string, includeBaseDirectory?: string): { directory: string; filename: string } {
+function getDirectoryAndFilename(filepath: string, includeBaseDirectory?: string): {directory: string; filename: string} {
     return {
         directory: includeBaseDirectory || dirname(filepath),
-        filename: includeBaseDirectory ? filepath : basename(filepath)
+        filename: includeBaseDirectory ? filepath : basename(filepath),
     };
 }
 
@@ -145,7 +132,7 @@ function generateContentTemplate(templateData: Schema, file: FileEntry): FileEnt
         classify: strings.classify,
         dasherize: strings.dasherize,
         camelize: strings.camelize,
-        options: {...templateData }
+        options: {...templateData},
     })(file);
 
     if (!result) {

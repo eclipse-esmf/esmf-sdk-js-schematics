@@ -12,6 +12,6 @@
  */
 
 import {DefaultSchema} from '../default-schema';
-import {Values} from "../components/shared/schema";
+import {Values} from '../components/shared/schema';
 
 export interface TypesSchema extends Values {}

@@ -15,19 +15,14 @@ import {dasherize} from '@angular-devkit/core/src/utils/strings';
 import {chain, Rule, SchematicContext, Tree} from '@angular-devkit/schematics';
 import {NodePackageInstallTask, RunSchematicTask} from '@angular-devkit/schematics/tasks';
 import {JSONFile} from '@schematics/angular/utility/json-file';
-import {
-    addToAppModule,
-    addToAppSharedModule,
-    addToComponentModule,
-    wrapBuildComponentExecution,
-} from '../../../utils/angular';
+import {addToAppModule, addToAppSharedModule, addToComponentModule, wrapBuildComponentExecution} from '../../../utils/angular';
 import {generateTranslationFiles, loadAspectModel, loadRDF, validateUrns} from '../../../utils/aspect-model';
 import {formatGeneratedFiles, loadAndApplyConfigFile} from '../../../utils/file';
 import {
     addPackageJsonDependencies,
     DATE_QUICK_FILTER_DEPENDENCIES,
     DEFAULT_DEPENDENCIES,
-    REMOTE_HANDLING_DEPENDENCIES
+    REMOTE_HANDLING_DEPENDENCIES,
 } from '../../../utils/package-json';
 import {TemplateHelper} from '../../../utils/template-helper';
 import {ComponentType, Schema, Values} from './schema';
@@ -41,10 +36,10 @@ import {
     generateSharedModule,
     generateShowDescriptionPipe,
     generateTranslationModule,
-    generateValidateInputDirective
-} from "./generators";
-import {APP_SHARED_MODULES, cardModules, tableModules, updateSharedModule} from "../../../utils/modules";
-import {WIZARD_CONFIG_FILE} from "../../prompter/index";
+    generateValidateInputDirective,
+} from './generators';
+import {APP_SHARED_MODULES, cardModules, tableModules, updateSharedModule} from '../../../utils/modules';
+import {WIZARD_CONFIG_FILE} from '../../prompter/index';
 
 export let options: Schema;
 
@@ -158,13 +153,12 @@ export function setCustomActionsAndFiltersRule(): Rule {
         const propertiesCheck = [
             {properties: options.templateHelper.getStringProperties(options), function: 'addSearchBar'},
             {properties: options.templateHelper.getDateProperties(options), function: 'addDateQuickFilters'},
-            {properties: options.templateHelper.getEnumProperties(options), function: 'addEnumQuickFilters'}
+            {properties: options.templateHelper.getEnumProperties(options), function: 'addEnumQuickFilters'},
         ];
 
-        options.enabledCommandBarFunctions = options.enabledCommandBarFunctions
-            .filter(func =>
-                propertiesCheck.some(item => item.function === func && item.properties.length > 0)
-            );
+        options.enabledCommandBarFunctions = options.enabledCommandBarFunctions.filter(func =>
+            propertiesCheck.some(item => item.function === func && item.properties.length > 0)
+        );
     };
 }
 
@@ -182,7 +176,6 @@ export function setComponentNameRule(componentType: ComponentType): Rule {
         }
     };
 }
-
 
 /**
  * Inserts version into the selector.
@@ -252,7 +245,7 @@ export function generateGeneralFilesRules(): Array<Rule> {
         generateValidateInputDirective(options),
         generateHorizontalOverflowDirective(options),
         generateShowDescriptionPipe(options),
-    ]
+    ];
 }
 
 /**
@@ -261,20 +254,24 @@ export function generateGeneralFilesRules(): Array<Rule> {
  * @returns {Array<Rule>} - The rules for adding and updating configuration files.
  */
 export function addAndUpdateConfigurationFilesRule() {
-    const componentModule = options.componentType === ComponentType.TABLE ? addToComponentModule(options.skipImport, options, tableModules(options)) :
-        addToComponentModule(options.skipImport, options, cardModules(options));
+    const componentModule =
+        options.componentType === ComponentType.TABLE
+            ? addToComponentModule(options.skipImport, options, tableModules(options))
+            : addToComponentModule(options.skipImport, options, cardModules(options));
 
     return [
         addPackageJsonDependencies(options.skipImport, options.spinner, loadDependencies()),
         updateConfigFiles(options),
-        addToAppModule(options.skipImport, [{
-            name: 'BrowserAnimationsModule',
-            fromLib: '@angular/platform-browser/animations'
-        }]),
+        addToAppModule(options.skipImport, [
+            {
+                name: 'BrowserAnimationsModule',
+                fromLib: '@angular/platform-browser/animations',
+            },
+        ]),
         componentModule,
         addToAppSharedModule(false, APP_SHARED_MODULES),
-        updateSharedModule(options)
-    ]
+        updateSharedModule(options),
+    ];
 }
 
 /**
@@ -424,7 +421,7 @@ export function formatAllFilesRule(): Rule {
         'src/app/shared/services',
         `src/app/shared/components/${options.name}`,
         'src/assets/scss',
-        'src/app/shared'
+        'src/app/shared',
     ];
 
     const rules = paths.map(path => formatGeneratedFiles({getPath: () => path}, options));

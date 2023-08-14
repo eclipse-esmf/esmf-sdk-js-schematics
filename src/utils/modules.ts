@@ -12,10 +12,10 @@
  */
 
 import {SchematicContext, Tree} from '@angular-devkit/schematics';
-import {classify, dasherize} from "@angular-devkit/core/src/utils/strings";
-import {Schema} from "../ng-generate/components/shared/schema";
-import {addToDeclarationsArray, addToExportsArray} from "./angular";
-import {TableSchema} from "../ng-generate/components/table/schema";
+import {classify, dasherize} from '@angular-devkit/core/src/utils/strings';
+import {Schema} from '../ng-generate/components/shared/schema';
+import {addToDeclarationsArray, addToExportsArray} from './angular';
+import {TableSchema} from '../ng-generate/components/table/schema';
 
 const generalComponentsModules = (options: Schema) => [
     {name: 'MatPaginatorModule', fromLib: '@angular/material/paginator'},
@@ -31,45 +31,44 @@ const generalComponentsModules = (options: Schema) => [
     {
         name: 'MatToolbarModule',
         fromLib: '@angular/material/toolbar',
-        skip: () => !options.addCommandBar || options.skipImport
+        skip: () => !options.addCommandBar || options.skipImport,
     },
     {
         name: 'MatFormFieldModule',
         fromLib: '@angular/material/form-field',
-        skip: () => !options.addCommandBar || options.skipImport
+        skip: () => !options.addCommandBar || options.skipImport,
     },
     {
         name: 'MatInputModule',
         fromLib: '@angular/material/input',
-        skip: () => !options.addCommandBar || options.skipImport
+        skip: () => !options.addCommandBar || options.skipImport,
     },
     {
         name: 'MatChipsModule',
         fromLib: '@angular/material/chips',
-        skip: () => !options.addCommandBar || options.skipImport
+        skip: () => !options.addCommandBar || options.skipImport,
     },
     {
         name: 'ReactiveFormsModule',
         fromLib: '@angular/forms',
-        skip: () => !options.addCommandBar || options.skipImport
+        skip: () => !options.addCommandBar || options.skipImport,
     },
     {
         name: 'MatSelectModule',
         fromLib: '@angular/material/select',
-        skip: () => !options.addCommandBar || options.skipImport
+        skip: () => !options.addCommandBar || options.skipImport,
     },
     {
         name: 'MatOptionModule',
         fromLib: '@angular/material/core',
-        skip: () => !options.enabledCommandBarFunctions?.includes('addEnumQuickFilters') || options.skipImport
+        skip: () => !options.enabledCommandBarFunctions?.includes('addEnumQuickFilters') || options.skipImport,
     },
     {
         name: 'MatDatepickerModule',
         fromLib: '@angular/material/datepicker',
-        skip: () => !options.enabledCommandBarFunctions?.includes('addDateQuickFilters') || options.skipImport
-    }
+        skip: () => !options.enabledCommandBarFunctions?.includes('addDateQuickFilters') || options.skipImport,
+    },
 ];
-
 
 export const tableModules = (options: Schema) => [
     ...generalComponentsModules(options),
@@ -83,12 +82,12 @@ export const tableModules = (options: Schema) => [
     {
         name: 'MatCheckboxModule',
         fromLib: '@angular/material/checkbox',
-        skip: () => !(options as TableSchema).addRowCheckboxes || options.skipImport
+        skip: () => !(options as TableSchema).addRowCheckboxes || options.skipImport,
     },
     {
         name: 'MatMomentDateModule',
         fromLib: '@angular/material-moment-adapter',
-        skip: () => options.templateHelper.getDateProperties(options).length < 1 || options.skipImport
+        skip: () => options.templateHelper.getDateProperties(options).length < 1 || options.skipImport,
     },
 ];
 
@@ -107,21 +106,20 @@ export const APP_SHARED_MODULES = [
     {name: 'MatIconModule', fromLib: '@angular/material/icon'},
     {name: 'FormsModule', fromLib: '@angular/forms'},
     {name: 'NgIf', fromLib: '@angular/common'},
-]
+];
 
 export function updateSharedModule(options: Schema) {
     return (tree: Tree, _context: SchematicContext): Tree => {
-
         const generatePath = (type: string, name: string, extraPath = '') => {
             let base = '';
-            let pathName =  '';
+            let pathName = '';
 
             switch (type) {
                 case 'component':
                     if (name.includes('card')) {
-                        pathName = name.replace('card', 'confirmation')
+                        pathName = name.replace('card', 'confirmation');
                     } else if (name.includes('table')) {
-                        pathName = name.replace('table', 'confirmation')
+                        pathName = name.replace('table', 'confirmation');
                     }
 
                     base = `./components/${pathName}`;
@@ -161,5 +159,5 @@ export function updateSharedModule(options: Schema) {
         processItem('pipe', 'show-description');
 
         return tree;
-    }
+    };
 }

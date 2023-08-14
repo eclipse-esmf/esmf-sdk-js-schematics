@@ -11,19 +11,9 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-import {
-    apply,
-    applyTemplates,
-    MergeStrategy,
-    mergeWith,
-    move,
-    Rule,
-    SchematicContext,
-    Tree,
-    url
-} from '@angular-devkit/schematics';
-import {strings} from "@angular-devkit/core";
-import {assetsPath} from "../../../../../../utils/aspect-model";
+import {apply, applyTemplates, MergeStrategy, mergeWith, move, Rule, SchematicContext, Tree, url} from '@angular-devkit/schematics';
+import {strings} from '@angular-devkit/core';
+import {assetsPath} from '../../../../../../utils/aspect-model';
 
 export function generateGeneralService(options: any): Rule {
     return (tree: Tree, _context: SchematicContext) => {

@@ -21,11 +21,11 @@ import {
     DefaultEntity,
     DefaultSingleEntity,
     Entity,
-    Property
+    Property,
 } from '@esmf/aspect-model-loader';
 import {Observable, Subscriber} from 'rxjs';
 import {Schema} from '../ng-generate/components/shared/schema';
-import {generateLanguageTranslationAsset} from "../ng-generate/components/shared/generators/language/index";
+import {generateLanguageTranslationAsset} from '../ng-generate/components/shared/generators/language/index';
 
 export type PropValue = {
     propertyValue: string;
@@ -33,7 +33,7 @@ export type PropValue = {
     characteristic: string;
     enumWithEntities: boolean;
     property: Property;
-    complexPropObj?: { complexProp: string; properties: Property[] };
+    complexPropObj?: {complexProp: string; properties: Property[]};
 };
 
 export const assetsPath = 'assets/i18n/shared/components';
@@ -63,7 +63,9 @@ export function loadRDF(options: Schema): Rule {
                 throw new SchematicsException(`TTL file not found under '${path}'.`);
             }
 
-            options.spinner.succeed(`Loaded RDF ${aspectModelTFiles.length > 1 ? index + 1 + '/' + aspectModelTFiles.length : ''} from "${path}"`);
+            options.spinner.succeed(
+                `Loaded RDF ${aspectModelTFiles.length > 1 ? index + 1 + '/' + aspectModelTFiles.length : ''} from "${path}"`
+            );
 
             return virtualFs.fileBufferToString(data);
         });
@@ -71,7 +73,6 @@ export function loadRDF(options: Schema): Rule {
         return tree;
     };
 }
-
 
 /**
  * A rule that interprets the provided strings in array options.ttl as RDF and
@@ -128,13 +129,13 @@ export function validateUrns(options: Schema): void {
 export function getSelectedModelElement(loader: AspectModelLoader, aspect: Aspect, options: Schema): Aspect | Entity {
     const element = loader.findByUrn(options.selectedModelElementUrn) || findCollectionElement(aspect);
 
-    return (element instanceof DefaultEntity) ? element as Entity : element as Aspect;
+    return element instanceof DefaultEntity ? (element as Entity) : (element as Aspect);
 }
 
 function findCollectionElement(aspect: Aspect): Aspect | Entity | undefined {
     if (!aspect.isCollectionAspect) return undefined;
     const collectionElement = aspect.properties.find(property => property.characteristic instanceof DefaultCollection);
-    return collectionElement?.effectiveDataType?.isComplex ? collectionElement.effectiveDataType as Entity : aspect;
+    return collectionElement?.effectiveDataType?.isComplex ? (collectionElement.effectiveDataType as Entity) : aspect;
 }
 
 export function generateTranslationFiles(options: Schema): Rule {

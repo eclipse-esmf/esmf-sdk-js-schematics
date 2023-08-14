@@ -30,7 +30,7 @@ import {
     Property,
     Type,
 } from '@esmf/aspect-model-loader';
-import {TypesSchema} from "./schema";
+import {TypesSchema} from './schema';
 
 export function visitAspectModel(options: TypesSchema): Rule {
     return async (tree: Tree) => {

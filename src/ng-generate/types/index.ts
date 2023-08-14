@@ -18,14 +18,14 @@ import {loadAspectModel, loadRDF} from '../../utils/aspect-model';
 import {formatGeneratedFiles, loadAndApplyConfigFile} from '../../utils/file';
 import {TemplateHelper} from '../../utils/template-helper';
 import {visitAspectModel} from './aspect-model-type-generator-visitor';
-import {WIZARD_CONFIG_FILE} from "../prompter/index";
-import {TypesSchema} from "./schema";
+import {WIZARD_CONFIG_FILE} from '../prompter/index';
+import {TypesSchema} from './schema';
 
 export default function (options: TypesSchema): Rule {
     options.spinner = ora().start();
     options.templateHelper = new TemplateHelper();
 
-    if(options.configFile !== WIZARD_CONFIG_FILE) {
+    if (options.configFile !== WIZARD_CONFIG_FILE) {
         options.configFile = WIZARD_CONFIG_FILE;
     }
 

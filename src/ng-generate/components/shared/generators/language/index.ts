@@ -11,20 +11,10 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-import {
-    apply,
-    applyTemplates,
-    MergeStrategy,
-    mergeWith,
-    move,
-    Rule,
-    SchematicContext,
-    Tree,
-    url
-} from '@angular-devkit/schematics';
-import {strings} from "@angular-devkit/core";
-import {DefaultEntityInstance, DefaultEnumeration, Property} from "@esmf/aspect-model-loader";
-import {dasherize} from "@angular-devkit/core/src/utils/strings";
+import {apply, applyTemplates, MergeStrategy, mergeWith, move, Rule, SchematicContext, Tree, url} from '@angular-devkit/schematics';
+import {strings} from '@angular-devkit/core';
+import {DefaultEntityInstance, DefaultEnumeration, Property} from '@esmf/aspect-model-loader';
+import {dasherize} from '@angular-devkit/core/src/utils/strings';
 
 let sharedOptions: any = {};
 
@@ -50,7 +40,7 @@ export function generateLanguageTranslationAsset(options: any, assetsPath: strin
                 }),
                 move(assetsPath),
             ]),
-            options.overwrite? MergeStrategy.Overwrite : MergeStrategy.Error
+            options.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error
         );
     };
 }
@@ -65,7 +55,7 @@ function getProperties(language: string) {
                 ${getBlockEntityInstance(property, language)}
                 ${getBlockTransEntity(property, language)}`;
         })
-        .join('')
+        .join('');
 }
 
 function getBlockTransEntity(property: Property, lang: string): string {
@@ -94,39 +84,44 @@ function getBlockEntityInstance(property: Property, lang: string, parentProperty
     }
 
     const entityInstanceToString = (entityInstance: DefaultEntityInstance) =>
-        `,"${parentPropertyName ? parentPropertyName + '.' : ''}${property.name}.${entityInstance.name}.${entityInstance.descriptionKey}": "${entityInstance.getDescription(lang) || ''}"`;
+        `,"${parentPropertyName ? parentPropertyName + '.' : ''}${property.name}.${entityInstance.name}.${
+            entityInstance.descriptionKey
+        }": "${entityInstance.getDescription(lang) || ''}"`;
 
     return characteristic.values.map(entityInstanceToString).join('');
 }
 
 function getBlockTransCustomColumns(): string {
-    const customColumns = sharedOptions.customColumns
-        .map((cc: string) => `"customColumn.${cc}": "${cc}"`)
-        .join(', ');
+    const customColumns = sharedOptions.customColumns.map((cc: string) => `"customColumn.${cc}": "${cc}"`).join(', ');
 
-    return customColumns.length > 0? `${customColumns},` : '';
-
+    return customColumns.length > 0 ? `${customColumns},` : '';
 }
 
 function getBlockTransRowActions(): string {
-    const customRowActions = sharedOptions.customRowActions.map((cr: string, i: number, arr: string[]) => {
-        const crReplaced = cr.replace(/\.[^/.]+$/, '').replace(/\s+/g, '-').toLowerCase();
-        return `"${crReplaced}.customRowAction": "${crReplaced}"`;
-    }).join(', ');
+    const customRowActions = sharedOptions.customRowActions
+        .map((cr: string, i: number, arr: string[]) => {
+            const crReplaced = cr
+                .replace(/\.[^/.]+$/, '')
+                .replace(/\s+/g, '-')
+                .toLowerCase();
+            return `"${crReplaced}.customRowAction": "${crReplaced}"`;
+        })
+        .join(', ');
 
-    return customRowActions.length > 0? `${customRowActions},` : '';
+    return customRowActions.length > 0 ? `${customRowActions},` : '';
 }
 
 function getBlockCustomCommandBarActions(): string {
     const transformActionName = (action: string) => {
-        return action.replace(/\.[^/.]+$/, '').replace(/\s+/g, '-').toLowerCase();
+        return action
+            .replace(/\.[^/.]+$/, '')
+            .replace(/\s+/g, '-')
+            .toLowerCase();
     };
 
     const actions = sharedOptions.customCommandBarActions.map(transformActionName);
 
-    const actionStrings = actions.map((action: string, index: number) =>
-        `"${action}.customCommandBarAction": "${action}"`);
+    const actionStrings = actions.map((action: string, index: number) => `"${action}.customCommandBarAction": "${action}"`);
 
-    return actionStrings.length > 0? `${actionStrings},` : '';
+    return actionStrings.length > 0 ? `${actionStrings},` : '';
 }
-

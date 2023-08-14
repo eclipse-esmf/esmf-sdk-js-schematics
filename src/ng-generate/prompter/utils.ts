@@ -11,11 +11,11 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-import {AspectModelLoader, DefaultEntity, Property} from "@esmf/aspect-model-loader";
-import {Tree} from "@angular-devkit/schematics/src/tree/interface";
-import {Subscriber} from "rxjs";
-import fs from "fs";
-import {WIZARD_CONFIG_FILE} from "./index";
+import {AspectModelLoader, DefaultEntity, Property} from '@esmf/aspect-model-loader';
+import {Tree} from '@angular-devkit/schematics/src/tree/interface';
+import {Subscriber} from 'rxjs';
+import fs from 'fs';
+import {WIZARD_CONFIG_FILE} from './index';
 
 interface PropertyDetail {
     name: string;
@@ -42,10 +42,7 @@ export const loader = new AspectModelLoader();
  */
 export function reorderAspectModelUrnToLoad(aspectModelTFiles: Array<string>, aspectModelUrnToLoad: string, tree: any): Array<string> {
     if (aspectModelTFiles.includes(aspectModelUrnToLoad)) {
-        return [
-            aspectModelUrnToLoad,
-            ...aspectModelTFiles.filter((item: string) => item !== aspectModelUrnToLoad)
-        ];
+        return [aspectModelUrnToLoad, ...aspectModelTFiles.filter((item: string) => item !== aspectModelUrnToLoad)];
     }
 
     return aspectModelTFiles;
@@ -91,9 +88,11 @@ export function writeConfigAndExit(subscriber: Subscriber<Tree>, tree: Tree, con
             throw error;
         }
 
-        console.log('\x1b[33m%s\x1b[0m', fromImport
-            ? `The import was successful, the config used for your generation can be found here: ${WIZARD_CONFIG_FILE}`
-            : `New config file was generated based on your choices, it can be found here: ${WIZARD_CONFIG_FILE}`
+        console.log(
+            '\x1b[33m%s\x1b[0m',
+            fromImport
+                ? `The import was successful, the config used for your generation can be found here: ${WIZARD_CONFIG_FILE}`
+                : `New config file was generated based on your choices, it can be found here: ${WIZARD_CONFIG_FILE}`
         );
 
         subscriber.next(tree);

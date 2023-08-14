@@ -33,12 +33,12 @@ export const DEFAULT_DEPENDENCIES = [
 
 export const REMOTE_HANDLING_DEPENDENCIES = [
     {type: NodeDependencyType.Default, version: '~0.9.4', name: 'rollun-ts-rql', overwrite: false},
-    {type: NodeDependencyType.Default, version: '~4.1.1', name: 'crypto-js', overwrite: false}
+    {type: NodeDependencyType.Default, version: '~4.1.1', name: 'crypto-js', overwrite: false},
 ];
 
 export const DATE_QUICK_FILTER_DEPENDENCIES = [
     {type: NodeDependencyType.Default, version: '~2.29.4', name: 'moment', overwrite: false},
-    {type: NodeDependencyType.Default, version: '^16.1.0', name: '@angular/material-moment-adapter', overwrite: false}
+    {type: NodeDependencyType.Default, version: '^16.1.0', name: '@angular/material-moment-adapter', overwrite: false},
 ];
 
 export function addPackageJsonDependencies(skipImport: boolean, spinner: Ora, dependencies: NodeDependency[] = []): Rule {

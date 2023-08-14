@@ -13,7 +13,7 @@
 
 import {Schema as ComponentSchema} from '@schematics/angular/component/schema';
 import {DefaultSchema} from '../../default-schema';
-import {Property} from "@esmf/aspect-model-loader";
+import {Property} from '@esmf/aspect-model-loader';
 
 export enum ComponentType {
     TABLE = 'table',
@@ -62,7 +62,7 @@ export interface Schema extends ComponentSchema, DefaultSchema {
     jsonAccessPath: string;
     customStyleImports: [];
     overwrite: boolean;
-    complexProps: Array<{ prop: string; propsToShow: ComplexEntityProperty[] }>;
+    complexProps: Array<{prop: string; propsToShow: ComplexEntityProperty[]}>;
     skipInstall: boolean;
     getOptionalMaterialTheme: boolean;
     skipImport: boolean;
