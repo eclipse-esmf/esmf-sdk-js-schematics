@@ -391,7 +391,7 @@ function loadDependencies() {
         dependencies.push(...REMOTE_HANDLING_DEPENDENCIES);
     }
 
-    if (!options.enabledCommandBarFunctions?.includes('addDateQuickFilters') || options.skipImport) {
+    if (options.enabledCommandBarFunctions?.includes('addDateQuickFilters') || options.skipImport) {
         dependencies.push(...DATE_QUICK_FILTER_DEPENDENCIES);
     }
 
