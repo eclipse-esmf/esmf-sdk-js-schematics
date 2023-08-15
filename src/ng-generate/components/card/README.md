@@ -199,6 +199,18 @@ You can either:
 
 This flexibility allows you to tailor the card's appearance and behavior to fit specific scenarios.
 
+Without versioning:
+```html
+<esmf-sdk-ui-movement-card-v100>
+    <ng-template #cardTemplate let-data let-element="versionSupportCardValues" let-getElementValue="getElementValue" let-translateService="translateService">
+        <div class="data-card-element" *ngFor="let elem of element">
+            <b>{{ translateService.instant(elem + '.preferredName') }}</b>: {{ getElementValue(data, elem) }}
+        </div>
+    </ng-template>
+</esmf-sdk-ui-movement-card-v100>
+```
+
+With versioning:
 ```html
 <esmf-sdk-ui-movement-card-v100>
     <ng-template #cardTemplate let-data let-element="versionSupportCardValues" let-getElementValue="getElementValue" let-translateService="translateService">

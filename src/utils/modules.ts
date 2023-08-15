@@ -64,6 +64,11 @@ const generalComponentsModules = (options: Schema) => [
         skip: () => !options.enabledCommandBarFunctions?.includes('addEnumQuickFilters') || options.skipImport,
     },
     {
+        name: 'MatNativeDateModule',
+        fromLib: '@angular/material/core',
+        skip: () => !options.enabledCommandBarFunctions?.includes('addDateQuickFilters') || options.skipImport,
+    },
+    {
         name: 'MatDatepickerModule',
         fromLib: '@angular/material/datepicker',
         skip: () => !options.enabledCommandBarFunctions?.includes('addDateQuickFilters') || options.skipImport,
@@ -108,6 +113,7 @@ export const APP_SHARED_MODULES = [
     {name: 'NgIf', fromLib: '@angular/common'},
 ];
 
+// TODO rethink this method
 export function updateSharedModule(options: Schema) {
     return (tree: Tree, _context: SchematicContext): Tree => {
         const generatePath = (type: string, name: string, extraPath = '') => {
@@ -151,8 +157,15 @@ export function updateSharedModule(options: Schema) {
             processItem('component', 'export-card-dialog');
         }
 
-        ['horizontal-overflow', 'resize-column', 'validate-input'].forEach(directive => processItem('directive', directive));
-        if (options.templateHelper.hasSearchBar(options)) {
+        ['horizontal-overflow', 'resize-column', 'validate-input'].forEach(directive => {
+            if(directive === 'resize-column' && options.componentType === 'card') {
+                return;
+            }
+
+            processItem('directive', directive)
+        });
+
+        if (options.templateHelper.hasSearchBar(options) && options.componentType !== 'card') {
             processItem('directive', 'highlight');
         }
 

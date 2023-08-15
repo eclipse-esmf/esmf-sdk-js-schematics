@@ -50,7 +50,7 @@ export default function (options: Schema): Rule {
 
 const dependencies = [
     {type: NodeDependencyType.Default, version: '~13.0.0', name: '@ngx-translate/core', overwrite: false},
-    {type: NodeDependencyType.Default, version: '~6.0.0', name: '@ngx-translate/http-loader', overwrite: true},
+    {type: NodeDependencyType.Default, version: '~8.0.0', name: '@ngx-translate/http-loader', overwrite: true},
     {type: NodeDependencyType.Default, version: '~1.1.0', name: 'ngx-i18n-combine', overwrite: false},
 ];
 

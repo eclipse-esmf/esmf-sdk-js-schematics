@@ -25,7 +25,7 @@ import {Injectable<% if (options.isDateQuickFilter) { %>, Inject<% } %>} from '@
 <% if (options.isDateQuickFilter) { %>
     import { FormGroup } from '@angular/forms';
     import {DateAdapter, MAT_DATE_FORMATS, MatDateFormats} from "@angular/material/core";
-    import moment from 'moment';
+    import * as moment from 'moment';
 <% } %>
 
 import {<%= classify(options.selectedModelTypeName) %>

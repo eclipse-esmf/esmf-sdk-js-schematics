@@ -162,6 +162,19 @@ npm run combine-i18n
 And in assets folder an i18n folder should be generated. And i18n folder should contain the translations json files:
 en.movement-table.translation.json, en.json.
 
+8. add environment files
+```bash
+ng generate environments
+```
+
+9. add default translation language to root component.
+```typescript
+constructor(private translate: TranslateService)
+{
+    translate.use(translate.defaultLang);
+}
+```
+
 ## Overview of the schematics commands
 
 ### The _types_ schematics

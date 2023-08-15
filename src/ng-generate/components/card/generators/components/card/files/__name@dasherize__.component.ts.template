@@ -138,7 +138,7 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit<% i
 
     getContext(data: Movement) {
         return {
-            versionSupportCardValues: this.versionSupportCardValues,
+            <%= camelize(name) %>CardValues: this.<%= camelize(name) %>CardValues,
             $implicit: data,
             getElementValue: this.getElementValue.bind(this),
             translateService: this.translateService,
