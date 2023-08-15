@@ -11,7 +11,7 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-import {chain, Rule} from '@angular-devkit/schematics';
+import {chain, Rule, SchematicContext, Tree} from '@angular-devkit/schematics';
 import {Schema} from './schema';
 import {addPackageJsonDependencies, addPackageJsonScripts} from '../../utils/package-json';
 import {NodeDependencyType} from '@schematics/angular/utility/dependencies';
@@ -19,6 +19,7 @@ import {TemplateHelper} from '../../utils/template-helper';
 import {formatGeneratedFiles} from '../../utils/file';
 import ora from 'ora';
 import {generateTranslationModule} from '../components/shared/generators';
+import {NodePackageInstallTask} from "@angular-devkit/schematics/tasks";
 
 /**
  * Updates the project with dependencies, scripts, and modules required for translation functionality.
@@ -31,7 +32,6 @@ export default function (options: Schema): Rule {
     const spinner = ora().start();
     options.spinner = spinner;
     (options as any).templateHelper = new TemplateHelper();
-
     return chain([
         addPackageJsonDependencies(options.skipImport, spinner, dependencies),
         addPackageJsonScripts(scripts),
@@ -45,6 +45,7 @@ export default function (options: Schema): Rule {
             options,
             ['app-shared.module.ts']
         ),
+        installPackages()
     ]);
 }
 
@@ -60,3 +61,10 @@ const scripts = [
         command: 'ngx-i18n-combine -i ./src/**/i18n/shared/components/**/*.translation.json -o ./src/assets/i18n/{en,de}.json',
     },
 ];
+
+function installPackages(): Rule {
+    return (tree: Tree, context: SchematicContext) => {
+        context.addTask(new NodePackageInstallTask());
+        return tree;
+    };
+}
