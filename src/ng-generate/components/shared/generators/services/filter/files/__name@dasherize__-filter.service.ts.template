@@ -312,7 +312,7 @@ export class <%= classify(name) %>FilterService {
 
         private getFormattedDate(theDate: string) {
             return this.dateFormats.display.dateInput !== 'L'
-                ? this.dateAdapter.format(moment(theDate), this.dateFormats.display.dateInput)
+                ? this.dateAdapter.format(moment(theDate).toDate(), this.dateFormats.display.dateInput)
                 : new Date(theDate).toLocaleDateString( this.translateService.currentLang, {timeZone: 'UTC'});
         }
     <% } %>

@@ -158,11 +158,11 @@ export function updateSharedModule(options: Schema) {
         }
 
         ['horizontal-overflow', 'resize-column', 'validate-input'].forEach(directive => {
-            if(directive === 'resize-column' && options.componentType === 'card') {
+            if (directive === 'resize-column' && options.componentType === 'card') {
                 return;
             }
 
-            processItem('directive', directive)
+            processItem('directive', directive);
         });
 
         if (options.templateHelper.hasSearchBar(options) && options.componentType !== 'card') {

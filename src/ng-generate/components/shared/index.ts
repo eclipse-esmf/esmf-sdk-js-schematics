@@ -61,7 +61,12 @@ export let options: Schema;
 export function generateComponent(context: SchematicContext, schema: Schema, componentType: ComponentType) {
     options = schema;
 
-    const prompterTaskId = context.addTask(new RunSchematicTask(`${componentType}-prompter`, options));
+    let prompterTaskId = null;
+    if (options.configFile === undefined || options.configFile === '') {
+        options.configFile = WIZARD_CONFIG_FILE;
+        prompterTaskId = context.addTask(new RunSchematicTask(`${componentType}-prompter`, options));
+    }
+
     const generateTypesTaskId = context.addTask(new RunSchematicTask('types', options), prompterTaskId ? [prompterTaskId] : []);
     const tableGenId = context.addTask(new RunSchematicTask(`${componentType}-generation`, options), [generateTypesTaskId]);
 
@@ -89,7 +94,7 @@ export function prepareOptions(schema: Schema, componentType: ComponentType): Sc
         skipImport: false,
     };
 
-    if (options.configFile !== WIZARD_CONFIG_FILE) {
+    if (options.configFile === 'wizard.config.json') {
         options.configFile = WIZARD_CONFIG_FILE;
     }
 

@@ -19,7 +19,7 @@ import {TemplateHelper} from '../../utils/template-helper';
 import {formatGeneratedFiles} from '../../utils/file';
 import ora from 'ora';
 import {generateTranslationModule} from '../components/shared/generators';
-import {NodePackageInstallTask} from "@angular-devkit/schematics/tasks";
+import {NodePackageInstallTask} from '@angular-devkit/schematics/tasks';
 
 /**
  * Updates the project with dependencies, scripts, and modules required for translation functionality.
@@ -45,7 +45,7 @@ export default function (options: Schema): Rule {
             options,
             ['app-shared.module.ts']
         ),
-        installPackages()
+        installPackages(),
     ]);
 }
 

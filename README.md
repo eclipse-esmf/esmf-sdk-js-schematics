@@ -94,17 +94,7 @@ npm install -g @angular-devkit/schematics-cli@16
 4. Optionally add some .ttl files in the same folder in order to use in the schema generation process. The schematic
    generator will ask for a path to one or more .ttl files
 
-5. Optionally modify tsconfig.json by adding to the `compilerOptions` field the following (prevents compiler warnings):
-
-```json
-{
-    "resolveJsonModule": true,
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true
-}
-```
-
-6. Install and run the command to generate the component, table in this case (do not use Git Bash, preferably use idea
+5. Install and run the command to generate the component, table in this case (do not use Git Bash, preferably use idea
    terminal, (Windows) command promt or other (Linux/Mac) terminal)
 
 **_NOTE:_** Please enter the desired version under {Version}.
@@ -138,7 +128,7 @@ where `<schematics-name>` can be replaced by:
 -   i18n
 -   types
 
-7. add translations
+6. add translations
 
 ```bash
 ng generate @esmf/semantic-ui-schematics:i18n
@@ -162,12 +152,12 @@ npm run combine-i18n
 And in assets folder an i18n folder should be generated. And i18n folder should contain the translations json files:
 en.movement-table.translation.json, en.json.
 
-8. add environment files
+7. add environment files
 ```bash
 ng generate environments
 ```
 
-9. add default translation language to root component.
+8. add default translation language to root component.
 ```typescript
 constructor(private translate: TranslateService)
 {
