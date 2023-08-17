@@ -65,7 +65,7 @@ export enum <%= classify(name) %>CardValues {
 export class <%= classify(name) %>Component implements OnInit, AfterViewInit<% if (options.hasSearchBar || options.enableRemoteDataHandling) { %>, OnDestroy<% } %> {
     @ContentChild('cardTemplate') cardTemplate!: TemplateRef<any>;
 
-    @Input() data: Array<Movement> = [];
+    @Input() data: Array<<%= options.aspectModelTypeName %>> = [];
 
     <% if (options.hasSearchBar) { %>
         @Input() initialSearchString = '';
@@ -102,9 +102,9 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit<% i
 
     currentLanguage: string;
 
-    dataSource: MatTableDataSource<Movement> =  new MatTableDataSource<Movement>();
+    dataSource: MatTableDataSource<<%= options.aspectModelTypeName %>> =  new MatTableDataSource<<%= options.aspectModelTypeName %>>();
 
-    dataToShow: Array<Movement> = [];
+    dataToShow: Array<<%= options.aspectModelTypeName %>> = [];
     totalItems: number = 0;
 
     <% if (options.enableRemoteDataHandling) { %>
@@ -137,7 +137,7 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit<% i
         }
      <% } %>
 
-    getContext(data: Movement) {
+    getContext(data: <%= options.aspectModelTypeName %>) {
         return {
             <%= camelize(name) %>CardValues: this.<%= camelize(name) %>CardValues,
             $implicit: data,
@@ -319,11 +319,11 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit<% i
             });
         }
 
-        private exportToCsv(exportData: Array<Movement>) {
+        private exportToCsv(exportData: Array<<%= options.aspectModelTypeName %>>) {
             const headersCSV = unparse({
                 fields: this.<%= camelize(name) %>CardValues.map(columnName => {
-                    const translatedHeader = this.translateService.instant(`movement.${columnName}.preferredName`);
-                    return translatedHeader !== `movement.${columnName}.preferredName` ? translatedHeader : columnName;
+                    const translatedHeader = this.translateService.instant(`<%= options.aspectModelTypeName.toLowerCase() %>.${columnName}.preferredName`);
+                    return translatedHeader !== `<%= options.aspectModelTypeName.toLowerCase() %>.${columnName}.preferredName` ? translatedHeader : columnName;
                 }),
                 data: [],
             });
@@ -346,7 +346,7 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit<% i
         }
     <% } %>
 
-    detailInformation(data: Movement) {
+    detailInformation(data: <%= options.aspectModelTypeName %>) {
       this.detail.emit(data);
     }
 
