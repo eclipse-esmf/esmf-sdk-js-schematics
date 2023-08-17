@@ -55,7 +55,7 @@ import {<%= classify(options.selectedModelTypeName) %>
     };
 <% } %>
 
-<% if (options.componentType === 'card' && options.addCommandBar) { %>
+<% if (options.componentType === 'card') { %>
     export enum SortCard {
       ASCENDING,
       DESCENDING,
@@ -147,7 +147,7 @@ export class <%= classify(name) %>FilterService {
         <% } %>
     <% } %>
 
-    <% if (options.componentType === 'card' && options.addCommandBar) { %>
+    <% if (options.componentType === 'card') { %>
         sortCard = SortCard.ASCENDING;
         sortedProperty = '';
     <% } %>

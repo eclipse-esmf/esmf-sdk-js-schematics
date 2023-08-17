@@ -27,9 +27,10 @@ import {
     <% } %>
 } from '<%= options.typePath %>';
 
+import {<%= options.filterServiceName %>, SortCard} from './<%= dasherize(name) %>-filter.service'
+
 <% if (options.addCommandBar) { %>
     import {filter} from "rxjs/operators";
-    import {<%= options.filterServiceName %>, SortCard} from './<%= dasherize(name) %>-filter.service'
     import {MatDialog} from '@angular/material/dialog';
     import {unparse} from "papaparse";
     import {Action, ExportCardDialogComponent} from '<% if (options.enableVersionSupport) { %>../<% } %>../export-confirmation-dialog/export-card-dialog.component';
@@ -118,9 +119,9 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit<% i
 
     <% if (options.enableRemoteDataHandling) { %>
         constructor(private translateService: TranslateService,
+                    private filterService: <%= classify(name) %>FilterService,
                     <% if (options.addCommandBar) { %>
                         public dialog: MatDialog,
-                        private filterService: <%= classify(name) %>FilterService,
                     <% } %>
                     private <% if (options.customRemoteService) { %>custom<% } %><%= classify(name) %>Service: <% if (options.customRemoteService) { %>Custom<% } %><%= classify(name) %>Service) {
             this.currentLanguage = this.translateService.currentLang;
@@ -128,9 +129,9 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit<% i
     <% } else { %>
         constructor(private translateService: TranslateService,
                     private <%= camelize(name) %>Service: <%= classify(name) %>Service,
+                    private filterService: <%= classify(name) %>FilterService,
                     <% if (options.addCommandBar) { %>
                         public dialog: MatDialog,
-                        private filterService: <%= classify(name) %>FilterService
                     <% } %>) {
             this.currentLanguage = this.translateService.currentLang;
         }
@@ -223,7 +224,7 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit<% i
     <% } %>
 
 
-    <% if (!options.enableRemoteDataHandling && options.addCommandBar) { %>
+    <% if (!options.enableRemoteDataHandling) { %>
         private applyAllFilters(data: any[]): any[] {
             let dataTemp = [...data];
 
@@ -274,7 +275,7 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit<% i
         }
     <% } %>
 
-    <% if (options.enableRemoteDataHandling && options.addCommandBar) { %>
+    <% if (options.enableRemoteDataHandling) { %>
         sorting() {
             this.applyFilters();
         }

@@ -121,7 +121,7 @@
     "columns": "Columns",
     "export": "Export"
 
-    <% if (options.componentType === 'card' && options.hasSearchBar) { %>
+    <% if (options.componentType === 'card' && options.addCommandBar) { %>
         ,
         "toolbar.sorted_tooltip": "Sort data by property",
         "toolbar.sort_dir_tooltip": "Sort data direction",

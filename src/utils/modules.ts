@@ -89,11 +89,6 @@ export const tableModules = (options: Schema) => [
         fromLib: '@angular/material/checkbox',
         skip: () => !(options as TableSchema).addRowCheckboxes || options.skipImport,
     },
-    {
-        name: 'MatMomentDateModule',
-        fromLib: '@angular/material-moment-adapter',
-        skip: () => options.templateHelper.getDateProperties(options).length < 1 || options.skipImport,
-    },
 ];
 
 export const cardModules = (options: Schema) => [

@@ -24,7 +24,7 @@ export function generateFilterService(options: any): Rule {
     sharedOptions = options;
 
     return (tree: Tree, _context: SchematicContext) => {
-        if (!sharedOptions.addCommandBar || (sharedOptions.componentType === ComponentType.TABLE && !sharedOptions.hasFilters)) {
+        if (sharedOptions.componentType === ComponentType.TABLE && !sharedOptions.hasFilters) {
             return noop;
         }
 
