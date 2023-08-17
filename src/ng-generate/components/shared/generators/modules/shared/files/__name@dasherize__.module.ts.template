@@ -26,6 +26,10 @@ import {AppSharedModule} from 'src/app/shared/app-shared.module';
     declarations: [
         <%= classify(name) %>Component
 
+        <% if (options.componentType === 'table') { %>
+            , <%= classify(name) %>ColumnMenuComponent
+        <% } %>
+
         <% if (options.addCommandBar) { %>
             , <%= classify(name) %>CommandBarComponent
 
@@ -34,12 +38,9 @@ import {AppSharedModule} from 'src/app/shared/app-shared.module';
             <% } %>
 
             <% if (options.componentType === 'table') { %>
-                , <%= classify(name) %>ColumnMenuComponent
-
                 <% if (options.hasSearchBar) { %>
                     , <%= classify(name) %>ConfigMenuComponent
                 <% } %>
-
             <% } %>
         <% } %>
     ],

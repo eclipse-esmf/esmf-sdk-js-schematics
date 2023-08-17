@@ -490,7 +490,7 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
       this.tableUpdateFinishedEvent.emit();
     }
 
-    <% if (!options.enableRemoteDataHandling && options.addCommandBar) { %>
+    <% if (!options.enableRemoteDataHandling) { %>
         private applyAllFilters(data: any[]): any[] {
             let dataTemp = [...data];
 
