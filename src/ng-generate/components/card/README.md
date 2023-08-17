@@ -199,10 +199,13 @@ You can either:
 
 This flexibility allows you to tailor the card's appearance and behavior to fit specific scenarios.
 
+**_NOTE:_** The "let-element" should be constructed from the component's name, following the pattern <componentName>CardValues. 
+This naming convention can also be directly observed within the child component (refer to the Enum).
+
 Without versioning:
 ```html
 <esmf-sdk-ui-movement-card-v100>
-    <ng-template #cardTemplate let-data let-element="versionSupportCardValues" let-getElementValue="getElementValue" let-translateService="translateService">
+    <ng-template #cardTemplate let-data let-element="<componentName>CardValues" let-getElementValue="getElementValue" let-translateService="translateService">
         <div class="data-card-element" *ngFor="let elem of element">
             <b>{{ translateService.instant(elem + '.preferredName') }}</b>: {{ getElementValue(data, elem) }}
         </div>
@@ -213,14 +216,13 @@ Without versioning:
 With versioning:
 ```html
 <esmf-sdk-ui-movement-card-v100>
-    <ng-template #cardTemplate let-data let-element="versionSupportCardValues" let-getElementValue="getElementValue" let-translateService="translateService">
+    <ng-template #cardTemplate let-data let-element="<componentName>CardValues" let-getElementValue="getElementValue" let-translateService="translateService">
         <div class="data-card-element" *ngFor="let elem of element">
             <b>{{ translateService.instant('movement.v210.' + elem + '.preferredName') }}</b>: {{ getElementValue(data, elem) }}
         </div>
     </ng-template>
 </esmf-sdk-ui-movement-card-v100>
 ```
-
 ---
 
 ## Add translations
