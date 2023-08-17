@@ -52,34 +52,23 @@
     "exportData": {
         "title": "Export data",
         "description": {
-            <% if (options.componentType == "card") { %>
-                "exportOnlyFirstPage": "Export only the first page of data.",
-            <% } %>
-
-            <% if (options.componentType == "table") { %>
-                "caseOne": "Export the maximum of {{maxExportRows}} rows from all {{allColumns}} columns.",
-                "caseTwo": {
-                    "singular": "Export the maximum of {{maxExportRows}} rows from the displayed {{displayedColumns}} column.",
-                        "plural": "Export the maximum of {{maxExportRows}} rows from the displayed {{displayedColumns}} columns."
-                },
-                "caseThree": {
-                    "singular": "Export all data from the selected {{displayedColumns}} column of the current page.",
-                    "plural": "Export all data from the selected {{displayedColumns}} columns of the current page."
-                },
-                "caseFour": "Export all data from all {{allColumns}} columns of the current page.",
-            <% } %>
-
+            "exportOnlyFirstPage": "Export only the first page of data.",
+            "caseOne": "Export the maximum of {{maxExportRows}} rows from all {{allColumns}} columns.",
+            "caseTwo": {
+                "singular": "Export the maximum of {{maxExportRows}} rows from the displayed {{displayedColumns}} column.",
+                "plural": "Export the maximum of {{maxExportRows}} rows from the displayed {{displayedColumns}} columns."
+            },
+            "caseThree": {
+                "singular": "Export all data from the selected {{displayedColumns}} column of the current page.",
+                "plural": "Export all data from the selected {{displayedColumns}} columns of the current page."
+            },
+            "caseFour": "Export all data from all {{allColumns}} columns of the current page.",
             "default": "Export entire datasource."
         },
 
-        <% if (options.componentType == "table") { %>
-            "exportAllPages": "export the maximum of {{maxExportRows}} rows",
-            "exportAllColumns": "export all data from all {{allColumns}} columns"
-        <% } %>
-
-        <% if (options.componentType == "card") { %>
-            "exportFirstPage": "export the first page of data"
-        <% } %>
+        "exportAllPages": "export the maximum of {{maxExportRows}} rows",
+        "exportAllColumns": "export all data from all {{allColumns}} columns",
+        "exportFirstPage": "export the first page of data"
     }
 
     ,
@@ -119,14 +108,12 @@
     "apply": "Apply",
     "restoreDefaults": "Restore Defaults",
     "columns": "Columns",
-    "export": "Export"
-
-    <% if (options.componentType === 'card' && options.addCommandBar) { %>
-        ,
-        "toolbar.sorted_tooltip": "Sort data by property",
-        "toolbar.sort_dir_tooltip": "Sort data direction",
-        "toolbar.sort_by": "Sorted by",
-        "toolbar.sort_asc": "Ascending",
-        "toolbar.sort_desc": "Descending"
-    <% } %>
+    "export": "Export",
+    "toolbar": {
+        "sorted_tooltip": "Sort data by property",
+        "sort_dir_tooltip": "Sort data direction",
+        "sort_by": "Sorted by",
+        "sort_asc": "Ascending",
+        "sort_desc": "Descending"
+    }
 }
