@@ -207,7 +207,7 @@ Without versioning:
 <esmf-sdk-ui-movement-card-v100>
     <ng-template #cardTemplate let-data let-element="<componentName>CardValues" let-getElementValue="getElementValue" let-translateService="translateService">
         <div class="data-card-element" *ngFor="let elem of element">
-            <b>{{ translateService.instant(elem + '.preferredName') }}</b>: {{ getElementValue(data, elem) }}
+            <b>{{ elem + ".preferredName" | translate }}</b>: {{ getElementValue(data, elem) }}
         </div>
     </ng-template>
 </esmf-sdk-ui-movement-card-v100>
@@ -218,7 +218,7 @@ With versioning:
 <esmf-sdk-ui-movement-card-v100>
     <ng-template #cardTemplate let-data let-element="<componentName>CardValues" let-getElementValue="getElementValue" let-translateService="translateService">
         <div class="data-card-element" *ngFor="let elem of element">
-            <b>{{ translateService.instant('movement.v210.' + elem + '.preferredName') }}</b>: {{ getElementValue(data, elem) }}
+            <b>{{ 'movement.v210.' + elem + ".preferredName" | translate }}</b>: {{ getElementValue(data, elem) }}
         </div>
     </ng-template>
 </esmf-sdk-ui-movement-card-v100>

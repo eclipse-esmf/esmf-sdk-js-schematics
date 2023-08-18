@@ -1,6 +1,9 @@
 /** <%= options.generationDisclaimerText %> **/
 import {NgModule} from '@angular/core';
 import {<%= classify(name) %>Component} from './<%= dasherize(name) %>.component';
+<% if (options.componentType === 'card') { %>
+    import {TranslateModule} from '@ngx-translate/core';
+<% } %>
 
 <% if (options.addCommandBar) { %>
     import {<%= classify(name) %>CommandBarComponent} from './<%= dasherize(name) %>-command-bar.component';
@@ -55,6 +58,9 @@ import {AppSharedModule} from 'src/app/shared/app-shared.module';
             <% if (options.hasFilters) { %>
                 , <%= classify(name) %>ChipListComponent
             <% } %>
+        <% } %>
+        <% if (options.componentType === 'card') { %>
+            , TranslateModule
         <% } %>
     ],
 })
