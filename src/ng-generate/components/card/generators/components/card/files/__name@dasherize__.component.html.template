@@ -1,0 +1,44 @@
+<!--
+ * Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH
+ *
+ * See the AUTHORS file(s) distributed with this work for
+ * additional information regarding authorship.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ *
+ * SPDX-License-Identifier: MPL-2.0
+ -->
+
+<div class="js-sdk-component-container">
+    <% if (options.addCommandBar) { %>
+      <command-bar
+        [totalItems]="totalItems"
+        (applyFilters)="applyFilters()"
+        (reloadFilter)="reloadFilter()"
+        (exportToCsv)="openExportConfirmationDialog()"
+        (sorting)="sorting()">
+      </command-bar>
+    <% } %>
+
+    <% if (options.hasFilters) { %>
+        <chip-list (removeFilter)="removeFilter($event)"></chip-list>
+    <% } %>
+
+  <mat-card class="data-card"
+            *ngFor="let data of dataToShow | slice:(paginator.pageIndex * paginator.pageSize):(paginator.pageIndex * paginator.pageSize + paginator.pageSize)">
+    <div class="data-card-header">
+      <div class="data-card-content">
+        <mat-card-content>
+            <ng-container *ngTemplateOutlet="cardTemplate; context: getContext(data)"></ng-container>
+        </mat-card-content>
+      </div>
+      <button class="more-button" data-test="card-more-button" mat-icon-button (click)="detailInformation(data)">
+        <mat-icon>more_vert</mat-icon>
+      </button>
+    </div>
+  </mat-card>
+
+  <mat-paginator [pageSizeOptions]="[5, 10, 25, 50, 100]"></mat-paginator>
+</div>

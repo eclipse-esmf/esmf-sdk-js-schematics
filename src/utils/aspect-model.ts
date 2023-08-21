@@ -21,12 +21,11 @@ import {
     DefaultEntity,
     DefaultSingleEntity,
     Entity,
-    Property
+    Property,
 } from '@esmf/aspect-model-loader';
 import {Observable, Subscriber} from 'rxjs';
-import {Schema, Schema as tableSchema} from '../ng-generate/table/schema';
-import {Schema as typeSchema} from '../ng-generate/types/schema';
-import {generateLanguageTranslationAsset} from "../ng-generate/table/generators/language/index";
+import {Schema} from '../ng-generate/components/shared/schema';
+import {generateLanguageTranslationAsset} from '../ng-generate/components/shared/generators/language/index';
 
 export type PropValue = {
     propertyValue: string;
@@ -34,7 +33,7 @@ export type PropValue = {
     characteristic: string;
     enumWithEntities: boolean;
     property: Property;
-    complexPropObj?: { complexProp: string; properties: Property[] };
+    complexPropObj?: {complexProp: string; properties: Property[]};
 };
 
 export const assetsPath = 'assets/i18n/shared/components';
@@ -44,7 +43,7 @@ export const baseAssetsPath = `src/${assetsPath}`;
  * A rule that reads the comma-separated list of files specified as options.aspectModelTFiles
  * and provides them as strings in array options.ttl.
  */
-export function loadRDF(options: tableSchema | typeSchema): Rule {
+export function loadRDF(options: Schema): Rule {
     return (tree: Tree, context: SchematicContext) => {
         const aspectModelTFiles = Array.isArray(options.aspectModelTFiles)
             ? options.aspectModelTFiles
@@ -64,7 +63,9 @@ export function loadRDF(options: tableSchema | typeSchema): Rule {
                 throw new SchematicsException(`TTL file not found under '${path}'.`);
             }
 
-            options.spinner.succeed(`Loaded RDF ${aspectModelTFiles.length > 1 ? index + 1 + '/' + aspectModelTFiles.length : ''} from "${path}"`);
+            options.spinner.succeed(
+                `Loaded RDF ${aspectModelTFiles.length > 1 ? index + 1 + '/' + aspectModelTFiles.length : ''} from "${path}"`
+            );
 
             return virtualFs.fileBufferToString(data);
         });
@@ -73,12 +74,11 @@ export function loadRDF(options: tableSchema | typeSchema): Rule {
     };
 }
 
-
 /**
  * A rule that interprets the provided strings in array options.ttl as RDF and
  * provides the aspect in options.aspectModel.
  */
-export function loadAspectModel(options: tableSchema | typeSchema): Rule {
+export function loadAspectModel(options: Schema): Rule {
     const func = (tree: Tree, context: SchematicContext) => {
         return new Observable<Tree>((subscriber: Subscriber<Tree>) => {
             const loader = new AspectModelLoader();
@@ -126,19 +126,19 @@ export function validateUrns(options: Schema): void {
     }
 }
 
-export function getSelectedModelElement(loader: AspectModelLoader, aspect: Aspect, options: tableSchema | typeSchema): Aspect | Entity {
+export function getSelectedModelElement(loader: AspectModelLoader, aspect: Aspect, options: Schema): Aspect | Entity {
     const element = loader.findByUrn(options.selectedModelElementUrn) || findCollectionElement(aspect);
 
-    return (element instanceof DefaultEntity) ? element as Entity : element as Aspect;
+    return element instanceof DefaultEntity ? (element as Entity) : (element as Aspect);
 }
 
 function findCollectionElement(aspect: Aspect): Aspect | Entity | undefined {
     if (!aspect.isCollectionAspect) return undefined;
     const collectionElement = aspect.properties.find(property => property.characteristic instanceof DefaultCollection);
-    return collectionElement?.effectiveDataType?.isComplex ? collectionElement.effectiveDataType as Entity : aspect;
+    return collectionElement?.effectiveDataType?.isComplex ? (collectionElement.effectiveDataType as Entity) : aspect;
 }
 
-export function generateTranslationFiles(options: tableSchema): Rule {
+export function generateTranslationFiles(options: Schema): Rule {
     return (tree: Tree, _context: SchematicContext) => {
         const element = options.selectedModelElement as Aspect | Entity;
 

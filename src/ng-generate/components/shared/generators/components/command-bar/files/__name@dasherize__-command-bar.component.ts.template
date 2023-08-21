@@ -1,0 +1,111 @@
+/** <%= options.generationDisclaimerText %> **/
+import {Component, EventEmitter, Input, Output, ViewChild} from '@angular/core';
+import {SelectionModel} from "@angular/cdk/collections";
+
+<% if (options.hasFilters || (options.componentType === 'card' && options.addCommandBar)) { %>
+    import {<%= classify(name) %>FilterService
+        <% if (options.componentType === 'card') { %>
+            , SortCard
+        <% } %>
+    } from './<%= dasherize(name) %>-filter.service';
+<% } %>
+
+<% if (options.componentType === 'card') { %>
+    import {<%= classify(name) %>CardValues} from './<%= dasherize(name) %>.component';
+<% } %>
+
+<% if (options.componentType === 'table' && options.hasSearchBar) { %>
+    import {Config} from "./<%= dasherize(name) %>.component";
+    import {<%= classify(name) %>ConfigMenuComponent} from './<%= dasherize(name) %>-config-menu.component';
+<% } %>
+
+@Component({
+    selector: 'command-bar',
+    templateUrl: './<%= dasherize(name) %>-command-bar.component.html',
+    styleUrls: ['./<%= dasherize(name) %>-command-bar.component.scss']
+})
+export class <%= classify(name) %>CommandBarComponent {
+    @Input() isMultipleSelectionEnabled = true;
+    @Input() selection = new SelectionModel<any>(this.isMultipleSelectionEnabled, []);
+    @Input() totalItems = 0;
+    @Input() searchFocused = false;
+    @Input() allowedCharacters: string = '';
+    @Input() minNumberCharacters: number = 2;
+    @Input() maxNumberCharacters: number = 50;
+    @Input() searchHint?: string;
+    @Input() <%= options.localStorageKeyConfig %>: string = '';
+
+    <% if (options.componentType === 'table' && options.hasSearchBar) { %>
+        @Input() configs: Array<Config> = [];
+        @Input() hasAdvancedSearch: boolean = this.filterService.stringColumns.length > 1;
+    <% } %>
+
+    @Output() applyFilters = new EventEmitter<void>();
+    @Output() reloadFilter = new EventEmitter<void>();
+    @Output() exportToCsv = new EventEmitter<void>();
+
+    <% if (options.customCommandBarActions.length > 0) { %>
+        @Output() customCommandBarActionEvent = new EventEmitter<any>();
+    <% } %>
+
+    <% if (options.componentType === 'table' && options.hasSearchBar) { %>
+        @Output() setConfiguration = new EventEmitter<Array<Config>>();
+        @ViewChild(<%= classify(name) %>ConfigMenuComponent) private configurationComponent!: <%= classify(name) %>ConfigMenuComponent;
+    <% } %>
+
+    <% if (options.componentType === 'card') { %>
+        @Output() sorting = new EventEmitter<void>();
+
+        <%= camelize(name) %>CardValues = Object.values(<%= classify(name) %>CardValues);
+        protected readonly SortCard = SortCard;
+    <% } %>
+
+    constructor(<% if (options.hasFilters || (options.componentType === 'card' && options.addCommandBar)) { %>public filterService: <%= classify(name) %>FilterService<% } %>) {
+        <% if (options.componentType === 'card') { %>
+            this.filterService.sortedProperty = this.<%= camelize(name) %>CardValues[0];
+        <% } %>
+    }
+
+    triggerApplyFilters(): void {
+      this.applyFilters.emit();
+    }
+
+    triggerExportToCsv(): void {
+      this.exportToCsv.emit();
+    }
+
+    triggerReloadFilter(): void {
+        this.reloadFilter.emit();
+    }
+
+    <% if (options.componentType === 'card') { %>
+        setSortingProperty(value: string) {
+            this.filterService.sortedProperty = value;
+            this.sorting.emit();
+        }
+
+        setSortingDir() {
+            this.filterService.sortCard = this.filterService.sortCard === SortCard.ASCENDING ? SortCard.DESCENDING : SortCard.ASCENDING;
+            this.sorting.emit();
+        }
+    <% } %>
+
+    <% if (options.componentType === 'table' && options.hasSearchBar) { %>
+        triggerInitOpenedConfigurationDialog(): void {
+            this.configurationComponent.keyLocalStorage = this.<%= options.localStorageKeyConfig %>;
+            this.configurationComponent.configs.splice(0, this.configurationComponent.configs.length);
+            this.configurationComponent.configs.push(...this.configs.map(config => ({...config})));
+        }
+
+        triggerSetConfiguration(config: Array<Config>): void {
+          this.setConfiguration.emit(config);
+        }
+    <% } %>
+
+    <% if (options.customCommandBarActions.length > 0) { %>
+        executeCustomCommandBarAction($event: MouseEvent, action: string) {
+            $event.stopPropagation()
+            this.customCommandBarActionEvent.emit({action: action})
+        }
+    <% } %>
+}

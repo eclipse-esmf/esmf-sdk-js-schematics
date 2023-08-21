@@ -1,0 +1,67 @@
+/** <%= options.generationDisclaimerText %> **/
+import {NgModule} from '@angular/core';
+import {<%= classify(name) %>Component} from './<%= dasherize(name) %>.component';
+<% if (options.componentType === 'card') { %>
+    import {TranslateModule} from '@ngx-translate/core';
+<% } %>
+
+<% if (options.addCommandBar) { %>
+    import {<%= classify(name) %>CommandBarComponent} from './<%= dasherize(name) %>-command-bar.component';
+
+        <% if (options.hasFilters) { %>
+            import {<%= classify(name) %>ChipListComponent} from './<%= dasherize(name) %>-chip-list.component';
+        <% } %>
+
+    <% if (options.componentType === 'table') { %>
+        <% if (options.hasSearchBar) { %>
+            import {<%= classify(name) %>ConfigMenuComponent} from './<%= dasherize(name) %>-config-menu.component';
+        <% } %>
+    <% } %>
+<% } %>
+
+<% if (options.componentType === 'table') { %>
+    import {<%= classify(name) %>ColumnMenuComponent} from './<%= dasherize(name) %>-column-menu.component';
+<% } %>
+
+import {AppSharedModule} from 'src/app/shared/app-shared.module';
+
+@NgModule({
+    declarations: [
+        <%= classify(name) %>Component
+
+        <% if (options.componentType === 'table') { %>
+            , <%= classify(name) %>ColumnMenuComponent
+        <% } %>
+
+        <% if (options.addCommandBar) { %>
+            , <%= classify(name) %>CommandBarComponent
+
+            <% if (options.hasFilters) { %>
+                , <%= classify(name) %>ChipListComponent
+            <% } %>
+
+            <% if (options.componentType === 'table') { %>
+                <% if (options.hasSearchBar) { %>
+                    , <%= classify(name) %>ConfigMenuComponent
+                <% } %>
+            <% } %>
+        <% } %>
+    ],
+    imports: [AppSharedModule],
+    providers: [],
+    exports: [
+        <%= classify(name) %>Component
+
+        <% if (options.addCommandBar) { %>
+            , <%= classify(name) %>CommandBarComponent
+
+            <% if (options.hasFilters) { %>
+                , <%= classify(name) %>ChipListComponent
+            <% } %>
+        <% } %>
+        <% if (options.componentType === 'card') { %>
+            , TranslateModule
+        <% } %>
+    ],
+})
+export class <%= classify(name) %>Module {}

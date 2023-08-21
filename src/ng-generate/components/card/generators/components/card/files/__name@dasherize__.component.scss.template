@@ -1,0 +1,12 @@
+/** <%= options.generationDisclaimerText %> **/
+@import 'general.component';
+
+.data-card {
+  margin: 15px 0 10px 0;
+}
+
+.data-card-header {
+  display: flex;
+  justify-content: space-between;
+  border-top: 5px solid black;
+}

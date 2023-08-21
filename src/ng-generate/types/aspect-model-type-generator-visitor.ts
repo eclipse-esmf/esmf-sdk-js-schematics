@@ -30,9 +30,9 @@ import {
     Property,
     Type,
 } from '@esmf/aspect-model-loader';
-import {Schema} from './schema';
+import {TypesSchema} from './schema';
 
-export function visitAspectModel(options: Schema): Rule {
+export function visitAspectModel(options: TypesSchema): Rule {
     return async (tree: Tree) => {
         const visitor = new AspectModelTypeGeneratorVisitor(options);
         const aspect: Aspect = options.aspectModel;
@@ -64,9 +64,9 @@ export class AspectModelTypeGeneratorVisitor extends DefaultAspectModelVisitor<B
     // Key = Name of the generated data type
     // Value = Array of lines that define the data type
     private typeDefinitions = new Map<string, string[]>();
-    private readonly options: Schema;
+    private readonly options: TypesSchema;
 
-    constructor(options: Schema) {
+    constructor(options: TypesSchema) {
         super();
         this.options = options;
     }

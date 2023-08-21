@@ -1,0 +1,6 @@
+export interface Column {
+    /** Column name **/
+    name: string;
+    /** State if the column is selected **/
+    selected: boolean;
+}

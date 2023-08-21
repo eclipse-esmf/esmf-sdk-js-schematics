@@ -27,8 +27,10 @@ import {
     Property,
 } from '@esmf/aspect-model-loader';
 import {classify, dasherize, underscore} from '@angular-devkit/core/src/utils/strings';
-import {ExcludedProperty, Schema, Values} from '../ng-generate/table/schema';
+// TODO change this ...
+import {ExcludedProperty, Schema, Values} from '../ng-generate/components/shared/schema';
 import * as locale from 'locale-codes';
+import {TableSchema} from '../ng-generate/components/table/schema';
 
 export class TemplateHelper {
     /**
@@ -42,7 +44,9 @@ export class TemplateHelper {
         options.hasFilters = this.hasFilters(options);
         options.typePath = this.getTypesPath(options.enableVersionSupport, options.aspectModelVersion, options.aspectModel);
         options.dateProperties = this.getDateProperties(options).filter((property: Property) => this.isDateProperty(property));
-        options.dateTimeStampProperties = this.getDateProperties(options).filter((property: Property) => this.isDateTimestampProperty(property));
+        options.dateTimeStampProperties = this.getDateProperties(options).filter((property: Property) =>
+            this.isDateTimestampProperty(property)
+        );
         options.timeProperties = this.getDateProperties(options).filter((property: Property) => this.isTimeProperty(property));
         options.isDateQuickFilter = this.isAddDateQuickFilters(options.enabledCommandBarFunctions);
         options.isEnumQuickFilter = this.isAddEnumQuickFilters(options.enabledCommandBarFunctions);
@@ -323,7 +327,6 @@ export class TemplateHelper {
         ];
 
         return numberShortUrns.includes(property.effectiveDataType.shortUrn);
-
     }
 
     /**
@@ -398,7 +401,6 @@ export class TemplateHelper {
         return ((property.characteristic as DefaultEnumeration).values[0] as DefaultEntityInstance).valuePayloadKey;
     }
 
-
     /**
      * Gets the properties for the selected model element.
      *
@@ -425,7 +427,7 @@ export class TemplateHelper {
      * @param {Schema} options The schema options.
      * @returns {Object} An object with the complex property name and the properties.
      */
-    getComplexProperties(complexProp: Property, options: Schema): { complexProp: string; properties: Property[] } {
+    getComplexProperties(complexProp: Property, options: Schema): {complexProp: string; properties: Property[]} {
         const propsToShow = options.complexProps.find(cp => cp.prop === complexProp.name)?.propsToShow;
         const properties = this.getProperties({
             selectedModelElement: complexProp.effectiveDataType as DefaultEntity,
@@ -553,8 +555,10 @@ export class TemplateHelper {
      * @returns Whether the schema has filters.
      */
     hasFilters(options: Schema): boolean {
-        return this.hasSearchBar(options) ||
+        return (
+            this.hasSearchBar(options) ||
             this.isAddDateQuickFilters(options.enabledCommandBarFunctions) ||
-            this.isAddEnumQuickFilters(options.enabledCommandBarFunctions);
+            this.isAddEnumQuickFilters(options.enabledCommandBarFunctions)
+        );
     }
 }
