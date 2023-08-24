@@ -8,11 +8,11 @@ If a copy of the MPL was not distributed with this file, You can obtain one at h
 SPDX-License-Identifier: MPL-2.0
 ////
 
-= Table component generation
+= Card component generation
 
 == _Detailed schema overview_
 
-NOTE: Before generating a table component refer to the xref:internationalization.adoc[internationalization] file.
+NOTE: Before generating a card component refer to the xref:internationalization.adoc[internationalization] file.
 
 In the example, a brand-new application was generated using the command:
 
@@ -26,17 +26,17 @@ ng generate [collection-name]:[schematics-name]
 
 
 For demonstration purposes, the https://github.com/eclipse-esmf/esmf-aspect-model-editor/blob/main/core/apps/ame/src/assets/aspect-models/org.esmf.examples.movement/1.0.0/Movement.ttl[Movement.ttl] Aspect Model will be used.
-Below is a detailed representation of the command-line interface steps which generates a table component using the Movement.ttl Aspect Model file by running the command.
+Below is a detailed representation of the command-line interface steps which generates a card component using the Movement.ttl Aspect Model file by running the command.
 
 NOTE: Before running any schematics commands make sure you are in the Angular project folder where you want to generate the new component.
 
 Component generation is achieved by running either of the following commands:
 
 [source]
-ng generate @esmf/semantic-ui-schematics:table
+ng generate @esmf/semantic-ui-schematics:card
 
 [source]
-ng g @esmf/semantic-ui-schematics:table
+ng g @esmf/semantic-ui-schematics:card
 
 NOTE: The Angular folder where the component generation takes place should contain another folder with the .ttl files.
 
@@ -63,16 +63,15 @@ This will give access to the folder structure and by using a FUZZY search mechan
 === _Aspect Model selection_
 If no pre-existing config file is loaded, then there is an option to choose for one or multiple Aspect Model files from the folder structure, using the same FUZZY search mechanism.
 
+image::schema.aspect-model-selection.png[width=100%]
 
 image::schema.another-aspect-model-selection.png[width=100%]
 
-image::schema.aspect-model-selection.png[width=100%]
-
 === _Entity or specific aspect selection_
 
-An Aspect or an Entity must be chosen in order for the table to be created. This can be done in this step by choosing from a list.
+An Aspect or an Entity must be chosen in order for the card to be created. This can be done in this step by choosing from a list.
 
-image::schema.aspect-or-entity-selection-table.png[width=100%]
+image::schema.aspect-or-entity-selection-card.png[width=100%]
 
 === _Property exclusion_
 
@@ -82,35 +81,13 @@ image::schema.exclude-properties.png[width=100%]
 
 === _Default property sorting_
 
-The table can sort the rows based on a property. In this step the default one can be chosen.
+The card can sort based on a property. In this step the default one can be chosen.
 
 image::schema.default-sorting-property.png[width=100%]
 
-=== _Custom actions_
-
-The table supports custom actions to be configured. These actions will appear in the actions column of the table. In the following prompt you can choose different files or class names to customize the icons.
-
-image::custom-actions-prompt.png[width=100%]
-
-In the generated table the selection custom actions can be observed in the actions column as below.
-
-image::table-example.png[width=100%]
-
-=== _Multiple selection_
-
-One other thing supported is multiple selection. There is an option to choose to have this feature or not in the following prompt.
-
-image::multiple-actions-prompt.png[width=100%]
-
-The generated table containing checkboxes will look like in the following example:
-
-NOTE: _The checkboxes are displayed in the first column of the table. One or multiple rows can be selected._
-
-image::table-with-checked-rows.png[width=100%]
-
 === _Command bar_
 
-The command bar is displayed above the table, and it holds the controls for searching and filtering the data inside the table. This is shown only if the 'yes' option is chosen in the provided input.
+The command bar is displayed above the cards, and it holds the controls for searching and filtering the data inside the card. This is shown only if the 'yes' option is chosen in the provided input.
 
 image::command-bar-prompt.png[width=100%]
 
@@ -122,7 +99,7 @@ In the example provided, only the search functionality will be available.
 
 image::search-bar.png[width=100%]
 
-The search input is present allowing you to filter the existing data in the table if the data is handled on the client side or request new data. This can be decided in the next steps. The filtered data will be displayed after pressing the `search` button next to the search field.
+The search input is present allowing you to filter the existing data in the card if the data is handled on the client side or request new data. This can be decided in the next steps. The filtered data will be displayed after pressing the `search` button next to the search field.
 
 NOTE:  _The search input will filter the data `*ONLY*` by the existing `*STRING*` properties in the chosen Aspect Model._
 
@@ -136,11 +113,11 @@ After generating a component, you can pass the data from the parent to the child
 
 image::remote-data-handling-prompt.png[width=100%]
 
-This means that any time you request data, an API endpoint will be called and the result coming from that endpoint will populate the table with a fresh set of data.
+This means that any time you request data, an API endpoint will be called and the result coming from that endpoint will populate the card with a fresh set of data.
 
 === _Component path_
 
-Once all the prompts are answered, a table will be generated based on the selected options. The default path of the newly generated component is `*_src/app/shared/components/<component-name>_*`.
+Once all the prompts are answered, a card will be generated based on the selected options. The default path of the newly generated component is `*_src/app/shared/components/<component-name>_*`.
 
 [source]
 ----
@@ -157,7 +134,6 @@ shared
         │   │   <component-name>-chip-list.component.html
         │   │   <component-name>.module.ts
         │   │   <component-name>.service.ts
-        │   │   <component-name>.datasource.ts
         │   │   <component-name>-filter.service.ts
 ----
 
@@ -218,7 +194,6 @@ shared
         │    │   │   <component-name>.module.ts
         │    │   │   <component-name>.service.ts
         │    │   │   <component-name>-filter.service.ts
-        │    │   │   <component-name>-datasource.ts
         └─── <component-version-1>
         │    └─── <component-name>
         │    │   │   custom-<component-name>.service.ts
@@ -233,36 +208,35 @@ shared
         │    │   │   <component-name>.module.ts
         │    │   │   <component-name>.service.ts
         │    │   │   <component-name>-filter.service.ts
-        │    │   │   <component-name>-datasource.ts
 ----
 
 === _Material theme(Indigo pink)_
 
-User can add to angular.json Indigo pink material theme. These action will appear in the actions column of the table. In the following prompt you can choose to add the Indigo pink material theme.
+User can add to angular.json Indigo pink material theme. These action will appear in the actions column of the card. In the following prompt you can choose to add the Indigo pink material theme.
 
 image::material-theme-prompt.png[width=100%]
 
-In the generated angular.json table if user selected yes we can observe the change in styles array.
+In the generated angular.json card if user selected yes we can observe the change in styles array.
 
 image::angular-json-example.png[width=100%]
 
-=== _Set view encapsulation strategy for the generated table component_
+=== _Set view encapsulation strategy for the generated card component_
 
-User can set the View Encapsulation strategy by default the ViewEncapsulation will be set to None on the generated table component. In the following prompt you can choose to add another View Encapsulation value.
+User can set the View Encapsulation strategy by default the ViewEncapsulation will be set to None on the generated card component. In the following prompt you can choose to add another View Encapsulation value.
 
 image::view-encapsulation-prompt.png[width=100%]
 
-=== _Flags for generating the table_
+=== _Flags for generating the card_
 
 By using
 
 [source]
-ng generate @esmf/semantic-ui-schematics:table --help
+ng generate @esmf/semantic-ui-schematics:card --help
 
 or
 
 [source]
-ng g @esmf/semantic-ui-schematics:table --help
+ng g @esmf/semantic-ui-schematics:card --help
 
 you can get access to all the options encapsulated in the schema.json file. Each field has a description for a better understanding of it and how to use it.
 
@@ -272,12 +246,8 @@ you can get access to all the options encapsulated in the schema.json file. Each
 |Flag to add the command bar
 |false
 |boolean
-|_--add-row-checkboxes_
-|Multi selection checkboxes for selecting table rows
-|false
-|boolean
 |_--aspect-model-urn-to-load_
-|Specify the Aspect Model for table generation
+|Specify the Aspect Model for card generation
 |''
 |string
 |_--change-detection_
@@ -316,7 +286,7 @@ Aspect Model
 |true
 |boolean
 |_--selected-model-element-urn_
-|Choose a specific Entity or Aspect to show as table
+|Choose a specific Entity or Aspect to show as card
 |''
 |string
 |_--ttl_
@@ -342,7 +312,7 @@ Make sure moment.js and dateAdaptor are correctly installed
 
 ## Set default language
 
-In app.component.ts, it is required to set the default language):
+In app.component.ts, it is required to set the default language:
 
     constructor(lang: TranslateService) {
         lang.use(lang.defaultLang);
@@ -350,5 +320,20 @@ In app.component.ts, it is required to set the default language):
 
 ---
 
+## Add custom content template
+
+In the app.component.ts you can determine the content of the cards yourself:
+
+    <esmf-ui-cards [data]="data">
+      <ng-template #cardTemplate let-data let-element="cardValues" let-getElementValue="getElementValue" let-translateService="translateService">
+        <div class="data-card-element" *ngFor="let elem of element">
+          <b>{{ translateService.instant(elem + '.preferredName') }}</b>: {{ getElementValue(data, elem) }}
+        </div>
+      </ng-template>
+    </esmf-ui-cards>
+
+The ng-tempalte values can be used from the child componente or can be determined by the user.
+
+---
 
 
