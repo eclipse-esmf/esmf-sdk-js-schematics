@@ -68,10 +68,10 @@ export function generateComponent(context: SchematicContext, schema: Schema, com
     }
 
     const generateTypesTaskId = context.addTask(new RunSchematicTask('types', options), prompterTaskId ? [prompterTaskId] : []);
-    const tableGenId = context.addTask(new RunSchematicTask(`${componentType}-generation`, options), [generateTypesTaskId]);
+    const componentGenId = context.addTask(new RunSchematicTask(`${componentType}-generation`, options), [generateTypesTaskId]);
 
     if (!options.skipInstall) {
-        context.addTask(new NodePackageInstallTask(), [tableGenId]);
+        context.addTask(new NodePackageInstallTask(), [componentGenId]);
     }
 }
 

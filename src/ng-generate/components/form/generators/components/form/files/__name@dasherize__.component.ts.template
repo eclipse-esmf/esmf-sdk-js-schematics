@@ -1,0 +1,97 @@
+/** <%= options.generationDisclaimerText %> **/
+
+import {Component, OnInit} from '@angular/core';
+import {AbstractControl, FormBuilder, FormGroup, Validators} from '@angular/forms';
+
+@Component({
+    selector: '<%= dasherize(name) %>',
+    templateUrl: './<%= dasherize(name) %>.component.html',
+    styleUrls: ['./<%= dasherize(name) %>.component.scss']
+})
+export class <%= classify(name) %>Component implements OnInit {
+    form: FormGroup;
+
+    constructor(private fb: FormBuilder) { }
+
+    ngOnInit() {
+        this.form = this.createFormGroup();
+    }
+
+    private createFormGroup(): FormGroup {
+        const group = this.fb.group({});
+
+        <% for(let property of allProps) { %>
+            <% if (property.characteristic.dataType.isScalar) { %>
+                group.addControl('<%= property.name %>',
+
+                    <% if(property.characteristic.dataType?.shortUrn === 'boolean') { %>
+                        this.fb.control(false)
+                    <% } else { %>
+                        this.fb.control(
+                            <% if (property.exampleValue) { %>
+                                <%= property.exampleValue %>
+                            <% } else { %>
+                                ''
+                            <% } %>
+
+                            <% if (!property.isOptional) { %>
+                                <% if (dateTypeValidation(property).length) { %>
+                                    , [Validators.required, Validators.min(<%= dateTypeValidation(property)[0] %>), Validators.max(<%= dateTypeValidation(property)[1] %>)])
+                                <% } else { %>
+                                    , Validators.required)
+                                <% } %>
+                            <% } else { %>
+                                )
+                            <% } %>
+                    <% } %>
+
+                );
+            <% } else { %>
+                const <%= property.name %>Group = this.fb.group({});
+
+                <% for (let dataTypeProperty of property.characteristic.dataType.properties) { %>
+                    <%= property.name %>Group.addControl('<%= dataTypeProperty.name %>',
+
+                            <% if(dataTypeProperty.characteristic.dataType?.shortUrn === 'boolean') { %>
+                                this.fb.control(false)
+                            <% } else { %>
+                                this.fb.control(
+                                   <% if (dataTypeProperty.exampleValue) { %>
+                                       <%= dataTypeProperty.exampleValue %>
+                                   <% } else { %>
+                                       ''
+                                   <% } %>
+
+                                   <% if (!dataTypeProperty.isOptional) { %>
+                                       <% if (dateTypeValidation(dataTypeProperty).length) { %>
+                                           , [Validators.required, Validators.min(<%= dateTypeValidation(dataTypeProperty)[0] %>), Validators.max(<%= dateTypeValidation(dataTypeProperty)[1] %>)])
+                                       <% } else { %>
+                                           , Validators.required)
+                                       <% } %>
+                                   <% } else { %>
+                                       )
+                                   <% } %>
+                            <% } %>
+                        );
+                <% } %>
+                group.addControl('<%= property.name %>', <%= property.name %>Group);
+            <% } %>
+        <% } %>
+
+        return group;
+    }
+
+    getFormControl(property: string, dataTypeProperty?: string): AbstractControl | null | undefined {
+        if (dataTypeProperty) {
+            return this.form.get(property)?.get(dataTypeProperty);
+        }
+
+        return this.form.get(property);
+    }
+
+    onSubmit() {
+        if (this.form.valid) {
+        console.log('Form Value:', this.form.value);
+        }
+    }
+}

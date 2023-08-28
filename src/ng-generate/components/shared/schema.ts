@@ -18,6 +18,7 @@ import {Property} from '@esmf/aspect-model-loader';
 export enum ComponentType {
     TABLE = 'table',
     CARD = 'card',
+    FORM = 'form',
 }
 export interface ExcludedProperty {
     /**
