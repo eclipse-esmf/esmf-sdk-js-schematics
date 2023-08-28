@@ -33,6 +33,20 @@
             "factory": "./ng-generate/components/card/index#generateCard",
             "schema": "./ng-generate/components/card/schema.json"
         },
+        "form": {
+            "description": "Create a component that generate a form",
+            "factory": "./ng-generate/components/form/index",
+            "schema": "./ng-generate/components/form/schema.json"
+        },
+        "form-prompter": {
+            "description": "generate custom prompter",
+            "factory": "./ng-generate/prompter/form/index"
+        },
+        "form-generation": {
+            "description": "Executes the form generation",
+            "factory": "./ng-generate/components/form/index#generateForm",
+            "schema": "./ng-generate/components/form/schema.json"
+        },
         "i18n": {
             "description": "Add i18n strategy to the application",
             "factory": "./ng-generate/i18n/index",
