@@ -1,7 +1,7 @@
 <mat-toolbar data-test="toolbar" class="toolbar">
     <div *ngIf="isMultipleSelectionEnabled" data-test="toolbar-number-of-items" class="command-bar-number-of-items">{{ selection.selected.length > 0 ? (selection.selected.length + ' / ') : '' }}{{ totalItems }}</div>
     <% if (options.hasSearchBar) { %>
-        <mat-form-field data-test="search-form-field" appearance="fill">
+        <mat-form-field data-test="search-form-field-<%= options.componentType %>" appearance="fill">
           <mat-label data-test="search-label">{{ 'search' | translate }}</mat-label>
           <input
             #searchInput
@@ -140,11 +140,11 @@
         <% } %>
     <% } %>
 
-    <button data-test="refresh-data-button" mat-icon-button aria-label="Refresh table" (click)="triggerReloadFilter()">
+    <button data-test="refresh-data-button-<%= options.componentType %>" mat-icon-button aria-label="Refresh table" (click)="triggerReloadFilter()">
       <mat-icon data-test="refresh-data-icon" class="material-icons" [matTooltip]="'tableActions.refreshData' | translate">autorenew</mat-icon>
     </button>
 
-    <button data-test="export-data-button" mat-icon-button aria-label="Download data as CSV" (click)="triggerExportToCsv()">
+    <button data-test="export-data-button-<%= options.componentType %>" mat-icon-button aria-label="Download data as CSV" (click)="triggerExportToCsv()">
       <mat-icon data-test="export-data-icon" class="material-icons" [matTooltip]="'tableActions.exportData' | translate">file_download</mat-icon>
     </button>
 

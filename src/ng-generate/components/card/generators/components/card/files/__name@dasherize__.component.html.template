@@ -40,5 +40,5 @@
     </div>
   </mat-card>
 
-  <mat-paginator [pageSizeOptions]="[5, 10, 25, 50, 100]"></mat-paginator>
+  <mat-paginator [pageSizeOptions]="[5, 10, 25, 50, 100]" data-test="paginator-card"></mat-paginator>
 </div>

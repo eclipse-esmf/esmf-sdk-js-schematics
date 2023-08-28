@@ -172,7 +172,7 @@
       <% } %>
 
     </div>
-    <mat-paginator data-test="paginator"
+    <mat-paginator data-test="paginator-table"
                    [length]="<%= remoteDataHandling %>"
                    [pageIndex]="0"
                    [pageSize]="pageSize"
