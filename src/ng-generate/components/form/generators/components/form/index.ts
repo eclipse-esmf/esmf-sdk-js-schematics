@@ -53,8 +53,12 @@ export function generateFormComponent(options: any): Rule {
 function getInputType(property: Property) {
     const urn = property.characteristic.dataType?.shortUrn;
 
-    if (urn === 'string' || urn === 'longString' || urn === 'hexBinary' || urn === 'curie' || urn === 'base64Binary') {
+    if (urn === 'string' || urn === 'hexBinary' || urn === 'curie' || urn === 'base64Binary') {
         return 'text';
+    }
+
+    if(urn === 'langString') {
+        return 'textArea'
     }
 
     if (urn === 'byte' || urn === 'float' || urn === 'decimal' || urn === 'double' || urn === 'integer' || urn === 'int'
@@ -63,10 +67,12 @@ function getInputType(property: Property) {
         return 'number';
     }
 
-    if (urn === 'date' || urn === 'dateTime' || urn === 'dataTimeStamp' || urn === 'dayTimeDuration' || urn === 'duration'
-        || urn === 'gDay' || urn === 'gMonth' || urn === 'gMonthDay' || urn === 'gYearMonth' || urn === 'time'
-        || urn === 'yearMonthDuration') {
+    if (urn === 'date'|| urn === 'gDay' || urn === 'gMonth' || urn === 'gMonthDay' || urn === 'gYearMonth') {
         return 'date';
+    }
+
+    if(urn === 'dateTime' || urn === 'dataTimeStamp' || urn === 'dayTimeDuration' || urn === 'duration' || urn === 'time' || urn === 'yearMonthDuration') {
+        return 'dateTime'
     }
 
     return urn;
