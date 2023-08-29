@@ -2,8 +2,6 @@
     <% for(let property of allProps) { %>
         <% if (property.characteristic.dataType.isScalar) { %>
             <div class="form-group">
-                <label for="<%= property.name %>"><%= property.name %></label>
-
                 <% if (property.characteristic instanceof Enumeration) { %>
                     <mat-form-field appearance="fill" id='<%= property.name %>'>
                         <mat-label>Select a <%= property.name %></mat-label>
@@ -24,23 +22,42 @@
                        </mat-error>
                     <% } %>
                 <% } else if (inputType(property) === 'boolean') { %>
-                    <mat-checkbox id="<%= property.name %>" formControlName="<%= property.name %>">{{  form.get('<%= property.name %>')?.value }}</mat-checkbox>
+                    <mat-checkbox id="<%= property.name %>" formControlName="<%= property.name %>"><%= property.name %></mat-checkbox>
+                <% } else if (inputType(property) === 'date') { %>
+                    <mat-form-field>
+                        <mat-label>Choose a <%= property.name %></mat-label>
+                        <input matInput [matDatepicker]="picker" formControlName="<%= property.name %>">
+                        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                        <mat-datepicker #picker></mat-datepicker>
+
+                        <% if (!property.isOptional) { %>
+                            <mat-error *ngIf="form.get('<%= property.name %>')?.hasError('required') && form.get('<%= property.name %>')?.touched">
+                                <%= property.name %> is required.
+                            </mat-error>
+                        <% } %>
+                    </mat-form-field>
                 <% } else { %>
-                    <input type="<%= inputType(property) %>" id="<%= property.name %>"
-                           formControlName="<%= property.name %>"
-                           [required]="<%= !property.isOptional %>"
-                           placeholder="<%= property.exampleValue || '' %>">
-                    <% if (!property.isOptional) { %>
-                        <mat-error *ngIf="form.get('<%= property.name %>')?.hasError('required') && form.get('<%= property.name %>')?.touched">
-                            <%= property.name %> is required.
-                        </mat-error>
-                        <mat-error *ngIf="form.get('<%= property.name %>')?.hasError('min')">
-                            <%= property.name %> is to low.
-                        </mat-error>
-                        <mat-error *ngIf="form.get('<%= property.name %>')?.hasError('max')">
-                            <%= property.name %> is to high.
-                        </mat-error>
-                    <% } %>
+                    <mat-form-field>
+                        <mat-label><%= property.name %></mat-label>
+                            <input type="<%= inputType(property) %>" matInput
+                                   formControlName="<%= property.name %>"
+                                   placeholder="<%= property.exampleValue || '' %>">
+
+                            <% if (!property.isOptional) { %>
+                                <mat-error *ngIf="form.get('<%= property.name %>')?.hasError('required') && form.get('<%= property.name %>')?.touched">
+                                    <%= property.name %> is required.
+                                </mat-error>
+                            <% } %>
+
+                            <% if (dateTypeValidation(property).length > 0) { %>
+                                <mat-error *ngIf="form.get('<%= property.name %>')?.hasError('min')">
+                                    <%= property.name %> is to low.
+                                </mat-error>
+                                <mat-error *ngIf="form.get('<%= property.name %>')?.hasError('max')">
+                                    <%= property.name %> is to high.
+                                </mat-error>
+                            <% } %>
+                    </mat-form-field>
                 <% } %>
             </div>
         <% } else { %>
@@ -49,47 +66,64 @@
                     <legend><%= property.name %></legend>
                     <% for (let dataTypeProperty of property.characteristic.dataType.properties) { %>
                         <div class="form-group">
-                            <label for="<%= dataTypeProperty.name %>"><%= dataTypeProperty.name %></label>
+                            <% if (dataTypeProperty.characteristic instanceof Enumeration) { %>
+                                <mat-form-field appearance="fill" id='<%= dataTypeProperty.name %>'>
+                                    <mat-label>Select a <%= dataTypeProperty.name %></mat-label>
+                                    <mat-select formControlName="<%= dataTypeProperty.name %>" [required]="<%= !dataTypeProperty.isOptional %>">
 
-                        <% if (dataTypeProperty.characteristic instanceof Enumeration) { %>
-                            <mat-form-field appearance="fill" id='<%= dataTypeProperty.name %>'>
-                                <mat-label>Select a <%= dataTypeProperty.name %></mat-label>
-                                <mat-select formControlName="<%= dataTypeProperty.name %>" [required]="<%= !dataTypeProperty.isOptional %>">
+                                    <% for (let value of dataTypeProperty.characteristic._values) { %>
+                                          <mat-option value="<%= value %>">
+                                            <%= value %>
+                                          </mat-option>
+                                    <% } %>
 
-                                <% for (let value of dataTypeProperty.characteristic._values) { %>
-                                      <mat-option value="<%= value %>">
-                                        <%= value %>
-                                      </mat-option>
+                                    </mat-select>
+                                  </mat-form-field>
+
+                                  <% if (!dataTypeProperty.isOptional) { %>
+                                      <mat-error *ngIf="getFormControl('<%= property.name %>', '<%= dataTypeProperty.name %>')?.hasError('required')
+                                                   && getFormControl('<%= property.name %>', '<%= dataTypeProperty.name %>')?.touched">
+                                          <%= dataTypeProperty.name %> is required.
+                                      </mat-error>
                                 <% } %>
+                            <% } else if (inputType(property) === 'boolean') { %>
+                                <mat-checkbox id="<%= dataTypeProperty.name %>" formControlName="<%= dataTypeProperty.name %>"><%= dataTypeProperty.name %></mat-checkbox>
+                            <% } else if (inputType(property) === 'date') { %>
+                                <mat-form-field>
+                                    <mat-label>Choose a <%= dataTypeProperty.name %></mat-label>
+                                    <input matInput [matDatepicker]="picker" formControlName="<%= dataTypeProperty.name %>">
+                                    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                                    <mat-datepicker #picker></mat-datepicker>
 
-                                </mat-select>
-                              </mat-form-field>
-
-                              <% if (!dataTypeProperty.isOptional) { %>
-                                  <mat-error *ngIf="getFormControl('<%= property.name %>', '<%= dataTypeProperty.name %>')?.hasError('required')
-                                               && getFormControl('<%= property.name %>', '<%= dataTypeProperty.name %>')?.touched">
-                                      <%= dataTypeProperty.name %> is required.
-                                  </mat-error>
-                            <% } %>
-                        <% } else if (inputType(property) === 'boolean') { %>
-                                <mat-checkbox id="<%= dataTypeProperty.name %>" formControlName="<%= dataTypeProperty.name %>">{{  form.get('<%= dataTypeProperty.name %>')?.value }}</mat-checkbox>
+                                    <% if (!property.isOptional) { %>
+                                        <mat-error *ngIf="form.get('<%= property.name %>')?.hasError('required') && form.get('<%= property.name %>')?.touched">
+                                            <%= property.name %> is required.
+                                        </mat-error>
+                                    <% } %>
+                                </mat-form-field>
                             <% } else { %>
-                                <input type="<%= inputType(dataTypeProperty) %>" id="<%= dataTypeProperty.name %>"
-                                       formControlName="<%= dataTypeProperty.name %>"
-                                       [required]="<%= !dataTypeProperty.isOptional %>"
-                                       placeholder="<%= dataTypeProperty.exampleValue || '' %>">
-                                <% if (!dataTypeProperty.isOptional) { %>
-                                    <mat-error *ngIf="getFormControl('<%= property.name %>', '<%= dataTypeProperty.name %>')?.hasError('required')
-                                                 && getFormControl('<%= property.name %>', '<%= dataTypeProperty.name %>')?.touched">
-                                        <%= dataTypeProperty.name %> is required.
-                                    </mat-error>
-                                    <mat-error *ngIf="getFormControl('<%= property.name %>', '<%= dataTypeProperty.name %>')?.hasError('min')">
-                                        <%= property.name %>: <%= dataTypeProperty.name %> is to low.
-                                    </mat-error>
-                                    <mat-error *ngIf="getFormControl('<%= property.name %>', '<%= dataTypeProperty.name %>')?.hasError('max')">
-                                        <%= property.name %>: <%= dataTypeProperty.name %> is to high.
-                                    </mat-error>
-                                <% } %>
+                                <mat-form-field>
+                                    <mat-label><%= dataTypeProperty.name %></mat-label>
+                                    <input type="<%= inputType(dataTypeProperty) %>" matInput
+                                           formControlName="<%= dataTypeProperty.name %>"
+                                           placeholder="<%= dataTypeProperty.exampleValue || '' %>">
+
+                                    <% if (!dataTypeProperty.isOptional) { %>
+                                        <mat-error *ngIf="getFormControl('<%= property.name %>', '<%= dataTypeProperty.name %>')?.hasError('required')
+                                                     && getFormControl('<%= property.name %>', '<%= dataTypeProperty.name %>')?.touched">
+                                            <%= dataTypeProperty.name %> is required.
+                                        </mat-error>
+                                    <% } %>
+
+                                    <% if (dateTypeValidation(dataTypeProperty).length > 0) { %>
+                                        <mat-error *ngIf="getFormControl('<%= property.name %>', '<%= dataTypeProperty.name %>')?.hasError('min')">
+                                            <%= property.name %>: <%= dataTypeProperty.name %> is to low.
+                                        </mat-error>
+                                        <mat-error *ngIf="getFormControl('<%= property.name %>', '<%= dataTypeProperty.name %>')?.hasError('max')">
+                                            <%= property.name %>: <%= dataTypeProperty.name %> is to high.
+                                        </mat-error>
+                                    <% } %>
+                                </mat-form-field>
                             <% } %>
                         </div>
                     <% } %>
@@ -97,5 +131,7 @@
             </div>
         <% } %>
     <% } %>
-    <button type="submit" [disabled]="form.invalid">Submit</button>
+
+    <button mat-raised-button type="button" color="warn" (click)="onCancel()">Cancel</button>
+    <button mat-raised-button type="submit" color="primary" [disabled]="form.invalid">Submit</button>
 </form>
