@@ -43,6 +43,10 @@
                                    formControlName="<%= property.name %>"
                                    placeholder="<%= property.exampleValue || '' %>">
 
+                            <% if (property.characteristic?.unit?.name) { %>
+                                <span matTextSuffix>unit:<%= property.characteristic.unit.name %></span>
+                            <% } %>
+
                             <% if (!property.isOptional) { %>
                                 <mat-error *ngIf="form.get('<%= property.name %>')?.hasError('required') && form.get('<%= property.name %>')?.touched">
                                     <%= property.name %> is required.
@@ -107,6 +111,10 @@
                                     <input type="<%= inputType(dataTypeProperty) %>" matInput
                                            formControlName="<%= dataTypeProperty.name %>"
                                            placeholder="<%= dataTypeProperty.exampleValue || '' %>">
+
+                                    <% if (dataTypeProperty.characteristic?.unit?.name) { %>
+                                        <span matTextSuffix>unit:<%= dataTypeProperty.characteristic.unit.name %></span>
+                                    <% } %>
 
                                     <% if (!dataTypeProperty.isOptional) { %>
                                         <mat-error *ngIf="getFormControl('<%= property.name %>', '<%= dataTypeProperty.name %>')?.hasError('required')
