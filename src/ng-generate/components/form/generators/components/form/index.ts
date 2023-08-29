@@ -23,13 +23,13 @@ import {
     url
 } from '@angular-devkit/schematics';
 import {strings} from '@angular-devkit/core';
-import {DefaultEnumeration, Property} from "@esmf/aspect-model-loader";
+import {Characteristic, DefaultEnumeration, DefaultSingleEntity, Property} from "@esmf/aspect-model-loader";
 
 let allProps: Array<Property> = [];
 
 export function generateFormComponent(options: any): Rule {
     return (tree: Tree, _context: SchematicContext) => {
-        allProps = options.listAllProperties;
+        allProps = options.listAllProperties.filter((property: Property) => (property.characteristic instanceof DefaultSingleEntity) || (<Characteristic>property.characteristic)?.dataType?.isScalar);
 
         return mergeWith(
             apply(url('./generators/components/form/files'), [
@@ -72,46 +72,46 @@ function getInputType(property: Property) {
     return urn;
 }
 
-function getDateTypeValidation(property: Property){
+function getDateTypeValidation(property: Property) {
     const urn = property.characteristic.dataType?.shortUrn;
 
-    if(urn === 'byte') {
+    if (urn === 'byte') {
         return [-128, 127];
     }
 
-    if(urn === 'short') {
+    if (urn === 'short') {
         return [-32768, 32767];
     }
 
-    if(urn === 'integer' || urn === 'int') {
+    if (urn === 'integer' || urn === 'int') {
         return [-2147483648, 2147483647];
     }
 
-    if(urn === 'unsignedByte') {
+    if (urn === 'unsignedByte') {
         return [0, 255];
     }
 
-    if(urn === 'unsignedShort') {
+    if (urn === 'unsignedShort') {
         return [0, 65535];
     }
 
-    if(urn === 'unsignedInt') {
+    if (urn === 'unsignedInt') {
         return [0, 4294967295];
     }
 
-    if(urn === 'positiveInteger' || urn === 'int') {
+    if (urn === 'positiveInteger' || urn === 'int') {
         return [1, 2147483647];
     }
 
-    if(urn === 'negativeInteger' || urn === 'int') {
+    if (urn === 'negativeInteger' || urn === 'int') {
         return [-2147483648, -1];
     }
 
-    if(urn === 'nonPositiveInteger' || urn === 'int') {
+    if (urn === 'nonPositiveInteger' || urn === 'int') {
         return [0, 2147483647];
     }
 
-    if(urn === 'nonNegativeInteger' || urn === 'int') {
+    if (urn === 'nonNegativeInteger' || urn === 'int') {
         return [-2147483648, 0];
     }
 
