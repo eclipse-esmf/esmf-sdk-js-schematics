@@ -31,4 +31,4 @@ In the `demo-schematics` project folder run:
 [source]
 ng generate @esmf/semantic-ui-schematics:i18n
 
-Afterwards the project can translate a UI using https://github.com/ngx-translate[ngx-translate].
+Afterwards the project can translate a UI using https://github.com/ngx-translate[ngx-translate,window=_blank,opts=nofollow].
