@@ -9,5 +9,6 @@ The following people have contributed to this repository:
 * Hagen Wittlich
 * Arun Kumar Rajapal
 * Wolfgang Klenk
+* Pavel Shalamkov
 
 Please add yourself to this list, if you contribute to the content.
