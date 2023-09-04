@@ -108,27 +108,6 @@
                 <% } %>
             <% } %>
 
-            <% if(options.customColumns && options.customColumns.length > 0) { %>
-                <% for(let columnName of options.customColumns) { %>
-                    <!-- <%= columnName %> Column -->
-                    <ng-container data-test="custom-column-container" matColumnDef="<%= columnName %>">
-                        <% if(options.enableVersionSupport) { %>
-                            <th data-test="custom-column-header" mat-header-cell *matHeaderCellDef mat-sort-header>
-                                {{'<%= options.selectedModelTypeName.toLowerCase() %>.v<%= options.formatedAspectModelVersion %>.customColumn.<%= columnName %>' | translate}}
-                            </th>
-                        <% } else { %>
-                            <th data-test="custom-column-header" mat-header-cell *matHeaderCellDef mat-sort-header>
-                                {{ '<%= options.selectedModelTypeName.toLowerCase() %>.customColumn.<%= columnName %>' | translate }}
-                            </th>
-                        <% } %>
-
-                        <td data-test="custom-column-cell" mat-cell *matCellDef="let row">
-                            <ng-container data-test="custom-column-container" *ngTemplateOutlet="<%= camelize(columnName) %>Template; context:{aspect:row}"></ng-container>
-                        </td>
-                    </ng-container>
-                <% } %>
-            <% } %>
-
             <tr data-test="table-header-row" mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
             <tr data-test="table-row" mat-row *matRowDef="let row; columns: displayedColumns;"
                 [class.selected-row]="selection.isSelected(row) && highlightSelectedRow"
