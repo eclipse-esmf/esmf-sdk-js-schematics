@@ -17,7 +17,7 @@
               </td>
             </tr>
 
-            <% if (options.addRowCheckboxes %>
+            <% if (options.addRowCheckboxes) { %>
                 <ng-container matColumnDef="checkboxes" data-test="checkboxes-container">
                     <th mat-header-cell *matHeaderCellDef data-test="table-header-checkbox">
                         <mat-checkbox data-test="header-checkbox" (change)="$event ? toggleSelectAll() : null" [checked]="selection.hasValue() && isAllSelected()" [indeterminate]="selection.hasValue() && !isAllSelected()"></mat-checkbox>
@@ -29,9 +29,7 @@
                 </ng-container>
             <% } %>
 
-            <%
-                let tableColumValuesFunc = options.tableColumValues(options.allProps, options);
-            %>
+            <% let tableColumValuesFunc = options.tableColumValues(options.allProps, options); %>
 
             <% for(let value of tableColumValuesFunc) { %>
                 <%
@@ -114,7 +112,7 @@
                 <% } %>
             <% } %>
 
-            <%= options.customRowActions(options) %>
+            <%= options.getCustomRowActions(options) %>
 
             <ng-container data-test="columns-menu-button-header" matColumnDef="columnsMenu" stickyEnd>
                 <th style="text-align: right;justify-content: flex-end;" data-test="columns-menu-button-header" mat-header-cell *matHeaderCellDef>
@@ -150,7 +148,7 @@
     </div>
 
     <mat-paginator data-test="paginator-table"
-                   [length]="<%= !sharedOptions.enableRemoteDataHandling ? 'dataSource.length' : 'totalItems' %>"
+                   [length]="<%= !options.enableRemoteDataHandling ? 'dataSource.length' : 'totalItems' %>"
                    [pageIndex]="0"
                    [pageSize]="pageSize"
                    [pageSizeOptions]="pageSizeOptions"

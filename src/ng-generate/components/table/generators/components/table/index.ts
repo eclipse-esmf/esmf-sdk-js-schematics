@@ -43,7 +43,7 @@ export function generateTableComponent(options: any): Rule {
         sharedOptions['allProps'] = options.listAllProperties;
         sharedOptions['tableColumValues'] = getTableColumValues;
         sharedOptions['resolveDateTimeFormat'] = resolveDateTimeFormat;
-        sharedOptions['customRowActions'] = getCustomRowActions;
+        sharedOptions['getCustomRowActions'] = getCustomRowActions;
 
         return chain([
             ...(options.hasFilters ? [generateChipList(sharedOptions)] : []),
