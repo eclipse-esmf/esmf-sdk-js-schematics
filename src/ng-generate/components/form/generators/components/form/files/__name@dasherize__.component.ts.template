@@ -1,7 +1,26 @@
 /** <%= options.generationDisclaimerText %> **/
 
-import {Component, OnInit} from '@angular/core';
-import {AbstractControl, FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {AbstractControl, FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {SelectionModel} from "@angular/cdk/collections";
+import {Clipboard} from '@angular/cdk/clipboard';
+import {MatTableDataSource} from '@angular/material/table';
+
+<% for(let property of options.listProps) { %>
+    <% if (property.characteristic instanceof options.collection
+           && (property.characteristic.elementCharacteristic?.dataType.isComplex || property.characteristic.dataType?.isComplex)
+          ) { %>
+        import {<%= resolveJsPropertyType(property) %>} from '<%= options.typePath %>';
+    <% } %>
+<% } %>
+
+/**
+ * Enumeration of all available columns in the table.
+ */
+export enum <%= classify(name) %>Column {
+    CHECKBOX = 'checkboxes',
+    <%= enumPropertyDefinitions %>
+}
 
 @Component({
     selector: '<%= dasherize(name) %>',
@@ -9,9 +28,32 @@ import {AbstractControl, FormBuilder, FormGroup, Validators} from '@angular/form
     styleUrls: ['./<%= dasherize(name) %>.component.scss']
 })
 export class <%= classify(name) %>Component implements OnInit {
-    form: FormGroup;
+    @Input() noDataMessage: string = 'No data in the table';
+    @Input() isMultipleSelectionEnabled = false;
+    @Input() headerTooltipsOff: boolean = false;
+    @Input() highlightSelectedRow: boolean = true;
+    @Input() selection = new SelectionModel<any>(this.isMultipleSelectionEnabled, []);
 
-    constructor(private fb: FormBuilder) { }
+    @Output() rowSelectionEvent = new EventEmitter<any>();
+    @Output() copyToClipboardEvent = new EventEmitter<any>();
+    @Output() rowClickEvent = new EventEmitter<any>();
+    @Output() rowDblClickEvent = new EventEmitter<any>();
+    @Output() rowRightClickEvent = new EventEmitter<any>();
+    @Output() addRowClickEvent = new EventEmitter<any>();
+    @Output() editRowClickEvent = new EventEmitter<any>();
+    @Output() deleteRowClickEvent = new EventEmitter<any>();
+
+    form: FormGroup;
+    editForm: Array<any> | any;
+
+    <% for(let property of options.listProps) { %>
+        <% if (property.characteristic instanceof options.collection) { %>
+            displayedColumns: Array<string> = Object.values(<%= classify(name) %>Column);
+            dataSource: MatTableDataSource<<%= resolveJsPropertyType(property) %>> = new MatTableDataSource<<%= resolveJsPropertyType(property) %>>();
+        <% } %>
+    <% } %>
+
+    constructor(private fb: FormBuilder, private clipboard: Clipboard,) { }
 
     ngOnInit() {
         this.form = this.createFormGroup();
@@ -20,8 +62,14 @@ export class <%= classify(name) %>Component implements OnInit {
     private createFormGroup(): FormGroup {
         const group = this.fb.group({});
 
-        <% for(let property of allProps) { %>
-            <% if (property.characteristic.dataType.isScalar) { %>
+        <% for(let property of options.allProps) { %>
+            <% if (property.characteristic instanceof options.collection) { %>
+                const <%= property.name %>Group = this.fb.group({});
+
+                <%= property.name %>Group.addControl('rows', this.fb.array([...this.dataSource.data]));
+
+                group.addControl('<%= property.name %>', <%= property.name %>Group);
+            <% } else if (property.characteristic.dataType !== null && property.characteristic.dataType.isScalar) { %>
                 group.addControl('<%= property.name %>',
 
                     <% if(property.characteristic.dataType?.shortUrn === 'boolean') { %>
@@ -35,8 +83,8 @@ export class <%= classify(name) %>Component implements OnInit {
                             <% } %>
 
                             <% if (!property.isOptional) { %>
-                                <% if (dateTypeValidation(property).length) { %>
-                                    , [Validators.required, Validators.min(<%= dateTypeValidation(property)[0] %>), Validators.max(<%= dateTypeValidation(property)[1] %>)])
+                                <% if (options.dateTypeValidation(property).length) { %>
+                                    , [Validators.required, Validators.min(<%= options.dateTypeValidation(property)[0] %>), Validators.max(<%= options.dateTypeValidation(property)[1] %>)])
                                 <% } else { %>
                                     , Validators.required)
                                 <% } %>
@@ -46,7 +94,7 @@ export class <%= classify(name) %>Component implements OnInit {
                     <% } %>
 
                 );
-            <% } else { %>
+            <% } else if (property.characteristic.dataType !== null && property.characteristic.dataType.isComplex) { %>
                 const <%= property.name %>Group = this.fb.group({});
 
                 <% for (let dataTypeProperty of property.characteristic.dataType.properties) { %>
@@ -63,8 +111,8 @@ export class <%= classify(name) %>Component implements OnInit {
                                    <% } %>
 
                                    <% if (!dataTypeProperty.isOptional) { %>
-                                       <% if (dateTypeValidation(dataTypeProperty).length) { %>
-                                           , [Validators.required, Validators.min(<%= dateTypeValidation(dataTypeProperty)[0] %>), Validators.max(<%= dateTypeValidation(dataTypeProperty)[1] %>)])
+                                       <% if (options.dateTypeValidation(dataTypeProperty).length) { %>
+                                           , [Validators.required, Validators.min(<%= options.dateTypeValidation(dataTypeProperty)[0] %>), Validators.max(<%= options.dateTypeValidation(dataTypeProperty)[1] %>)])
                                        <% } else { %>
                                            , Validators.required)
                                        <% } %>
@@ -87,6 +135,80 @@ export class <%= classify(name) %>Component implements OnInit {
         }
 
         return this.form.get(property);
+    }
+
+
+    checkboxClicked(row: any, prop: Array<string> | string): void {
+        if (!this.isMultipleSelectionEnabled) {
+          this.selection.clear();
+        }
+
+        this.selection.toggle(row);
+        if( prop instanceof Array ) {
+          this.editForm = prop.map(property => this.form.get(property));
+        } else {
+          this.editForm = this.form.get(prop);
+        }
+        this.rowSelectionEvent.emit(this.selection.selected);
+    }
+
+    copyToClipboard(value: any, event: MouseEvent): void {
+        event.stopPropagation();
+        event.preventDefault();
+        this.clipboard.copy(value);
+        this.copyToClipboardEvent.emit(value);
+    }
+
+    rowClicked(row: any, prop: Array<string> | string, $event: MouseEvent): boolean {
+        if (this.highlightSelectedRow) {
+            this.checkboxClicked(row, prop);
+        }
+
+        if ($event.type === 'contextmenu') {
+            $event.preventDefault();
+            const mousePositionOnClick = {x: $event.clientX + 'px', y: $event.clientY + 'px'};
+            this.rowRightClickEvent.emit({data: row, mousePosition: mousePositionOnClick});
+        }
+
+        if ($event.type === 'click') {
+            this.rowClickEvent.emit({data: row});
+        }
+
+        return false;
+    }
+
+    rowDblClicked(row: any, $event: MouseEvent): void {
+        this.rowDblClickEvent.emit({data: row});
+    }
+
+    addRow() {
+        this.addRowClickEvent.emit();
+    }
+
+    editRow() {
+        if (this.selection.selected.length >= 0) {
+            this.editRowClickEvent.emit(this.findSelectedRowFormGroup());
+        }
+    }
+
+    deleteRow() {
+        if (this.selection.selected.length >= 0) {
+            this.deleteRowClickEvent.emit(this.findSelectedRowFormGroup());
+        }
+    }
+
+    private findSelectedRowFormGroup(): FormGroup | null {
+        const selectedValue = this.selection.selected[0];
+        const rowsArray = (this.editForm as FormGroup).get('rows') as FormArray;
+
+        for (let i = 0; i < rowsArray.length; i++) {
+          const rowGroup = rowsArray.at(i) as FormGroup;
+          if (JSON.stringify(rowGroup.value) === JSON.stringify(selectedValue)) {
+            return rowGroup;
+          }
+        }
+
+        return null;
     }
 
     onCancel() {

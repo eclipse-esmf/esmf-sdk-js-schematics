@@ -23,41 +23,66 @@ import {
     url
 } from '@angular-devkit/schematics';
 import {strings} from '@angular-devkit/core';
-import {Characteristic, DefaultEnumeration, DefaultSingleEntity, Property} from "@esmf/aspect-model-loader";
+import {
+    Characteristic, DefaultCollection,
+    DefaultEnumeration,
+    DefaultList,
+    DefaultSingleEntity, Entity,
+    Property
+} from "@esmf/aspect-model-loader";
+import {templateInclude} from "../../../../shared/include";
+import {
+    getEnumPropertyDefinitions,
+    getTableColumValues,
+    resolveDateTimeFormat,
+    resolveJsPropertyType
+} from "../../../../shared/utils";
 
-let allProps: Array<Property> = [];
+let sharedOptions: any = {};
 
 export function generateFormComponent(options: any): Rule {
     return (tree: Tree, _context: SchematicContext) => {
-        allProps = options.listAllProperties.filter((property: Property) => (property.characteristic instanceof DefaultSingleEntity) || (<Characteristic>property.characteristic)?.dataType?.isScalar);
+        sharedOptions = options;
+        sharedOptions['allProps'] = options.listAllProperties.filter((property: Property) => (property.characteristic instanceof DefaultSingleEntity) || property.characteristic instanceof DefaultList || (<Characteristic>property.characteristic)?.dataType?.isScalar);
+        sharedOptions['listProps'] = options.listAllProperties.filter((property: Property) => (property.characteristic instanceof DefaultList));
 
+        sharedOptions['tableColumValues'] = getTableColumValues;
+        sharedOptions['resolveDateTimeFormat'] = resolveDateTimeFormat;
+        sharedOptions['inputType'] = getInputType;
+        sharedOptions['dateTypeValidation'] = getDateTypeValidation;
+        sharedOptions['enumeration'] = DefaultEnumeration;
+        sharedOptions['collection'] = DefaultCollection;
+
+        // TODO remove elementChar case and clarify with Andreas T. we only say for now list .. DataType really simple remove all elementChar ...
         return mergeWith(
             apply(url('./generators/components/form/files'), [
-                applyTemplates({
-                    classify: strings.classify,
-                    dasherize: strings.dasherize,
-                    options: options,
-                    name: options.name,
-                    allProps: allProps,
-                    inputType: getInputType,
-                    dateTypeValidation: getDateTypeValidation,
-                    Enumeration: DefaultEnumeration
-                }),
-                move(options.path),
+                templateInclude(_context, applyTemplate, sharedOptions, '../shared/methods'),
+                move(sharedOptions.path),
             ]),
-            options.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error
+            sharedOptions.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error
         );
     };
+}
+
+function applyTemplate(): Rule {
+    return applyTemplates({
+        classify: strings.classify,
+        dasherize: strings.dasherize,
+        options: sharedOptions,
+        name: sharedOptions.name,
+        enumPropertyDefinitions: getEnumPropertyDefinitions(sharedOptions, sharedOptions.listProps),
+        resolveJsPropertyType: resolveJsPropertyType,
+    });
 }
 
 function getInputType(property: Property) {
     const urn = property.characteristic.dataType?.shortUrn;
 
-    if (urn === 'string' || urn === 'hexBinary' || urn === 'curie' || urn === 'base64Binary') {
+    if (urn === 'string' || urn === 'anyUri' || urn === 'hexBinary' || urn === 'curie' || urn === 'base64Binary') {
         return 'text';
     }
 
-    if(urn === 'langString') {
+    if (urn === 'langString') {
         return 'textArea'
     }
 
@@ -67,11 +92,11 @@ function getInputType(property: Property) {
         return 'number';
     }
 
-    if (urn === 'date'|| urn === 'gDay' || urn === 'gMonth' || urn === 'gMonthDay' || urn === 'gYearMonth') {
+    if (urn === 'date' || urn === 'gDay' || urn === 'gMonth' || urn === 'gMonthDay' || urn === 'gYearMonth') {
         return 'date';
     }
 
-    if(urn === 'dateTime' || urn === 'dataTimeStamp' || urn === 'dayTimeDuration' || urn === 'duration' || urn === 'time' || urn === 'yearMonthDuration') {
+    if (urn === 'dateTime' || urn === 'dataTimeStamp' || urn === 'dayTimeDuration' || urn === 'duration' || urn === 'time' || urn === 'yearMonthDuration') {
         return 'dateTime'
     }
 
