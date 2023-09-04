@@ -1,176 +1,19 @@
 <form [formGroup]="form" (ngSubmit)="onSubmit()">
-    <% for(let property of allProps) { %>
-        <% if (property.characteristic.dataType.isScalar) { %>
-            <div class="form-group">
-                <% if (property.characteristic instanceof Enumeration) { %>
-                    <mat-form-field appearance="fill" id='<%= property.name %>'>
-                        <mat-label>Select a <%= property.name %></mat-label>
-                        <mat-select formControlName="<%= property.name %>" [required]="<%= !property.isOptional %>">
+    <% for(let property of options.allProps) { %>
+        <% options['property'] = property %>
 
-                        <% for (let value of property.characteristic._values) { %>
-                              <mat-option value="<%= value %>">
-                                <%= value %>
-                              </mat-option>
-                        <% } %>
+        <% if (property.characteristic instanceof options.collection) { %>
 
-                        </mat-select>
-                      </mat-form-field>
+            <%= options.include('/generation/simple-table.html.template') %>
 
-                      <% if (!property.isOptional) { %>
-                          <mat-error *ngIf="form.get('<%= property.name %>')?.hasError('required') && form.get('<%= property.name %>')?.touched">
-                          <%= property.name %> is required.
-                       </mat-error>
-                    <% } %>
-                <% } else if (inputType(property) === 'boolean') { %>
-                    <mat-checkbox id="<%= property.name %>" formControlName="<%= property.name %>"><%= property.name %></mat-checkbox>
-                <% } else if ((inputType(property) === 'date') || (inputType(property) === 'dateTime')) { %>
-                    <mat-form-field>
-                        <% if (inputType(property) === 'date') { %>
-                            <mat-label>Choose a <%= property.name %> date</mat-label>
-                            <input matInput [matDatepicker]="<%= property.name %>picker" formControlName="<%= property.name %>">
-                            <mat-datepicker-toggle matSuffix [for]="<%= property.name %>picker"></mat-datepicker-toggle>
-                            <mat-datepicker #<%= property.name %>picker></mat-datepicker>
-                        <% } else if (inputType(property) === 'dateTime') { %>
-                            <input matInput [ngxMatDatetimePicker]="<%= property.name %>picker" placeholder="Choose a date" formControlName="<%= property.name %>">
-                            <mat-datepicker-toggle matSuffix [for]="$any(<%= property.name %>picker)"></mat-datepicker-toggle>
-                            <ngx-mat-datetime-picker #<%= property.name %>picker></ngx-mat-datetime-picker>
-                        <% } %>
+        <% } else if (property.characteristic.dataType !== null && property.characteristic.dataType.isScalar) { %>
 
-                        <% if (!property.isOptional) { %>
-                            <mat-error *ngIf="form.get('<%= property.name %>')?.hasError('required') && form.get('<%= property.name %>')?.touched">
-                                <%= property.name %> is required.
-                            </mat-error>
-                        <% } %>
-                    </mat-form-field>
-                <% } else { %>
-                    <mat-form-field>
-                        <mat-label><%= property.name %></mat-label>
+            <%= options.include('/form/scalar.html.template') %>
 
-                        <% if (inputType(property) !== 'textArea') { %>
-                            <input type="<%= inputType(property) %>"
-                        <% } else { %>
-                            <textarea
-                        <% } %>
+        <% } else if (property.characteristic.dataType !== null && property.characteristic.dataType.isComplex) { %>
 
-                            matInput
-                            formControlName="<%= property.name %>"
-                            placeholder="<%= property.exampleValue || '' %>">
+            <%= options.include('/form/complex.html.template') %>
 
-                        <% if (inputType(property) === 'textArea') { %>
-                            </textarea>
-                        <% } %>
-
-                        <% if (property.characteristic?.unit?.name) { %>
-                            <span matTextSuffix>unit:<%= property.characteristic.unit.name %></span>
-                        <% } %>
-
-                        <% if (!property.isOptional) { %>
-                            <mat-error *ngIf="form.get('<%= property.name %>')?.hasError('required') && form.get('<%= property.name %>')?.touched">
-                                <%= property.name %> is required.
-                            </mat-error>
-                        <% } %>
-
-                        <% if (dateTypeValidation(property).length > 0) { %>
-                            <mat-error *ngIf="form.get('<%= property.name %>')?.hasError('min')">
-                                <%= property.name %> is to low.
-                            </mat-error>
-                            <mat-error *ngIf="form.get('<%= property.name %>')?.hasError('max')">
-                                <%= property.name %> is to high.
-                            </mat-error>
-                        <% } %>
-                    </mat-form-field>
-                <% } %>
-            </div>
-        <% } else { %>
-            <div formGroupName="<%= property.name %>">
-                <fieldset>
-                    <legend><%= property.name %></legend>
-                    <% for (let dataTypeProperty of property.characteristic.dataType.properties) { %>
-                        <div class="form-group">
-                            <% if (dataTypeProperty.characteristic instanceof Enumeration) { %>
-                                <mat-form-field appearance="fill" id='<%= dataTypeProperty.name %>'>
-                                    <mat-label>Select a <%= dataTypeProperty.name %></mat-label>
-                                    <mat-select formControlName="<%= dataTypeProperty.name %>" [required]="<%= !dataTypeProperty.isOptional %>">
-
-                                    <% for (let value of dataTypeProperty.characteristic._values) { %>
-                                          <mat-option value="<%= value %>">
-                                            <%= value %>
-                                          </mat-option>
-                                    <% } %>
-
-                                    </mat-select>
-                                  </mat-form-field>
-
-                                  <% if (!dataTypeProperty.isOptional) { %>
-                                      <mat-error *ngIf="getFormControl('<%= property.name %>', '<%= dataTypeProperty.name %>')?.hasError('required')
-                                                   && getFormControl('<%= property.name %>', '<%= dataTypeProperty.name %>')?.touched">
-                                          <%= dataTypeProperty.name %> is required.
-                                      </mat-error>
-                                <% } %>
-                            <% } else if (inputType(dataTypeProperty) === 'boolean') { %>
-                                <mat-checkbox id="<%= dataTypeProperty.name %>" formControlName="<%= dataTypeProperty.name %>"><%= dataTypeProperty.name %></mat-checkbox>
-                            <% } else if ((inputType(property) === 'date') || (inputType(property) === 'dateTime')) { %>
-                                <mat-form-field>
-                                    <% if (inputType(dataTypeProperty) === 'date') { %>
-                                        <mat-label>Choose a <%= dataTypeProperty.name %></mat-label>
-                                        <input matInput [matDatepicker]="<%= dataTypeProperty.name %>picker" formControlName="<%= dataTypeProperty.name %>">
-                                        <mat-datepicker-toggle matSuffix [for]="<%= dataTypeProperty.name %>picker"></mat-datepicker-toggle>
-                                        <mat-datepicker #<%= dataTypeProperty.name %>picker></mat-datepicker>
-                                    <% } else if (inputType(dataTypeProperty) === 'dateTime') { %>
-                                        <input matInput [ngxMatDatetimePicker]="<%= dataTypeProperty.name %>picker" placeholder="Choose a date" formControlName="<%= dataTypeProperty.name %>">
-                                        <mat-datepicker-toggle matSuffix [for]="$any(<%= dataTypeProperty.name %>picker)"></mat-datepicker-toggle>
-                                        <ngx-mat-datetime-picker #<%= dataTypeProperty.name %>picker></ngx-mat-datetime-picker>
-                                    <% } %>
-
-                                    <% if (!dataTypeProperty.isOptional) { %>
-                                        <mat-error *ngIf="form.get('<%= dataTypeProperty.name %>')?.hasError('required') && form.get('<%= dataTypeProperty.name %>')?.touched">
-                                            <%= dataTypeProperty.name %> is required.
-                                        </mat-error>
-                                    <% } %>
-                                </mat-form-field>
-                            <% } else { %>
-                                <mat-form-field>
-                                    <mat-label><%= dataTypeProperty.name %></mat-label>
-
-                                    <% if (inputType(dataTypeProperty) !== 'textArea') { %>
-                                        <input type="<%= inputType(dataTypeProperty) %>"
-                                    <% } else { %>
-                                        <textarea
-                                    <% } %>
-
-                                        matInput
-                                        formControlName="<%= dataTypeProperty.name %>"
-                                        placeholder="<%= dataTypeProperty.exampleValue || '' %>">
-
-                                    <% if (inputType(dataTypeProperty) === 'textArea') { %>
-                                        </textarea>
-                                    <% } %>
-
-                                    <% if (dataTypeProperty.characteristic?.unit?.name) { %>
-                                        <span matTextSuffix>unit:<%= dataTypeProperty.characteristic.unit.name %></span>
-                                    <% } %>
-
-                                    <% if (!dataTypeProperty.isOptional) { %>
-                                        <mat-error *ngIf="getFormControl('<%= property.name %>', '<%= dataTypeProperty.name %>')?.hasError('required')
-                                                     && getFormControl('<%= property.name %>', '<%= dataTypeProperty.name %>')?.touched">
-                                            <%= dataTypeProperty.name %> is required.
-                                        </mat-error>
-                                    <% } %>
-
-                                    <% if (dateTypeValidation(dataTypeProperty).length > 0) { %>
-                                        <mat-error *ngIf="getFormControl('<%= property.name %>', '<%= dataTypeProperty.name %>')?.hasError('min')">
-                                            <%= property.name %>: <%= dataTypeProperty.name %> is to low.
-                                        </mat-error>
-                                        <mat-error *ngIf="getFormControl('<%= property.name %>', '<%= dataTypeProperty.name %>')?.hasError('max')">
-                                            <%= property.name %>: <%= dataTypeProperty.name %> is to high.
-                                        </mat-error>
-                                    <% } %>
-                                </mat-form-field>
-                            <% } %>
-                        </div>
-                    <% } %>
-                </fieldset>
-            </div>
         <% } %>
     <% } %>
 

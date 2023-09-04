@@ -11,7 +11,6 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-import {Rule} from '@angular-devkit/schematics';
 import {Tree} from '@angular-devkit/schematics/src/tree/interface';
 import {Aspect, DefaultSingleEntity} from '@esmf/aspect-model-loader';
 import * as fs from 'fs';
@@ -79,9 +78,6 @@ export let aspect: Aspect;
  * @param {Schema} options - The options Schema object for the schematic.
  * @param {string} type - The type of the generated component.
  *
- * @returns {Rule} - Returns a Rule that creates an Observable
- * that executes the prompting and writing of configurations.
- *
  * @throws {Error} - Will throw an error if an error occurs during execution.
  */
 export function generate(subscriber: Subscriber<Tree>, tree: Tree, options: Schema, type: string) {
@@ -133,12 +129,20 @@ function initAnswers() {
 async function runPrompts(subscriber: Subscriber<Tree>, tree: Tree, templateHelper: TemplateHelper, options: Schema) {
     try {
         const answerConfigurationFileConfig = await getConfigurationFileConfig(subscriber, tree);
+
         if (!answerConfigurationFileConfig.importConfigFile) {
             const answerAspectModel = await getAspectModelUrnToLoad();
             aspect = await loadAspectModel(answerAspectModel.aspectModelUrnToLoad, tree);
             const answerSelectedModelElement = await getSelectedModelElement();
             const answerComplexPropertyElements = await getComplexPropertyElements(templateHelper);
-            const answerUserSpecificConfig = await getUserSpecificConfigs(tree, templateHelper, options);
+
+            // TODO change this .. only for dev testing purposes ...
+            let answerUserSpecificConfig
+            if(generationType !== 'form') {
+                answerUserSpecificConfig = await getUserSpecificConfigs(tree, templateHelper, options);
+            } else {
+                answerUserSpecificConfig = await getUserSpecificFormConfigs(tree, templateHelper, options);
+            }
 
             combineAnswers(
                 answerConfigurationFileConfig,
@@ -404,4 +408,24 @@ function cleanUpOptionsObject(allAnswers: any) {
             delete allAnswers[objectKey];
         }
     });
+}
+
+async function getUserSpecificFormConfigs(tree: Tree, templateHelper: TemplateHelper, options: Schema) {
+    const firstBatchAnswers = await inquirer.prompt([
+        requestJSONPathSelectedModelElement(aspect, allAnswers, tree),
+        requestExcludedProperties(generationType, aspect, allAnswers, templateHelper),
+    ]);
+
+    const secondBatchAnswers = await inquirer.prompt([
+        requestGenerateLabelsForExcludedProps(firstBatchAnswers),
+        requestEnableRemoteDataHandling,
+        requestCustomService,
+        requestAspectModelVersionSupport,
+        requestOptionalMaterialTheme(options),
+        requestCustomStyleImports,
+        requestSetViewEncapsulation,
+        requestOverwriteFiles(options),
+    ]);
+
+    return {...firstBatchAnswers, ...secondBatchAnswers};
 }
