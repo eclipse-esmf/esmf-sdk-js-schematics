@@ -358,7 +358,7 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
 
         if ($event.type === 'contextmenu') {
             $event.preventDefault();
-            let mousePositionOnClick = { x: $event.clientX + 'px', y: $event.clientY + 'px' };
+            const mousePositionOnClick = { x: $event.clientX + 'px', y: $event.clientY + 'px' };
             this.rowRightClickEvent.emit({ data: row, mousePosition: mousePositionOnClick });
         }
 

@@ -1,0 +1,78 @@
+<div class="form-group">
+    <% if (options.property.characteristic instanceof options.enumeration) { %>
+        <mat-form-field appearance="fill" id='<%= options.property.name %>'>
+            <mat-label>Select a <%= options.property.name %></mat-label>
+            <mat-select formControlName="<%= options.property.name %>" [required]="<%= !options.property.isOptional %>">
+
+            <% for (let value of options.property.characteristic._values) { %>
+                <mat-option value="<%= value %>"><%= value %></mat-option>
+            <% } %>
+
+            </mat-select>
+        </mat-form-field>
+
+        <% if (!options.property.isOptional) { %>
+            <mat-error *ngIf="form.get('<%= options.property.name %>')?.hasError('required') && form.get('<%= options.property.name %>')?.touched">
+                <%= options.property.name %> is required.
+            </mat-error>
+        <% } %>
+    <% } else if (options.inputType(options.property) === 'boolean') { %>
+        <mat-checkbox id="<%= options.property.name %>" formControlName="<%= options.property.name %>"><%= options.property.name %></mat-checkbox>
+    <% } else if ((options.inputType(options.property) === 'date') || (options.inputType(options.property) === 'dateTime')) { %>
+        <mat-form-field>
+            <% if (options.inputType(options.property) === 'date') { %>
+                <mat-label>Choose a <%= options.property.name %> date</mat-label>
+                <input matInput [matDatepicker]="<%= options.property.name %>picker" formControlName="<%= options.property.name %>">
+                <mat-datepicker-toggle matSuffix [for]="<%= options.property.name %>picker"></mat-datepicker-toggle>
+                <mat-datepicker #<%= options.property.name %>picker></mat-datepicker>
+            <% } else if (options.inputType(options.property) === 'dateTime') { %>
+                <input matInput [ngxMatDatetimePicker]="<%= options.property.name %>picker" placeholder="Choose a date" formControlName="<%= options.property.name %>">
+                <mat-datepicker-toggle matSuffix [for]="$any(<%= options.property.name %>picker)"></mat-datepicker-toggle>
+                <ngx-mat-datetime-picker #<%= options.property.name %>picker></ngx-mat-datetime-picker>
+            <% } %>
+
+            <% if (!options.property.isOptional) { %>
+                <mat-error *ngIf="form.get('<%= options.property.name %>')?.hasError('required') && form.get('<%= options.property.name %>')?.touched">
+                    <%= options.property.name %> is required.
+                </mat-error>
+            <% } %>
+        </mat-form-field>
+    <% } else { %>
+        <mat-form-field>
+            <mat-label><%= options.property.name %></mat-label>
+
+            <% if (options.inputType(options.property) !== 'textArea') { %>
+                <input type="<%= options.inputType(options.property) %>"
+            <% } else { %>
+                <textarea
+            <% } %>
+
+            matInput
+            formControlName="<%= options.property.name %>"
+            placeholder="<%= options.property.exampleValue || '' %>">
+
+            <% if (options.inputType(options.property) === 'textArea') { %>
+                </textarea>
+            <% } %>
+
+            <% if (options.property.characteristic?.unit?.name) { %>
+                <span matTextSuffix>unit:<%= options.property.characteristic.unit.name %></span>
+            <% } %>
+
+            <% if (!options.property.isOptional) { %>
+                <mat-error *ngIf="form.get('<%= options.property.name %>')?.hasError('required') && form.get('<%= options.property.name %>')?.touched">
+                    <%= options.property.name %> is required.
+                </mat-error>
+            <% } %>
+
+            <% if (options.dateTypeValidation(options.property).length > 0) { %>
+                <mat-error *ngIf="form.get('<%= options.property.name %>')?.hasError('min')">
+                    <%= options.property.name %> is to low.
+                </mat-error>
+                <mat-error *ngIf="form.get('<%= options.property.name %>')?.hasError('max')">
+                    <%= options.property.name %> is to high.
+                </mat-error>
+            <% } %>
+        </mat-form-field>
+    <% } %>
+</div>
