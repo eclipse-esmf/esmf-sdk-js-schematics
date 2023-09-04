@@ -186,13 +186,13 @@ export class <%= classify(name) %>Component implements OnInit {
     }
 
     editRow() {
-        if (this.selection.selected.length >= 0) {
+        if (this.selection.selected.length > 0) {
             this.editRowClickEvent.emit(this.findSelectedRowFormGroup());
         }
     }
 
     deleteRow() {
-        if (this.selection.selected.length >= 0) {
+        if (this.selection.selected.length > 0) {
             this.deleteRowClickEvent.emit(this.findSelectedRowFormGroup());
         }
     }
