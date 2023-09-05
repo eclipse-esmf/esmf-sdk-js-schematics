@@ -25,7 +25,7 @@ A schematics will be generated using the following command:
 ng generate [collection-name]:[schematics-name]
 
 
-For demonstration purposes, the https://github.com/eclipse-esmf/esmf-aspect-model-editor/blob/main/core/apps/ame/src/assets/aspect-models/org.esmf.examples.movement/1.0.0/Movement.ttl[Movement.ttl] Aspect Model will be used.
+For demonstration purposes, the https://github.com/eclipse-esmf/esmf-aspect-model-editor/blob/main/core/apps/ame/src/assets/aspect-models/org.esmf.examples.movement/1.0.0/Movement.ttl[Movement.ttl, window=_blank,opts=nofollow] Aspect Model will be used.
 Below is a detailed representation of the command-line interface steps which generates a table component using the Movement.ttl Aspect Model file by running the command.
 
 NOTE: Before running any schematics commands make sure you are in the Angular project folder where you want to generate the new component.

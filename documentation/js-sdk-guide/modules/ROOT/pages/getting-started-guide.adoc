@@ -14,9 +14,9 @@ SPDX-License-Identifier: MPL-2.0
 
 === Prerequisites
 
-Install https://nodejs.org/en/download/[node] LTS (long term support) version.
+Install https://nodejs.org/en/download/[node,window=_blank,opts=nofollow] LTS (long term support) version.
 
-=== Install SAMM Schematic
+=== Install SAMM Schematics
 
 Run the following command in the desired Angular project folder to add the dependency
 

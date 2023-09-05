@@ -1,4 +1,4 @@
-# ESMF SKD JS :: Angular Schematic 👷
+# ESMF SKD JS :: Angular Schematics 👷
 
 ## Table of Contents
 
