@@ -1,10 +1,10 @@
 /** <%= options.generationDisclaimerText %> **/
 
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {AbstractControl, FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {Component, EventEmitter, Input, Output} from '@angular/core';
+import {AbstractControl, FormArray, FormBuilder, FormGroup, FormControl, Validators} from '@angular/forms';
 import {SelectionModel} from "@angular/cdk/collections";
 import {Clipboard} from '@angular/cdk/clipboard';
-import {MatTableDataSource} from '@angular/material/table';
+import {ThemePalette} from "@angular/material/core";
 
 <% for(let property of options.listProps) { %>
     <% if (property.characteristic instanceof options.collection
@@ -27,12 +27,13 @@ export enum <%= classify(name) %>Column {
     templateUrl: './<%= dasherize(name) %>.component.html',
     styleUrls: ['./<%= dasherize(name) %>.component.scss']
 })
-export class <%= classify(name) %>Component implements OnInit {
+export class <%= classify(name) %>Component {
     @Input() noDataMessage: string = 'No data in the table';
     @Input() isMultipleSelectionEnabled = false;
     @Input() headerTooltipsOff: boolean = false;
     @Input() highlightSelectedRow: boolean = true;
     @Input() selection = new SelectionModel<any>(this.isMultipleSelectionEnabled, []);
+    @Input() color: ThemePalette = 'primary';
 
     @Output() rowSelectionEvent = new EventEmitter<any>();
     @Output() copyToClipboardEvent = new EventEmitter<any>();
@@ -53,80 +54,16 @@ export class <%= classify(name) %>Component implements OnInit {
         <% } %>
     <% } %>
 
-    constructor(private fb: FormBuilder, private clipboard: Clipboard,) { }
-
-    ngOnInit() {
+    constructor(private fb: FormBuilder, private clipboard: Clipboard,) {
         this.form = this.createFormGroup();
     }
 
     private createFormGroup(): FormGroup {
-        const group = this.fb.group({});
-
-        <% for(let property of options.allProps) { %>
-            <% if (property.characteristic instanceof options.collection) { %>
-                const <%= property.name %>Group = this.fb.group({});
-
-                <%= property.name %>Group.addControl('rows', this.fb.array([...this.dataSource.data]));
-
-                group.addControl('<%= property.name %>', <%= property.name %>Group);
-            <% } else if (property.characteristic.dataType !== null && property.characteristic.dataType.isScalar) { %>
-                group.addControl('<%= property.name %>',
-
-                    <% if(property.characteristic.dataType?.shortUrn === 'boolean') { %>
-                        this.fb.control(false)
-                    <% } else { %>
-                        this.fb.control(
-                            <% if (property.exampleValue) { %>
-                                <%= property.exampleValue %>
-                            <% } else { %>
-                                ''
-                            <% } %>
-
-                            <% if (!property.isOptional) { %>
-                                <% if (options.dateTypeValidation(property).length) { %>
-                                    , [Validators.required, Validators.min(<%= options.dateTypeValidation(property)[0] %>), Validators.max(<%= options.dateTypeValidation(property)[1] %>)])
-                                <% } else { %>
-                                    , Validators.required)
-                                <% } %>
-                            <% } else { %>
-                                )
-                            <% } %>
-                    <% } %>
-
-                );
-            <% } else if (property.characteristic.dataType !== null && property.characteristic.dataType.isComplex) { %>
-                const <%= property.name %>Group = this.fb.group({});
-
-                <% for (let dataTypeProperty of property.characteristic.dataType.properties) { %>
-                    <%= property.name %>Group.addControl('<%= dataTypeProperty.name %>',
-
-                            <% if(dataTypeProperty.characteristic.dataType?.shortUrn === 'boolean') { %>
-                                this.fb.control(false)
-                            <% } else { %>
-                                this.fb.control(
-                                   <% if (dataTypeProperty.exampleValue) { %>
-                                       <%= dataTypeProperty.exampleValue %>
-                                   <% } else { %>
-                                       ''
-                                   <% } %>
-
-                                   <% if (!dataTypeProperty.isOptional) { %>
-                                       <% if (options.dateTypeValidation(dataTypeProperty).length) { %>
-                                           , [Validators.required, Validators.min(<%= options.dateTypeValidation(dataTypeProperty)[0] %>), Validators.max(<%= options.dateTypeValidation(dataTypeProperty)[1] %>)])
-                                       <% } else { %>
-                                           , Validators.required)
-                                       <% } %>
-                                   <% } else { %>
-                                       )
-                                   <% } %>
-                            <% } %>
-                        );
-                <% } %>
-                group.addControl('<%= property.name %>', <%= property.name %>Group);
+        return this.fb.group({
+            <% for(let fieldConfig of options.fieldsConfigs) { %>
+                <%= options.include(fieldConfig.tsTemplatePath, { fieldConfig: fieldConfig, include: options.include }) %>
             <% } %>
-        <% } %>
-
-        return group;
+        });
     }
 
     getFormControl(property: string, dataTypeProperty?: string): AbstractControl | null | undefined {

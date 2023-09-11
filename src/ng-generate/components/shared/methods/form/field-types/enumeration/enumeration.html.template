@@ -1,0 +1,19 @@
+<mat-form-field appearance="fill" class="form-field">
+    <mat-label><%= options.fieldConfig.name %></mat-label>
+
+    <mat-select formControlName="<%= options.fieldConfig.name %>">
+        <% if (options.fieldConfig.values) { %>
+            <% for (let value of options.fieldConfig.values) { %>
+                <mat-option value="<%= value %>">
+                    <%= value %>
+                </mat-option>
+            <% } %>
+        <% } %>
+    </mat-select>
+
+    <% for(let validator of options.fieldConfig.validators) { %>
+        <mat-error *ngIf="form.getError('<%= validator.errorCode %>', ['<%= options.fieldConfig.name %>'])">
+            <%= validator.errorMessage %>
+        </mat-error>
+    <% } %>
+</mat-form-field>

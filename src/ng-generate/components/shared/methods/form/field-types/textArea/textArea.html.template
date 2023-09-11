@@ -1,0 +1,19 @@
+<mat-form-field class="form-field">
+    <mat-label><%= options.fieldConfig.name %></mat-label>
+
+    <textarea
+        matInput
+        formControlName="<%= options.fieldConfig.name %>"
+        placeholder="<%= options.fieldConfig.exampleValue %>"
+    ></textarea>
+
+    <% if (options.fieldConfig.unitName) { %>
+        <span matTextSuffix>unit:<%= options.fieldConfig.unitName %></span>
+    <% } %>
+
+    <% for(let validator of options.fieldConfig.validators) { %>
+        <mat-error *ngIf="form.getError('<%= validator.errorCode %>', ['<%= options.fieldConfig.name %>'])">
+            <%= validator.errorMessage %>
+        </mat-error>
+    <% } %>
+</mat-form-field>
