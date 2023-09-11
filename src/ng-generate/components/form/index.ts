@@ -15,8 +15,10 @@ import {FormSchema} from './schema';
 import {chain, Rule, SchematicContext} from '@angular-devkit/schematics';
 import {Tree} from '@angular-devkit/schematics/src/tree/interface';
 import {
+    addAndUpdateConfigurationFilesRule,
     formatAllFilesRule,
     generateComponent,
+    generateGeneralFilesRules,
     insertVersionIntoPathRule,
     insertVersionIntoSelectorRule,
     loadAspectModelRule,
@@ -24,12 +26,13 @@ import {
     options,
     prepareOptions,
     setComponentNameRule,
+    setCustomActionsAndFiltersRule,
     setTemplateOptionValuesRule,
 } from '../shared/index';
 import {ComponentType, Schema} from '../shared/schema';
-import {generateFormComponent} from "./generators/components/form/index";
-import {addPackageJsonDependencies} from "../../../utils/package-json";
-import {NodeDependencyType} from "@schematics/angular/utility/dependencies";
+import {generateFormComponent} from './generators/components/form/index';
+import {addPackageJsonDependencies} from '../../../utils/package-json';
+import {NodeDependencyType} from '@schematics/angular/utility/dependencies';
 
 export default function (formSchema: FormSchema): Rule {
     return (tree: Tree, context: SchematicContext) => {
@@ -43,16 +46,15 @@ export function generateForm(formSchema: Schema): Rule {
     return chain([
         loadRdfRule(),
         loadAspectModelRule(),
-        // setCustomActionsAndFiltersRule(),
+        setCustomActionsAndFiltersRule(),
         setComponentNameRule(ComponentType.FORM),
         insertVersionIntoSelectorRule(),
         insertVersionIntoPathRule(),
         setTemplateOptionValuesRule(),
-        // ...generateGeneralFilesRules(),
+        ...generateGeneralFilesRules(),
         ...formSpecificGeneration(),
-        // ...addAndUpdateConfigurationFilesRule(),
-        // TODO reactivate addDateTimePickerDependenciesRule()
-        // addDateTimePickerDependenciesRule(),
+        ...addAndUpdateConfigurationFilesRule(),
+        addDateTimePickerDependenciesRule(),
         formatAllFilesRule(),
     ]);
 }
@@ -62,21 +64,20 @@ function formSpecificGeneration(): Array<Rule> {
 }
 
 function addDateTimePickerDependenciesRule(): Rule {
-    const loadDependencies =
-        [
-            {
-                type: NodeDependencyType.Default,
-                version: '^16.0.1',
-                name: '@angular-material-components/datetime-picker',
-                overwrite: false
-            },
-            {
-                type: NodeDependencyType.Default,
-                version: '^16.0.1',
-                name: '@angular-material-components/moment-adapter',
-                overwrite: false
-            },
-        ];
+    const loadDependencies = [
+        {
+            type: NodeDependencyType.Default,
+            version: '^16.0.1',
+            name: '@angular-material-components/datetime-picker',
+            overwrite: false,
+        },
+        {
+            type: NodeDependencyType.Default,
+            version: '^16.0.1',
+            name: '@angular-material-components/moment-adapter',
+            overwrite: false,
+        },
+    ];
 
     // Todo update component module file with NgxMatTimepickerModule, NgxMatDatetimePickerModule, NgxMatMomentModule and declarations/export -> MovementFormComponent
     return addPackageJsonDependencies(options.skipImport, options.spinner, loadDependencies);

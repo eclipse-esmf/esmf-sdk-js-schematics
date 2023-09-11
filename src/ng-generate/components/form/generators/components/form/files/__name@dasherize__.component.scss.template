@@ -1,7 +1,29 @@
 /** <%= options.generationDisclaimerText %> **/
 
 ::ng-deep .mat-mdc-form-field-text-suffix {
-  padding-left: 5px;
-  color: gray;
-  font-size: smaller;
+    padding-left: 5px;
+    color: gray;
+    font-size: smaller;
+}
+
+form.<%= options.name %> {
+    padding: 1rem;
+}
+
+form.<%= options.name %>,
+.form-group {
+    display: flex;
+    flex-flow: column nowrap;
+}
+
+.form-field {
+    margin-top: 1rem;
+}
+
+.form-group {
+    margin: 1rem 0;
+}
+
+mat-checkbox {
+    margin-bottom: 1rem;
 }

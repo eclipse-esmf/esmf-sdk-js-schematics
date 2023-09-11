@@ -1,0 +1,5 @@
+<%= options.fieldConfig.name %>: new FormControl(false, [
+    <% for(let validator of options.fieldConfig.validators) { %>
+        <%= validator.definition %>
+    <% } %>
+]),
