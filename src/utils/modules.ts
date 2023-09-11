@@ -13,7 +13,7 @@
 
 import {SchematicContext, Tree} from '@angular-devkit/schematics';
 import {classify, dasherize} from '@angular-devkit/core/src/utils/strings';
-import {Schema} from '../ng-generate/components/shared/schema';
+import {ComponentType, Schema} from '../ng-generate/components/shared/schema';
 import {addToDeclarationsArray, addToExportsArray} from './angular';
 import {TableSchema} from '../ng-generate/components/table/schema';
 
@@ -99,6 +99,20 @@ export const cardModules = (options: Schema) => [
     {name: 'SlicePipe', fromLib: '@angular/common'},
 ];
 
+export const formModules = (options: Schema) => [
+    ...generalComponentsModules(options),
+    {name: 'ReactiveFormsModule', fromLib: '@angular/forms'},
+    {name: 'MatFormFieldModule', fromLib: '@angular/material/form-field'},
+    {name: 'MatSelectModule', fromLib: '@angular/material/select'},
+    {name: 'MatOptionModule', fromLib: '@angular/material/core'},
+    {name: 'MatInputModule', fromLib: '@angular/material/input'},
+    {name: 'MatDatepickerModule', fromLib: '@angular/material/datepicker'},
+    {name: 'MatCheckboxModule', fromLib: '@angular/material/checkbox'},
+    {name: 'NgxMatDatetimePickerModule', fromLib: '@angular-material-components/datetime-picker'},
+    {name: 'NgxMatNativeDateModule', fromLib: '@angular-material-components/datetime-picker'},
+    {name: 'MatNativeDateModule', fromLib: '@angular/material/core'},
+];
+
 export const APP_SHARED_MODULES = [
     {name: 'MatButtonModule', fromLib: '@angular/material/button'},
     {name: 'MatDialogModule', fromLib: '@angular/material/dialog'},
@@ -144,11 +158,11 @@ export function updateSharedModule(options: Schema) {
             await addToExportsArray(options, tree, className, path, options.templateHelper.getSharedModulePath());
         };
 
-        if (options.componentType === 'table') {
+        if (options.componentType === ComponentType.TABLE) {
             processItem('component', 'export-table-dialog');
         }
 
-        if (options.componentType === 'card') {
+        if (options.componentType === ComponentType.CARD) {
             processItem('component', 'export-card-dialog');
         }
 

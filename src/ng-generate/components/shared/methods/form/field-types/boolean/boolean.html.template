@@ -1,0 +1,4 @@
+<mat-checkbox
+    formControlName="<%= options.fieldConfig.name %>"
+    class="form-field"
+><%= options.fieldConfig.name %></mat-checkbox>

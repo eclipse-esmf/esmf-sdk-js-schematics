@@ -1,22 +1,8 @@
-<form [formGroup]="form" (ngSubmit)="onSubmit()">
-    <% for(let property of options.allProps) { %>
-        <% options['property'] = property %>
-
-        <% if (property.characteristic instanceof options.collection) { %>
-
-            <%= options.include('/generation/simple-table.html.template') %>
-
-        <% } else if (property.characteristic.dataType !== null && property.characteristic.dataType.isScalar) { %>
-
-            <%= options.include('/form/scalar.html.template') %>
-
-        <% } else if (property.characteristic.dataType !== null && property.characteristic.dataType.isComplex) { %>
-
-            <%= options.include('/form/complex.html.template') %>
-
-        <% } %>
+<form [formGroup]="form" (ngSubmit)="onSubmit()" class="<%= options.name %>">
+    <% for(let fieldConfig of options.fieldsConfigs) { %>
+        <%= options.include(fieldConfig.htmlTemplatePath, { fieldConfig: fieldConfig, include: options.include }) %>
     <% } %>
 
-    <button mat-raised-button type="button" color="warn" (click)="onCancel()">Cancel</button>
-    <button mat-raised-button type="submit" color="primary" [disabled]="form.invalid">Submit</button>
+    <button mat-raised-button type="button" color="warn" (click)="onCancel()"> Cancel </button>
+    <button mat-raised-button type="submit" color="primary" [disabled]="form.invalid"> Submit </button>
 </form>
