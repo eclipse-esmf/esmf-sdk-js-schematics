@@ -27,3 +27,13 @@ form.<%= options.name %>,
 mat-checkbox {
     margin-bottom: 1rem;
 }
+
+.form-actions {
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: flex-end;
+
+    button + button {
+        margin-left: 1rem;
+    }
+}
