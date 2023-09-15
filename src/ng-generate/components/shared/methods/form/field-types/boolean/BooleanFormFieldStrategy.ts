@@ -16,6 +16,7 @@ export class BooleanFormFieldStrategy extends FormFieldStrategy {
             tsTemplatePath: this.getTemplatePath(TemplateType.Ts),
             name: this.fieldName,
             validators: [...this.getBaseValidatorsConfigs()],
+            validatorsHtmlTemplatePath: this.validatorsHtmlTemplatePath,
         };
     }
 }

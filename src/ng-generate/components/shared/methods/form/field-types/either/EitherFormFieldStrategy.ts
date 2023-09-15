@@ -1,4 +1,4 @@
-import {Characteristic, DefaultEither, Property} from '@esmf/aspect-model-loader';
+import {Characteristic, DefaultEither} from '@esmf/aspect-model-loader';
 import {FormFieldConfig, FormFieldStrategy, TemplateType} from '../FormFieldStrategy';
 import {FormFieldBuilder} from '../FormFieldBuilder';
 
@@ -16,16 +16,20 @@ export class EitherFormFieldStrategy extends FormFieldStrategy {
             tsTemplatePath: this.getTemplatePath(TemplateType.Ts),
             name: this.fieldName,
             validators: [...this.getBaseValidatorsConfigs()],
+            validatorsHtmlTemplatePath: this.validatorsHtmlTemplatePath,
             children: this.getChildConfigs(),
         };
     }
 
     private getChildConfigs(): FormFieldConfig[] {
         const typedChild = this.child as DefaultEither;
+        return [this.buildChildConfig(typedChild.left), this.buildChildConfig(typedChild.right)];
+    }
 
-        return [
-            FormFieldBuilder.buildFieldConfig(this.parent, typedChild.left, {name: typedChild.left.name}),
-            FormFieldBuilder.buildFieldConfig(this.parent, typedChild.right, {name: typedChild.right.name}),
-        ];
+    private buildChildConfig(child: Characteristic): FormFieldConfig {
+        return FormFieldBuilder.buildFieldConfig(this.parent, child, {
+            name: child.name,
+            parentFieldsNames: this.getFieldNamesChain(),
+        });
     }
 }

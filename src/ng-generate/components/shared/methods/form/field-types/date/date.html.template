@@ -4,9 +4,5 @@
     <mat-datepicker-toggle matSuffix [for]="<%= options.fieldConfig.name %>picker"></mat-datepicker-toggle>
     <mat-datepicker #<%= options.fieldConfig.name %>picker></mat-datepicker>
 
-    <% for(let validator of options.fieldConfig.validators) { %>
-        <mat-error *ngIf="form.getError('<%= validator.errorCode %>', ['<%= options.fieldConfig.name %>'])">
-            <%= validator.errorMessage %>
-        </mat-error>
-    <% } %>
+    <%= options.include(options.fieldConfig.validatorsHtmlTemplatePath, { validators: options.fieldConfig.validators, include: options.include }) %>
 </mat-form-field>
