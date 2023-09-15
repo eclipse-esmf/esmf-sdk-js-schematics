@@ -3,6 +3,8 @@
         <%= options.include(fieldConfig.htmlTemplatePath, { fieldConfig: fieldConfig, include: options.include }) %>
     <% } %>
 
-    <button mat-raised-button type="button" color="warn" (click)="onCancel()"> Cancel </button>
-    <button mat-raised-button type="submit" color="primary" [disabled]="form.invalid"> Submit </button>
+    <section class="form-actions">
+        <button mat-flat-button (click)="onCancel()">Cancel</button>
+        <button mat-flat-button color="primary" [disabled]="form.invalid">Submit</button>
+    </section>
 </form>
