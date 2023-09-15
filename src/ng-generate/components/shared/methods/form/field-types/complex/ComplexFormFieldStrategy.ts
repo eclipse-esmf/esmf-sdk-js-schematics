@@ -16,6 +16,7 @@ export class ComplexFormFieldStrategy extends FormFieldStrategy {
             tsTemplatePath: this.getTemplatePath(TemplateType.Ts),
             name: this.fieldName,
             validators: [...this.getBaseValidatorsConfigs()],
+            validatorsHtmlTemplatePath: this.validatorsHtmlTemplatePath,
             children: this.getChildConfigs(),
         };
     }
@@ -23,7 +24,13 @@ export class ComplexFormFieldStrategy extends FormFieldStrategy {
     private getChildConfigs(): FormFieldConfig[] {
         const untypedDataType = this.child.dataType as any;
         return untypedDataType?.properties
-            ? untypedDataType.properties.map((p: Property) => FormFieldBuilder.buildFieldConfig(p, p.characteristic))
+            ? untypedDataType.properties.map((p: Property) => this.buildChildConfig(p, p.characteristic))
             : [];
+    }
+
+    private buildChildConfig(parent: Property, child: Characteristic): FormFieldConfig {
+        return FormFieldBuilder.buildFieldConfig(parent, child, {
+            parentFieldsNames: this.getFieldNamesChain(),
+        });
     }
 }
