@@ -4,6 +4,7 @@ export interface ValidatorConfig {
     definition: string;
     errorCode: string;
     errorMessage: string;
+    pathToControl: string[];
 }
 
 export interface FormFieldConfig {
@@ -12,6 +13,7 @@ export interface FormFieldConfig {
     tsTemplatePath: string;
     name: string;
     validators: ValidatorConfig[];
+    validatorsHtmlTemplatePath: string;
     exampleValue?: string;
     values?: any[];
     unitName?: string;
@@ -24,8 +26,10 @@ export enum TemplateType {
 }
 
 export class FormFieldStrategy {
+    validatorsHtmlTemplatePath = `/form/validation-errors.html.template`;
     templateName: string;
     fieldName: string;
+    parentFieldsNames: string[];
 
     static isTargetStrategy(child: Characteristic): boolean {
         throw new Error('An implementation of the method has to be provided by a derived class');
@@ -35,8 +39,13 @@ export class FormFieldStrategy {
         return child.dataType?.shortUrn;
     }
 
-    constructor(public parent: Property, public child: Characteristic, public forceParams: {name?: string} = {}) {
-        this.fieldName = this.forceParams.name || parent.name;
+    constructor(
+        public parent: Property,
+        public child: Characteristic,
+        public forceParams: {name?: string; parentFieldsNames?: string[]} = {}
+    ) {
+        this.fieldName = this.forceParams.name ?? parent.name;
+        this.parentFieldsNames = forceParams.parentFieldsNames ?? [];
     }
 
     getTemplatePath(type: TemplateType): string {
@@ -44,20 +53,24 @@ export class FormFieldStrategy {
     }
 
     getBaseValidatorsConfigs(): ValidatorConfig[] {
-        const validatorsConfigs = [];
+        const validatorsConfigs: ValidatorConfig[] = [];
 
         if (!this.parent.isOptional) {
             validatorsConfigs.push({
                 definition: 'Validators.required',
                 errorCode: 'required',
                 errorMessage: `${this.fieldName} is required.`,
+                pathToControl: this.getFieldNamesChain(),
             });
         }
 
         return validatorsConfigs;
     }
 
-    // TODO: Type
+    getFieldNamesChain(): string[] {
+        return [...this.parentFieldsNames, this.fieldName];
+    }
+
     buildConfig(): FormFieldConfig {
         throw new Error('An implementation of the method has to be provided by a derived class');
     }

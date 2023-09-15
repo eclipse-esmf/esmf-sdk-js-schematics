@@ -1,20 +1,24 @@
 import {Characteristic, Property} from '@esmf/aspect-model-loader';
-import {FormFieldStrategy} from './FormFieldStrategy';
+import {FormFieldConfig, FormFieldStrategy} from './FormFieldStrategy';
 import {FORM_FIELD_DEFAULT_STRATEGY, FORM_FIELD_STRATEGIES, FormFieldDefaultStrategy, FormFieldStrategies} from './form-field-strategies';
 
 export class FormFieldBuilder {
     static strategies: FormFieldStrategies = FORM_FIELD_STRATEGIES;
     static defaultStrategy: FormFieldDefaultStrategy = FORM_FIELD_DEFAULT_STRATEGY;
 
-    static buildFieldsConfigs(properties: Property[]) {
+    static buildFieldsConfigs(properties: Property[]): FormFieldConfig[] {
         return properties.map(property => this.buildFieldConfig(property, property.characteristic));
     }
 
-    static buildFieldConfig(parent: Property, child: Characteristic, forceParams: {name?: string} = {}): any {
+    static buildFieldConfig(
+        parent: Property,
+        child: Characteristic,
+        forceParams: {name?: string; parentFieldsNames?: string[]} = {}
+    ): FormFieldConfig {
         // TODO: Handle
         // if (property.characteristic instanceof options.collection)
 
-        const strategy = this.strategies.find(strategy => strategy.isTargetStrategy(child)) || this.defaultStrategy;
+        const strategy = this.strategies.find(strategy => strategy.isTargetStrategy(child)) ?? this.defaultStrategy;
         const formFieldStrategy: FormFieldStrategy = new strategy(parent, child, forceParams);
         return formFieldStrategy.buildConfig();
     }
