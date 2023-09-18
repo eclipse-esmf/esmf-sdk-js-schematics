@@ -33,6 +33,7 @@ import {
     requestJSONPathSelectedModelElement,
     requestOptionalMaterialTheme,
     requestOverwriteFiles,
+    requestReadOnlyForm,
     requestRowCheckboxes,
     requestSelectedModelElement,
 } from './prompts-with-function';
@@ -137,8 +138,8 @@ async function runPrompts(subscriber: Subscriber<Tree>, tree: Tree, templateHelp
             const answerComplexPropertyElements = await getComplexPropertyElements(templateHelper);
 
             // TODO change this .. only for dev testing purposes ...
-            let answerUserSpecificConfig
-            if(generationType !== 'form') {
+            let answerUserSpecificConfig;
+            if (generationType !== 'form') {
                 answerUserSpecificConfig = await getUserSpecificConfigs(tree, templateHelper, options);
             } else {
                 answerUserSpecificConfig = await getUserSpecificFormConfigs(tree, templateHelper, options);
@@ -425,6 +426,7 @@ async function getUserSpecificFormConfigs(tree: Tree, templateHelper: TemplateHe
         requestCustomStyleImports,
         requestSetViewEncapsulation,
         requestOverwriteFiles(options),
+        requestReadOnlyForm(options),
     ]);
 
     return {...firstBatchAnswers, ...secondBatchAnswers};
