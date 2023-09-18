@@ -1,8 +1,6 @@
 <mat-form-field class="form-field">
     <mat-label><%= options.fieldConfig.name %></mat-label>
-    <input matInput [ngxMatDatetimePicker]="<%= options.fieldConfig.name %>picker" formControlName="<%= options.fieldConfig.name %>">
-    <ngx-mat-datepicker-toggle matSuffix [for]="<%= options.fieldConfig.name %>picker"></ngx-mat-datepicker-toggle>
-    <ngx-mat-datetime-picker #<%= options.fieldConfig.name %>picker [color]="color"></ngx-mat-datetime-picker>
+    <input matInput type="datetime-local" formControlName="<%= options.fieldConfig.name %>">
 
     <%= options.include(options.fieldConfig.validatorsHtmlTemplatePath, { validators: options.fieldConfig.validators, include: options.include }) %>
 </mat-form-field>
