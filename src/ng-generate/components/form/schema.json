@@ -27,14 +27,21 @@
         },
         "viewEncapsulation": {
             "description": "Specifies the view encapsulation strategy.",
-            "enum": ["Emulated", "None", "ShadowDom"],
+            "enum": [
+                "Emulated",
+                "None",
+                "ShadowDom"
+            ],
             "type": "string",
             "default": "None",
             "alias": "v"
         },
         "changeDetection": {
             "description": "Specifies the change detection strategy.",
-            "enum": ["Default", "OnPush"],
+            "enum": [
+                "Default",
+                "OnPush"
+            ],
             "type": "string",
             "alias": "c"
         },
@@ -143,6 +150,10 @@
             "description": "Weather or not to install dependencies at the end of the generation process."
         },
         "getOptionalMaterialTheme": {
+            "type": "boolean",
+            "default": false
+        },
+        "readOnlyForm": {
             "type": "boolean",
             "default": false
         }

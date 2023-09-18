@@ -55,10 +55,15 @@ export class <%= classify(name) %>Component {
     <% } %>
 
     constructor(private fb: FormBuilder, private clipboard: Clipboard,) {
+      <%   if(options.readOnlyForm){%>
+         console.log('options.readOnlyForm');
+       <% }%>
+
         this.form = this.createFormGroup();
     }
 
     private createFormGroup(): FormGroup {
+
         return this.fb.group({
             <% for(let fieldConfig of options.fieldsConfigs) { %>
                 <%= options.include(fieldConfig.tsTemplatePath, { fieldConfig: fieldConfig, include: options.include }) %>
