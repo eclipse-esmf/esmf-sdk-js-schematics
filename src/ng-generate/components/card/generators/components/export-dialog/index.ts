@@ -11,20 +11,11 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-import {apply, applyTemplates, MergeStrategy, mergeWith, move, noop, Rule, SchematicContext, Tree, url} from '@angular-devkit/schematics';
+import {apply, applyTemplates, MergeStrategy, mergeWith, move, Rule, SchematicContext, Tree, url} from '@angular-devkit/schematics';
 import {strings} from '@angular-devkit/core';
 
 export function generateExportCardDialog(options: any): Rule {
     return (tree: Tree, _context: SchematicContext) => {
-        const filePath = 'src/app/shared/components/export-confirmation-dialog/export-card-dialog.component';
-        const htmlPath = `${filePath}.html`;
-        const scssPath = `${filePath}.scss`;
-        const tsPath = `${filePath}.ts`;
-
-        if (tree.exists(htmlPath) && tree.exists(scssPath) && tree.exists(tsPath)) {
-            return noop();
-        }
-
         return mergeWith(
             apply(url('./generators/components/export-dialog/files'), [
                 applyTemplates({
