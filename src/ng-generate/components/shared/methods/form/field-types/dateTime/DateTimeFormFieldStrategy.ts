@@ -1,8 +1,6 @@
 import {Characteristic} from '@esmf/aspect-model-loader';
 import {FormFieldConfig, FormFieldStrategy, TemplateType} from '../FormFieldStrategy';
 
-// Transparent background of the datetime-picker is the known issue: https://github.com/h2qutc/angular-material-components/issues/348
-
 export class DateTimeFormFieldStrategy extends FormFieldStrategy {
     templateName = 'dateTime';
 
