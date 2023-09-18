@@ -68,6 +68,7 @@ export interface Schema extends ComponentSchema, DefaultSchema {
     getOptionalMaterialTheme: boolean;
     skipImport: boolean;
     componentType: ComponentType;
+    readOnlyForm: boolean;
 }
 
 export interface Values extends Schema {

@@ -308,3 +308,11 @@ export const requestRowCheckboxes = (type: string) => ({
     when: () => type === 'table',
     default: false,
 });
+
+export const requestReadOnlyForm = (options: Schema) => ({
+    type: 'confirm',
+    name: 'readOnlyForm',
+    message: 'Do you want to set the form read only?',
+    when: () => !options.readOnlyForm,
+    default: false,
+});

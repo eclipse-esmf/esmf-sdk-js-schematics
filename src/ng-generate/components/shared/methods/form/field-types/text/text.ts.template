@@ -1,4 +1,4 @@
-<%= options.fieldConfig.name %>: new FormControl('', [
+<%= options.fieldConfig.name %>: new FormControl({value: false, disabled: <%= options.readOnlyForm %>}, [
     <% for(let validator of options.fieldConfig.validators) { %>
         <%= validator.definition %>
     <% } %>
