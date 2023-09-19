@@ -419,11 +419,8 @@ async function getUserSpecificFormConfigs(tree: Tree, templateHelper: TemplateHe
 
     const secondBatchAnswers = await inquirer.prompt([
         requestGenerateLabelsForExcludedProps(firstBatchAnswers),
-        requestEnableRemoteDataHandling,
-        requestCustomService,
         requestAspectModelVersionSupport,
         requestOptionalMaterialTheme(options),
-        requestCustomStyleImports,
         requestSetViewEncapsulation,
         requestOverwriteFiles(options),
         requestReadOnlyForm(options),
