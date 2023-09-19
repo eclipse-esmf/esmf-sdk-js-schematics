@@ -55,10 +55,6 @@ export class <%= classify(name) %>Component {
     <% } %>
 
     constructor(private fb: FormBuilder, private clipboard: Clipboard,) {
-      <%   if(options.readOnlyForm){%>
-         console.log('options.readOnlyForm');
-       <% }%>
-
         this.form = this.createFormGroup();
     }
 

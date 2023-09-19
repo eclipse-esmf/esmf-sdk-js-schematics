@@ -18,6 +18,7 @@ export class EitherFormFieldStrategy extends FormFieldStrategy {
             validators: [...this.getBaseValidatorsConfigs()],
             validatorsHtmlTemplatePath: this.validatorsHtmlTemplatePath,
             children: this.getChildConfigs(),
+            readOnlyForm: this.readOnlyForm,
         };
     }
 
@@ -27,7 +28,7 @@ export class EitherFormFieldStrategy extends FormFieldStrategy {
     }
 
     private buildChildConfig(child: Characteristic): FormFieldConfig {
-        return FormFieldBuilder.buildFieldConfig(this.parent, child, {
+        return FormFieldBuilder.buildFieldConfig(this.options, this.parent, child, {
             name: child.name,
             parentFieldsNames: this.getFieldNamesChain(),
         });
