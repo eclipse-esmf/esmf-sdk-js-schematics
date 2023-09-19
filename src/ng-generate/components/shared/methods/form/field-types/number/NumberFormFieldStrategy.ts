@@ -38,6 +38,7 @@ export class NumberFormFieldStrategy extends FormFieldStrategy {
             unitName: untypedChild.unit?.name || '',
             validators: [...this.getBaseValidatorsConfigs()],
             validatorsHtmlTemplatePath: this.validatorsHtmlTemplatePath,
+            readOnlyForm: this.readOnlyForm,
         };
     }
 }

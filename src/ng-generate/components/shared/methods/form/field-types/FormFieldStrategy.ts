@@ -18,6 +18,7 @@ export interface FormFieldConfig {
     values?: any[];
     unitName?: string;
     children?: FormFieldConfig[];
+    readOnlyForm: boolean;
 }
 
 export enum TemplateType {
@@ -30,6 +31,7 @@ export class FormFieldStrategy {
     templateName: string;
     fieldName: string;
     parentFieldsNames: string[];
+    readOnlyForm: boolean;
 
     static isTargetStrategy(child: Characteristic): boolean {
         throw new Error('An implementation of the method has to be provided by a derived class');
@@ -40,12 +42,14 @@ export class FormFieldStrategy {
     }
 
     constructor(
+        public options: any,
         public parent: Property,
         public child: Characteristic,
         public forceParams: {name?: string; parentFieldsNames?: string[]} = {}
     ) {
         this.fieldName = this.forceParams.name ?? parent.name;
         this.parentFieldsNames = forceParams.parentFieldsNames ?? [];
+        this.readOnlyForm = this.options.readOnlyForm;
     }
 
     getTemplatePath(type: TemplateType): string {

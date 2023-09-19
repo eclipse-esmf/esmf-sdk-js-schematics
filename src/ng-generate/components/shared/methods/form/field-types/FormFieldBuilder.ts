@@ -6,11 +6,12 @@ export class FormFieldBuilder {
     static strategies: FormFieldStrategies = FORM_FIELD_STRATEGIES;
     static defaultStrategy: FormFieldDefaultStrategy = FORM_FIELD_DEFAULT_STRATEGY;
 
-    static buildFieldsConfigs(properties: Property[]): FormFieldConfig[] {
-        return properties.map(property => this.buildFieldConfig(property, property.characteristic));
+    static buildFieldsConfigs(options: any): FormFieldConfig[] {
+        return options.listAllProperties.map((property: any) => this.buildFieldConfig(options, property, property.characteristic));
     }
 
     static buildFieldConfig(
+        options: any,
         parent: Property,
         child: Characteristic,
         forceParams: {name?: string; parentFieldsNames?: string[]} = {}
@@ -19,7 +20,7 @@ export class FormFieldBuilder {
         // if (property.characteristic instanceof options.collection)
 
         const strategy = this.strategies.find(strategy => strategy.isTargetStrategy(child)) ?? this.defaultStrategy;
-        const formFieldStrategy: FormFieldStrategy = new strategy(parent, child, forceParams);
+        const formFieldStrategy: FormFieldStrategy = new strategy(options, parent, child, forceParams);
         return formFieldStrategy.buildConfig();
     }
 

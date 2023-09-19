@@ -31,7 +31,7 @@ export function generateFormComponent(options: any): Rule {
             (property: Property) => property.characteristic instanceof DefaultList
         );
 
-        sharedOptions['fieldsConfigs'] = FormFieldBuilder.buildFieldsConfigs(options.listAllProperties);
+        sharedOptions['fieldsConfigs'] = FormFieldBuilder.buildFieldsConfigs(options);
 
         sharedOptions['tableColumValues'] = getTableColumValues;
         sharedOptions['resolveDateTimeFormat'] = resolveDateTimeFormat;
