@@ -100,7 +100,7 @@ private requestData() {
                 this.dataSource.paginator = this.paginator;
             }),
         catchError((error: any) => {
-            this.dataLoadError = true;
+            this.dataLoadError = false;
             <% if (options.componentType === 'card') { %>
                 this.dataToShow = [];
                 this.dataSource.data = [];
@@ -108,6 +108,7 @@ private requestData() {
                 const dataToShow = [];
                 this.dataSource.setData([]);
             <% } %>
+            throw new Error(error.message);
         }),
         finalize(() => this.<% if (options.componentType === 'card') { %>card<% } else { %>table<% } %>UpdateFinishedEvent.emit()))
     .subscribe();
