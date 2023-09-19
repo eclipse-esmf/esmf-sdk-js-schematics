@@ -24,6 +24,7 @@ export class DateTimeFormFieldStrategy extends FormFieldStrategy {
             name: this.fieldName,
             validators: [...this.getBaseValidatorsConfigs()],
             validatorsHtmlTemplatePath: this.validatorsHtmlTemplatePath,
+            readOnlyForm: this.readOnlyForm,
         };
     }
 }

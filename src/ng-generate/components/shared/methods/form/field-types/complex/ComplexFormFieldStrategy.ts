@@ -18,6 +18,7 @@ export class ComplexFormFieldStrategy extends FormFieldStrategy {
             validators: [...this.getBaseValidatorsConfigs()],
             validatorsHtmlTemplatePath: this.validatorsHtmlTemplatePath,
             children: this.getChildConfigs(),
+            readOnlyForm: this.readOnlyForm,
         };
     }
 
@@ -29,7 +30,7 @@ export class ComplexFormFieldStrategy extends FormFieldStrategy {
     }
 
     private buildChildConfig(parent: Property, child: Characteristic): FormFieldConfig {
-        return FormFieldBuilder.buildFieldConfig(parent, child, {
+        return FormFieldBuilder.buildFieldConfig(this.options, parent, child, {
             parentFieldsNames: this.getFieldNamesChain(),
         });
     }

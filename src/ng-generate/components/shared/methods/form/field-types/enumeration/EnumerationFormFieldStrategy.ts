@@ -19,6 +19,7 @@ export class EnumerationFormFieldStrategy extends FormFieldStrategy {
             values: typedChild.values,
             validators: [...this.getBaseValidatorsConfigs()],
             validatorsHtmlTemplatePath: this.validatorsHtmlTemplatePath,
+            readOnlyForm: this.readOnlyForm,
         };
     }
 }
