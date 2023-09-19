@@ -6,7 +6,7 @@ export class TextFormFieldStrategy extends FormFieldStrategy {
 
     static isTargetStrategy(child: Characteristic): boolean {
         const urn = this.getShortUrn(child);
-        return urn === 'string' || urn === 'anyUri' || urn === 'hexBinary' || urn === 'curie' || urn === 'base64Binary';
+        return urn === 'string' || urn === 'anyURI' || urn === 'hexBinary' || urn === 'curie' || urn === 'base64Binary';
     }
 
     buildConfig(): FormFieldConfig {

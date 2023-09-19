@@ -6,7 +6,7 @@ export class DateFormFieldStrategy extends FormFieldStrategy {
 
     static isTargetStrategy(child: Characteristic): boolean {
         const urn = this.getShortUrn(child);
-        return urn === 'date' || urn === 'gDay' || urn === 'gMonth' || urn === 'gMonthDay' || urn === 'gYearMonth';
+        return urn === 'date' || urn === 'gDay' || urn === 'gMonth' || urn === 'gYear' || urn === 'gMonthDay' || urn === 'gYearMonth';
     }
 
     buildConfig(): FormFieldConfig {

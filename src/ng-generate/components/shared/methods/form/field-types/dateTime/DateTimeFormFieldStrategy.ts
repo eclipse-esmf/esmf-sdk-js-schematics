@@ -8,7 +8,7 @@ export class DateTimeFormFieldStrategy extends FormFieldStrategy {
         const urn = this.getShortUrn(child);
         return (
             urn === 'dateTime' ||
-            urn === 'dataTimeStamp' ||
+            urn === 'dateTimeStamp' ||
             urn === 'dayTimeDuration' ||
             urn === 'duration' ||
             urn === 'time' ||
