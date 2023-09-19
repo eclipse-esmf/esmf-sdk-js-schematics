@@ -106,6 +106,7 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit<% i
 
     dataToShow: Array<<%= options.aspectModelTypeName %>> = [];
     totalItems: number = 0;
+    dataLoadError = false;
 
     <% if (options.enableRemoteDataHandling) { %>
         rqlString: string = '';
@@ -115,6 +116,7 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit<% i
 
     <% if (options.hasSearchBar || options.enableRemoteDataHandling) { %>
         private readonly destroy$ = new Subject<void>();
+        private requestSubscription: Subscription;
     <% } %>
 
     <% if (options.enableRemoteDataHandling) { %>

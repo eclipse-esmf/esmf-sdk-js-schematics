@@ -73,9 +73,14 @@ private requestData() {
 
     this.rqlString = rqlStringTemp;
 
-    this.<%= camelize((options.customRemoteService ? 'custom' : '') + '-' + options.name) %>Service.requestData(this.remoteAPI, {query: rqlStringTemp})
+    if (this.requestSubscription && !this.requestSubscription.closed) {
+        this.requestSubscription.unsubscribe();
+    }
+
+    this.requestSubscription = this.<%= camelize((options.customRemoteService ? 'custom' : '') + '-' + options.name) %>Service.requestData(this.remoteAPI, {query: rqlStringTemp})
         .pipe(
             tap((movementResponse: <%= classify(options.aspectModel.name) %>Response) => {
+                this.dataLoadError = false;
                 this.totalItems =
                     movementResponse.totalItems !== null && movementResponse.totalItems !== undefined
                         ? movementResponse.totalItems
@@ -95,6 +100,14 @@ private requestData() {
                 this.dataSource.paginator = this.paginator;
             }),
         catchError((error: any) => {
+            this.dataLoadError = false;
+            <% if (options.componentType === 'card') { %>
+                this.dataToShow = [];
+                this.dataSource.data = [];
+            <% } else { %>
+                const dataToShow = [];
+                this.dataSource.setData([]);
+            <% } %>
             throw new Error(error.message);
         }),
         finalize(() => this.<% if (options.componentType === 'card') { %>card<% } else { %>table<% } %>UpdateFinishedEvent.emit()))
