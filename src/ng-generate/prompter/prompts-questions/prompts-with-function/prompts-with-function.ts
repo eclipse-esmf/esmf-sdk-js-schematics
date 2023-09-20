@@ -11,12 +11,12 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-import {loader} from './utils';
+import {loader} from '../../utils';
 import {Tree} from '@angular-devkit/schematics';
 import {Aspect, DefaultAspect, DefaultEntity, DefaultProperty, DefaultSingleEntity, Entity, Property} from '@esmf/aspect-model-loader';
-import {TemplateHelper} from '../../utils/template-helper';
+import {TemplateHelper} from '../../../../utils/template-helper';
 import * as locale from 'locale-codes';
-import {Schema} from '../components/shared/schema';
+import {Schema} from '../../../components/shared/schema';
 
 export const pathDecision: any = (configFile: string, anotherFile: boolean = false) => ({
     type: 'fuzzypath',
