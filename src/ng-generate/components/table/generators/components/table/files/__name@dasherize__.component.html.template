@@ -96,12 +96,12 @@
                 </th>
 
                 <td data-test="table-cell"
-                    mat-cell *matCellDef="let row"
-                    [matTooltipDisabled]="<%= isEmptyValue %>"
+                    mat-cell
+                    *matCellDef="let row"
                     <% if(options.templateHelper.isEnumPropertyWithEntityValues(value.property)) { %>
-                        [matTooltip]="!(<%= isEmptyValue %>) ? (row.<%= cellPropertyPath %><%= descriptionPipe %>:true<%= language %>) : ''"
+                        <%= !isEmptyValue ? '[matTooltip]="row.' + cellPropertyPath + descriptionPipe + ':true' +  language + '"' : '' %>
                     <% } else { %>
-                        [matTooltip]="<%= cellContent %>"
+                        <%= !isEmptyValue ? '[matTooltip]="' + cellContent + '"' : '' %>
                     <% } %>
                     <% if(options.templateHelper.isNumberProperty(value.property)) { %>
                         class="table-cell-number"
