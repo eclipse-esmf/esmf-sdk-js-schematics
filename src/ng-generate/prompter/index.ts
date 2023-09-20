@@ -36,7 +36,7 @@ import {
     requestReadOnlyForm,
     requestRowCheckboxes,
     requestSelectedModelElement,
-} from './prompts-with-function';
+} from './prompts-questions/prompts-with-function/prompts-with-function';
 
 import {handleComplexPropList, loader, reorderAspectModelUrnToLoad, writeConfigAndExit} from './utils';
 import {
@@ -51,7 +51,7 @@ import {
     requestCustomStyleImports,
     requestEnableRemoteDataHandling,
     requestSetViewEncapsulation,
-} from './prompts-without-function';
+} from './prompts-questions/promts-without-function/prompts-without-function';
 import {virtualFs} from '@angular-devkit/core';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
