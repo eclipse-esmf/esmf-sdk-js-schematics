@@ -1,0 +1,63 @@
+/** <%= options.generationDisclaimerText %> **/
+
+import {Attribute, Component, forwardRef} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {
+    FormControl,
+    FormGroup,
+    FormsModule,
+    NG_VALIDATORS,
+    NG_VALUE_ACCESSOR,
+    ReactiveFormsModule,
+} from '@angular/forms';
+import {FormGroupReusable} from '../../../../utils/form-group-reusable';
+<% for (let childConfig of options.fieldConfig.children) {
+    %>import {<%= classify(childConfig.name) %>Component, <%= classify(childConfig.name) %>FormControl} from '../<%= childConfig.nameDasherized %>/<%= childConfig.nameDasherized %>.component';
+<% } %>
+
+export interface <%= classify(options.fieldConfig.name) %> {
+    <% for (let childConfig of options.fieldConfig.children) {
+        %><%= classify(childConfig.name) %>: FormControl<string | null>;
+    <% } %>
+}
+
+export const <%= classify(options.fieldConfig.name) %>FormControl = new FormControl<<%= classify(options.fieldConfig.name) %> | null>(null);
+export const <%= classify(options.fieldConfig.name) %>FormGroup = new FormGroup<<%= classify(options.fieldConfig.name) %>>({
+    <% for (let childConfig of options.fieldConfig.children) {
+        %><%= childConfig.name %>: <%= childConfig.name %>FormControl,
+    <% } %>
+});
+
+@Component({
+    selector: '<%= dasherize(options.fieldConfig.name) %>',
+    standalone: true,
+    imports: [
+        CommonModule,
+        FormsModule,
+        ReactiveFormsModule,
+        <% for (let childConfig of options.fieldConfig.children) {
+            %><%= classify(childConfig.name) %>Component,
+        <% } %>
+    ],
+    templateUrl: './<%= dasherize(options.fieldConfig.name) %>.component.html',
+    styleUrls: ['./<%= dasherize(options.fieldConfig.name) %>.component.scss'],
+    providers: [
+        {
+            provide: NG_VALUE_ACCESSOR,
+            useExisting: forwardRef(() => <%= classify(options.fieldConfig.name) %>Component),
+            multi: true,
+        },
+        {
+            provide: NG_VALIDATORS,
+            useExisting: forwardRef(() => <%= classify(options.fieldConfig.name) %>Component),
+            multi: true,
+        },
+    ],
+})
+export class <%= classify(options.fieldConfig.name) %>Component extends FormGroupReusable {
+    formGroup: FormGroup<<%= classify(options.fieldConfig.name) %>> = <%= classify(options.fieldConfig.name) %>FormGroup;
+
+    constructor(@Attribute('formControlName') public formControlName: string) {
+        super();
+    }
+}

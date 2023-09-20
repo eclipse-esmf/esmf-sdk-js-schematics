@@ -7,33 +7,23 @@
 }
 
 form.<%= options.name %> {
-    padding: 1rem;
-}
-
-form.<%= options.name %>,
-.form-group {
     display: flex;
     flex-flow: column nowrap;
-}
 
-.form-field {
-    margin-top: 1rem;
-}
+    .form-fields > * {
+        display: flex;
+        flex-flow: column nowrap;
+        margin: 1rem 0;
+    }
 
-.form-group {
-    margin: 1rem 0;
-}
+    .form-actions {
+        display: flex;
+        flex-flow: row nowrap;
+        justify-content: flex-end;
+        padding: 1rem 0;
 
-mat-checkbox {
-    margin-bottom: 1rem;
-}
-
-.form-actions {
-    display: flex;
-    flex-flow: row nowrap;
-    justify-content: flex-end;
-
-    button + button {
-        margin-left: 1rem;
+        button + button {
+            margin-left: 1rem;
+        }
     }
 }

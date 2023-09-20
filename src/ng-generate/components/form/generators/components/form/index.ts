@@ -13,11 +13,11 @@
 
 import {apply, applyTemplates, chain, MergeStrategy, mergeWith, move, Rule, SchematicContext, Tree, url} from '@angular-devkit/schematics';
 import {strings} from '@angular-devkit/core';
-import {DefaultCollection, DefaultEither, DefaultEnumeration, DefaultList, Property} from '@esmf/aspect-model-loader';
+import {DefaultList, Property} from '@esmf/aspect-model-loader';
 import {templateInclude} from '../../../../shared/include';
-import {getEnumPropertyDefinitions, getTableColumValues, resolveDateTimeFormat, resolveJsPropertyType} from '../../../../shared/utils';
+import {getEnumPropertyDefinitions, resolveJsPropertyType} from '../../../../shared/utils';
 import {Schema} from '../../../../shared/schema';
-import {FormFieldBuilder} from '../../../../shared/methods/form/field-types/FormFieldBuilder';
+import {RootFormFieldStrategy} from './RootFormFieldStrategy';
 
 let sharedOptions: any = {};
 
@@ -31,18 +31,21 @@ export function generateFormComponent(options: any): Rule {
             (property: Property) => property.characteristic instanceof DefaultList
         );
 
-        sharedOptions['fieldsConfigs'] = FormFieldBuilder.buildFieldsConfigs(options);
+        // sharedOptions['fieldsConfigs'] = FormFieldBuilder.buildFieldsConfigs(options);
 
-        sharedOptions['tableColumValues'] = getTableColumValues;
-        sharedOptions['resolveDateTimeFormat'] = resolveDateTimeFormat;
-        sharedOptions['enumeration'] = DefaultEnumeration;
-        sharedOptions['collection'] = DefaultCollection;
-        sharedOptions['either'] = DefaultEither;
+        // sharedOptions['tableColumValues'] = getTableColumValues;
+        // sharedOptions['resolveDateTimeFormat'] = resolveDateTimeFormat;
+        // sharedOptions['enumeration'] = DefaultEnumeration;
+        // sharedOptions['collection'] = DefaultCollection;
+        // sharedOptions['either'] = DefaultEither;
 
-        return chain([generateForm(options, _context)])(tree, _context);
+        const rootFormFieldStrategy = new RootFormFieldStrategy(options, _context);
+        const rules = rootFormFieldStrategy.generate();
+        return chain(rules)(tree, _context);
     };
 }
 
+// TODO: Handle generation of a form
 function generateForm(options: Schema, _context: SchematicContext): Rule {
     sharedOptions = options;
 
@@ -63,6 +66,6 @@ function applyTemplate(): Rule {
         options: sharedOptions,
         name: sharedOptions.name,
         enumPropertyDefinitions: getEnumPropertyDefinitions(sharedOptions, sharedOptions.listProps),
-        // resolveJsPropertyType: resolveJsPropertyType,
+        resolveJsPropertyType: resolveJsPropertyType,
     });
 }

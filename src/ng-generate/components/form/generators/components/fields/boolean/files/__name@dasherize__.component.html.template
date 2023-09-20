@@ -1,0 +1,5 @@
+<mat-checkbox
+    class="form-field"
+    [formControl]="formControl"
+    (ngModelChange)="value"
+><%= options.fieldConfig.name %></mat-checkbox>

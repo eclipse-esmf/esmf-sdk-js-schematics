@@ -1,0 +1,38 @@
+/** <%= options.generationDisclaimerText %> **/
+import {AbstractControl, ControlValueAccessor, FormGroup, ValidationErrors, Validator} from '@angular/forms';
+import {takeUntil} from 'rxjs';
+import {mixinDestroyedSubject} from './destroyed-subject.mixin';
+
+export abstract class FormGroupReusable extends mixinDestroyedSubject() implements ControlValueAccessor, Validator {
+    abstract formGroup: FormGroup;
+    abstract formControlName: string;
+
+    protected constructor() {
+        super();
+    }
+
+    registerOnChange(fn: any): void {
+        if (!this.formGroup) return;
+
+        this.formGroup.valueChanges.pipe(takeUntil(this.destroyed$)).subscribe(fn);
+    }
+
+    registerOnTouched(fn: any): void {
+        if (!this.formGroup) return;
+
+        this.formGroup.valueChanges.pipe(takeUntil(this.destroyed$)).subscribe(fn);
+    }
+
+    setDisabledState(isDisabled: boolean): void {
+        isDisabled ? this.formGroup.disable() : this.formGroup.enable();
+    }
+
+    writeValue(value: any): void {
+        this.formGroup.patchValue(value, {emitEvent: false});
+    }
+
+    validate(control: AbstractControl): ValidationErrors | null {
+        return this.formGroup.valid ? null : {[this.formControlName]: true};
+    }
+}
+

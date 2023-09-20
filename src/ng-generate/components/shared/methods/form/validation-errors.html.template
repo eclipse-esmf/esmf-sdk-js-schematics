@@ -1,9 +1,0 @@
-<% for(let validator of options.validators) { %>
-    <mat-error *ngIf="form.getError('<%= validator.errorCode %>', [
-        <% for(let controlName of validator.pathToControl) { %>
-            '<%= controlName %>',
-        <% } %>
-    ])">
-        <%= validator.errorMessage %>
-    </mat-error>
-<% } %>

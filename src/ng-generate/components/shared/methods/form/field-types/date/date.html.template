@@ -1,8 +1,0 @@
-<mat-form-field class="form-field">
-    <mat-label><%= options.fieldConfig.name %></mat-label>
-    <input matInput [matDatepicker]="<%= options.fieldConfig.name %>picker" formControlName="<%= options.fieldConfig.name %>">
-    <mat-datepicker-toggle matSuffix [for]="<%= options.fieldConfig.name %>picker"></mat-datepicker-toggle>
-    <mat-datepicker #<%= options.fieldConfig.name %>picker></mat-datepicker>
-
-    <%= options.include(options.fieldConfig.validatorsHtmlTemplatePath, { validators: options.fieldConfig.validators, include: options.include }) %>
-</mat-form-field>

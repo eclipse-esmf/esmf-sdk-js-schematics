@@ -5,6 +5,9 @@ import {AbstractControl, FormArray, FormBuilder, FormGroup, FormControl, Validat
 import {SelectionModel} from "@angular/cdk/collections";
 import {Clipboard} from '@angular/cdk/clipboard';
 import {ThemePalette} from "@angular/material/core";
+<% for (let childConfig of options.fieldConfig.children) {
+    %>import {<%= childConfig.name %>FormControl} from "./<%= childConfig.nameDasherized %>/<%= childConfig.nameDasherized %>.component";
+<% } %>
 
 <% for(let property of options.listProps) { %>
     <% if (property.characteristic instanceof options.collection
@@ -19,7 +22,7 @@ import {ThemePalette} from "@angular/material/core";
  */
 export enum <%= classify(name) %>Column {
     CHECKBOX = 'checkboxes',
-    <%= enumPropertyDefinitions %>
+    <%# enumPropertyDefinitions %>
 }
 
 @Component({
@@ -56,13 +59,16 @@ export class <%= classify(name) %>Component {
 
     constructor(private fb: FormBuilder, private clipboard: Clipboard,) {
         this.form = this.createFormGroup();
+        <% if (options.fieldConfig.readOnlyForm) {
+            %>this.form.disable();
+        <% } %>
     }
 
     private createFormGroup(): FormGroup {
 
         return this.fb.group({
-            <% for(let fieldConfig of options.fieldsConfigs) { %>
-                <%= options.include(fieldConfig.tsTemplatePath, { fieldConfig: fieldConfig, include: options.include }) %>
+            <% for (let childConfig of options.fieldConfig.children) {
+                %><%= childConfig.name %>: <%= childConfig.name %>FormControl,
             <% } %>
         });
     }
@@ -153,9 +159,8 @@ export class <%= classify(name) %>Component {
         console.log('Cancel form');
     }
 
-    onSubmit() {
-        if (this.form.valid) {
-        console.log('Form Value:', this.form.value);
-        }
+    onSubmit(form: FormGroup) {
+        console.log('Form Value:', form.value);
+        console.log('Form Valid:', form.valid);
     }
 }
