@@ -1,0 +1,8 @@
+<mat-form-field class="form-field">
+    <mat-label><%= options.fieldConfig.name %></mat-label>
+    <input matInput [matDatepicker]="<%= options.fieldConfig.name %>picker" [formControl]="formControl" (ngModelChange)="value" />
+    <mat-datepicker-toggle matSuffix [for]="<%= options.fieldConfig.name %>picker"></mat-datepicker-toggle>
+    <mat-datepicker #<%= options.fieldConfig.name %>picker [color]="color"></mat-datepicker>
+
+    <mat-error *ngIf="formControl.invalid">{{ errorMessage }}</mat-error>
+</mat-form-field>

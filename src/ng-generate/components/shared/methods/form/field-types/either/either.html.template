@@ -1,6 +1,0 @@
-<fieldset formGroupName="<%= options.fieldConfig.name %>" class="form-group">
-    <legend><%= options.fieldConfig.name %></legend>
-    <% for (let childConfig of options.fieldConfig.children) { %>
-        <%= options.include(childConfig.htmlTemplatePath, { fieldConfig: childConfig, include: options.include }) %>
-    <% } %>
-</fieldset>

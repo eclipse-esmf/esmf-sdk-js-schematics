@@ -1,0 +1,32 @@
+/** <%= options.generationDisclaimerText %> **/
+import {ControlValueAccessor} from '@angular/forms';
+
+export abstract class FormControlReusable implements ControlValueAccessor {
+    abstract formControlName: string;
+    val: any;
+
+    onChange: any = () => {};
+    onTouch: any = () => {};
+
+    set value(val: any) {
+        this.val = val;
+        this.onChange(val);
+        this.onTouch(val);
+    }
+
+    get value(): any {
+        return this.val;
+    }
+
+    writeValue(value: any): void {
+        this.value = value;
+    }
+
+    registerOnChange(fn: any): void {
+        this.onChange = fn;
+    }
+
+    registerOnTouched(fn: any): void {
+        this.onTouch = fn;
+    }
+}

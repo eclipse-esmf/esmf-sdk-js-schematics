@@ -33,6 +33,8 @@ import {ComponentType, Schema} from '../shared/schema';
 import {generateFormComponent} from './generators/components/form/index';
 import {addPackageJsonDependencies} from '../../../utils/package-json';
 import {NodeDependencyType} from '@schematics/angular/utility/dependencies';
+import {generateFormControlReusable} from '../shared/generators/utils/form-control-reusable/index';
+import {generateDestroyedSubject, generateFormGroupReusable} from '../shared/generators';
 
 export default function (formSchema: FormSchema): Rule {
     return (tree: Tree, context: SchematicContext) => {
@@ -42,6 +44,8 @@ export default function (formSchema: FormSchema): Rule {
 
 export function generateForm(formSchema: Schema): Rule {
     prepareOptions(formSchema, ComponentType.FORM);
+
+    // (options as any)['fieldsConfigs'] = FormFieldBuilder.buildFieldsConfigs(options);
 
     return chain([
         loadRdfRule(),
@@ -54,6 +58,7 @@ export function generateForm(formSchema: Schema): Rule {
         ...generateGeneralFilesRules(),
         ...formSpecificGeneration(),
         ...addAndUpdateConfigurationFilesRule(),
+        ...utilsGeneration(),
         addDateTimePickerDependenciesRule(),
         formatAllFilesRule(),
     ]);
@@ -61,6 +66,10 @@ export function generateForm(formSchema: Schema): Rule {
 
 function formSpecificGeneration(): Array<Rule> {
     return [generateFormComponent(options)];
+}
+
+function utilsGeneration(): Array<Rule> {
+    return [generateFormControlReusable(options), generateFormGroupReusable(options), generateDestroyedSubject(options)];
 }
 
 function addDateTimePickerDependenciesRule(): Rule {

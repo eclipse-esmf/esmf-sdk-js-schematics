@@ -1,9 +1,0 @@
-<%= options.fieldConfig.name %>: new FormGroup({
-    <% for (let childConfig of options.fieldConfig.children) { %>
-        <%= options.include(childConfig.tsTemplatePath, { fieldConfig: childConfig }) %>
-    <% } %>
-}, [
-   <% for(let validator of options.fieldConfig.validators) { %>
-       <%= validator.definition %>
-   <% } %>
-]),

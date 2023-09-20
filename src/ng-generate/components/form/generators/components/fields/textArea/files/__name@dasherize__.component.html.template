@@ -1,0 +1,14 @@
+<mat-form-field class="form-field">
+    <mat-label><%= options.fieldConfig.name %></mat-label>
+    <textarea
+        matInput
+        placeholder="<%= options.fieldConfig.exampleValue %>"
+        [formControl]="formControl"
+        (ngModelChange)="value"
+    ></textarea>
+    <% if (options.fieldConfig.unitName) {
+        %><span matTextSuffix>unit:<%= options.fieldConfig.unitName %></span>
+    <% } %>
+
+    <mat-error *ngIf="formControl.invalid">{{ errorMessage }}</mat-error>
+</mat-form-field>

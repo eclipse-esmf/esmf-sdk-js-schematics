@@ -1,10 +1,14 @@
-<form [formGroup]="form" (ngSubmit)="onSubmit()" class="<%= options.name %>">
-    <% for(let fieldConfig of options.fieldsConfigs) { %>
-        <%= options.include(fieldConfig.htmlTemplatePath, { fieldConfig: fieldConfig, include: options.include }) %>
-    <% } %>
-
-    <section class="form-actions">
-        <button mat-flat-button (click)="onCancel()">Cancel</button>
-        <button mat-flat-button color="primary" [disabled]="form.invalid">Submit</button>
+<form [formGroup]="form" class="<%= options.name %>">
+    <section class="form-fields">
+        <% for (let childConfig of options.fieldConfig.children) {
+            %><<%= dasherize(childConfig.name) %> formControlName="<%= childConfig.name %>"></<%= dasherize(childConfig.name) %>>
+        <% } %>
     </section>
+
+    <% if (!options.fieldConfig.readOnlyForm) { %>
+        <section class="form-actions">
+            <button mat-flat-button (click)="onCancel()">Cancel</button>
+            <button mat-flat-button color="primary" [disabled]="form.invalid" (click)="onSubmit(form)">Submit</button>
+        </section>
+    <% } %>
 </form>

@@ -1,0 +1,10 @@
+<form [formGroup]="formGroup">
+    <fieldset class="form-group">
+        <legend><%= options.fieldConfig.name %></legend>
+        <section class="form-fields">
+            <% for (let childConfig of options.fieldConfig.children) {
+                %><<%= dasherize(childConfig.name) %> formControlName="<%= childConfig.name %>"></<%= dasherize(childConfig.name) %>>
+            <% } %>
+        </section>
+    </fieldset>
+</form>

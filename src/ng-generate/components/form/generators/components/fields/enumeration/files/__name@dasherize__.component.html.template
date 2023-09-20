@@ -1,0 +1,14 @@
+<mat-form-field appearance="fill" class="form-field">
+    <mat-label><%= options.fieldConfig.name %></mat-label>
+    <mat-select [formControl]="formControl" (ngModelChange)="value">
+        <% if (options.fieldConfig.values) { %>
+            <% for (let value of options.fieldConfig.values) { %>
+                <mat-option value="<%= value %>">
+                    <%= value %>
+                </mat-option>
+            <% } %>
+        <% } %>
+    </mat-select>
+
+    <mat-error *ngIf="formControl.invalid">{{ errorMessage }}</mat-error>
+</mat-form-field>
