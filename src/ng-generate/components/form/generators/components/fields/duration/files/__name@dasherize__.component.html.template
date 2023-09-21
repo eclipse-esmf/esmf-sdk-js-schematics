@@ -1,0 +1,24 @@
+<form [formGroup]="formGroup">
+  <fieldset class="form-group">
+    <legend><%= options.fieldConfig.name %></legend>
+    <section class="form-fields">
+      <mat-form-field class="form-field">
+        <mat-label>start</mat-label>
+        <input matInput [ngxMatDatetimePicker]="startPicker" formControlName="start" />
+        <ngx-mat-datepicker-toggle matSuffix [for]="startPicker"></ngx-mat-datepicker-toggle>
+        <ngx-mat-datetime-picker #startPicker [color]="color"></ngx-mat-datetime-picker>
+
+        <mat-error *ngIf="formGroup.get('start')?.invalid">{{ errorMessage }}</mat-error>
+      </mat-form-field>
+
+      <mat-form-field class="form-field">
+        <mat-label>end</mat-label>
+        <input matInput [ngxMatDatetimePicker]="endPicker" formControlName="end" />
+        <ngx-mat-datepicker-toggle matSuffix [for]="endPicker"></ngx-mat-datepicker-toggle>
+        <ngx-mat-datetime-picker #endPicker [color]="color"></ngx-mat-datetime-picker>
+
+        <mat-error *ngIf="formGroup.get('end')?.invalid">{{ errorMessage }}</mat-error>
+      </mat-form-field>
+    </section>
+  </fieldset>
+</form>

@@ -2,37 +2,25 @@ import {Characteristic} from '@esmf/aspect-model-loader';
 import {FormFieldConfig, FormFieldStrategy} from '../FormFieldStrategy';
 import {strings} from '@angular-devkit/core';
 
-const DEFAULT_FORMAT = 'yyyy-MM-DD';
+const DEFAULT_FORMAT = '`PT${timeDuration.hours()}H${timeDuration.minutes()}M${timeDuration.seconds()}S`';
 const dataFormats = [
     {
-        type: 'date',
-        format: 'yyyy-MM-DD',
+        type: 'dayTimeDuration',
+        format: '`PT${timeDuration.hours()}H${timeDuration.minutes()}M${timeDuration.seconds()}S`',
     },
     {
-        type: 'gDay',
-        format: '---DD',
+        type: 'duration',
+        format: '`PT${timeDuration.hours()}H${timeDuration.minutes()}M${timeDuration.seconds()}S`',
     },
     {
-        type: 'gMonth',
-        format: '--MM',
-    },
-    {
-        type: 'gYear',
-        format: 'yyyy',
-    },
-    {
-        type: 'gMonthDay',
-        format: '--MM-DD',
-    },
-    {
-        type: 'gYearMonth',
-        format: 'yyyy-MM',
+        type: 'yearMonthDuration',
+        format: '`P${Math.floor(timeDuration.asYears())}Y${timeDuration.months()}M`',
     },
 ];
 const supportedTypes = dataFormats.map(dt => dt.type);
 
-export class DateFormFieldStrategy extends FormFieldStrategy {
-    pathToFiles = './generators/components/fields/date/files';
+export class DurationFormFieldStrategy extends FormFieldStrategy {
+    pathToFiles = './generators/components/fields/duration/files';
     hasChildren = false;
 
     static isTargetStrategy(child: Characteristic): boolean {
@@ -50,7 +38,7 @@ export class DateFormFieldStrategy extends FormFieldStrategy {
     }
 
     getDataFormat(): string {
-        const urn = DateFormFieldStrategy.getShortUrn(this.child);
+        const urn = DurationFormFieldStrategy.getShortUrn(this.child);
         const format = dataFormats.find(dt => dt.type === urn)?.format;
         return format || DEFAULT_FORMAT;
     }

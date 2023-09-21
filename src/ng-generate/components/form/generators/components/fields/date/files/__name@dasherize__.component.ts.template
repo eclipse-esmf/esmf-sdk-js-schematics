@@ -57,7 +57,7 @@ export class <%= classify(options.fieldConfig.name) %>Component extends FormCont
     }
 
     override set value(val: any) {
-        this.val = isMoment(val) ? val.format('yyyy-MM-DD') : val;
+        this.val = isMoment(val) ? val.format('<%= options.fieldConfig.dataFormat %>') : val;
         this.onChange(this.val);
         this.onTouch(this.val);
     }
