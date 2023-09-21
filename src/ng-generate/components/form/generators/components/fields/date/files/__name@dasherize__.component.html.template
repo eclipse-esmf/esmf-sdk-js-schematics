@@ -1,6 +1,6 @@
 <mat-form-field class="form-field">
     <mat-label><%= options.fieldConfig.name %></mat-label>
-    <input matInput [matDatepicker]="<%= options.fieldConfig.name %>picker" [formControl]="formControl" (ngModelChange)="value" />
+    <input matInput [matDatepicker]="<%= options.fieldConfig.name %>picker" [formControl]="formControl" (ngModelChange)="value = $event" />
     <mat-datepicker-toggle matSuffix [for]="<%= options.fieldConfig.name %>picker"></mat-datepicker-toggle>
     <mat-datepicker #<%= options.fieldConfig.name %>picker [color]="color"></mat-datepicker>
 

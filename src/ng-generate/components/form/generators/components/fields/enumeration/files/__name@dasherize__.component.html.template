@@ -1,6 +1,6 @@
 <mat-form-field appearance="fill" class="form-field">
     <mat-label><%= options.fieldConfig.name %></mat-label>
-    <mat-select [formControl]="formControl" (ngModelChange)="value">
+    <mat-select [formControl]="formControl" (ngModelChange)="value = $event">
         <% if (options.fieldConfig.values) { %>
             <% for (let value of options.fieldConfig.values) { %>
                 <mat-option value="<%= value %>">

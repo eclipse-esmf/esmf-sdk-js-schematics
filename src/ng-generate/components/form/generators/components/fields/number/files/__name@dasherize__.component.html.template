@@ -5,7 +5,7 @@
         matInput
         placeholder="<%= options.fieldConfig.exampleValue %>"
         [formControl]="formControl"
-        (ngModelChange)="value"
+        (ngModelChange)="value = $event"
     />
     <% if (options.fieldConfig.unitName) {
         %><span matTextSuffix>unit:<%= options.fieldConfig.unitName %></span>
