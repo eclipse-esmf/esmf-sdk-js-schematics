@@ -412,9 +412,13 @@ function cleanUpOptionsObject(allAnswers: any) {
 }
 
 async function getUserSpecificFormConfigs(tree: Tree, templateHelper: TemplateHelper, options: Schema) {
-    const firstBatchAnswers = await inquirer.prompt([requestJSONPathSelectedModelElement(aspect, allAnswers, tree)]);
+    const firstBatchAnswers = await inquirer.prompt([
+        requestJSONPathSelectedModelElement(aspect, allAnswers, tree),
+        requestExcludedProperties(generationType, aspect, allAnswers, templateHelper),
+    ]);
 
     const secondBatchAnswers = await inquirer.prompt([
+        requestGenerateLabelsForExcludedProps(firstBatchAnswers),
         requestAspectModelVersionSupport,
         requestOptionalMaterialTheme(options),
         requestSetViewEncapsulation,
