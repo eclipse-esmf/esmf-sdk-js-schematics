@@ -135,32 +135,23 @@ async function runPrompts(subscriber: Subscriber<Tree>, tree: Tree, templateHelp
             const answerAspectModel = await getAspectModelUrnToLoad();
             aspect = await loadAspectModel(answerAspectModel.aspectModelUrnToLoad, tree);
             const answerSelectedModelElement = await getSelectedModelElement();
+            const answerComplexPropertyElements = await getComplexPropertyElements(templateHelper);
 
             // TODO change this .. only for dev testing purposes ...
             let answerUserSpecificConfig;
-            let answerComplexPropertyElements;
             if (generationType !== 'form') {
-                answerComplexPropertyElements = await getComplexPropertyElements(templateHelper);
                 answerUserSpecificConfig = await getUserSpecificConfigs(tree, templateHelper, options);
             } else {
                 answerUserSpecificConfig = await getUserSpecificFormConfigs(tree, templateHelper, options);
             }
 
-            let answersToCombine;
-
-            if (generationType !== 'form') {
-                answersToCombine = [
-                    answerConfigurationFileConfig,
-                    answerAspectModel,
-                    answerSelectedModelElement,
-                    answerComplexPropertyElements,
-                    answerUserSpecificConfig,
-                ];
-            } else {
-                answersToCombine = [answerConfigurationFileConfig, answerAspectModel, answerSelectedModelElement, answerUserSpecificConfig];
-            }
-
-            combineAnswers(...answersToCombine);
+            combineAnswers(
+                answerConfigurationFileConfig,
+                answerAspectModel,
+                answerSelectedModelElement,
+                answerComplexPropertyElements,
+                answerUserSpecificConfig
+            );
         }
     } catch (error) {
         console.error('An error occurred:', error);
