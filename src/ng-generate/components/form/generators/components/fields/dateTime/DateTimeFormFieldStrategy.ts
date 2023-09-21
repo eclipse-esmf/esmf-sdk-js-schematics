@@ -2,20 +2,30 @@ import {Characteristic} from '@esmf/aspect-model-loader';
 import {FormFieldConfig, FormFieldStrategy} from '../FormFieldStrategy';
 import {strings} from '@angular-devkit/core';
 
+const DEFAULT_FORMAT = 'YYYY-MM-DDTHH:mm:ss.SSSSSSZ';
+const dataFormats = [
+    {
+        type: 'dateTime',
+        format: 'YYYY-MM-DDTHH:mm:ss.SSSSSSZ',
+    },
+    {
+        type: 'dateTimeStamp',
+        format: 'YYYY-MM-DDTHH:mm:ss.SSSSSZ',
+    },
+    {
+        type: 'time',
+        format: 'HH:mm:ss.SSSSSSZ',
+    },
+];
+const supportedTypes = dataFormats.map(dt => dt.type);
+
 export class DateTimeFormFieldStrategy extends FormFieldStrategy {
     pathToFiles = './generators/components/fields/dateTime/files';
     hasChildren = false;
 
     static isTargetStrategy(child: Characteristic): boolean {
         const urn = this.getShortUrn(child);
-        return (
-            urn === 'dateTime' ||
-            urn === 'dateTimeStamp' ||
-            urn === 'dayTimeDuration' ||
-            urn === 'duration' ||
-            urn === 'time' ||
-            urn === 'yearMonthDuration'
-        );
+        return urn ? supportedTypes.includes(urn) : false;
     }
 
     buildConfig(): FormFieldConfig {
@@ -23,6 +33,13 @@ export class DateTimeFormFieldStrategy extends FormFieldStrategy {
             name: this.fieldName,
             nameDasherized: strings.dasherize(this.fieldName.charAt(0).toLowerCase() + this.fieldName.slice(1)),
             validators: [...this.getBaseValidatorsConfigs()],
+            dataFormat: this.getDataFormat(),
         };
+    }
+
+    getDataFormat(): string {
+        const urn = DateTimeFormFieldStrategy.getShortUrn(this.child);
+        const format = dataFormats.find(dt => dt.type === urn)?.format;
+        return format || DEFAULT_FORMAT;
     }
 }

@@ -1,0 +1,100 @@
+/** <%= options.generationDisclaimerText %> **/
+
+import {Attribute, Component, forwardRef, Input, OnInit} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {FormControl, FormGroup, FormsModule, NG_VALUE_ACCESSOR, ReactiveFormsModule, Validators} from '@angular/forms';
+import {MatDatepickerModule} from '@angular/material/datepicker';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatInputModule} from '@angular/material/input';
+import {ThemePalette, MAT_DATE_LOCALE} from '@angular/material/core';
+import {
+  NgxMatMomentAdapter,
+  NGX_MAT_MOMENT_DATE_ADAPTER_OPTIONS,
+  NGX_MAT_MOMENT_FORMATS,
+  NgxMatMomentModule,
+} from '@angular-material-components/moment-adapter';
+import {Duration, duration, Moment} from 'moment';
+import {NGX_MAT_DATE_FORMATS, NgxMatDateAdapter, NgxMatDatetimePickerModule} from '@angular-material-components/datetime-picker';
+import {FormControlReusable} from "../../../../utils/form-control-reusable";
+
+export const <%= options.fieldConfig.name %>FormControl = new FormControl<string | null>(
+    null,
+    [
+        <% for(let validator of options.fieldConfig.validators) { %>
+            <%= validator.definition %>
+        <% } %>
+    ]
+);
+
+interface FormGroupValue {
+    start: Moment | null;
+    end: Moment | null;
+}
+
+@Component({
+    selector: '<%= dasherize(options.fieldConfig.name) %>',
+    standalone: true,
+    imports: [
+        CommonModule,
+        FormsModule,
+        MatDatepickerModule,
+        MatFormFieldModule,
+        MatInputModule,
+        ReactiveFormsModule,
+        NgxMatDatetimePickerModule,
+        NgxMatMomentModule,
+    ],
+    templateUrl: './<%= dasherize(options.fieldConfig.name) %>.component.html',
+    styleUrls: ['./<%= dasherize(options.fieldConfig.name) %>.component.scss'],
+    providers: [
+        {
+            provide: NG_VALUE_ACCESSOR,
+            useExisting: forwardRef(() => <%= classify(options.fieldConfig.name) %>Component),
+            multi: true,
+        },
+        {
+            provide: NgxMatDateAdapter,
+            useClass: NgxMatMomentAdapter,
+            deps: [MAT_DATE_LOCALE, NGX_MAT_MOMENT_DATE_ADAPTER_OPTIONS],
+        },
+        {provide: NGX_MAT_DATE_FORMATS, useValue: NGX_MAT_MOMENT_FORMATS},
+        {provide: MAT_DATE_LOCALE, useValue: 'en-GB'},
+    ],
+})
+export class <%= classify(options.fieldConfig.name) %>Component extends FormControlReusable implements OnInit {
+    @Input() color: ThemePalette;
+
+    formGroup: FormGroup = new FormGroup({
+        start: new FormControl(null, [Validators.required]),
+        end: new FormControl(null, [Validators.required]),
+    });
+    formControl: FormControl = <%= options.fieldConfig.name %>FormControl;
+
+    constructor(@Attribute('formControlName') public formControlName: string) {
+        super();
+    }
+
+    get errorMessage() {
+        return this.formControl.hasError('required')
+            ? 'The field is required'
+            : 'The value is invalid or empty';
+    }
+
+    ngOnInit() {
+        this.formGroup.valueChanges.subscribe(value => this.updateControlValue(value));
+    }
+
+    private updateControlValue(value: FormGroupValue): void {
+        if (!value?.start || !value?.end) {
+            return this.formControl.setValue(null);
+        }
+
+        const timeDuration = duration(value.start.diff(value.end));
+        const formattedDuration = this.formatDuration(timeDuration)
+        this.formControl.setValue(formattedDuration);
+    }
+
+    private formatDuration(timeDuration: Duration): string {
+        return <%= options.fieldConfig.dataFormat %>;
+    }
+}

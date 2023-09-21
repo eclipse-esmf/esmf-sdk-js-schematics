@@ -19,6 +19,7 @@ export interface FormFieldConfig {
     values?: any[];
     unitName?: string;
     children?: FormFieldConfig[];
+    dataFormat?: string;
 }
 
 export class FormFieldStrategy {
