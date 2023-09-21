@@ -1,9 +1,8 @@
 /** <%= options.generationDisclaimerText %> **/
 
-import {Attribute, Component, forwardRef, OnInit} from '@angular/core';
+import {Attribute, Component, forwardRef} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {
-    FormBuilder,
     FormControl,
     FormGroup,
     FormsModule,
@@ -13,14 +12,21 @@ import {
 } from '@angular/forms';
 import {FormGroupReusable} from '../../../../utils/form-group-reusable';
 <% for (let childConfig of options.fieldConfig.children) {
-    %>import {<%= classify(childConfig.name) %>Component} from '../<%= classify(childConfig.name) %>/<%= dasherize(childConfig.name) %>.component';
+    %>import {<%= classify(childConfig.name) %>Component, <%= classify(childConfig.name) %>FormControl} from '../<%= childConfig.nameDasherized %>/<%= childConfig.nameDasherized %>.component';
 <% } %>
 
-export interface <%= classify(options.fieldConfig.name) %>FormGroup {
+export interface <%= options.fieldConfig.name %> {
     <% for (let childConfig of options.fieldConfig.children) {
-        %><%= classify(childConfig.name) %>: FormControl<string | null>;
+        %><%= childConfig.name %>: FormControl<string | null>;
     <% } %>
 }
+
+export const <%= options.fieldConfig.name %>FormControl = new FormControl<<%= options.fieldConfig.name %> | null>(null);
+export const <%= options.fieldConfig.name %>FormGroup = new FormGroup<<%= options.fieldConfig.name %>>({
+    <% for (let childConfig of options.fieldConfig.children) {
+        %><%= childConfig.name %>: <%= childConfig.name %>FormControl,
+    <% } %>
+});
 
 @Component({
     selector: '<%= dasherize(options.fieldConfig.name) %>',
@@ -48,18 +54,10 @@ export interface <%= classify(options.fieldConfig.name) %>FormGroup {
         },
     ],
 })
-export class <%= classify(options.fieldConfig.name) %>Component extends FormGroupReusable implements OnInit {
-    form!: FormGroup<<%= classify(options.fieldConfig.name) %>FormGroup>;
+export class <%= classify(options.fieldConfig.name) %>Component extends FormGroupReusable {
+    formGroup: FormGroup<<%= options.fieldConfig.name %>> = <%= options.fieldConfig.name %>FormGroup;
 
-    ngOnInit(): void {
-        this.form = this.fb.nonNullable.group<<%= classify(options.fieldConfig.name) %>FormGroup>({
-            <% for (let childConfig of options.fieldConfig.children) {
-                %><%= childConfig.name %>: new FormControl(null),
-            <% } %>
-        });
-    }
-
-    constructor(@Attribute('formControlName') public formControlName: string, private fb: FormBuilder) {
+    constructor(@Attribute('formControlName') public formControlName: string) {
         super();
     }
 }

@@ -15,14 +15,14 @@ import {FormGroupReusable} from '../../../../utils/form-group-reusable';
     %>import {<%= classify(childConfig.name) %>Component, <%= classify(childConfig.name) %>FormControl} from '../<%= childConfig.nameDasherized %>/<%= childConfig.nameDasherized %>.component';
 <% } %>
 
-export interface <%= classify(options.fieldConfig.name) %> {
+export interface <%= options.fieldConfig.name %> {
     <% for (let childConfig of options.fieldConfig.children) {
-        %><%= classify(childConfig.name) %>: FormControl<string | null>;
+        %><%= childConfig.name %>: FormControl<string | null>;
     <% } %>
 }
 
-export const <%= classify(options.fieldConfig.name) %>FormControl = new FormControl<<%= classify(options.fieldConfig.name) %> | null>(null);
-export const <%= classify(options.fieldConfig.name) %>FormGroup = new FormGroup<<%= classify(options.fieldConfig.name) %>>({
+export const <%= options.fieldConfig.name %>FormControl = new FormControl<<%= options.fieldConfig.name %> | null>(null);
+export const <%= options.fieldConfig.name %>FormGroup = new FormGroup<<%= options.fieldConfig.name %>>({
     <% for (let childConfig of options.fieldConfig.children) {
         %><%= childConfig.name %>: <%= childConfig.name %>FormControl,
     <% } %>
@@ -55,7 +55,7 @@ export const <%= classify(options.fieldConfig.name) %>FormGroup = new FormGroup<
     ],
 })
 export class <%= classify(options.fieldConfig.name) %>Component extends FormGroupReusable {
-    formGroup: FormGroup<<%= classify(options.fieldConfig.name) %>> = <%= classify(options.fieldConfig.name) %>FormGroup;
+    formGroup: FormGroup<<%= options.fieldConfig.name %>> = <%= options.fieldConfig.name %>FormGroup;
 
     constructor(@Attribute('formControlName') public formControlName: string) {
         super();

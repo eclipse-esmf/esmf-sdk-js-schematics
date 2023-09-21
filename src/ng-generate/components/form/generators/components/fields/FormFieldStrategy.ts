@@ -79,7 +79,7 @@ export class FormFieldStrategy {
 
         const modules = [
             {
-                name: this.fieldName + 'Component',
+                name: strings.classify(this.fieldName) + 'Component',
                 fromLib: `./${fieldConfig.nameDasherized}/${fieldConfig.nameDasherized}.component`,
             },
         ];
