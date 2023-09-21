@@ -135,7 +135,6 @@ async function runPrompts(subscriber: Subscriber<Tree>, tree: Tree, templateHelp
             const answerAspectModel = await getAspectModelUrnToLoad();
             aspect = await loadAspectModel(answerAspectModel.aspectModelUrnToLoad, tree);
             const answerSelectedModelElement = await getSelectedModelElement();
-            const answerComplexPropertyElements = await getComplexPropertyElements(templateHelper);
 
             // TODO change this .. only for dev testing purposes ...
             let answerUserSpecificConfig;
@@ -145,13 +144,7 @@ async function runPrompts(subscriber: Subscriber<Tree>, tree: Tree, templateHelp
                 answerUserSpecificConfig = await getUserSpecificFormConfigs(tree, templateHelper, options);
             }
 
-            combineAnswers(
-                answerConfigurationFileConfig,
-                answerAspectModel,
-                answerSelectedModelElement,
-                answerComplexPropertyElements,
-                answerUserSpecificConfig
-            );
+            combineAnswers(answerConfigurationFileConfig, answerAspectModel, answerSelectedModelElement, answerUserSpecificConfig);
         }
     } catch (error) {
         console.error('An error occurred:', error);
@@ -356,6 +349,7 @@ async function getUserSpecificConfigs(tree: Tree, templateHelper: TemplateHelper
     const firstBatchAnswers = await inquirer.prompt([
         requestJSONPathSelectedModelElement(aspect, allAnswers, tree),
         requestExcludedProperties(generationType, aspect, allAnswers, templateHelper),
+        getComplexPropertyElements(templateHelper),
     ]);
 
     const secondBatchAnswers = await inquirer.prompt([
@@ -412,13 +406,9 @@ function cleanUpOptionsObject(allAnswers: any) {
 }
 
 async function getUserSpecificFormConfigs(tree: Tree, templateHelper: TemplateHelper, options: Schema) {
-    const firstBatchAnswers = await inquirer.prompt([
-        requestJSONPathSelectedModelElement(aspect, allAnswers, tree),
-        requestExcludedProperties(generationType, aspect, allAnswers, templateHelper),
-    ]);
+    const firstBatchAnswers = await inquirer.prompt([requestJSONPathSelectedModelElement(aspect, allAnswers, tree)]);
 
     const secondBatchAnswers = await inquirer.prompt([
-        requestGenerateLabelsForExcludedProps(firstBatchAnswers),
         requestAspectModelVersionSupport,
         requestOptionalMaterialTheme(options),
         requestSetViewEncapsulation,
