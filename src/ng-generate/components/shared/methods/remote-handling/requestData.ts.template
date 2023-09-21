@@ -100,7 +100,7 @@ private requestData() {
                 this.dataSource.paginator = this.paginator;
             }),
         catchError((error: any) => {
-            this.dataLoadError = false;
+            this.dataLoadError = true;
             <% if (options.componentType === 'card') { %>
                 this.dataToShow = [];
                 this.dataSource.data = [];
