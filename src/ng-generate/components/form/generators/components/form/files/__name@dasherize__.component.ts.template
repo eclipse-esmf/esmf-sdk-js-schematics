@@ -5,7 +5,7 @@ import {AbstractControl, FormArray, FormBuilder, FormGroup, FormControl, Validat
 import {SelectionModel} from "@angular/cdk/collections";
 import {Clipboard} from '@angular/cdk/clipboard';
 import {ThemePalette} from "@angular/material/core";
-<% for (let childConfig of options.fieldConfig.children) {
+<% for (let childConfig of options.childConfigs) {
     %>import {<%= childConfig.name %>FormControl} from "./<%= childConfig.nameDasherized %>/<%= childConfig.nameDasherized %>.component";
 <% } %>
 
@@ -67,7 +67,7 @@ export class <%= classify(name) %>Component {
     private createFormGroup(): FormGroup {
 
         return this.fb.group({
-            <% for (let childConfig of options.fieldConfig.children) {
+            <% for (let childConfig of options.childConfigs) {
                 %><%= childConfig.name %>: <%= childConfig.name %>FormControl,
             <% } %>
         });

@@ -16,7 +16,6 @@ import {FormFieldStrategy} from './FormFieldStrategy';
 import {Characteristic, Property} from '@esmf/aspect-model-loader';
 import {FORM_FIELD_DEFAULT_STRATEGY, FORM_FIELD_STRATEGIES} from './form-field-strategies';
 
-// TODO: Make it a separate factory
 export function getFormFieldStrategy(
     options: any,
     context: SchematicContext,

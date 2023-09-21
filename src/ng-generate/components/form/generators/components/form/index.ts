@@ -15,9 +15,8 @@ import {apply, applyTemplates, chain, MergeStrategy, mergeWith, move, Rule, Sche
 import {strings} from '@angular-devkit/core';
 import {DefaultList, Property} from '@esmf/aspect-model-loader';
 import {templateInclude} from '../../../../shared/include';
-import {getEnumPropertyDefinitions, resolveJsPropertyType} from '../../../../shared/utils';
 import {Schema} from '../../../../shared/schema';
-import {RootFormFieldStrategy} from './RootFormFieldStrategy';
+import {RootFormField} from './RootFormFieldStrategy';
 
 let sharedOptions: any = {};
 
@@ -39,8 +38,8 @@ export function generateFormComponent(options: any): Rule {
         // sharedOptions['collection'] = DefaultCollection;
         // sharedOptions['either'] = DefaultEither;
 
-        const rootFormFieldStrategy = new RootFormFieldStrategy(options, _context);
-        const rules = rootFormFieldStrategy.generate();
+        const rootFormField = new RootFormField(options, _context);
+        const rules = rootFormField.generate();
         return chain(rules)(tree, _context);
     };
 }
@@ -65,7 +64,5 @@ function applyTemplate(): Rule {
         dasherize: strings.dasherize,
         options: sharedOptions,
         name: sharedOptions.name,
-        enumPropertyDefinitions: getEnumPropertyDefinitions(sharedOptions, sharedOptions.listProps),
-        resolveJsPropertyType: resolveJsPropertyType,
     });
 }

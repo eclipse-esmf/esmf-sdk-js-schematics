@@ -45,8 +45,6 @@ export default function (formSchema: FormSchema): Rule {
 export function generateForm(formSchema: Schema): Rule {
     prepareOptions(formSchema, ComponentType.FORM);
 
-    // (options as any)['fieldsConfigs'] = FormFieldBuilder.buildFieldsConfigs(options);
-
     return chain([
         loadRdfRule(),
         loadAspectModelRule(),
@@ -89,6 +87,5 @@ function addDateTimePickerDependenciesRule(): Rule {
         },
     ];
 
-    // Todo update component module file with NgxMatTimepickerModule, NgxMatDatetimePickerModule, NgxMatMomentModule and declarations/export -> MovementFormComponent
     return addPackageJsonDependencies(options.skipImport, options.spinner, loadDependencies);
 }

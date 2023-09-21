@@ -1,4 +1,4 @@
-import {Characteristic, DefaultEither, Property} from '@esmf/aspect-model-loader';
+import {Characteristic, Property} from '@esmf/aspect-model-loader';
 import {apply, applyTemplates, chain, MergeStrategy, mergeWith, move, Rule, SchematicContext, url} from '@angular-devkit/schematics';
 import {strings} from '@angular-devkit/core';
 import {templateInclude} from '../../../../shared/include';

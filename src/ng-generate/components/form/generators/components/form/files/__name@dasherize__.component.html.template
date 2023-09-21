@@ -1,11 +1,11 @@
 <form [formGroup]="form" class="<%= options.name %>">
     <section class="form-fields">
-        <% for (let childConfig of options.fieldConfig.children) {
+        <% for (let childConfig of options.childConfigs) {
             %><<%= dasherize(childConfig.name) %> formControlName="<%= childConfig.name %>"></<%= dasherize(childConfig.name) %>>
         <% } %>
     </section>
 
-    <% if (!options.fieldConfig.readOnlyForm) { %>
+    <% if (!options.childConfigs) { %>
         <section class="form-actions">
             <button mat-flat-button (click)="onCancel()">Cancel</button>
             <button mat-flat-button color="primary" [disabled]="form.invalid" (click)="onSubmit(form)">Submit</button>
