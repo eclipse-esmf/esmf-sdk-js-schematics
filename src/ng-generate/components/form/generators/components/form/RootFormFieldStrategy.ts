@@ -19,7 +19,6 @@ export class RootFormFieldStrategy {
             nameDasherized: '',
             validators: [],
             children: this.getChildConfigs(),
-            readOnlyForm: this.options.readOnlyForm,
         };
     }
 

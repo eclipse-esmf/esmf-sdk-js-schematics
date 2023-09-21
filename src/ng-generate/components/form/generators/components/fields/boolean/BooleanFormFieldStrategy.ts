@@ -16,7 +16,6 @@ export class BooleanFormFieldStrategy extends FormFieldStrategy {
             name: this.fieldName,
             nameDasherized: strings.dasherize(this.fieldName.charAt(0).toLowerCase() + this.fieldName.slice(1)),
             validators: [...this.getBaseValidatorsConfigs()],
-            readOnlyForm: this.readOnlyForm,
         };
     }
 }

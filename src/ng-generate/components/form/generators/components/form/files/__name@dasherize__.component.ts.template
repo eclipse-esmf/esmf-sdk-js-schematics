@@ -59,7 +59,7 @@ export class <%= classify(name) %>Component {
 
     constructor(private fb: FormBuilder, private clipboard: Clipboard,) {
         this.form = this.createFormGroup();
-        <% if (options.fieldConfig.readOnlyForm) {
+        <% if (options.readOnlyForm) {
             %>this.form.disable();
         <% } %>
     }

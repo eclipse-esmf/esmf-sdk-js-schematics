@@ -16,7 +16,6 @@ export class EitherFormFieldStrategy extends FormFieldStrategy {
             nameDasherized: strings.dasherize(this.fieldName.charAt(0).toLowerCase() + this.fieldName.slice(1)),
             validators: [...this.getBaseValidatorsConfigs()],
             children: this.getChildConfigs(),
-            readOnlyForm: this.readOnlyForm,
         };
     }
 

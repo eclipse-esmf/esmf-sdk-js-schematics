@@ -19,13 +19,11 @@ export interface FormFieldConfig {
     values?: any[];
     unitName?: string;
     children?: FormFieldConfig[];
-    readOnlyForm: boolean;
 }
 
 export class FormFieldStrategy {
     pathToFiles: string;
     hasChildren: boolean;
-    readOnlyForm: boolean;
     options: any;
 
     static isTargetStrategy(child: Characteristic): boolean {
@@ -44,7 +42,6 @@ export class FormFieldStrategy {
         public fieldName: string
     ) {
         this.options = {...options};
-        this.readOnlyForm = this.options.readOnlyForm;
     }
 
     getBaseValidatorsConfigs(): ValidatorConfig[] {

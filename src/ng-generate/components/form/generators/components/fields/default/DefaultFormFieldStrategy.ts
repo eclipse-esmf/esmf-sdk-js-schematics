@@ -18,7 +18,6 @@ export class DefaultFormFieldStrategy extends FormFieldStrategy {
             exampleValue: this.parent.exampleValue || '',
             unitName: untypedChild.unit?.name || '',
             validators: [...this.getBaseValidatorsConfigs()],
-            readOnlyForm: this.readOnlyForm,
         };
     }
 }
