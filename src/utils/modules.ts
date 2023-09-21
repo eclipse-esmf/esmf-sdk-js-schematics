@@ -171,6 +171,10 @@ export function updateSharedModule(options: Schema) {
                 return;
             }
 
+            if (directive === 'resize-column' && options.componentType === 'form') {
+                return;
+            }
+
             processItem('directive', directive);
         });
 

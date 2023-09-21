@@ -72,6 +72,7 @@ function utilsGeneration(): Array<Rule> {
     return [generateFormControlReusable(options), generateFormGroupReusable(options), generateDestroyedSubject(options)];
 }
 
+// TODO: Move to date-related controls generation?
 function addDateTimePickerDependenciesRule(): Rule {
     const loadDependencies = [
         {
