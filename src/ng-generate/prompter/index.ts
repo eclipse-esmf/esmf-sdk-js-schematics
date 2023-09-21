@@ -138,13 +138,29 @@ async function runPrompts(subscriber: Subscriber<Tree>, tree: Tree, templateHelp
 
             // TODO change this .. only for dev testing purposes ...
             let answerUserSpecificConfig;
+            let answerComplexPropertyElements;
             if (generationType !== 'form') {
+                answerComplexPropertyElements = await getComplexPropertyElements(templateHelper);
                 answerUserSpecificConfig = await getUserSpecificConfigs(tree, templateHelper, options);
             } else {
                 answerUserSpecificConfig = await getUserSpecificFormConfigs(tree, templateHelper, options);
             }
 
-            combineAnswers(answerConfigurationFileConfig, answerAspectModel, answerSelectedModelElement, answerUserSpecificConfig);
+            let answersToCombine;
+
+            if (generationType !== 'form') {
+                answersToCombine = [
+                    answerConfigurationFileConfig,
+                    answerAspectModel,
+                    answerSelectedModelElement,
+                    answerComplexPropertyElements,
+                    answerUserSpecificConfig,
+                ];
+            } else {
+                answersToCombine = [answerConfigurationFileConfig, answerAspectModel, answerSelectedModelElement, answerUserSpecificConfig];
+            }
+
+            combineAnswers(...answersToCombine);
         }
     } catch (error) {
         console.error('An error occurred:', error);
@@ -349,7 +365,6 @@ async function getUserSpecificConfigs(tree: Tree, templateHelper: TemplateHelper
     const firstBatchAnswers = await inquirer.prompt([
         requestJSONPathSelectedModelElement(aspect, allAnswers, tree),
         requestExcludedProperties(generationType, aspect, allAnswers, templateHelper),
-        getComplexPropertyElements(templateHelper),
     ]);
 
     const secondBatchAnswers = await inquirer.prompt([
