@@ -11,22 +11,22 @@ SPDX-License-Identifier: MPL-2.0
 = Custom Column Renderer
 
 The table UI representation for an Aspect Model per default renders the values
-as text. However, when creating the table using the schematic, you can let
-the schematic create additional, customizable columns.
+as text. However, when creating the table using schematics, you can let
+schematics create additional, customizable columns.
 
-One way to render the content of the column is to use the Angular [ng-template
-directive](https://blog.angular-university.io/angular-ng-template-ng-container-ngtemplateoutlet/), another
+One way to render the content of the column is to use the Angular https://blog.angular-university.io/angular-ng-template-ng-container-ngtemplateoutlet/[ng-template
+directive, window=_blank,opts=nofollow], another
 way is to create a custom component to individually render the content of a column. The latter choice is
 recommended especially if business logic is involved for rendering the content.
 
 == Example showing a traffic light in a column
 The following example show how to implement and offer a column with graphical content
-using [Scalable Vector Graphics (SVG)](https://www.w3.org/Graphics/SVG/).
+using https://www.w3.org/Graphics/SVG/[Scalable Vector Graphics (SVG), window=_blank,opts=nofollow].
 
 === Alternative A: Render column content using ng-template
 This is the recommended approach if no business logic is involved.
 
-==== Step A1: Create graphical representation
+====  Step A1: Create graphical representation
 Let's say that the table row includes an attribute *speedLimitWarning* that
 can be one of *red*, *yellow* or *green*.
 
