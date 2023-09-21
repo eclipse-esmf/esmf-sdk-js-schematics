@@ -31,7 +31,7 @@ export class RootFormFieldStrategy {
     }
 
     private getChildStrategy(parent: Property, child: Characteristic): FormFieldStrategy {
-        return getFormFieldStrategy(this.options, this.context, parent, child, child.name);
+        return getFormFieldStrategy(this.options, this.context, parent, child, parent.name);
     }
 
     generate(): Rule[] {

@@ -7,7 +7,7 @@ import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatInputModule} from '@angular/material/input';
 import {FormControlReusable} from "../../../../utils/form-control-reusable";
 
-export const <%= classify(options.fieldConfig.name) %>FormControl = new FormControl(
+export const <%= options.fieldConfig.name %>FormControl = new FormControl(
     null,
     [
         <% for(let validator of options.fieldConfig.validators) { %>
@@ -31,7 +31,7 @@ export const <%= classify(options.fieldConfig.name) %>FormControl = new FormCont
     ]
 })
 export class <%= classify(options.fieldConfig.name) %>Component extends FormControlReusable {
-    formControl = <%= classify(options.fieldConfig.name) %>FormControl;
+    formControl = <%= options.fieldConfig.name %>FormControl;
 
     constructor(@Attribute('formControlName') public formControlName: string) {
         super();

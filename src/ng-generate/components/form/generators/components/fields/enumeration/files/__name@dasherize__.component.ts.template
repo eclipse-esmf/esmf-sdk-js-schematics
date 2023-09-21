@@ -5,9 +5,10 @@ import {CommonModule} from '@angular/common';
 import {FormControl, FormsModule, NG_VALUE_ACCESSOR, ReactiveFormsModule, Validators} from '@angular/forms';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatInputModule} from '@angular/material/input';
+import {MatSelectModule} from "@angular/material/select";
 import {FormControlReusable} from "../../../../utils/form-control-reusable";
 
-export const <%= classify(options.fieldConfig.name) %>FormControl = new FormControl(
+export const <%= options.fieldConfig.name %>FormControl = new FormControl(
     null,
     [
         <% for(let validator of options.fieldConfig.validators) { %>
@@ -19,7 +20,7 @@ export const <%= classify(options.fieldConfig.name) %>FormControl = new FormCont
 @Component({
     selector: '<%= dasherize(options.fieldConfig.name) %>',
     standalone: true,
-    imports: [CommonModule, FormsModule, MatFormFieldModule, MatInputModule, ReactiveFormsModule],
+    imports: [CommonModule, FormsModule, MatFormFieldModule, MatInputModule, ReactiveFormsModule, MatSelectModule],
     templateUrl: './<%= dasherize(options.fieldConfig.name) %>.component.html',
     styleUrls: ['./<%= dasherize(options.fieldConfig.name) %>.component.scss'],
     providers: [
@@ -31,7 +32,7 @@ export const <%= classify(options.fieldConfig.name) %>FormControl = new FormCont
     ]
 })
 export class <%= classify(options.fieldConfig.name) %>Component extends FormControlReusable {
-    formControl = <%= classify(options.fieldConfig.name) %>FormControl;
+    formControl = <%= options.fieldConfig.name %>FormControl;
 
     constructor(@Attribute('formControlName') public formControlName: string) {
         super();
