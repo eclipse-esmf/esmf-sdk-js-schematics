@@ -50,7 +50,10 @@
         <!-- Row shown when there is no matching data that will be provided to the wrapper table. -->
         <tr data-test="no-data-table-row" class="mat-row" *matNoDataRow>
           <td data-test="no-data-table-cell" class="mat-cell" [colSpan]="displayedColumns.length" *ngIf="!dataSource.data.length">
-            <span data-test="no-data-message">{{noDataMessage || 'No data'}}</span>
+            <span *ngIf="!dataLoadError" data-test="no-data-message">{{ noDataMessage || 'No data' }}</span>
+            <span *ngIf="dataLoadError"
+                  data-test="no-data-message">{{ dataLoadErrorMessage || 'Unable to load data' }}</span>
+
           </td>
         </tr>
 

@@ -126,6 +126,7 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
     @Input() highlightColor = 'rgba(127, 198, 231, 0.3)';
     @Input() isMultipleSelectionEnabled = true;
     @Input() noDataMessage: string = '';
+    @Input() dataLoadErrorMessage: string = '';
     @Input() visibleRowActionsIcons: number = 3;
     @Input() headerTooltipsOff: boolean = false;
     @Input() setStickRowActions: boolean = true;
@@ -207,6 +208,7 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
     closeColumnMenu: boolean = false;
     rqlString: string = '';
     searchFocused: boolean = false;
+    dataLoadError = false;
 
     <% if (options.hasSearchBar) { %>
         highlightString: string[] = [];
@@ -220,6 +222,7 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
 
     <% if (options.hasSearchBar || options.enableRemoteDataHandling) { %>
         private readonly ngUnsubscribe = new Subject<void>();
+        private requestSubscription: Subscription;
     <% } %>
 
     <% if (options.enableRemoteDataHandling) { %>
