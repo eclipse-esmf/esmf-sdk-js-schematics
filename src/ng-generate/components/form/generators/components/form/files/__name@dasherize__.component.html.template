@@ -5,7 +5,7 @@
         <% } %>
     </section>
 
-    <% if (!options.childConfigs) { %>
+    <% if (!options.readOnlyForm) { %>
         <section class="form-actions">
             <button mat-flat-button (click)="onCancel()">Cancel</button>
             <button mat-flat-button color="primary" [disabled]="form.invalid" (click)="onSubmit(form)">Submit</button>
