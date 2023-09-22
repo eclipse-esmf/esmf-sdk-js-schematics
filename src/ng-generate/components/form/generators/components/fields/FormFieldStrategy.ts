@@ -112,7 +112,7 @@ export class FormFieldStrategy {
         throw new Error('An implementation of the method has to be provided by a derived class');
     }
 
-    getChildStrategy(child: Characteristic): FormFieldStrategy {
+    getChildStrategy(parent: Property, child: Characteristic): FormFieldStrategy {
         return getFormFieldStrategy(this.options, this.context, this.parent, child, child.name);
     }
 }

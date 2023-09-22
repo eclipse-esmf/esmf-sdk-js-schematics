@@ -1,6 +1,7 @@
 import {Characteristic, Property} from '@esmf/aspect-model-loader';
 import {FormFieldConfig, FormFieldStrategy} from '../FormFieldStrategy';
 import {strings} from '@angular-devkit/core';
+import {getFormFieldStrategy} from '../index';
 
 export class ComplexFormFieldStrategy extends FormFieldStrategy {
     pathToFiles = './generators/components/fields/complex/files';
@@ -21,6 +22,12 @@ export class ComplexFormFieldStrategy extends FormFieldStrategy {
 
     getChildStrategies(): FormFieldStrategy[] {
         const untypedDataType = this.child.dataType as any;
-        return untypedDataType?.properties ? untypedDataType.properties.map((p: Property) => this.getChildStrategy(p.characteristic)) : [];
+        return untypedDataType?.properties
+            ? untypedDataType.properties.map((p: Property) => this.getChildStrategy(p, p.characteristic))
+            : [];
+    }
+
+    getChildStrategy(parent: Property, child: Characteristic): FormFieldStrategy {
+        return getFormFieldStrategy(this.options, this.context, parent, child, parent.name);
     }
 }

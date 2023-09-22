@@ -21,6 +21,6 @@ export class EitherFormFieldStrategy extends FormFieldStrategy {
 
     getChildStrategies(): FormFieldStrategy[] {
         const typedChild = this.child as DefaultEither;
-        return [this.getChildStrategy(typedChild.left), this.getChildStrategy(typedChild.right)];
+        return [this.getChildStrategy(this.parent, typedChild.left), this.getChildStrategy(this.parent, typedChild.right)];
     }
 }
