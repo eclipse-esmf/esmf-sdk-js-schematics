@@ -9,6 +9,8 @@ import {DateFormFieldStrategy} from './date/DateFormFieldStrategy';
 import {DateTimeFormFieldStrategy} from './dateTime/DateTimeFormFieldStrategy';
 import {DefaultFormFieldStrategy} from './default/DefaultFormFieldStrategy';
 import {DurationFormFieldStrategy} from './duration/DurationFormFieldStrategy';
+import {TimeFormFieldStrategy} from './time/TimeFormFieldStrategy';
+import {DatePartialFormFieldStrategy} from './datePartial/DatePartialFormFieldStrategy';
 
 export const FORM_FIELD_STRATEGIES = [
     ComplexFormFieldStrategy,
@@ -21,8 +23,7 @@ export const FORM_FIELD_STRATEGIES = [
     DateFormFieldStrategy,
     DateTimeFormFieldStrategy,
     DurationFormFieldStrategy,
+    TimeFormFieldStrategy,
+    DatePartialFormFieldStrategy,
 ];
 export const FORM_FIELD_DEFAULT_STRATEGY = DefaultFormFieldStrategy;
-
-export type FormFieldStrategies = typeof FORM_FIELD_STRATEGIES;
-export type FormFieldDefaultStrategy = typeof FORM_FIELD_DEFAULT_STRATEGY;

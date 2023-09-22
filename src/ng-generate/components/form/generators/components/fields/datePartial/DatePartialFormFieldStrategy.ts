@@ -4,21 +4,29 @@ import {strings} from '@angular-devkit/core';
 
 const typesConfigs = [
     {
-        type: 'dayTimeDuration',
-        hint: "Examples: 'P30D', 'P1DT5H', 'PT1H5M0S'",
+        type: 'gDay',
+        hint: "Examples: '---04', '---04+03:00'",
     },
     {
-        type: 'duration',
-        hint: "Examples: 'P30D', '-P1Y2M3DT1H', 'PT1H5M0S'",
+        type: 'gMonth',
+        hint: "Examples: '--04', '--04+03:00'",
     },
     {
-        type: 'yearMonthDuration',
-        hint: "Examples: 'P10M', 'P5Y2M'",
+        type: 'gYear',
+        hint: "Examples: '2000', '2000+03:00'",
+    },
+    {
+        type: 'gMonthDay',
+        hint: "Examples: '--01-01', '--01-01+03:00'",
+    },
+    {
+        type: 'gYearMonth',
+        hint: "Examples: '2000-01', '2000-01+03:00'",
     },
 ];
 const supportedTypes = typesConfigs.map(dt => dt.type);
 
-export class DurationFormFieldStrategy extends FormFieldStrategy {
+export class DatePartialFormFieldStrategy extends FormFieldStrategy {
     pathToFiles = './generators/components/fields/duration/files';
     hasChildren = false;
 
@@ -37,7 +45,7 @@ export class DurationFormFieldStrategy extends FormFieldStrategy {
     }
 
     getHint(): string | undefined {
-        const urn = DurationFormFieldStrategy.getShortUrn(this.child);
+        const urn = DatePartialFormFieldStrategy.getShortUrn(this.child);
         return typesConfigs.find(dt => dt.type === urn)?.hint;
     }
 }
