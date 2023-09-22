@@ -3,33 +3,13 @@ import {FormFieldConfig, FormFieldStrategy} from '../FormFieldStrategy';
 import {strings} from '@angular-devkit/core';
 
 const DEFAULT_FORMAT = 'yyyy-MM-DD';
-const dataFormats = [
+const typesConfigs = [
     {
         type: 'date',
         format: 'yyyy-MM-DD',
     },
-    {
-        type: 'gDay',
-        format: '---DD',
-    },
-    {
-        type: 'gMonth',
-        format: '--MM',
-    },
-    {
-        type: 'gYear',
-        format: 'yyyy',
-    },
-    {
-        type: 'gMonthDay',
-        format: '--MM-DD',
-    },
-    {
-        type: 'gYearMonth',
-        format: 'yyyy-MM',
-    },
 ];
-const supportedTypes = dataFormats.map(dt => dt.type);
+const supportedTypes = typesConfigs.map(dt => dt.type);
 
 export class DateFormFieldStrategy extends FormFieldStrategy {
     pathToFiles = './generators/components/fields/date/files';
@@ -51,7 +31,7 @@ export class DateFormFieldStrategy extends FormFieldStrategy {
 
     getDataFormat(): string {
         const urn = DateFormFieldStrategy.getShortUrn(this.child);
-        const format = dataFormats.find(dt => dt.type === urn)?.format;
+        const format = typesConfigs.find(dt => dt.type === urn)?.format;
         return format || DEFAULT_FORMAT;
     }
 }

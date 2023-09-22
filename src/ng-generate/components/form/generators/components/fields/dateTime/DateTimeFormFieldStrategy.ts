@@ -3,7 +3,7 @@ import {FormFieldConfig, FormFieldStrategy} from '../FormFieldStrategy';
 import {strings} from '@angular-devkit/core';
 
 const DEFAULT_FORMAT = 'YYYY-MM-DDTHH:mm:ss.SSSSSSZ';
-const dataFormats = [
+const typesConfigs = [
     {
         type: 'dateTime',
         format: 'YYYY-MM-DDTHH:mm:ss.SSSSSSZ',
@@ -12,12 +12,8 @@ const dataFormats = [
         type: 'dateTimeStamp',
         format: 'YYYY-MM-DDTHH:mm:ss.SSSSSZ',
     },
-    {
-        type: 'time',
-        format: 'HH:mm:ss.SSSSSSZ',
-    },
 ];
-const supportedTypes = dataFormats.map(dt => dt.type);
+const supportedTypes = typesConfigs.map(dt => dt.type);
 
 export class DateTimeFormFieldStrategy extends FormFieldStrategy {
     pathToFiles = './generators/components/fields/dateTime/files';
@@ -39,7 +35,7 @@ export class DateTimeFormFieldStrategy extends FormFieldStrategy {
 
     getDataFormat(): string {
         const urn = DateTimeFormFieldStrategy.getShortUrn(this.child);
-        const format = dataFormats.find(dt => dt.type === urn)?.format;
+        const format = typesConfigs.find(dt => dt.type === urn)?.format;
         return format || DEFAULT_FORMAT;
     }
 }
