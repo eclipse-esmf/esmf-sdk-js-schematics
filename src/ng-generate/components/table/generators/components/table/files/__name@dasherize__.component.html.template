@@ -99,10 +99,13 @@
                 </th>
 
                 <td data-test="table-cell"
+                    mat-cell
+                    *matCellDef="let row"
                     <% if(options.templateHelper.isEnumPropertyWithEntityValues(value.property)) { %>
-                        [matTooltip]="!('<%= isEmptyValue %>') ? (row.<%= cellPropertyPath %><%= descriptionPipe %>:true<%= language %>) : ''" [matTooltipDisabled]="'<%= isEmptyValue %>'"
+                        <%= !isEmptyValue ? '[matTooltip]="row.' + cellPropertyPath + descriptionPipe + ':true' +  language + '"' : '' %>
+                    <% } else { %>
+                        <%= !isEmptyValue ? '[matTooltip]="' + cellContent + '"' : '' %>
                     <% } %>
-                        mat-cell *matCellDef="let row"
                     <% if(options.templateHelper.isNumberProperty(value.property)) { %>
                         class="table-cell-number"
                     <% } %>
