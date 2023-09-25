@@ -51,7 +51,7 @@ export const requestAspectModelUrnToLoad = (allAnswers: any) => ({
 });
 
 export const requestSelectedModelElement = (type: string, aspect: Aspect) => ({
-    type: 'search-list',
+    type: 'list',
     name: 'selectedModelElementUrn',
     message: `Choose a specific Entity or Aspect to show as ${type}:`,
     choices: [
@@ -96,7 +96,7 @@ export const requestJSONPathSelectedModelElement = (aspect: Aspect, allAnswers: 
     },
 });
 
-export const requestExcludedProperties = (type: string, aspect: Aspect, allAnswers: any, templateHelper: TemplateHelper) => ({
+export const requestExcludedProperties = (type: string, aspect: Aspect, allAnswers: any, templateHelper: TemplateHelper, options: any) => ({
     type: 'checkbox',
     name: 'excludedProperties',
     message: `Choose the properties to hide in the ${type}:`,
@@ -110,42 +110,54 @@ export const requestExcludedProperties = (type: string, aspect: Aspect, allAnswe
         return templateHelper.resolveType(selectedElement).properties.length > 1;
     },
     choices: () => {
-        let selectedElement: Aspect | Entity = aspect;
+        // let selectedElement: Aspect | Entity = aspect;
 
-        if (allAnswers.selectedModelElementUrn && allAnswers.selectedModelElementUrn.length > 0) {
-            selectedElement = loader.findByUrn(allAnswers.selectedModelElementUrn) as Aspect | Entity;
+        // if (allAnswers.selectedModelElementUrn && allAnswers.selectedModelElementUrn.length > 0) {
+        //     selectedElement = loader.findByUrn(allAnswers.selectedModelElementUrn) as Aspect | Entity;
+        // }
+
+        // const allProperties: Array<any> = [];
+        // templateHelper
+        //     .getProperties({
+        //         selectedModelElement: selectedElement,
+        //         excludedProperties: [],
+        //         complexProps: allAnswers.complexProps,
+        //     })
+        //     .forEach((property: DefaultProperty) => {
+        //         if (property.effectiveDataType?.isComplex && property.characteristic instanceof DefaultSingleEntity) {
+        //             const complexProperties = templateHelper.getComplexProperties(property, allAnswers);
+        //             complexProperties.properties.forEach((complexProp: Property) => {
+        //                 allProperties.push({
+        //                     name: `${complexProp.aspectModelUrn}`,
+        //                     value: {
+        //                         prop: `${complexProperties.complexProp}`,
+        //                         propToExcludeAspectModelUrn: `${complexProp.aspectModelUrn}`,
+        //                     },
+        //                 });
+        //             });
+        //         } else {
+        //             allProperties.push({
+        //                 name: `${property.aspectModelUrn}`,
+        //                 value: {
+        //                     prop: '',
+        //                     propToExcludeAspectModelUrn: `${property.aspectModelUrn}`,
+        //                 },
+        //             });
+        //         }
+        //     });
+        // allAnswers.selectedModelElementUrn
+        // allAnswers['selectedModelElementUrn'] = 'urn:samm:com.bosch.nexeed.digitaltwin:2.1.0#SpatialPosition';
+        // const ttt = templateHelper.resolveType('urn:samm:com.bosch.nexeed.digitaltwin:2.1.0#SpatialPosition').properties;
+        let properties;
+        if (options.selectedEl) {
+            // if (options.selectedEl) {
+            properties = templateHelper.getProperties({
+                selectedModelElement: loader.findByUrn(options.selectedEl),
+                excludedProperties: [],
+            });
         }
 
-        const allProperties: Array<any> = [];
-        templateHelper
-            .getProperties({
-                selectedModelElement: selectedElement,
-                excludedProperties: [],
-                complexProps: allAnswers.complexProps,
-            })
-            .forEach((property: DefaultProperty) => {
-                if (property.effectiveDataType?.isComplex && property.characteristic instanceof DefaultSingleEntity) {
-                    const complexProperties = templateHelper.getComplexProperties(property, allAnswers);
-                    complexProperties.properties.forEach((complexProp: Property) => {
-                        allProperties.push({
-                            name: `${complexProp.aspectModelUrn}`,
-                            value: {
-                                prop: `${complexProperties.complexProp}`,
-                                propToExcludeAspectModelUrn: `${complexProp.aspectModelUrn}`,
-                            },
-                        });
-                    });
-                } else {
-                    allProperties.push({
-                        name: `${property.aspectModelUrn}`,
-                        value: {
-                            prop: '',
-                            propToExcludeAspectModelUrn: `${property.aspectModelUrn}`,
-                        },
-                    });
-                }
-            });
-        return allProperties;
+        return properties;
     },
 });
 
@@ -315,4 +327,18 @@ export const requestReadOnlyForm = (options: Schema) => ({
     message: 'Do you want to set the form read only?',
     when: () => !options.readOnlyForm,
     default: false,
+});
+
+export const requestSelectedModelElementSel = (aspect: Aspect) => ({
+    type: 'list',
+    name: 'selectedEl',
+    message: 'test test a specific Entity or Aspect to show as :',
+    choices: [
+        {name: `${aspect.aspectModelUrn} (Aspect)`, value: `${aspect.aspectModelUrn}`},
+        ...loader
+            .filterElements(entry => entry instanceof DefaultEntity)
+            .map(entry => ({name: `${entry.aspectModelUrn} (Entity)`, value: `${entry.aspectModelUrn}`}))
+            .sort(),
+    ],
+    default: '',
 });

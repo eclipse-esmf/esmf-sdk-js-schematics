@@ -36,6 +36,7 @@ import {
     requestReadOnlyForm,
     requestRowCheckboxes,
     requestSelectedModelElement,
+    requestSelectedModelElementSel,
 } from './prompts-questions/prompts-with-function/prompts-with-function';
 
 import {handleComplexPropList, loader, reorderAspectModelUrnToLoad, writeConfigAndExit} from './utils';
@@ -53,6 +54,7 @@ import {
     requestSetViewEncapsulation,
 } from './prompts-questions/promts-without-function/prompts-without-function';
 import {virtualFs} from '@angular-devkit/core';
+import {all} from 'locale-codes';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 inquirer.registerPrompt('fuzzypath', require('inquirer-fuzzy-path'));
@@ -135,23 +137,35 @@ async function runPrompts(subscriber: Subscriber<Tree>, tree: Tree, templateHelp
             const answerAspectModel = await getAspectModelUrnToLoad();
             aspect = await loadAspectModel(answerAspectModel.aspectModelUrnToLoad, tree);
             const answerSelectedModelElement = await getSelectedModelElement();
-            const answerComplexPropertyElements = await getComplexPropertyElements(templateHelper);
+            // const answerComplexPropertyElements =
+            // const ttttt = await ttt();
 
+            // allAnswers.selectedModelElementUrn = 'urn:samm:com.bosch.nexeed.digitaltwin:2.1.0#SpatialPosition';
             // TODO change this .. only for dev testing purposes ...
-            let answerUserSpecificConfig;
+            // let answerUserSpecificConfig;
+            // if (generationType !== 'form') {
+            //     answerUserSpecificConfig = await getUserSpecificConfigs(tree, templateHelper, options);
+            // } else {
+            //     answerUserSpecificConfig = await getUserSpecificFormConfigs(tree, templateHelper, options, allAnswers);
+            // }
             if (generationType !== 'form') {
-                answerUserSpecificConfig = await getUserSpecificConfigs(tree, templateHelper, options);
+                combineAnswers(
+                    answerConfigurationFileConfig,
+                    answerAspectModel,
+                    answerSelectedModelElement,
+                    await getComplexPropertyElements(templateHelper),
+                    await getUserSpecificConfigs(tree, templateHelper, options)
+                );
             } else {
-                answerUserSpecificConfig = await getUserSpecificFormConfigs(tree, templateHelper, options);
-            }
+                combineAnswers(
+                    answerConfigurationFileConfig,
+                    answerAspectModel,
+                    answerSelectedModelElement,
+                    // answerComplexPropertyElements,
 
-            combineAnswers(
-                answerConfigurationFileConfig,
-                answerAspectModel,
-                answerSelectedModelElement,
-                answerComplexPropertyElements,
-                answerUserSpecificConfig
-            );
+                    await getUserSpecificFormConfigs(tree, templateHelper, options, allAnswers)
+                );
+            }
         }
     } catch (error) {
         console.error('An error occurred:', error);
@@ -355,7 +369,7 @@ async function getComplexPropertyElements(templateHelper: TemplateHelper): Promi
 async function getUserSpecificConfigs(tree: Tree, templateHelper: TemplateHelper, options: Schema) {
     const firstBatchAnswers = await inquirer.prompt([
         requestJSONPathSelectedModelElement(aspect, allAnswers, tree),
-        requestExcludedProperties(generationType, aspect, allAnswers, templateHelper),
+        requestExcludedProperties(generationType, aspect, allAnswers, templateHelper, options),
     ]);
 
     const secondBatchAnswers = await inquirer.prompt([
@@ -411,14 +425,13 @@ function cleanUpOptionsObject(allAnswers: any) {
     });
 }
 
-async function getUserSpecificFormConfigs(tree: Tree, templateHelper: TemplateHelper, options: Schema) {
-    const firstBatchAnswers = await inquirer.prompt([
-        requestJSONPathSelectedModelElement(aspect, allAnswers, tree),
-        requestExcludedProperties(generationType, aspect, allAnswers, templateHelper),
-    ]);
+async function getUserSpecificFormConfigs(tree: Tree, templateHelper: TemplateHelper, options: Schema, allAnswers: any) {
+    const firstBatchAnswers = await inquirer.prompt([requestJSONPathSelectedModelElement(aspect, allAnswers, tree)]);
 
-    const secondBatchAnswers = await inquirer.prompt([
-        requestGenerateLabelsForExcludedProps(firstBatchAnswers),
+    const secondBatchAnswers = await inquirer.prompt([requestSelectedModelElementSel(aspect)]);
+
+    const thirdBatchAnswers = await inquirer.prompt([
+        requestExcludedProperties(generationType, aspect, allAnswers, templateHelper, secondBatchAnswers),
         requestAspectModelVersionSupport,
         requestOptionalMaterialTheme(options),
         requestSetViewEncapsulation,
@@ -426,5 +439,5 @@ async function getUserSpecificFormConfigs(tree: Tree, templateHelper: TemplateHe
         requestReadOnlyForm(options),
     ]);
 
-    return {...firstBatchAnswers, ...secondBatchAnswers};
+    return {...firstBatchAnswers, ...secondBatchAnswers, ...thirdBatchAnswers};
 }

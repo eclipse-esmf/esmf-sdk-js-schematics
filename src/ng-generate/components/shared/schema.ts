@@ -69,6 +69,7 @@ export interface Schema extends ComponentSchema, DefaultSchema {
     skipImport: boolean;
     componentType: ComponentType;
     readOnlyForm: boolean;
+    selectedEl: string;
 }
 
 export interface Values extends Schema {
