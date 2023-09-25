@@ -17,7 +17,7 @@ import {FormGroupReusable} from '../../../../utils/form-group-reusable';
 
 export interface <%= options.fieldConfig.name %> {
     <% for (let childConfig of options.fieldConfig.children) {
-        %><%= childConfig.name %>: FormControl<string | null>;
+        %><%= childConfig.name %>: FormControl<any | null>;
     <% } %>
 }
 
