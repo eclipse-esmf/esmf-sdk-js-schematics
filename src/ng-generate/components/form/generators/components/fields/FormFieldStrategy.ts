@@ -34,6 +34,7 @@ export interface FormFieldConfig {
     children?: FormFieldConfig[];
     dataFormat?: string;
     hint?: string;
+    deconstructionRule?: string;
 }
 
 export class FormFieldStrategy {

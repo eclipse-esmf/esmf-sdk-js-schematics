@@ -24,10 +24,14 @@ import {DefaultFormFieldStrategy} from './default/DefaultFormFieldStrategy';
 import {DurationFormFieldStrategy} from './duration/DurationFormFieldStrategy';
 import {TimeFormFieldStrategy} from './time/TimeFormFieldStrategy';
 import {DatePartialFormFieldStrategy} from './datePartial/DatePartialFormFieldStrategy';
+import {ListFormFieldStrategy} from './list/ListFormFieldStrategy';
+import {StructuredValueFormFieldStrategy} from './structuredValue/StructuredValueFormFieldStrategy';
 
 export const FORM_FIELD_STRATEGIES = [
     ComplexFormFieldStrategy,
     EitherFormFieldStrategy,
+    ListFormFieldStrategy,
+    StructuredValueFormFieldStrategy,
     EnumerationFormFieldStrategy,
     BooleanFormFieldStrategy,
     TextFormFieldStrategy,

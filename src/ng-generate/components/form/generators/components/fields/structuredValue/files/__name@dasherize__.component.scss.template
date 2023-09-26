@@ -1,0 +1,14 @@
+.form-group {
+    padding: 0 1rem;
+    margin-bottom: 1rem;
+}
+
+.form-group > .form-info {
+    margin: 1rem 0;
+}
+
+.form-fields > * {
+    display: flex;
+    flex-flow: column nowrap;
+    margin: 1rem 0;
+}
