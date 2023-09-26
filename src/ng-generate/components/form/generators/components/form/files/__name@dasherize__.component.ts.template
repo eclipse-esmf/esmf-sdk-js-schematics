@@ -1,21 +1,10 @@
 /** <%= options.generationDisclaimerText %> **/
 
-import {Component, EventEmitter, Input, Output} from '@angular/core';
-import {AbstractControl, FormArray, FormBuilder, FormGroup, FormControl, Validators} from '@angular/forms';
-import {SelectionModel} from "@angular/cdk/collections";
-import {Clipboard} from '@angular/cdk/clipboard';
-import {ThemePalette} from "@angular/material/core";
+import {Component, EventEmitter, Output} from '@angular/core';
+import {FormBuilder, FormGroup} from '@angular/forms';
 <% for (let childConfig of options.childConfigs) {
     %>import {<%= childConfig.name %>FormControl} from "./<%= childConfig.nameDasherized %>/<%= childConfig.nameDasherized %>.component";
 <% } %>
-
-/**
- * Enumeration of all available columns in the table.
- */
-export enum <%= classify(name) %>Column {
-    CHECKBOX = 'checkboxes',
-    <%# enumPropertyDefinitions %>
-}
 
 @Component({
     selector: '<%= dasherize(name) %>',
@@ -23,26 +12,12 @@ export enum <%= classify(name) %>Column {
     styleUrls: ['./<%= dasherize(name) %>.component.scss']
 })
 export class <%= classify(name) %>Component {
-    @Input() noDataMessage: string = 'No data in the table';
-    @Input() isMultipleSelectionEnabled = false;
-    @Input() headerTooltipsOff: boolean = false;
-    @Input() highlightSelectedRow: boolean = true;
-    @Input() selection = new SelectionModel<any>(this.isMultipleSelectionEnabled, []);
-    @Input() color: ThemePalette = 'primary';
-
-    @Output() rowSelectionEvent = new EventEmitter<any>();
-    @Output() copyToClipboardEvent = new EventEmitter<any>();
-    @Output() rowClickEvent = new EventEmitter<any>();
-    @Output() rowDblClickEvent = new EventEmitter<any>();
-    @Output() rowRightClickEvent = new EventEmitter<any>();
-    @Output() addRowClickEvent = new EventEmitter<any>();
-    @Output() editRowClickEvent = new EventEmitter<any>();
-    @Output() deleteRowClickEvent = new EventEmitter<any>();
+    @Output() formSubmit: EventEmitter<any> = new EventEmitter();
+    @Output() formCancel: EventEmitter<void> = new EventEmitter();
 
     form: FormGroup;
-    editForm: Array<any> | any;
 
-    constructor(private fb: FormBuilder, private clipboard: Clipboard,) {
+    constructor(private fb: FormBuilder) {
         this.form = this.createFormGroup();
         <% if (options.readOnlyForm) {
             %>this.form.disable();
@@ -50,7 +25,6 @@ export class <%= classify(name) %>Component {
     }
 
     private createFormGroup(): FormGroup {
-
         return this.fb.group({
             <% for (let childConfig of options.childConfigs) {
                 %><%= childConfig.name %>: <%= childConfig.name %>FormControl,
@@ -58,94 +32,13 @@ export class <%= classify(name) %>Component {
         });
     }
 
-    getFormControl(property: string, dataTypeProperty?: string): AbstractControl | null | undefined {
-        if (dataTypeProperty) {
-            return this.form.get(property)?.get(dataTypeProperty);
-        }
-
-        return this.form.get(property);
-    }
-
-
-    checkboxClicked(row: any, prop: Array<string> | string): void {
-        if (!this.isMultipleSelectionEnabled) {
-          this.selection.clear();
-        }
-
-        this.selection.toggle(row);
-        if( prop instanceof Array ) {
-          this.editForm = prop.map(property => this.form.get(property));
-        } else {
-          this.editForm = this.form.get(prop);
-        }
-        this.rowSelectionEvent.emit(this.selection.selected);
-    }
-
-    copyToClipboard(value: any, event: MouseEvent): void {
-        event.stopPropagation();
-        event.preventDefault();
-        this.clipboard.copy(value);
-        this.copyToClipboardEvent.emit(value);
-    }
-
-    rowClicked(row: any, prop: Array<string> | string, $event: MouseEvent): boolean {
-        if (this.highlightSelectedRow) {
-            this.checkboxClicked(row, prop);
-        }
-
-        if ($event.type === 'contextmenu') {
-            $event.preventDefault();
-            const mousePositionOnClick = {x: $event.clientX + 'px', y: $event.clientY + 'px'};
-            this.rowRightClickEvent.emit({data: row, mousePosition: mousePositionOnClick});
-        }
-
-        if ($event.type === 'click') {
-            this.rowClickEvent.emit({data: row});
-        }
-
-        return false;
-    }
-
-    rowDblClicked(row: any, $event: MouseEvent): void {
-        this.rowDblClickEvent.emit({data: row});
-    }
-
-    addRow() {
-        this.addRowClickEvent.emit();
-    }
-
-    editRow() {
-        if (this.selection.selected.length > 0) {
-            this.editRowClickEvent.emit(this.findSelectedRowFormGroup());
-        }
-    }
-
-    deleteRow() {
-        if (this.selection.selected.length > 0) {
-            this.deleteRowClickEvent.emit(this.findSelectedRowFormGroup());
-        }
-    }
-
-    private findSelectedRowFormGroup(): FormGroup | null {
-        const selectedValue = this.selection.selected[0];
-        const rowsArray = (this.editForm as FormGroup).get('rows') as FormArray;
-
-        for (let i = 0; i < rowsArray.length; i++) {
-          const rowGroup = rowsArray.at(i) as FormGroup;
-          if (JSON.stringify(rowGroup.value) === JSON.stringify(selectedValue)) {
-            return rowGroup;
-          }
-        }
-
-        return null;
-    }
-
     onCancel() {
         console.log('Cancel form');
+        this.formCancel.emit();
     }
 
     onSubmit(form: FormGroup) {
         console.log('Form Value:', form.value);
-        console.log('Form Valid:', form.valid);
+        this.formSubmit.emit(form.value);
     }
 }
