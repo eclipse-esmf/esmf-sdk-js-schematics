@@ -11,58 +11,13 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-import {apply, applyTemplates, chain, MergeStrategy, mergeWith, move, Rule, SchematicContext, Tree, url} from '@angular-devkit/schematics';
-import {strings} from '@angular-devkit/core';
-import {DefaultList, Property} from '@esmf/aspect-model-loader';
-import {templateInclude} from '../../../../shared/include';
-import {Schema} from '../../../../shared/schema';
+import {chain, Rule, SchematicContext, Tree} from '@angular-devkit/schematics';
 import {RootFormField} from './RootFormFieldStrategy';
-
-let sharedOptions: any = {};
 
 export function generateFormComponent(options: any): Rule {
     return (tree: Tree, _context: SchematicContext) => {
-        sharedOptions = options;
-        // TODO: Revert back?
-        // sharedOptions['allProps'] = options.listAllProperties.filter((property: Property) => (property.characteristic instanceof DefaultSingleEntity) || property.characteristic instanceof DefaultList || (<Characteristic>property.characteristic)?.dataType?.isScalar);
-        sharedOptions['allProps'] = options.listAllProperties;
-        sharedOptions['listProps'] = options.listAllProperties.filter(
-            (property: Property) => property.characteristic instanceof DefaultList
-        );
-
-        // sharedOptions['fieldsConfigs'] = FormFieldBuilder.buildFieldsConfigs(options);
-
-        // sharedOptions['tableColumValues'] = getTableColumValues;
-        // sharedOptions['resolveDateTimeFormat'] = resolveDateTimeFormat;
-        // sharedOptions['enumeration'] = DefaultEnumeration;
-        // sharedOptions['collection'] = DefaultCollection;
-        // sharedOptions['either'] = DefaultEither;
-
         const rootFormField = new RootFormField(options, _context);
         const rules = rootFormField.generate();
         return chain(rules)(tree, _context);
     };
-}
-
-// TODO: Handle generation of a form
-function generateForm(options: Schema, _context: SchematicContext): Rule {
-    sharedOptions = options;
-
-    // TODO remove elementChar case and clarify with Andreas T. we only say for now list .. DataType really simple remove all elementChar ...
-    return mergeWith(
-        apply(url('./generators/components/form/files'), [
-            templateInclude(_context, applyTemplate, sharedOptions, '../shared/methods'),
-            move(sharedOptions.path),
-        ]),
-        sharedOptions.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error
-    );
-}
-
-function applyTemplate(): Rule {
-    return applyTemplates({
-        classify: strings.classify,
-        dasherize: strings.dasherize,
-        options: sharedOptions,
-        name: sharedOptions.name,
-    });
 }
