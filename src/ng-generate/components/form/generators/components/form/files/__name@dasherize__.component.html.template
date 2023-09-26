@@ -8,7 +8,7 @@
     <% if (!options.readOnlyForm) { %>
         <section class="form-actions">
             <button mat-flat-button (click)="onCancel()">Cancel</button>
-            <button mat-flat-button color="primary" [disabled]="form.invalid" (click)="onSubmit(form)">Submit</button>
+            <button mat-flat-button color="primary" [disabled]="form.invalid || form.disabled" (click)="onSubmit(form)">Submit</button>
         </section>
     <% } %>
 </form>
