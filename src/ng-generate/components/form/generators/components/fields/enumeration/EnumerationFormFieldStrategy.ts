@@ -29,6 +29,7 @@ export class EnumerationFormFieldStrategy extends FormFieldStrategy {
         return {
             name: this.fieldName,
             nameDasherized: strings.dasherize(this.fieldName.charAt(0).toLowerCase() + this.fieldName.slice(1)),
+            exampleValue: this.parent.exampleValue || '',
             values: typedChild.values,
             validators: [...this.getBaseValidatorsConfigs()],
         };

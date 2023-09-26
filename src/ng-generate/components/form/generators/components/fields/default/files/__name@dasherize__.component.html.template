@@ -10,6 +10,9 @@
     <% if (options.fieldConfig.unitName) {
         %><span matTextSuffix>unit:<%= options.fieldConfig.unitName %></span>
     <% } %>
+    <% if (options.fieldConfig.exampleValue) {
+        %><mat-hint align="start">exampleValue: <%= options.fieldConfig.exampleValue %></mat-hint>
+    <% } %>
 
     <mat-error *ngIf="formControl.invalid">{{ errorMessage }}</mat-error>
 </mat-form-field>
