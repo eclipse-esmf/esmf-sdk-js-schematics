@@ -117,7 +117,7 @@ export class FormFieldStrategy {
         return chain(operations);
     }
 
-    getChildConfigs() {
+    getChildConfigs(): FormFieldConfig[] {
         return this.getChildStrategies().map(strategy => strategy.buildConfig());
     }
 

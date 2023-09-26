@@ -9,14 +9,6 @@ import {ThemePalette} from "@angular/material/core";
     %>import {<%= childConfig.name %>FormControl} from "./<%= childConfig.nameDasherized %>/<%= childConfig.nameDasherized %>.component";
 <% } %>
 
-<% for(let property of options.listProps) { %>
-    <% if (property.characteristic instanceof options.collection
-           && (property.characteristic.elementCharacteristic?.dataType.isComplex || property.characteristic.dataType?.isComplex)
-          ) { %>
-        import {<%= resolveJsPropertyType(property) %>} from '<%= options.typePath %>';
-    <% } %>
-<% } %>
-
 /**
  * Enumeration of all available columns in the table.
  */
@@ -49,13 +41,6 @@ export class <%= classify(name) %>Component {
 
     form: FormGroup;
     editForm: Array<any> | any;
-
-    <% for(let property of options.listProps) { %>
-        <% if (property.characteristic instanceof options.collection) { %>
-            displayedColumns: Array<string> = Object.values(<%= classify(name) %>Column);
-            dataSource: MatTableDataSource<<%= resolveJsPropertyType(property) %>> = new MatTableDataSource<<%= resolveJsPropertyType(property) %>>();
-        <% } %>
-    <% } %>
 
     constructor(private fb: FormBuilder, private clipboard: Clipboard,) {
         this.form = this.createFormGroup();
