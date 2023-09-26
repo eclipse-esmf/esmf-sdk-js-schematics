@@ -1,0 +1,13 @@
+<form [formGroup]="formGroup">
+    <fieldset class="form-group">
+        <legend><%= options.fieldConfig.name %></legend>
+        <% if (options.fieldConfig.deconstructionRule) {
+            %><p class="form-info">Deconstruction rule: <code>{{deconstructionRule}}</code></p>
+        <% } %>
+        <section class="form-fields">
+            <% for (let childConfig of options.fieldConfig.children) {
+                %><<%= dasherize(childConfig.name) %> formControlName="<%= childConfig.name %>"></<%= dasherize(childConfig.name) %>>
+            <% } %>
+        </section>
+    </fieldset>
+</form>
