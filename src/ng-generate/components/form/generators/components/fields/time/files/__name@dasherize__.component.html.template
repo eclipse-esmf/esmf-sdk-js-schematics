@@ -3,13 +3,16 @@
     <input
         type="time"
         matInput
-        placeholder="<%= options.fieldConfig.exampleValue %>"
+        placeholder=""
         step="0.001"
         [formControl]="formControl"
         (ngModelChange)="value = $event"
     />
     <% if (options.fieldConfig.unitName) {
         %><span matTextSuffix>unit:<%= options.fieldConfig.unitName %></span>
+    <% } %>
+    <% if (options.fieldConfig.exampleValue) {
+       %><mat-hint align="start">exampleValue: <%= options.fieldConfig.exampleValue %></mat-hint>
     <% } %>
 
     <mat-error *ngIf="formControl.invalid">{{ errorMessage }}</mat-error>

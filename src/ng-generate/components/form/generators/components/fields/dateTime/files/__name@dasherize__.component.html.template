@@ -4,5 +4,9 @@
     <ngx-mat-datepicker-toggle matSuffix [for]="<%= options.fieldConfig.name %>picker"></ngx-mat-datepicker-toggle>
     <ngx-mat-datetime-picker #<%= options.fieldConfig.name %>picker [color]="color"></ngx-mat-datetime-picker>
 
+    <% if (options.fieldConfig.exampleValue) {
+        %><mat-hint align="start">exampleValue: <%= options.fieldConfig.exampleValue %></mat-hint>
+    <% } %>
+
     <mat-error *ngIf="formControl.invalid">{{ errorMessage }}</mat-error>
 </mat-form-field>

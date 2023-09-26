@@ -37,6 +37,7 @@ export class DateFormFieldStrategy extends FormFieldStrategy {
         return {
             name: this.fieldName,
             nameDasherized: strings.dasherize(this.fieldName.charAt(0).toLowerCase() + this.fieldName.slice(1)),
+            exampleValue: this.parent.exampleValue || '',
             validators: [...this.getBaseValidatorsConfigs()],
             dataFormat: this.getDataFormat(),
         };

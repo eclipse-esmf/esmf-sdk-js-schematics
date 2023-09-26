@@ -44,6 +44,7 @@ export class DurationFormFieldStrategy extends FormFieldStrategy {
         return {
             name: this.fieldName,
             nameDasherized: strings.dasherize(this.fieldName.charAt(0).toLowerCase() + this.fieldName.slice(1)),
+            exampleValue: this.parent.exampleValue || '',
             validators: [...this.getBaseValidatorsConfigs()],
             hint: this.getHint(),
         };
