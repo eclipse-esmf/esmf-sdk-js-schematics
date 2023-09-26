@@ -156,10 +156,6 @@
         "readOnlyForm": {
             "type": "boolean",
             "default": false
-        },
-        "selectedEl": {
-            "type": "string",
-            "default": ""
         }
     }
 }
