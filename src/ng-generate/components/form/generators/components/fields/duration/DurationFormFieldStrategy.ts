@@ -1,23 +1,35 @@
+/*
+ * Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH
+ *
+ * See the AUTHORS file(s) distributed with this work for
+ * additional information regarding authorship.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ *
+ * SPDX-License-Identifier: MPL-2.0
+ */
+
 import {Characteristic} from '@esmf/aspect-model-loader';
 import {FormFieldConfig, FormFieldStrategy} from '../FormFieldStrategy';
 import {strings} from '@angular-devkit/core';
 
-const DEFAULT_FORMAT = '`PT${timeDuration.hours()}H${timeDuration.minutes()}M${timeDuration.seconds()}S`';
-const dataFormats = [
+const typesConfigs = [
     {
         type: 'dayTimeDuration',
-        format: '`PT${timeDuration.hours()}H${timeDuration.minutes()}M${timeDuration.seconds()}S`',
+        hint: "Examples: 'P30D', 'P1DT5H', 'PT1H5M0S'",
     },
     {
         type: 'duration',
-        format: '`PT${timeDuration.hours()}H${timeDuration.minutes()}M${timeDuration.seconds()}S`',
+        hint: "Examples: 'P30D', '-P1Y2M3DT1H', 'PT1H5M0S'",
     },
     {
         type: 'yearMonthDuration',
-        format: '`P${Math.floor(timeDuration.asYears())}Y${timeDuration.months()}M`',
+        hint: "Examples: 'P10M', 'P5Y2M'",
     },
 ];
-const supportedTypes = dataFormats.map(dt => dt.type);
+const supportedTypes = typesConfigs.map(dt => dt.type);
 
 export class DurationFormFieldStrategy extends FormFieldStrategy {
     pathToFiles = './generators/components/fields/duration/files';
@@ -33,13 +45,12 @@ export class DurationFormFieldStrategy extends FormFieldStrategy {
             name: this.fieldName,
             nameDasherized: strings.dasherize(this.fieldName.charAt(0).toLowerCase() + this.fieldName.slice(1)),
             validators: [...this.getBaseValidatorsConfigs()],
-            dataFormat: this.getDataFormat(),
+            hint: this.getHint(),
         };
     }
 
-    getDataFormat(): string {
+    getHint(): string | undefined {
         const urn = DurationFormFieldStrategy.getShortUrn(this.child);
-        const format = dataFormats.find(dt => dt.type === urn)?.format;
-        return format || DEFAULT_FORMAT;
+        return typesConfigs.find(dt => dt.type === urn)?.hint;
     }
 }

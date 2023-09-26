@@ -1,3 +1,16 @@
+/*
+ * Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH
+ *
+ * See the AUTHORS file(s) distributed with this work for
+ * additional information regarding authorship.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ *
+ * SPDX-License-Identifier: MPL-2.0
+ */
+
 import {ComplexFormFieldStrategy} from './complex/ComplexFormFieldStrategy';
 import {EitherFormFieldStrategy} from './either/EitherFormFieldStrategy';
 import {EnumerationFormFieldStrategy} from './enumeration/EnumerationFormFieldStrategy';
@@ -9,6 +22,8 @@ import {DateFormFieldStrategy} from './date/DateFormFieldStrategy';
 import {DateTimeFormFieldStrategy} from './dateTime/DateTimeFormFieldStrategy';
 import {DefaultFormFieldStrategy} from './default/DefaultFormFieldStrategy';
 import {DurationFormFieldStrategy} from './duration/DurationFormFieldStrategy';
+import {TimeFormFieldStrategy} from './time/TimeFormFieldStrategy';
+import {DatePartialFormFieldStrategy} from './datePartial/DatePartialFormFieldStrategy';
 
 export const FORM_FIELD_STRATEGIES = [
     ComplexFormFieldStrategy,
@@ -21,8 +36,7 @@ export const FORM_FIELD_STRATEGIES = [
     DateFormFieldStrategy,
     DateTimeFormFieldStrategy,
     DurationFormFieldStrategy,
+    TimeFormFieldStrategy,
+    DatePartialFormFieldStrategy,
 ];
 export const FORM_FIELD_DEFAULT_STRATEGY = DefaultFormFieldStrategy;
-
-export type FormFieldStrategies = typeof FORM_FIELD_STRATEGIES;
-export type FormFieldDefaultStrategy = typeof FORM_FIELD_DEFAULT_STRATEGY;

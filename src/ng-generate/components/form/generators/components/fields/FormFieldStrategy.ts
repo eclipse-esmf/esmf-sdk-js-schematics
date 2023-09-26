@@ -1,3 +1,16 @@
+/*
+ * Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH
+ *
+ * See the AUTHORS file(s) distributed with this work for
+ * additional information regarding authorship.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ *
+ * SPDX-License-Identifier: MPL-2.0
+ */
+
 import {Characteristic, Property} from '@esmf/aspect-model-loader';
 import {apply, applyTemplates, chain, MergeStrategy, mergeWith, move, Rule, SchematicContext, url} from '@angular-devkit/schematics';
 import {strings} from '@angular-devkit/core';
@@ -20,6 +33,7 @@ export interface FormFieldConfig {
     unitName?: string;
     children?: FormFieldConfig[];
     dataFormat?: string;
+    hint?: string;
 }
 
 export class FormFieldStrategy {
@@ -111,7 +125,7 @@ export class FormFieldStrategy {
         throw new Error('An implementation of the method has to be provided by a derived class');
     }
 
-    getChildStrategy(child: Characteristic): FormFieldStrategy {
+    getChildStrategy(parent: Property, child: Characteristic): FormFieldStrategy {
         return getFormFieldStrategy(this.options, this.context, this.parent, child, child.name);
     }
 }

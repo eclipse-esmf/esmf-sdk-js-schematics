@@ -12,7 +12,7 @@ import {
 } from '@angular/forms';
 import {FormGroupReusable} from '../../../../utils/form-group-reusable';
 <% for (let childConfig of options.fieldConfig.children) {
-    %>import {<%= classify(childConfig.name) %>Component, <%= classify(childConfig.name) %>FormControl} from '../<%= childConfig.nameDasherized %>/<%= childConfig.nameDasherized %>.component';
+    %>import {<%= classify(childConfig.name) %>Component, <%= childConfig.name %>FormControl} from '../<%= childConfig.nameDasherized %>/<%= childConfig.nameDasherized %>.component';
 <% } %>
 
 export interface <%= options.fieldConfig.name %> {
