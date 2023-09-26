@@ -36,7 +36,6 @@ import {
     requestReadOnlyForm,
     requestRowCheckboxes,
     requestSelectedModelElement,
-    requestSelectedModelElementSel,
 } from './prompts-questions/prompts-with-function/prompts-with-function';
 
 import {handleComplexPropList, loader, reorderAspectModelUrnToLoad, writeConfigAndExit} from './utils';
@@ -136,34 +135,13 @@ async function runPrompts(subscriber: Subscriber<Tree>, tree: Tree, templateHelp
         if (!answerConfigurationFileConfig.importConfigFile) {
             const answerAspectModel = await getAspectModelUrnToLoad();
             aspect = await loadAspectModel(answerAspectModel.aspectModelUrnToLoad, tree);
-            const answerSelectedModelElement = await getSelectedModelElement();
-            // const answerComplexPropertyElements =
-            // const ttttt = await ttt();
-
-            // allAnswers.selectedModelElementUrn = 'urn:samm:com.bosch.nexeed.digitaltwin:2.1.0#SpatialPosition';
-            // TODO change this .. only for dev testing purposes ...
-            // let answerUserSpecificConfig;
-            // if (generationType !== 'form') {
-            //     answerUserSpecificConfig = await getUserSpecificConfigs(tree, templateHelper, options);
-            // } else {
-            //     answerUserSpecificConfig = await getUserSpecificFormConfigs(tree, templateHelper, options, allAnswers);
-            // }
             if (generationType !== 'form') {
-                combineAnswers(
-                    answerConfigurationFileConfig,
-                    answerAspectModel,
-                    answerSelectedModelElement,
-                    await getComplexPropertyElements(templateHelper),
-                    await getUserSpecificConfigs(tree, templateHelper, options)
-                );
+                combineAnswers(answerConfigurationFileConfig, answerAspectModel, await getUserSpecificConfigs(templateHelper, options));
             } else {
                 combineAnswers(
                     answerConfigurationFileConfig,
                     answerAspectModel,
-                    answerSelectedModelElement,
-                    // answerComplexPropertyElements,
-
-                    await getUserSpecificFormConfigs(tree, templateHelper, options, allAnswers)
+                    await getUserSpecificFormConfigs(templateHelper, options, allAnswers)
                 );
             }
         }
@@ -318,27 +296,15 @@ async function loadAspectModel(aspectModelUrnToLoad: string, tree: Tree): Promis
 }
 
 /**
- * This function retrieves the selected model element by prompting the user
- * to choose from a list of available options.
- *
- * @returns {Promise} The selected model element.
- */
-async function getSelectedModelElement() {
-    return await inquirer.prompt([requestSelectedModelElement(generationType, aspect)]);
-}
-
-/**
  * Generates a list of complex property elements.
  *
  * @param {TemplateHelper} templateHelper - The helper object to resolve types and get properties.
  *
  * @returns {Promise<Object>} - Returns a Promise that resolves to an object containing complex property elements.
  */
-async function getComplexPropertyElements(templateHelper: TemplateHelper): Promise<any> {
-    allAnswers.selectedModelElementUrn = allAnswers.selectedModelElementUrn || templateHelper.resolveType(aspect).aspectModelUrn;
-
+async function getComplexPropertyElements(templateHelper: TemplateHelper, answers: any): Promise<any> {
     const properties = templateHelper.getProperties({
-        selectedModelElement: loader.findByUrn(allAnswers.selectedModelElementUrn),
+        selectedModelElement: loader.findByUrn(answers.selectedModelElementUrn),
         excludedProperties: [],
     });
 
@@ -366,13 +332,17 @@ async function getComplexPropertyElements(templateHelper: TemplateHelper): Promi
  * @param {Schema} options - User defined options provided when running the script.
  * @returns {Promise<Object>} An object containing the user responses.
  */
-async function getUserSpecificConfigs(tree: Tree, templateHelper: TemplateHelper, options: Schema) {
-    const firstBatchAnswers = await inquirer.prompt([
-        requestJSONPathSelectedModelElement(aspect, allAnswers, tree),
-        requestExcludedProperties(generationType, aspect, allAnswers, templateHelper, options),
+async function getUserSpecificConfigs(templateHelper: TemplateHelper, options: Schema) {
+    const firstBatchAnswers = await inquirer.prompt([requestSelectedModelElement(generationType, aspect)]);
+
+    const secondBatchAnswers = await getComplexPropertyElements(templateHelper, firstBatchAnswers);
+
+    const thirdBatchAnswers = await inquirer.prompt([
+        requestJSONPathSelectedModelElement(aspect, firstBatchAnswers, allAnswers),
+        requestExcludedProperties(generationType, allAnswers, templateHelper, firstBatchAnswers),
     ]);
 
-    const secondBatchAnswers = await inquirer.prompt([
+    const fourthBatchAnswers = await inquirer.prompt([
         requestGenerateLabelsForExcludedProps(firstBatchAnswers),
         requestDefaultSortingCol(aspect, allAnswers, templateHelper),
         requestCustomColumnNames,
@@ -391,7 +361,7 @@ async function getUserSpecificConfigs(tree: Tree, templateHelper: TemplateHelper
         requestOverwriteFiles(options),
     ]);
 
-    return {...firstBatchAnswers, ...secondBatchAnswers};
+    return {...firstBatchAnswers, ...secondBatchAnswers, ...thirdBatchAnswers, ...fourthBatchAnswers};
 }
 
 /**
@@ -425,13 +395,13 @@ function cleanUpOptionsObject(allAnswers: any) {
     });
 }
 
-async function getUserSpecificFormConfigs(tree: Tree, templateHelper: TemplateHelper, options: Schema, allAnswers: any) {
-    const firstBatchAnswers = await inquirer.prompt([requestJSONPathSelectedModelElement(aspect, allAnswers, tree)]);
+async function getUserSpecificFormConfigs(templateHelper: TemplateHelper, options: Schema, allAnswers: any) {
+    const firstBatchAnswers = await inquirer.prompt([requestSelectedModelElement(generationType, aspect)]);
 
-    const secondBatchAnswers = await inquirer.prompt([requestSelectedModelElementSel(aspect)]);
+    const secondBatchAnswers = await inquirer.prompt([requestJSONPathSelectedModelElement(aspect, firstBatchAnswers, allAnswers)]);
 
     const thirdBatchAnswers = await inquirer.prompt([
-        requestExcludedProperties(generationType, aspect, allAnswers, templateHelper, secondBatchAnswers),
+        requestExcludedProperties(generationType, allAnswers, templateHelper, firstBatchAnswers),
         requestAspectModelVersionSupport,
         requestOptionalMaterialTheme(options),
         requestSetViewEncapsulation,

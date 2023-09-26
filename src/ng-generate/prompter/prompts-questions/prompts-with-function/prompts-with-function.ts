@@ -12,7 +12,6 @@
  */
 
 import {loader} from '../../utils';
-import {Tree} from '@angular-devkit/schematics';
 import {Aspect, DefaultAspect, DefaultEntity, DefaultProperty, DefaultSingleEntity, Entity, Property} from '@esmf/aspect-model-loader';
 import {TemplateHelper} from '../../../../utils/template-helper';
 import * as locale from 'locale-codes';
@@ -54,13 +53,7 @@ export const requestSelectedModelElement = (type: string, aspect: Aspect) => ({
     type: 'list',
     name: 'selectedModelElementUrn',
     message: `Choose a specific Entity or Aspect to show as ${type}:`,
-    choices: [
-        {name: `${aspect.aspectModelUrn} (Aspect)`, value: `${aspect.aspectModelUrn}`},
-        ...loader
-            .filterElements(entry => entry instanceof DefaultEntity)
-            .map(entry => ({name: `${entry.aspectModelUrn} (Entity)`, value: `${entry.aspectModelUrn}`}))
-            .sort(),
-    ],
+    choices: getAspectAndEntities(aspect),
     size: 5,
     when: () => !aspect.isCollectionAspect && loader.filterElements(entry => entry instanceof DefaultEntity).length >= 1,
     default: '',
@@ -74,19 +67,19 @@ export const requestComplexPropertyElements = (type: string, property: Property)
     default: [],
 });
 
-export const requestJSONPathSelectedModelElement = (aspect: Aspect, allAnswers: any, tree: Tree) => ({
+export const requestJSONPathSelectedModelElement = (aspect: Aspect, answers: any, allAnswers: any) => ({
     type: 'list',
     name: 'jsonAccessPath',
-    message: `Choose the access path in the JSON payload to show data for ${allAnswers.selectedModelElementUrn}`,
+    message: `Choose the access path in the JSON payload to show data for ${answers.selectedModelElementUrn}`,
     choices: () =>
         loader
-            .determineAccessPath((loader.findByUrn(allAnswers.selectedModelElementUrn) as Entity | Aspect).properties[0])
+            .determineAccessPath((loader.findByUrn(answers.selectedModelElementUrn) as Entity | Aspect).properties[0])
             .map((pathSegments: Array<string>) => (pathSegments.length > 1 ? pathSegments.slice(0, pathSegments.length - 1) : pathSegments))
             .map((pathSegments: Array<string>) => pathSegments.join('.'))
             .sort(),
     when: () => {
-        const isAspect = loader.findByUrn(allAnswers.selectedModelElementUrn) instanceof DefaultAspect;
-        const elementsPathSegments: Array<Array<string>> = loader.determineAccessPath(loader.findByUrn(allAnswers.selectedModelElementUrn));
+        const isAspect = loader.findByUrn(answers.selectedModelElementUrn) instanceof DefaultAspect;
+        const elementsPathSegments: Array<Array<string>> = loader.determineAccessPath(loader.findByUrn(answers.selectedModelElementUrn));
 
         if (!aspect.isCollectionAspect && elementsPathSegments.length <= 1) {
             allAnswers.jsonAccessPath = elementsPathSegments[0].join('.');
@@ -96,68 +89,29 @@ export const requestJSONPathSelectedModelElement = (aspect: Aspect, allAnswers: 
     },
 });
 
-export const requestExcludedProperties = (type: string, aspect: Aspect, allAnswers: any, templateHelper: TemplateHelper, options: any) => ({
+export const requestExcludedProperties = (type: string, allAnswers: any, templateHelper: TemplateHelper, answers: any) => ({
     type: 'checkbox',
     name: 'excludedProperties',
     message: `Choose the properties to hide in the ${type}:`,
     when: () => {
-        let selectedElement: Aspect | Entity = aspect;
-
-        if (allAnswers.selectedModelElementUrn && allAnswers.selectedModelElementUrn.length > 0) {
-            selectedElement = loader.findByUrn(allAnswers.selectedModelElementUrn) as Aspect | Entity;
-        }
-
+        const selectedElement: Aspect | Entity = loader.findByUrn(answers.selectedModelElementUrn) as Aspect | Entity;
         return templateHelper.resolveType(selectedElement).properties.length > 1;
     },
     choices: () => {
-        // let selectedElement: Aspect | Entity = aspect;
+        const selectedElement: Aspect | Entity = loader.findByUrn(answers.selectedModelElementUrn) as Aspect | Entity;
+        const isAspect = selectedElement instanceof DefaultAspect;
+        let allProperties: Array<any> = [];
 
-        // if (allAnswers.selectedModelElementUrn && allAnswers.selectedModelElementUrn.length > 0) {
-        //     selectedElement = loader.findByUrn(allAnswers.selectedModelElementUrn) as Aspect | Entity;
-        // }
-
-        // const allProperties: Array<any> = [];
-        // templateHelper
-        //     .getProperties({
-        //         selectedModelElement: selectedElement,
-        //         excludedProperties: [],
-        //         complexProps: allAnswers.complexProps,
-        //     })
-        //     .forEach((property: DefaultProperty) => {
-        //         if (property.effectiveDataType?.isComplex && property.characteristic instanceof DefaultSingleEntity) {
-        //             const complexProperties = templateHelper.getComplexProperties(property, allAnswers);
-        //             complexProperties.properties.forEach((complexProp: Property) => {
-        //                 allProperties.push({
-        //                     name: `${complexProp.aspectModelUrn}`,
-        //                     value: {
-        //                         prop: `${complexProperties.complexProp}`,
-        //                         propToExcludeAspectModelUrn: `${complexProp.aspectModelUrn}`,
-        //                     },
-        //                 });
-        //             });
-        //         } else {
-        //             allProperties.push({
-        //                 name: `${property.aspectModelUrn}`,
-        //                 value: {
-        //                     prop: '',
-        //                     propToExcludeAspectModelUrn: `${property.aspectModelUrn}`,
-        //                 },
-        //             });
-        //         }
-        //     });
-        // allAnswers.selectedModelElementUrn
-        // allAnswers['selectedModelElementUrn'] = 'urn:samm:com.bosch.nexeed.digitaltwin:2.1.0#SpatialPosition';
-        // const ttt = templateHelper.resolveType('urn:samm:com.bosch.nexeed.digitaltwin:2.1.0#SpatialPosition').properties;
-        let properties;
-        if (options.selectedEl) {
-            // if (options.selectedEl) {
-            properties = templateHelper.getProperties({
-                selectedModelElement: loader.findByUrn(options.selectedEl),
+        if (isAspect) {
+            allProperties = getAllPropertiesFromAspect(templateHelper, selectedElement, allAnswers);
+        } else {
+            allProperties = templateHelper.getProperties({
+                selectedModelElement: selectedElement,
                 excludedProperties: [],
             });
         }
 
-        return properties;
+        return allProperties;
     },
 });
 
@@ -329,16 +283,46 @@ export const requestReadOnlyForm = (options: Schema) => ({
     default: false,
 });
 
-export const requestSelectedModelElementSel = (aspect: Aspect) => ({
-    type: 'list',
-    name: 'selectedEl',
-    message: 'test test a specific Entity or Aspect to show as :',
-    choices: [
+function getAspectAndEntities(aspect: Aspect) {
+    return [
         {name: `${aspect.aspectModelUrn} (Aspect)`, value: `${aspect.aspectModelUrn}`},
         ...loader
             .filterElements(entry => entry instanceof DefaultEntity)
             .map(entry => ({name: `${entry.aspectModelUrn} (Entity)`, value: `${entry.aspectModelUrn}`}))
             .sort(),
-    ],
-    default: '',
-});
+    ];
+}
+
+function getAllPropertiesFromAspect(templateHelper: any, selectedElement: any, allAnswers: any) {
+    let allProperties: Array<any> = [];
+    templateHelper
+        .getProperties({
+            selectedModelElement: selectedElement,
+            excludedProperties: [],
+            complexProps: allAnswers.complexProps,
+        })
+        .forEach((property: DefaultProperty) => {
+            if (property.effectiveDataType?.isComplex && property.characteristic instanceof DefaultSingleEntity) {
+                const complexProperties = templateHelper.getComplexProperties(property, allAnswers);
+                complexProperties.properties.forEach((complexProp: Property) => {
+                    allProperties.push({
+                        name: `${complexProp.aspectModelUrn}`,
+                        value: {
+                            prop: `${complexProperties.complexProp}`,
+                            propToExcludeAspectModelUrn: `${complexProp.aspectModelUrn}`,
+                        },
+                    });
+                });
+            } else {
+                allProperties.push({
+                    name: `${property.aspectModelUrn}`,
+                    value: {
+                        prop: '',
+                        propToExcludeAspectModelUrn: `${property.aspectModelUrn}`,
+                    },
+                });
+            }
+        });
+
+    return allProperties;
+}
