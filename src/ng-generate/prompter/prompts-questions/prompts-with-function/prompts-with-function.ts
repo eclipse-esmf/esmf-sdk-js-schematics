@@ -12,7 +12,16 @@
  */
 
 import {loader} from '../../utils';
-import {Aspect, DefaultAspect, DefaultEntity, DefaultProperty, DefaultSingleEntity, Entity, Property} from '@esmf/aspect-model-loader';
+import {
+    Aspect,
+    BaseMetaModelElement,
+    DefaultAspect,
+    DefaultEntity,
+    DefaultProperty,
+    DefaultSingleEntity,
+    Entity,
+    Property,
+} from '@esmf/aspect-model-loader';
 import {TemplateHelper} from '../../../../utils/template-helper';
 import * as locale from 'locale-codes';
 import {Schema} from '../../../components/shared/schema';
@@ -288,6 +297,7 @@ function getAspectAndEntities(aspect: Aspect) {
         {name: `${aspect.aspectModelUrn} (Aspect)`, value: `${aspect.aspectModelUrn}`},
         ...loader
             .filterElements(entry => entry instanceof DefaultEntity)
+            .filter((entity: BaseMetaModelElement) => !entity.parents.some((el: BaseMetaModelElement) => el instanceof DefaultSingleEntity))
             .map(entry => ({name: `${entry.aspectModelUrn} (Entity)`, value: `${entry.aspectModelUrn}`}))
             .sort(),
     ];
