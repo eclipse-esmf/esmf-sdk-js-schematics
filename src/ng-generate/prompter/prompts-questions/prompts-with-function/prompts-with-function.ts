@@ -108,18 +108,8 @@ export const requestExcludedProperties = (type: string, allAnswers: any, templat
     },
     choices: () => {
         const selectedElement: Aspect | Entity = loader.findByUrn(answers.selectedModelElementUrn) as Aspect | Entity;
-        const isAspect = selectedElement instanceof DefaultAspect;
         let allProperties: Array<any> = [];
-
-        if (isAspect) {
-            allProperties = getAllPropertiesFromAspect(templateHelper, selectedElement, allAnswers);
-        } else {
-            allProperties = templateHelper.getProperties({
-                selectedModelElement: selectedElement,
-                excludedProperties: [],
-            });
-        }
-
+        allProperties = getAllPropertiesFromAspectOrEntity(templateHelper, selectedElement, allAnswers);
         return allProperties;
     },
 });
@@ -303,7 +293,7 @@ function getAspectAndEntities(aspect: Aspect) {
     ];
 }
 
-function getAllPropertiesFromAspect(templateHelper: any, selectedElement: any, allAnswers: any) {
+function getAllPropertiesFromAspectOrEntity(templateHelper: any, selectedElement: any, allAnswers: any) {
     let allProperties: Array<any> = [];
     templateHelper
         .getProperties({
