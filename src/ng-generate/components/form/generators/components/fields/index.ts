@@ -23,9 +23,6 @@ export function getFormFieldStrategy(
     child: Characteristic,
     fieldName: string
 ): FormFieldStrategy {
-    // TODO: Handle
-    // if (property.characteristic instanceof options.collection)
-
     const strategy = FORM_FIELD_STRATEGIES.find(strategy => strategy.isTargetStrategy(child)) ?? FORM_FIELD_DEFAULT_STRATEGY;
     return new strategy(options, context, parent, child, fieldName);
 }

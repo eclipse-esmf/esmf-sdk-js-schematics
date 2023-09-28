@@ -21,7 +21,7 @@ export class ComplexFormFieldStrategy extends FormFieldStrategy {
     hasChildren = true;
 
     static isTargetStrategy(child: Characteristic): boolean {
-        return (child.dataType !== null && child.dataType?.isComplex) || false;
+        return child.dataType !== null && !!child.dataType?.isComplex;
     }
 
     buildConfig(): FormFieldConfig {
