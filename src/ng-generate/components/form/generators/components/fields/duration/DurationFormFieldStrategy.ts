@@ -18,15 +18,15 @@ import {strings} from '@angular-devkit/core';
 const typesConfigs = [
     {
         type: 'dayTimeDuration',
-        hint: "Examples: 'P30D', 'P1DT5H', 'PT1H5M0S'",
+        placeholder: "'P30D', 'P1DT5H', 'PT1H5M0S'",
     },
     {
         type: 'duration',
-        hint: "Examples: 'P30D', '-P1Y2M3DT1H', 'PT1H5M0S'",
+        placeholder: "'P30D', '-P1Y2M3DT1H', 'PT1H5M0S'",
     },
     {
         type: 'yearMonthDuration',
-        hint: "Examples: 'P10M', 'P5Y2M'",
+        placeholder: "'P10M', 'P5Y2M'",
     },
 ];
 const supportedTypes = typesConfigs.map(dt => dt.type);
@@ -46,12 +46,12 @@ export class DurationFormFieldStrategy extends FormFieldStrategy {
             nameDasherized: strings.dasherize(this.fieldName.charAt(0).toLowerCase() + this.fieldName.slice(1)),
             exampleValue: this.parent.exampleValue || '',
             validators: [...this.getBaseValidatorsConfigs()],
-            hint: this.getHint(),
+            placeholder: this.getPlaceholder(),
         };
     }
 
-    getHint(): string | undefined {
+    getPlaceholder(): string | undefined {
         const urn = DurationFormFieldStrategy.getShortUrn(this.child);
-        return typesConfigs.find(dt => dt.type === urn)?.hint;
+        return typesConfigs.find(dt => dt.type === urn)?.placeholder;
     }
 }

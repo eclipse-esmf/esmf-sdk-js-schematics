@@ -33,7 +33,7 @@ export interface FormFieldConfig {
     unitName?: string;
     children?: FormFieldConfig[];
     dataFormat?: string;
-    hint?: string;
+    placeholder?: string;
     deconstructionRule?: string;
 }
 
