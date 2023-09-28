@@ -3,7 +3,7 @@
     <input
         type="text"
         matInput
-        placeholder="<%= options.fieldConfig.exampleValue %>"
+        placeholder="<%= options.fieldConfig.placeholder %>"
         [formControl]="formControl"
         (ngModelChange)="value = $event"
     />

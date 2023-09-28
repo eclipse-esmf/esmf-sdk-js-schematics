@@ -18,23 +18,23 @@ import {strings} from '@angular-devkit/core';
 const typesConfigs = [
     {
         type: 'gDay',
-        hint: "Examples: '---04', '---04+03:00'",
+        placeholder: "'---04', '---04+03:00'",
     },
     {
         type: 'gMonth',
-        hint: "Examples: '--04', '--04+03:00'",
+        placeholder: "'--04', '--04+03:00'",
     },
     {
         type: 'gYear',
-        hint: "Examples: '2000', '2000+03:00'",
+        placeholder: "'2000', '2000+03:00'",
     },
     {
         type: 'gMonthDay',
-        hint: "Examples: '--01-01', '--01-01+03:00'",
+        placeholder: "'--01-01', '--01-01+03:00'",
     },
     {
         type: 'gYearMonth',
-        hint: "Examples: '2000-01', '2000-01+03:00'",
+        placeholder: "'2000-01', '2000-01+03:00'",
     },
 ];
 const supportedTypes = typesConfigs.map(dt => dt.type);
@@ -54,12 +54,12 @@ export class DatePartialFormFieldStrategy extends FormFieldStrategy {
             nameDasherized: strings.dasherize(this.fieldName.charAt(0).toLowerCase() + this.fieldName.slice(1)),
             exampleValue: this.parent.exampleValue || '',
             validators: [...this.getBaseValidatorsConfigs()],
-            hint: this.getHint(),
+            placeholder: this.getPlaceholder(),
         };
     }
 
-    getHint(): string | undefined {
+    getPlaceholder(): string | undefined {
         const urn = DatePartialFormFieldStrategy.getShortUrn(this.child);
-        return typesConfigs.find(dt => dt.type === urn)?.hint;
+        return typesConfigs.find(dt => dt.type === urn)?.placeholder;
     }
 }
