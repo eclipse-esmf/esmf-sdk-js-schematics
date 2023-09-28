@@ -16,6 +16,7 @@ import {
     Aspect,
     BaseMetaModelElement,
     DefaultAspect,
+    DefaultCollection,
     DefaultEntity,
     DefaultProperty,
     DefaultSingleEntity,
@@ -64,7 +65,13 @@ export const requestSelectedModelElement = (type: string, aspect: Aspect) => ({
     message: `Choose a specific Entity or Aspect to show as ${type}:`,
     choices: getAspectAndEntities(aspect),
     size: 5,
-    when: () => !aspect.isCollectionAspect && loader.filterElements(entry => entry instanceof DefaultEntity).length >= 1,
+    when: () => {
+        if (type !== 'form') {
+            !aspect.isCollectionAspect && loader.filterElements(entry => entry instanceof DefaultEntity).length >= 1;
+        } else {
+            loader.filterElements(entry => entry instanceof DefaultEntity || entry instanceof DefaultCollection).length >= 1;
+        }
+    },
     default: '',
 });
 
@@ -103,14 +110,32 @@ export const requestExcludedProperties = (type: string, allAnswers: any, templat
     name: 'excludedProperties',
     message: `Choose the properties to hide in the ${type}:`,
     when: () => {
-        const selectedElement: Aspect | Entity = loader.findByUrn(answers.selectedModelElementUrn) as Aspect | Entity;
-        return templateHelper.resolveType(selectedElement).properties.length > 1;
+        if (type !== 'form') {
+            const selectedElement: Aspect | Entity = loader.findByUrn(answers.selectedModelElementUrn) as Aspect | Entity;
+            return templateHelper.resolveType(selectedElement).properties.length > 1;
+        } else {
+            if (loader.filterElements(entry => entry instanceof DefaultCollection).length >= 1) {
+                return false;
+            } else {
+                loader.filterElements(entry => entry instanceof DefaultEntity).length >= 1;
+            }
+        }
     },
     choices: () => {
-        const selectedElement: Aspect | Entity = loader.findByUrn(answers.selectedModelElementUrn) as Aspect | Entity;
-        let allProperties: Array<any> = [];
-        allProperties = getAllPropertiesFromAspectOrEntity(templateHelper, selectedElement, allAnswers);
-        return allProperties;
+        if (type !== 'form') {
+            const selectedElement: Aspect | Entity = loader.findByUrn(answers.selectedModelElementUrn) as Aspect | Entity;
+            let allProperties: Array<any> = [];
+            allProperties = getAllPropertiesFromAspectOrEntity(templateHelper, selectedElement, allAnswers);
+            return allProperties;
+        } else {
+            if (loader.filterElements(entry => entry instanceof DefaultCollection).length >= 1) {
+                return [];
+            } else {
+                const selectedElement: Aspect | Entity = loader.findByUrn(answers.selectedModelElementUrn) as Aspect | Entity;
+                let allProperties: Array<any> = [];
+                allProperties = getAllPropertiesFromAspectOrEntity(templateHelper, selectedElement, allAnswers);
+            }
+        }
     },
 });
 
