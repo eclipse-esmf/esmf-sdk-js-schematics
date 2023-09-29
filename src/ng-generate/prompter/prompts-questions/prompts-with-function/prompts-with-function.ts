@@ -16,8 +16,10 @@ import {
     Aspect,
     BaseMetaModelElement,
     DefaultAspect,
+    DefaultCharacteristic,
     DefaultCollection,
     DefaultEntity,
+    DefaultEnumeration,
     DefaultProperty,
     DefaultSingleEntity,
     Entity,
@@ -63,13 +65,18 @@ export const requestSelectedModelElement = (type: string, aspect: Aspect) => ({
     type: 'list',
     name: 'selectedModelElementUrn',
     message: `Choose a specific Entity or Aspect to show as ${type}:`,
-    choices: getAspectAndEntities(aspect),
+    choices: getAspectAndEntities(aspect, type),
     size: 5,
     when: () => {
         if (type !== 'form') {
             !aspect.isCollectionAspect && loader.filterElements(entry => entry instanceof DefaultEntity).length >= 1;
         } else {
-            loader.filterElements(entry => entry instanceof DefaultEntity || entry instanceof DefaultCollection).length >= 1;
+            return (
+                aspect.isCollectionAspect ||
+                loader.filterElements(entry => entry instanceof DefaultEntity).length >= 1 ||
+                loader.filterElements(entry => entry instanceof DefaultCollection).length >= 1 ||
+                aspect.properties.length >= 1
+            );
         }
     },
     default: '',
@@ -110,32 +117,14 @@ export const requestExcludedProperties = (type: string, allAnswers: any, templat
     name: 'excludedProperties',
     message: `Choose the properties to hide in the ${type}:`,
     when: () => {
-        if (type !== 'form') {
-            const selectedElement: Aspect | Entity = loader.findByUrn(answers.selectedModelElementUrn) as Aspect | Entity;
-            return templateHelper.resolveType(selectedElement).properties.length > 1;
-        } else {
-            if (loader.filterElements(entry => entry instanceof DefaultCollection).length >= 1) {
-                return false;
-            } else {
-                loader.filterElements(entry => entry instanceof DefaultEntity).length >= 1;
-            }
-        }
+        const selectedElement: Aspect | Entity = loader.findByUrn(answers.selectedModelElementUrn) as Aspect | Entity;
+        return templateHelper.resolveType(selectedElement).properties.length > 1;
     },
     choices: () => {
-        if (type !== 'form') {
-            const selectedElement: Aspect | Entity = loader.findByUrn(answers.selectedModelElementUrn) as Aspect | Entity;
-            let allProperties: Array<any> = [];
-            allProperties = getAllPropertiesFromAspectOrEntity(templateHelper, selectedElement, allAnswers);
-            return allProperties;
-        } else {
-            if (loader.filterElements(entry => entry instanceof DefaultCollection).length >= 1) {
-                return [];
-            } else {
-                const selectedElement: Aspect | Entity = loader.findByUrn(answers.selectedModelElementUrn) as Aspect | Entity;
-                let allProperties: Array<any> = [];
-                allProperties = getAllPropertiesFromAspectOrEntity(templateHelper, selectedElement, allAnswers);
-            }
-        }
+        const selectedElement: Aspect | Entity = loader.findByUrn(answers.selectedModelElementUrn) as Aspect | Entity;
+        let allProperties: Array<any> = [];
+        allProperties = getAllPropertiesFromAspectOrEntity(templateHelper, selectedElement, allAnswers);
+        return allProperties;
     },
 });
 
@@ -204,6 +193,7 @@ export const requestEnableCommandBarFunctions = (aspect: Aspect, allAnswers: any
         if (allAnswers.selectedModelElementUrn && allAnswers.selectedModelElementUrn.length > 0) {
             selectedElement = loader.findByUrn(allAnswers.selectedModelElementUrn) as Aspect | Entity;
         }
+
         const options = {
             selectedModelElement: selectedElement,
             excludedProperties: allAnswers.excludedProperties,
@@ -307,7 +297,7 @@ export const requestReadOnlyForm = (options: Schema) => ({
     default: false,
 });
 
-function getAspectAndEntities(aspect: Aspect) {
+function getAspectAndEntities(aspect: Aspect, type: string) {
     return [
         {name: `${aspect.aspectModelUrn} (Aspect)`, value: `${aspect.aspectModelUrn}`},
         ...loader

@@ -136,12 +136,16 @@ async function runPrompts(subscriber: Subscriber<Tree>, tree: Tree, templateHelp
             const answerAspectModel = await getAspectModelUrnToLoad();
             aspect = await loadAspectModel(answerAspectModel.aspectModelUrnToLoad, tree);
             if (generationType !== 'form') {
-                combineAnswers(answerConfigurationFileConfig, answerAspectModel, await getUserSpecificConfigs(templateHelper, options));
+                combineAnswers(
+                    answerConfigurationFileConfig,
+                    answerAspectModel,
+                    await getUserSpecificConfigs(templateHelper, options, aspect)
+                );
             } else {
                 combineAnswers(
                     answerConfigurationFileConfig,
                     answerAspectModel,
-                    await getUserSpecificFormConfigs(templateHelper, options, allAnswers)
+                    await getUserSpecificFormConfigs(templateHelper, options, allAnswers, aspect)
                 );
             }
         }
@@ -332,7 +336,7 @@ async function getComplexPropertyElements(templateHelper: TemplateHelper, answer
  * @param {Schema} options - User defined options provided when running the script.
  * @returns {Promise<Object>} An object containing the user responses.
  */
-async function getUserSpecificConfigs(templateHelper: TemplateHelper, options: Schema) {
+async function getUserSpecificConfigs(templateHelper: TemplateHelper, options: Schema, aspect: Aspect) {
     const firstBatchAnswers = await inquirer.prompt([requestSelectedModelElement(generationType, aspect)]);
 
     const secondBatchAnswers = await getComplexPropertyElements(templateHelper, firstBatchAnswers);
@@ -395,7 +399,7 @@ function cleanUpOptionsObject(allAnswers: any) {
     });
 }
 
-async function getUserSpecificFormConfigs(templateHelper: TemplateHelper, options: Schema, allAnswers: any) {
+async function getUserSpecificFormConfigs(templateHelper: TemplateHelper, options: Schema, allAnswers: any, aspect: Aspect) {
     const firstBatchAnswers = await inquirer.prompt([requestSelectedModelElement(generationType, aspect)]);
 
     const secondBatchAnswers = await inquirer.prompt([requestJSONPathSelectedModelElement(aspect, firstBatchAnswers, allAnswers)]);
