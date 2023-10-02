@@ -18,6 +18,7 @@ import {strings} from '@angular-devkit/core';
 export class ListFormFieldStrategy extends FormFieldStrategy {
     pathToFiles = './generators/components/fields/list/files';
     hasChildren = false;
+    isList = true;
 
     child: DefaultList | DefaultCollection | DefaultSet | DefaultSortedSet;
 
@@ -35,6 +36,12 @@ export class ListFormFieldStrategy extends FormFieldStrategy {
             name: this.fieldName,
             nameDasherized: strings.dasherize(this.fieldName.charAt(0).toLowerCase() + this.fieldName.slice(1)),
             validators: [...this.getBaseValidatorsConfigs()],
+            children: this.getChildConfigs(),
+            isList: this.isList,
         };
+    }
+
+    getChildStrategies(): FormFieldStrategy[] {
+        return this.child.elementCharacteristic ? [this.getChildStrategy(this.parent, this.child.elementCharacteristic)] : [];
     }
 }
