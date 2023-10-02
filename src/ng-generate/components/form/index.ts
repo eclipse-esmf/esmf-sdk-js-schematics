@@ -35,6 +35,7 @@ import {addPackageJsonDependencies} from '../../../utils/package-json';
 import {NodeDependencyType} from '@schematics/angular/utility/dependencies';
 import {generateFormControlReusable} from '../shared/generators/utils/form-control-reusable/index';
 import {generateDestroyedSubject, generateFormGroupReusable} from '../shared/generators';
+import {generateFormArrayReusable} from '../shared/generators/utils/form-array-reusable/index';
 
 export default function (formSchema: FormSchema): Rule {
     return (tree: Tree, context: SchematicContext) => {
@@ -67,7 +68,12 @@ function formSpecificGeneration(): Array<Rule> {
 }
 
 function utilsGeneration(): Array<Rule> {
-    return [generateFormControlReusable(options), generateFormGroupReusable(options), generateDestroyedSubject(options)];
+    return [
+        generateFormControlReusable(options),
+        generateFormGroupReusable(options),
+        generateFormArrayReusable(options),
+        generateDestroyedSubject(options),
+    ];
 }
 
 // TODO: Move to date-related controls generation?

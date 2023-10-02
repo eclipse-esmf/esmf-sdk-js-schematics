@@ -35,6 +35,7 @@ export interface FormFieldConfig {
     dataFormat?: string;
     placeholder?: string;
     deconstructionRule?: string;
+    isList?: boolean;
 }
 
 export class FormFieldStrategy {

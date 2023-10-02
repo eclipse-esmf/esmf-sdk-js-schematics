@@ -1,7 +1,11 @@
 <form [formGroup]="form" class="<%= options.name %>">
     <section class="form-fields">
         <% for (let childConfig of options.childConfigs) {
-            %><<%= dasherize(childConfig.name) %> formControlName="<%= childConfig.name %>"></<%= dasherize(childConfig.name) %>>
+            %><% if (childConfig.isList === true) { %>
+                <<%= dasherize(childConfig.name) %> formArrayName="<%= childConfig.name %>"></<%= dasherize(childConfig.name) %>>
+            <% } else { %>
+                <<%= dasherize(childConfig.name) %> formControlName="<%= childConfig.name %>"></<%= dasherize(childConfig.name) %>>
+            <% } %>
         <% } %>
     </section>
 

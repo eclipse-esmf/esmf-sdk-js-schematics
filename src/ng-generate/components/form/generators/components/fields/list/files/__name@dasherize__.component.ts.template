@@ -1,26 +1,53 @@
 /** <%= options.generationDisclaimerText %> **/
 
-import {Attribute, Component, forwardRef} from '@angular/core';
+import {Attribute, Component, forwardRef, OnInit} from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {FormControl, FormsModule, NG_VALUE_ACCESSOR, ReactiveFormsModule, Validators} from '@angular/forms';
-import {MatFormFieldModule} from '@angular/material/form-field';
-import {MatInputModule} from '@angular/material/input';
-import {MatSelectModule} from "@angular/material/select";
-import {FormControlReusable} from "../../../../utils/form-control-reusable";
+import {FormControl, FormArray, FormsModule, NG_VALIDATORS, NG_VALUE_ACCESSOR, ReactiveFormsModule} from '@angular/forms';
+import {FormArrayReusable} from '../../../../utils/form-array-reusable';
+import {MatTableDataSource, MatTableModule} from "@angular/material/table";
+import {MatCheckboxChange, MatCheckboxModule} from "@angular/material/checkbox";
+import {MatButtonModule} from "@angular/material/button";
+import {Subject} from "rxjs";
+import {takeUntil} from "rxjs/operators";
 
-export const <%= options.fieldConfig.name %>FormControl = new FormControl(
-    null,
-    [
-        <% for(let validator of options.fieldConfig.validators) { %>
-            <%= validator.definition %>
-        <% } %>
-    ]
-);
+export type <%= options.fieldConfig.children[0].name %> = any;
+export type <%= classify(options.fieldConfig.name) %>FormControl = FormArray<FormControl<<%= options.fieldConfig.children[0].name %>>>;
+export const <%= options.fieldConfig.name %>FormControl: <%= classify(options.fieldConfig.name) %>FormControl = new FormArray<FormControl<<%= options.fieldConfig.children[0].name %>>>([]);
+
+const <%= options.fieldConfig.name %>EventsSubjects = {
+  add: new Subject<void>(),
+  edit: new Subject<DataSourceSelection>(),
+  delete: new Subject<DataSourceSelection>(),
+}
+
+export const <%= options.fieldConfig.name %>Events = {
+  add$: <%= options.fieldConfig.name %>EventsSubjects.add.asObservable(),
+  edit$: <%= options.fieldConfig.name %>EventsSubjects.edit.asObservable(),
+  delete$: <%= options.fieldConfig.name %>EventsSubjects.delete.asObservable(),
+}
+
+interface DataSourceItem {
+  item: <%= options.fieldConfig.children[0].name %>;
+  isSelected: boolean;
+}
+
+export interface DataSourceSelectionItem {
+  item: <%= options.fieldConfig.children[0].name %>;
+  controlIndex: number;
+}
+export type DataSourceSelection = DataSourceSelectionItem[];
 
 @Component({
     selector: '<%= dasherize(options.fieldConfig.name) %>',
     standalone: true,
-    imports: [CommonModule, FormsModule, MatFormFieldModule, MatInputModule, ReactiveFormsModule, MatSelectModule],
+    imports: [
+        CommonModule,
+        FormsModule,
+        ReactiveFormsModule,
+        MatTableModule,
+        MatCheckboxModule,
+        MatButtonModule
+    ],
     templateUrl: './<%= dasherize(options.fieldConfig.name) %>.component.html',
     styleUrls: ['./<%= dasherize(options.fieldConfig.name) %>.component.scss'],
     providers: [
@@ -28,19 +55,81 @@ export const <%= options.fieldConfig.name %>FormControl = new FormControl(
             provide: NG_VALUE_ACCESSOR,
             useExisting: forwardRef(() => <%= classify(options.fieldConfig.name) %>Component),
             multi: true,
-        }
-    ]
+        },
+        {
+            provide: NG_VALIDATORS,
+            useExisting: forwardRef(() => <%= classify(options.fieldConfig.name) %>Component),
+            multi: true,
+        },
+    ],
 })
-export class <%= classify(options.fieldConfig.name) %>Component extends FormControlReusable {
-    formControl = <%= options.fieldConfig.name %>FormControl;
+export class <%= classify(options.fieldConfig.name) %>Component extends FormArrayReusable implements OnInit {
+    formArray: <%= classify(options.fieldConfig.name) %>FormControl = <%= options.fieldConfig.name %>FormControl;
+    dataSource: MatTableDataSource<DataSourceItem> = new MatTableDataSource<DataSourceItem>([]);
+    selection: DataSourceSelection = [];
+    isAllChecked: boolean = false;
+    columns: string[] = ['isSelected', 'value'];
 
-    constructor(@Attribute('formControlName') public formControlName: string) {
+    constructor(@Attribute('formArrayName') public formArrayName: string) {
         super();
     }
 
-    get errorMessage() {
-        return this.formControl.hasError('required')
-            ? 'The field is required'
-            : 'The value is invalid or empty';
+    get isSelection(): boolean {
+        return !!this.selection.length;
+    }
+
+    ngOnInit(): void {
+        this.setData(<%= options.fieldConfig.name %>FormControl.value);
+        <%= options.fieldConfig.name %>FormControl.valueChanges
+            .pipe(takeUntil(this.destroyed$))
+            .subscribe((values: <%= options.fieldConfig.children[0].name %>[]) => this.setData(values));
+    }
+
+    onAdd(): void {
+        <%= options.fieldConfig.name %>EventsSubjects.add.next();
+    }
+
+    onEdit(dataSourceSelection: DataSourceSelection): void {
+        <%= options.fieldConfig.name %>EventsSubjects.edit.next(dataSourceSelection);
+    }
+
+    onDelete(dataSourceSelection: DataSourceSelection): void {
+        <%= options.fieldConfig.name %>EventsSubjects.delete.next([...dataSourceSelection].reverse());
+    }
+
+    selectAllRows(value: MatCheckboxChange): void {
+        this.dataSource.data.forEach(item => item.isSelected = value.checked);
+        this.selection = this.getSelection(this.dataSource.data);
+    }
+
+    selectRow(dataSourceItem: DataSourceItem, event: MatCheckboxChange): void {
+        dataSourceItem.isSelected = event.checked;
+        this.selection = this.getSelection(this.dataSource.data);
+    }
+
+    private setData(values: <%= options.fieldConfig.children[0].name %>[]): void {
+        this.isAllChecked = false;
+        this.dataSource.data = this.createDataSourceItems(values);
+        this.selection = this.getSelection(values);
+    }
+
+    private createDataSourceItems(values: <%= options.fieldConfig.children[0].name %>[], isSelected: boolean = false): DataSourceItem[] {
+        return values.map(item => ({
+            item,
+            isSelected
+        }));
+    }
+
+    private getSelection(dataSourceItems: DataSourceItem[]): DataSourceSelection {
+        return dataSourceItems.reduce((acc: DataSourceSelection, dataSourceItem: DataSourceItem, index: number) => {
+            if (dataSourceItem.isSelected) {
+                acc.push({
+                    item: dataSourceItem.item,
+                    controlIndex: index
+                });
+            }
+
+            return acc;
+        }, []);
     }
 }
