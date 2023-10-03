@@ -13,4 +13,16 @@
 .table-notification {
     padding: 1rem;
     text-align: center;
+    color: rgb(98, 98, 98);
+}
+
+fieldset {
+    border-radius: 0.25rem;
+    border: 1px solid rgb(142, 142, 142);
+}
+
+legend {
+    color: rgb(98, 98, 98);
+    font-size: 1.15rem;
+    padding: 0 0.375rem;
 }
