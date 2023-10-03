@@ -36,6 +36,7 @@ export interface FormFieldConfig {
     placeholder?: string;
     deconstructionRule?: string;
     isList?: boolean;
+    isScalarChild?: boolean;
 }
 
 export class FormFieldStrategy {
