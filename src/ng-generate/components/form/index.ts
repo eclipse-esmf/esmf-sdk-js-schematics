@@ -18,7 +18,6 @@ import {
     addAndUpdateConfigurationFilesRule,
     formatAllFilesRule,
     generateComponent,
-    generateGeneralFilesRules,
     insertVersionIntoPathRule,
     insertVersionIntoSelectorRule,
     loadAspectModelRule,
@@ -34,8 +33,16 @@ import {generateFormComponent} from './generators/components/form/index';
 import {addPackageJsonDependencies} from '../../../utils/package-json';
 import {NodeDependencyType} from '@schematics/angular/utility/dependencies';
 import {generateFormControlReusable} from '../shared/generators/utils/form-control-reusable/index';
-import {generateDestroyedSubject, generateFormGroupReusable} from '../shared/generators';
+import {
+    generateDestroyedSubject,
+    generateFormGroupReusable,
+    generateGeneralStyle,
+    generateSharedModule,
+    generateTranslationModule,
+} from '../shared/generators';
 import {generateFormArrayReusable} from '../shared/generators/utils/form-array-reusable/index';
+import {generateTranslationFiles} from '../../../utils/aspect-model';
+import {wrapBuildComponentExecution} from '../../../utils/angular';
 
 export default function (formSchema: FormSchema): Rule {
     return (tree: Tree, context: SchematicContext) => {
@@ -54,13 +61,23 @@ export function generateForm(formSchema: Schema): Rule {
         insertVersionIntoSelectorRule(),
         insertVersionIntoPathRule(),
         setTemplateOptionValuesRule(),
-        ...generateGeneralFilesRules(),
+        ...genericGeneration(),
         ...formSpecificGeneration(),
         ...addAndUpdateConfigurationFilesRule(),
         ...utilsGeneration(),
         addDateTimePickerDependenciesRule(),
         formatAllFilesRule(),
     ]);
+}
+
+function genericGeneration(): Array<Rule> {
+    return [
+        generateSharedModule(options),
+        generateTranslationModule(options),
+        generateGeneralStyle(options),
+        generateTranslationFiles(options),
+        wrapBuildComponentExecution(options),
+    ];
 }
 
 function formSpecificGeneration(): Array<Rule> {

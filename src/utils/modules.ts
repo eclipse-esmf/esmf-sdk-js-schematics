@@ -167,11 +167,11 @@ export function updateSharedModule(options: Schema) {
         }
 
         ['horizontal-overflow', 'resize-column', 'validate-input'].forEach(directive => {
-            if (directive === 'resize-column' && options.componentType === 'card') {
+            if (options.componentType === 'form') {
                 return;
             }
 
-            if (directive === 'resize-column' && options.componentType === 'form') {
+            if (directive === 'resize-column' && options.componentType === 'card') {
                 return;
             }
 
@@ -182,7 +182,9 @@ export function updateSharedModule(options: Schema) {
             processItem('directive', 'highlight');
         }
 
-        processItem('pipe', 'show-description');
+        if (options.componentType !== 'form') {
+            processItem('pipe', 'show-description');
+        }
 
         return tree;
     };
