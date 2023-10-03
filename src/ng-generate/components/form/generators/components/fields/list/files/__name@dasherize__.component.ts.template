@@ -10,9 +10,9 @@ import {MatButtonModule} from "@angular/material/button";
 import {Subject} from "rxjs";
 import {takeUntil} from "rxjs/operators";
 
-export type <%= options.fieldConfig.children[0].name %> = any;
-export type <%= classify(options.fieldConfig.name) %>FormControl = FormArray<FormControl<<%= options.fieldConfig.children[0].name %>>>;
-export const <%= options.fieldConfig.name %>FormControl: <%= classify(options.fieldConfig.name) %>FormControl = new FormArray<FormControl<<%= options.fieldConfig.children[0].name %>>>([]);
+export type <%= classify(options.fieldConfig.name) %>Item = any;
+export type <%= classify(options.fieldConfig.name) %>FormControl = FormArray<FormControl<<%= classify(options.fieldConfig.name) %>Item>>;
+export const <%= options.fieldConfig.name %>FormControl: <%= classify(options.fieldConfig.name) %>FormControl = new FormArray<FormControl<<%= classify(options.fieldConfig.name) %>Item>>([]);
 
 const <%= options.fieldConfig.name %>EventsSubjects = {
   add: new Subject<void>(),
@@ -27,12 +27,12 @@ export const <%= options.fieldConfig.name %>Events = {
 }
 
 interface DataSourceItem {
-  item: <%= options.fieldConfig.children[0].name %>;
+  item: <%= classify(options.fieldConfig.name) %>Item;
   isSelected: boolean;
 }
 
 export interface DataSourceSelectionItem {
-  item: <%= options.fieldConfig.children[0].name %>;
+  item: <%= classify(options.fieldConfig.name) %>Item;
   controlIndex: number;
 }
 export type DataSourceSelection = DataSourceSelectionItem[];
@@ -68,7 +68,16 @@ export class <%= classify(options.fieldConfig.name) %>Component extends FormArra
     dataSource: MatTableDataSource<DataSourceItem> = new MatTableDataSource<DataSourceItem>([]);
     selection: DataSourceSelection = [];
     isAllChecked: boolean = false;
-    columns: string[] = ['isSelected', 'value'];
+    columns: string[] = [
+        'isSelected',
+        <% if (options.fieldConfig.isScalarChild) { %>
+            'value'
+        <% } else { %>
+            <% for (let childConfig of options.fieldConfig.children) {
+                %>'<%= childConfig.name %>',
+            <% } %>
+        <% } %>
+    ];
 
     constructor(@Attribute('formArrayName') public formArrayName: string) {
         super();
@@ -82,7 +91,7 @@ export class <%= classify(options.fieldConfig.name) %>Component extends FormArra
         this.setData(<%= options.fieldConfig.name %>FormControl.value);
         <%= options.fieldConfig.name %>FormControl.valueChanges
             .pipe(takeUntil(this.destroyed$))
-            .subscribe((values: <%= options.fieldConfig.children[0].name %>[]) => this.setData(values));
+            .subscribe((values: <%= classify(options.fieldConfig.name) %>Item[]) => this.setData(values));
     }
 
     onAdd(): void {
@@ -107,13 +116,13 @@ export class <%= classify(options.fieldConfig.name) %>Component extends FormArra
         this.selection = this.getSelection(this.dataSource.data);
     }
 
-    private setData(values: <%= options.fieldConfig.children[0].name %>[]): void {
+    private setData(values: <%= classify(options.fieldConfig.name) %>Item[]): void {
         this.isAllChecked = false;
         this.dataSource.data = this.createDataSourceItems(values);
         this.selection = this.getSelection(values);
     }
 
-    private createDataSourceItems(values: <%= options.fieldConfig.children[0].name %>[], isSelected: boolean = false): DataSourceItem[] {
+    private createDataSourceItems(values: <%= classify(options.fieldConfig.name) %>Item[], isSelected: boolean = false): DataSourceItem[] {
         return values.map(item => ({
             item,
             isSelected

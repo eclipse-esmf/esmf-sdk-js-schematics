@@ -17,10 +17,19 @@
         </td>
       </ng-container>
 
-      <ng-container matColumnDef="value">
-        <th mat-header-cell *matHeaderCellDef>Value</th>
-        <td mat-cell *matCellDef="let element">{{ element.item }}</td>
-      </ng-container>
+      <% if (options.fieldConfig.isScalarChild) { %>
+        <ng-container matColumnDef="value">
+          <th mat-header-cell *matHeaderCellDef>Value</th>
+          <td mat-cell *matCellDef="let element">{{ element.item }}</td>
+        </ng-container>
+      <% } else { %>
+        <% for (let childConfig of options.fieldConfig.children) { %>
+          <ng-container matColumnDef="<%= childConfig.name %>">
+            <th mat-header-cell *matHeaderCellDef><%= classify(childConfig.name) %></th>
+            <td mat-cell *matCellDef="let element">{{ element.item.<%= childConfig.name %> }}</td>
+          </ng-container>
+        <% } %>
+      <% } %>
 
       <tr mat-header-row *matHeaderRowDef="columns; sticky: true"></tr>
       <tr mat-row *matRowDef="let row; columns: columns"></tr>
