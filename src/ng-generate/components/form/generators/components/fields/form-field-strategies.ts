@@ -27,11 +27,15 @@ import {DatePartialFormFieldStrategy} from './datePartial/DatePartialFormFieldSt
 import {ListFormFieldStrategy} from './list/ListFormFieldStrategy';
 import {StructuredValueFormFieldStrategy} from './structuredValue/StructuredValueFormFieldStrategy';
 
+// The order matters:
+// Some of the "isTargetStrategy" methods have more strict checks than others,
+// the checks will be made in the same order as defined by "FORM_FIELD_STRATEGIES" array,
+// from more strict to more generic ones.
 export const FORM_FIELD_STRATEGIES = [
-    ComplexFormFieldStrategy,
     EitherFormFieldStrategy,
     ListFormFieldStrategy,
     StructuredValueFormFieldStrategy,
+    ComplexFormFieldStrategy,
     EnumerationFormFieldStrategy,
     BooleanFormFieldStrategy,
     TextFormFieldStrategy,
