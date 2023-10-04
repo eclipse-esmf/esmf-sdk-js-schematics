@@ -59,15 +59,6 @@ export const anotherFile: Question = {
     default: false,
 };
 
-export const requestCustomColumnNames = {
-    type: 'suggest',
-    name: 'customColumns',
-    message:
-        "To add custom columns to show individual content. Use keys and adapt column naming in the translation files afterwards. Use ','  to enter multiple (e.g. special-chart, slider):",
-    suggestions: ['chart', 'slider'],
-    filter: (input: string) => (input ? Array.from(new Set(input.split(','))) : []),
-};
-
 export const requestAddCommandBar = {
     type: 'confirm',
     name: 'addCommandBar',
