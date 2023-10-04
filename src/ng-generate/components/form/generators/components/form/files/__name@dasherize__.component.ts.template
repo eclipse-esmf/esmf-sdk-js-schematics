@@ -1,44 +1,40 @@
 /** <%= options.generationDisclaimerText %> **/
 
-import {Component, EventEmitter, Output} from '@angular/core';
-import {FormBuilder, FormGroup} from '@angular/forms';
+import {Component, EventEmitter, Output, <% if (options.readOnlyForm) { %>OnInit<% } %>} from '@angular/core';
+import {FormGroup} from '@angular/forms';
+import {<%= options.selectedModelTypeName %>} from '<%= options.typePath %>';
 <% for (let childConfig of options.childConfigs) {
     %>import {<%= childConfig.name %>FormControl} from "./<%= childConfig.nameDasherized %>/<%= childConfig.nameDasherized %>.component";
 <% } %>
+
+export const <%= options.selectedModelTypeName %>Form = new FormGroup({
+    <% for (let childConfig of options.childConfigs) {
+        %><%= childConfig.name %>: <%= childConfig.name %>FormControl,
+    <% } %>
+})
 
 @Component({
     selector: '<%= dasherize(name) %>',
     templateUrl: './<%= dasherize(name) %>.component.html',
     styleUrls: ['./<%= dasherize(name) %>.component.scss']
 })
-export class <%= classify(name) %>Component {
-    @Output() formSubmit: EventEmitter<any> = new EventEmitter();
+export class <%= classify(name) %>Component <% if (options.readOnlyForm) { %>implements OnInit<% } %> {
+    @Output() formSubmit: EventEmitter<<%= options.selectedModelTypeName %>> = new EventEmitter();
     @Output() formCancel: EventEmitter<void> = new EventEmitter();
 
-    form: FormGroup;
+    form: FormGroup = <%= options.selectedModelTypeName %>Form;
 
-    constructor(private fb: FormBuilder) {
-        this.form = this.createFormGroup();
-        <% if (options.readOnlyForm) {
-            %>this.form.disable();
-        <% } %>
-    }
+    <% if (options.readOnlyForm) { %>
+        ngOnInit() {
+            this.form.disable();
+        }
+    <% } %>
 
-    private createFormGroup(): FormGroup {
-        return this.fb.group({
-            <% for (let childConfig of options.childConfigs) {
-                %><%= childConfig.name %>: <%= childConfig.name %>FormControl,
-            <% } %>
-        });
-    }
-
-    onCancel() {
-        console.log('Cancel form');
+    onCancel(): void {
         this.formCancel.emit();
     }
 
-    onSubmit(form: FormGroup) {
-        console.log('Form Value:', form.value);
+    onSubmit(form: FormGroup): void {
         this.formSubmit.emit(form.value);
     }
 }
