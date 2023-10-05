@@ -16,6 +16,6 @@ fieldset {
 
 legend {
     color: rgb(98, 98, 98);
-    font-size: 1.15rem;
+    font-size: 1rem;
     padding: 0 0.375rem;
 }
