@@ -28,7 +28,7 @@ import {
     Property,
 } from '@esmf/aspect-model-loader';
 import {TypesSchema} from './schema';
-import {resolveJsPropertyType} from "../components/shared/utils";
+import {resolveJsPropertyType} from '../components/shared/utils';
 
 export function visitAspectModel(options: TypesSchema): Rule {
     return async (tree: Tree) => {
@@ -92,7 +92,10 @@ export class AspectModelTypeGeneratorVisitor extends DefaultAspectModelVisitor<B
         aspect.properties.forEach(property => {
             // Visit the property to eventually generate a new data type and return
             // the appropriate data type name.
-            const dataType = property.characteristic instanceof DefaultCollection ? `Array<${resolveJsPropertyType(property)}>` : resolveJsPropertyType(property);
+            const dataType =
+                property.characteristic instanceof DefaultCollection
+                    ? `Array<${resolveJsPropertyType(property)}>`
+                    : resolveJsPropertyType(property);
             const variableName = camelize(property.name);
             lines.push(this.getJavaDoc(property));
             lines.push(`${variableName}${property.isOptional ? '?' : ''}: ${dataType}${dataType.includes(';') ? '' : ';'}\n`);
@@ -157,12 +160,12 @@ export class AspectModelTypeGeneratorVisitor extends DefaultAspectModelVisitor<B
                 public static values(): Array<{iProcedureAndStepNo: string; description: string | undefined}> {
                     return [
                        ${enumeration.values
-                .map(
-                    (instance: DefaultEntityInstance) =>
-                        `{ ${valuePayloadKey}: ${classify(enumeration.name)}.${classify(instance.name)}.${valuePayloadKey}, 
+                           .map(
+                               (instance: DefaultEntityInstance) =>
+                                   `{ ${valuePayloadKey}: ${classify(enumeration.name)}.${classify(instance.name)}.${valuePayloadKey}, 
                                    description: ${classify(enumeration.name)}.${classify(instance.name)}.${instance.descriptionKey} }`
-                )
-                .join(',')}
+                           )
+                           .join(',')}
                     ]
                 }
                 
@@ -170,26 +173,26 @@ export class AspectModelTypeGeneratorVisitor extends DefaultAspectModelVisitor<B
                 public static getValueDescriptionList(propertyName: string): Array<{value:string, translationKey:string | undefined}> {
                     return [
                        ${enumeration.values
-                .map(
-                    (instance: DefaultEntityInstance) =>
-                        `{ value: '${
-                            instance.value
-                        }', translationKey: '${versionedAccessPrefix}' + propertyName + '.' + ${classify(
-                            enumeration.name
-                        )}.${classify(instance.name)}.translationKey }`
-                )
-                .join(',')}
+                           .map(
+                               (instance: DefaultEntityInstance) =>
+                                   `{ value: '${
+                                       instance.value
+                                   }', translationKey: '${versionedAccessPrefix}' + propertyName + '.' + ${classify(
+                                       enumeration.name
+                                   )}.${classify(instance.name)}.translationKey }`
+                           )
+                           .join(',')}
                     ]
                 }
     
                 /** Gets get the instance according to the given value or undefined if no instance exists */
                 public static getByValue(value: string): ${classify(enumeration.name)} | undefined {
                     ${enumeration.values
-                .map(
-                    (instance: DefaultEntityInstance) =>
-                        `if(value === '${instance.value}') return ${classify(enumeration.name)}.${classify(instance.name)}`
-                )
-                .join('; ')}
+                        .map(
+                            (instance: DefaultEntityInstance) =>
+                                `if(value === '${instance.value}') return ${classify(enumeration.name)}.${classify(instance.name)}`
+                        )
+                        .join('; ')}
                     
                     return undefined;
                 }
@@ -244,7 +247,6 @@ export class AspectModelTypeGeneratorVisitor extends DefaultAspectModelVisitor<B
 
         return entity;
     }
-
 
     private getJavaDoc(element: Aspect | Property | Characteristic | Entity) {
         const description = element.getDescription('en');
