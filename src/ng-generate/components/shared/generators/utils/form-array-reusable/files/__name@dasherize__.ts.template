@@ -1,0 +1,37 @@
+/** <%= options.generationDisclaimerText %> **/
+import {AbstractControl, ControlValueAccessor, FormArray, ValidationErrors, Validator} from '@angular/forms';
+import {takeUntil} from 'rxjs';
+import {mixinDestroyedSubject} from './destroyed-subject.mixin';
+
+export abstract class FormArrayReusable extends mixinDestroyedSubject() implements ControlValueAccessor, Validator {
+    abstract formArray: FormArray;
+    abstract formArrayName: string;
+
+    protected constructor() {
+        super();
+    }
+
+    registerOnChange(fn: any): void {
+        if (!this.formArray) return;
+
+        this.formArray.valueChanges.pipe(takeUntil(this.destroyed$)).subscribe(fn);
+    }
+
+    registerOnTouched(fn: any): void {
+        if (!this.formArray) return;
+
+        this.formArray.valueChanges.pipe(takeUntil(this.destroyed$)).subscribe(fn);
+    }
+
+    setDisabledState(isDisabled: boolean): void {
+        isDisabled ? this.formArray.disable() : this.formArray.enable();
+    }
+
+    writeValue(value: any): void {
+        this.formArray.patchValue(value, {emitEvent: false});
+    }
+
+    validate(control: AbstractControl): ValidationErrors | null {
+        return this.formArray.valid ? null : {[this.formArrayName]: true};
+    }
+}

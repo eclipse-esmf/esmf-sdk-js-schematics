@@ -8,3 +8,14 @@
     flex-flow: column nowrap;
     margin: 1rem 0;
 }
+
+fieldset {
+    border-radius: 0.25rem;
+    border: 1px solid rgb(142, 142, 142);
+}
+
+legend {
+    color: rgb(98, 98, 98);
+    font-size: 1.15rem;
+    padding: 0 0.375rem;
+}

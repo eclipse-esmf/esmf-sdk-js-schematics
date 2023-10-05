@@ -22,6 +22,10 @@ form.<%= options.name %> {
         justify-content: flex-end;
         padding: 1rem 0;
 
+        &.disabled {
+            display: none;
+        }
+
         button + button {
             margin-left: 1rem;
         }
