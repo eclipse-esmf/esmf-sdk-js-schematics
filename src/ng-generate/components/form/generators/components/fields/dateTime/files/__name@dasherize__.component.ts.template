@@ -6,7 +6,7 @@ import {FormControl, FormsModule, NG_VALUE_ACCESSOR, ReactiveFormsModule, Valida
 import {MatDatepickerModule} from '@angular/material/datepicker';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatInputModule} from '@angular/material/input';
-import {FormControlReusable} from "../../../../utils/form-control-reusable";
+import {FormControlReusable} from "<% if (options.enableVersionSupport) { %>../<% } %>../../../utils/form-control-reusable";
 import {ThemePalette, MAT_DATE_LOCALE} from '@angular/material/core';
 import {
     NgxMatMomentAdapter,

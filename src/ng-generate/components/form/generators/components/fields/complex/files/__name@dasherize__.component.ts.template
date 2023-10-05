@@ -10,7 +10,7 @@ import {
     NG_VALUE_ACCESSOR,
     ReactiveFormsModule,
 } from '@angular/forms';
-import {FormGroupReusable} from '../../../../utils/form-group-reusable';
+import {FormGroupReusable} from '<% if (options.enableVersionSupport) { %>../<% } %>../../../utils/form-group-reusable';
 <% for (let childConfig of options.fieldConfig.children) {
     %>import {<%= classify(childConfig.name) %>Component, <%= childConfig.name %>FormControl} from '../<%= childConfig.nameDasherized %>/<%= childConfig.nameDasherized %>.component';
 <% } %>
