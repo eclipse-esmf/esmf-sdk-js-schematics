@@ -234,17 +234,7 @@ export const requestSelectedModelElement = (type: ComponentType, aspect: Aspect,
     choices: getAspectAndEntities(aspect, type),
     size: 5,
     when: () => {
-        if (type !== ComponentType.FORM) {
-            return !aspect.isCollectionAspect && loader.filterElements(entry => entry instanceof DefaultEntity).length >= 1;
-        } else {
-            return (
-                aspect.isCollectionAspect ||
-                loader.filterElements(entry => entry instanceof DefaultEntity).length >= 1 ||
-                loader.filterElements(entry => entry instanceof DefaultCollection).length >= 1 ||
-                aspect.properties.length >= 1
-            );
-        }
-        // conditionFunction(aspect, loader);
+        return conditionFunction(aspect, loader);
     },
     default: '',
 });
