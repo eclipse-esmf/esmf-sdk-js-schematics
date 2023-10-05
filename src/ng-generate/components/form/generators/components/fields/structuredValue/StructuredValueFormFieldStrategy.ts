@@ -13,7 +13,6 @@
 
 import {Characteristic, DefaultPropertyInstanceDefinition, DefaultStructuredValue, Property} from '@esmf/aspect-model-loader';
 import {FormFieldConfig, FormFieldStrategy} from '../FormFieldStrategy';
-import {strings} from '@angular-devkit/core';
 import {getFormFieldStrategy} from '../index';
 
 export class StructuredValueFormFieldStrategy extends FormFieldStrategy {
@@ -29,7 +28,8 @@ export class StructuredValueFormFieldStrategy extends FormFieldStrategy {
     buildConfig(): FormFieldConfig {
         return {
             name: this.fieldName,
-            nameDasherized: strings.dasherize(this.fieldName.charAt(0).toLowerCase() + this.fieldName.slice(1)),
+            nameDasherized: this.getNameDasherized(),
+            selector: this.getSelector(),
             deconstructionRule: this.child.deconstructionRule,
             validators: [...this.getBaseValidatorsConfigs()],
             children: this.getChildConfigs(),

@@ -13,7 +13,6 @@
 
 import {Characteristic, DefaultEither} from '@esmf/aspect-model-loader';
 import {FormFieldConfig, FormFieldStrategy} from '../FormFieldStrategy';
-import {strings} from '@angular-devkit/core';
 
 export class EitherFormFieldStrategy extends FormFieldStrategy {
     pathToFiles = './generators/components/fields/either/files';
@@ -26,7 +25,8 @@ export class EitherFormFieldStrategy extends FormFieldStrategy {
     buildConfig(): FormFieldConfig {
         return {
             name: this.fieldName,
-            nameDasherized: strings.dasherize(this.fieldName.charAt(0).toLowerCase() + this.fieldName.slice(1)),
+            nameDasherized: this.getNameDasherized(),
+            selector: this.getSelector(),
             validators: [...this.getBaseValidatorsConfigs()],
             children: this.getChildConfigs(),
         };

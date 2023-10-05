@@ -29,7 +29,7 @@ export const <%= options.fieldConfig.name %>FormGroup = new FormGroup<<%= option
 });
 
 @Component({
-    selector: '<%= dasherize(options.fieldConfig.name) %>',
+    selector: '<%= options.fieldConfig.selector %>',
     standalone: true,
     imports: [
         CommonModule,

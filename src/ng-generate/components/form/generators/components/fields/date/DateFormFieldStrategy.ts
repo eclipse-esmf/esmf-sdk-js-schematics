@@ -13,7 +13,6 @@
 
 import {Characteristic} from '@esmf/aspect-model-loader';
 import {FormFieldConfig, FormFieldStrategy} from '../FormFieldStrategy';
-import {strings} from '@angular-devkit/core';
 
 const DEFAULT_FORMAT = 'yyyy-MM-DD';
 const typesConfigs = [
@@ -36,7 +35,8 @@ export class DateFormFieldStrategy extends FormFieldStrategy {
     buildConfig(): FormFieldConfig {
         return {
             name: this.fieldName,
-            nameDasherized: strings.dasherize(this.fieldName.charAt(0).toLowerCase() + this.fieldName.slice(1)),
+            nameDasherized: this.getNameDasherized(),
+            selector: this.getSelector(),
             exampleValue: this.parent.exampleValue || '',
             validators: [...this.getBaseValidatorsConfigs()],
             dataFormat: this.getDataFormat(),

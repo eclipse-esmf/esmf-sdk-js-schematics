@@ -13,7 +13,6 @@
 
 import {Characteristic, Property} from '@esmf/aspect-model-loader';
 import {FormFieldConfig, FormFieldStrategy} from '../FormFieldStrategy';
-import {strings} from '@angular-devkit/core';
 import {getFormFieldStrategy} from '../index';
 
 export class ComplexFormFieldStrategy extends FormFieldStrategy {
@@ -27,7 +26,8 @@ export class ComplexFormFieldStrategy extends FormFieldStrategy {
     buildConfig(): FormFieldConfig {
         return {
             name: this.fieldName,
-            nameDasherized: strings.dasherize(this.fieldName.charAt(0).toLowerCase() + this.fieldName.slice(1)),
+            nameDasherized: this.getNameDasherized(),
+            selector: this.getSelector(),
             validators: [...this.getBaseValidatorsConfigs()],
             children: this.getChildConfigs(),
         };

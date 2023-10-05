@@ -38,7 +38,7 @@ export interface DataSourceSelectionItem {
 export type DataSourceSelection = DataSourceSelectionItem[];
 
 @Component({
-    selector: '<%= dasherize(options.fieldConfig.name) %>',
+    selector: '<%= options.fieldConfig.selector %>',
     standalone: true,
     imports: [
         CommonModule,

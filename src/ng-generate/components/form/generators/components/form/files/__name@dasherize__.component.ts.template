@@ -14,7 +14,7 @@ export const <%= options.selectedModelTypeName %>Form = new FormGroup({
 })
 
 @Component({
-    selector: '<%= dasherize(name) %>',
+    selector: '<%= options.prefix %>-<%= dasherize(name) %>',
     templateUrl: './<%= dasherize(name) %>.component.html',
     styleUrls: ['./<%= dasherize(name) %>.component.scss']
 })

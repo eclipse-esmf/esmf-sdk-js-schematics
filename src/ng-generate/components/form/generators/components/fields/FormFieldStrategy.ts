@@ -27,6 +27,7 @@ export interface ValidatorConfig {
 export interface FormFieldConfig {
     name: string;
     nameDasherized: string;
+    selector: string;
     validators: ValidatorConfig[];
     exampleValue?: string;
     values?: any[];
@@ -74,6 +75,14 @@ export class FormFieldStrategy {
         }
 
         return validatorsConfigs;
+    }
+
+    getSelector(): string {
+        return `${this.options.prefix}-${strings.dasherize(this.fieldName)}`;
+    }
+
+    getNameDasherized(): string {
+        return strings.dasherize(this.fieldName.charAt(0).toLowerCase() + this.fieldName.slice(1));
     }
 
     applyTemplate(): Rule {

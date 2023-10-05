@@ -6,7 +6,7 @@
         <% } %>
         <section class="form-fields">
             <% for (let childConfig of options.fieldConfig.children) {
-                %><<%= dasherize(childConfig.name) %> formControlName="<%= childConfig.name %>"></<%= dasherize(childConfig.name) %>>
+                %><<%= childConfig.selector %> formControlName="<%= childConfig.name %>"></<%= childConfig.selector %>>
             <% } %>
         </section>
     </fieldset>
