@@ -16,13 +16,13 @@ import {TemplateHelper} from '../../../../utils/template-helper';
 import inquirer from 'inquirer';
 import {
     requestExcludedProperties,
-    requestJSONPathSelectedModelElement,
     requestOptionalMaterialTheme,
     requestOverwriteFiles,
     requestSelectedModelElement,
 } from '../shared/prompt-complex-questions';
 import {requestAspectModelVersionSupport, requestSetViewEncapsulation} from '../shared/prompt-simple-questions';
-import {Aspect} from '@esmf/aspect-model-loader';
+import {Aspect, DefaultCollection, DefaultEntity} from '@esmf/aspect-model-loader';
+import {loader} from '../../utils';
 
 export const requestReadOnlyForm = (options: Schema) => ({
     type: 'confirm',
@@ -58,11 +58,11 @@ export async function formPrompterQuestions(
  * @returns {Promise<Object>} An object containing the user responses.
  */
 async function getUserSpecificFormConfigs(templateHelper: TemplateHelper, options: Schema, allAnswers: any, aspect: Aspect) {
-    const firstBatchAnswers = await inquirer.prompt([requestSelectedModelElement(ComponentType.FORM, aspect)]);
+    const firstBatchAnswers = await inquirer.prompt([
+        requestSelectedModelElement(ComponentType.FORM, aspect, requestSelectedModelCondition),
+    ]);
 
-    const secondBatchAnswers = await inquirer.prompt([requestJSONPathSelectedModelElement(aspect, firstBatchAnswers, allAnswers)]);
-
-    const thirdBatchAnswers = await inquirer.prompt([
+    const seconsBatchAnswers = await inquirer.prompt([
         requestExcludedProperties(ComponentType.FORM, allAnswers, templateHelper, firstBatchAnswers, aspect),
         requestAspectModelVersionSupport,
         requestOptionalMaterialTheme(options),
@@ -71,5 +71,14 @@ async function getUserSpecificFormConfigs(templateHelper: TemplateHelper, option
         requestOverwriteFiles(options),
     ]);
 
-    return {...firstBatchAnswers, ...secondBatchAnswers, ...thirdBatchAnswers};
+    return {...firstBatchAnswers, ...seconsBatchAnswers};
+}
+
+function requestSelectedModelCondition(aspect: Aspect, loader: any): boolean {
+    return (
+        aspect.isCollectionAspect ||
+        loader.filterElements((entry: any) => entry instanceof DefaultEntity).length >= 1 ||
+        loader.filterElements((entry: any) => entry instanceof DefaultCollection).length >= 1 ||
+        aspect.properties.length >= 1
+    );
 }

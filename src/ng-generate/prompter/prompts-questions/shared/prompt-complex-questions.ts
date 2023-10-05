@@ -221,15 +221,13 @@ export const requestExcludedProperties = (type: string, allAnswers: any, templat
         if (answers.selectedModelElementUrn && answers.selectedModelElementUrn.length > 0) {
             selectedElement = loader.findByUrn(answers.selectedModelElementUrn) as Aspect | Entity;
         }
-
-        //  const selectedElement: Aspect | Entity = loader.findByUrn(answers.selectedModelElementUrn) as Aspect | Entity;
         let allProperties: Array<any> = [];
         allProperties = getAllPropertiesFromAspectOrEntity(templateHelper, selectedElement, allAnswers);
         return allProperties;
     },
 });
 
-export const requestSelectedModelElement = (type: ComponentType, aspect: Aspect) => ({
+export const requestSelectedModelElement = (type: ComponentType, aspect: Aspect, conditionFunction: Function) => ({
     type: 'list',
     name: 'selectedModelElementUrn',
     message: `Choose a specific Entity or Aspect to show as ${type}:`,
@@ -237,7 +235,7 @@ export const requestSelectedModelElement = (type: ComponentType, aspect: Aspect)
     size: 5,
     when: () => {
         if (type !== ComponentType.FORM) {
-            !aspect.isCollectionAspect && loader.filterElements(entry => entry instanceof DefaultEntity).length >= 1;
+            return !aspect.isCollectionAspect && loader.filterElements(entry => entry instanceof DefaultEntity).length >= 1;
         } else {
             return (
                 aspect.isCollectionAspect ||
@@ -246,6 +244,7 @@ export const requestSelectedModelElement = (type: ComponentType, aspect: Aspect)
                 aspect.properties.length >= 1
             );
         }
+        // conditionFunction(aspect, loader);
     },
     default: '',
 });

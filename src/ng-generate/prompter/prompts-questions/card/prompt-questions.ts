@@ -34,7 +34,7 @@ import {
     requestEnableRemoteDataHandling,
     requestSetViewEncapsulation,
 } from '../shared/prompt-simple-questions';
-import {Aspect} from '@esmf/aspect-model-loader';
+import {Aspect, DefaultEntity} from '@esmf/aspect-model-loader';
 
 export async function cardPrompterQuestions(
     answerConfigurationFileConfig: any,
@@ -62,7 +62,9 @@ export async function cardPrompterQuestions(
  * @returns {Promise<Object>} An object containing the user responses.
  */
 async function getUserSpecificCardConfigs(templateHelper: TemplateHelper, options: Schema, aspect: Aspect, allAnswers: any) {
-    const firstBatchAnswers = await inquirer.prompt([requestSelectedModelElement(ComponentType.CARD, aspect)]);
+    const firstBatchAnswers = await inquirer.prompt([
+        requestSelectedModelElement(ComponentType.CARD, aspect, requestSelectedModelCondition),
+    ]);
 
     const secondBatchAnswers = await getComplexPropertyElements(templateHelper, firstBatchAnswers, ComponentType.CARD, allAnswers, aspect);
 
@@ -88,4 +90,8 @@ async function getUserSpecificCardConfigs(templateHelper: TemplateHelper, option
     ]);
 
     return {...firstBatchAnswers, ...secondBatchAnswers, ...thirdBatchAnswers, ...fourthBatchAnswers};
+}
+
+function requestSelectedModelCondition(aspect: Aspect, loader: any): boolean {
+    return !aspect.isCollectionAspect && loader.filterElements((entry: any) => entry instanceof DefaultEntity).length >= 1;
 }
