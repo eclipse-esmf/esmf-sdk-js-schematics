@@ -26,9 +26,7 @@ export class EnumerationFormFieldStrategy extends FormFieldStrategy {
         const typedChild = this.child as DefaultEnumeration;
 
         return {
-            name: this.fieldName,
-            nameDasherized: this.getNameDasherized(),
-            selector: this.getSelector(),
+            ...this.getBaseFormFieldConfig(),
             exampleValue: this.parent.exampleValue || '',
             values: typedChild.values,
             validators: [...this.getBaseValidatorsConfigs()],

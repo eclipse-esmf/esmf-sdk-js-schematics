@@ -44,9 +44,7 @@ export class NumberFormFieldStrategy extends FormFieldStrategy {
         const untypedChild = this.child as any;
 
         return {
-            name: this.fieldName,
-            nameDasherized: this.getNameDasherized(),
-            selector: this.getSelector(),
+            ...this.getBaseFormFieldConfig(),
             exampleValue: this.parent.exampleValue || '',
             unitName: untypedChild.unit?.name || '',
             validators: [...this.getBaseValidatorsConfigs()],

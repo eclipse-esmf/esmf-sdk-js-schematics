@@ -27,9 +27,7 @@ export class StructuredValueFormFieldStrategy extends FormFieldStrategy {
 
     buildConfig(): FormFieldConfig {
         return {
-            name: this.fieldName,
-            nameDasherized: this.getNameDasherized(),
-            selector: this.getSelector(),
+            ...this.getBaseFormFieldConfig(),
             deconstructionRule: this.child.deconstructionRule,
             validators: [...this.getBaseValidatorsConfigs()],
             children: this.getChildConfigs(),

@@ -24,10 +24,13 @@ export interface ValidatorConfig {
     errorMessage: string;
 }
 
-export interface FormFieldConfig {
+export interface BaseFormFieldConfig {
     name: string;
     nameDasherized: string;
     selector: string;
+}
+
+export interface FormFieldConfig extends BaseFormFieldConfig {
     validators: ValidatorConfig[];
     exampleValue?: string;
     values?: any[];
@@ -75,6 +78,14 @@ export class FormFieldStrategy {
         }
 
         return validatorsConfigs;
+    }
+
+    getBaseFormFieldConfig(): BaseFormFieldConfig {
+        return {
+            name: this.fieldName,
+            nameDasherized: this.getNameDasherized(),
+            selector: this.getSelector(),
+        };
     }
 
     getSelector(): string {

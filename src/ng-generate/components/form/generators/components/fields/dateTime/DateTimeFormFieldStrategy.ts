@@ -38,9 +38,7 @@ export class DateTimeFormFieldStrategy extends FormFieldStrategy {
 
     buildConfig(): FormFieldConfig {
         return {
-            name: this.fieldName,
-            nameDasherized: this.getNameDasherized(),
-            selector: this.getSelector(),
+            ...this.getBaseFormFieldConfig(),
             exampleValue: this.parent.exampleValue || '',
             validators: [...this.getBaseValidatorsConfigs()],
             dataFormat: this.getDataFormat(),
