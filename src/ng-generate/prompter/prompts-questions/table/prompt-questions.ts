@@ -27,7 +27,7 @@ import {
     requestSelectedModelElement,
 } from '../shared/prompt-complex-questions';
 import {ComponentType, Schema} from '../../../components/shared/schema';
-import {Aspect} from '@esmf/aspect-model-loader';
+import {Aspect, DefaultEntity} from '@esmf/aspect-model-loader';
 import {
     requestAddCommandBar,
     requestAspectModelVersionSupport,
@@ -63,7 +63,9 @@ export async function tablePrompterQuestions(
  * @returns {Promise<Object>} An object containing the user responses.
  */
 async function getUserSpecificTableConfigs(templateHelper: TemplateHelper, options: Schema, aspect: Aspect, allAnswers: any) {
-    const firstBatchAnswers = await inquirer.prompt([requestSelectedModelElement(ComponentType.TABLE, aspect)]);
+    const firstBatchAnswers = await inquirer.prompt([
+        requestSelectedModelElement(ComponentType.TABLE, aspect, requestSelectedModelCondition),
+    ]);
 
     const secondBatchAnswers = await getComplexPropertyElements(templateHelper, firstBatchAnswers, ComponentType.TABLE, allAnswers, aspect);
 
@@ -117,3 +119,7 @@ export const requestCustomColumnNames = {
     suggestions: ['chart', 'slider'],
     filter: (input: string) => (input ? Array.from(new Set(input.split(','))) : []),
 };
+
+function requestSelectedModelCondition(aspect: Aspect, loader: any): boolean {
+    return !aspect.isCollectionAspect && loader.filterElements((entry: any) => entry instanceof DefaultEntity).length >= 1;
+}
