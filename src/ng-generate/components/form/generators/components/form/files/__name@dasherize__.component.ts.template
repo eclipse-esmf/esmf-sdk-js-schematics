@@ -2,7 +2,7 @@
 
 import {Component, EventEmitter, Output, <% if (options.readOnlyForm) { %>OnInit<% } %>} from '@angular/core';
 import {FormGroup} from '@angular/forms';
-import {<%= options.selectedModelTypeName %>} from '<% if (options.enableVersionSupport) { %>../<% } %><%= options.typePath %>';
+import {<%= options.selectedModelTypeName %>} from '<%= options.typePath %>';
 <% for (let childConfig of options.childConfigs) {
     %>import {<%= childConfig.name %>FormControl} from "./<%= childConfig.nameDasherized %>/<%= childConfig.nameDasherized %>.component";
 <% } %>
