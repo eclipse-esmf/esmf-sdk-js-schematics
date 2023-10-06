@@ -18,6 +18,9 @@
     -   [The _card_ schematics](#the-card-schematics)
         -   [Features provided by the schematics card](#features-provided-by-the-schematics-card)
         -   [Howto generate a card component with the schematics command](#howto-generate-a-card-component-with-the-schematics-command)
+    -   [The _form_ schematics](#the-form-schematics)
+        -   [Features provided by the schematics form](#features-provided-by-the-schematics-form)
+        -   [Howto generate a form component with the schematics command](#howto-generate-a-form-component-with-the-schematics-command)
 -   [Documentation](#documentation)
 -   [License](#license)
 
@@ -125,6 +128,7 @@ where `<schematics-name>` can be replaced by:
 
 -   table
 -   card
+-   form
 -   i18n
 -   types
 
@@ -153,11 +157,13 @@ And in assets folder an i18n folder should be generated. And i18n folder should 
 en.movement-table.translation.json, en.json.
 
 7. add environment files
+
 ```bash
 ng generate environments
 ```
 
 8. add default translation language to root component.
+
 ```typescript
 constructor(private translate: TranslateService)
 {
@@ -290,6 +296,25 @@ the [angular material package](https://v16.material.angular.io/components/card/o
 ### Howto generate a card component with the schematics command
 
 [Link to readme](src/ng-generate/components/card/README.md)
+
+---
+
+## The _form_ schematics
+
+The form schematics can be used for form generation.
+
+### Features provided by the schematics form
+
+1. Types generation
+2. Aspect model multiple version support
+3. Form generation for the entire aspect or just an entity of user's choice
+4. Multiple aspect models selection
+5. Wizard output to regenerate the same form without going through the wizard again
+6. Possibility to set the form as read only
+
+### How to generate a form component with the schematics command
+
+[Link to readme](src/ng-generate/components/form/README.md)
 
 ---
 
