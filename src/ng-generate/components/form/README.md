@@ -14,6 +14,7 @@
     -   [Overwrite](#overwrite)
     -   [Add material css theme](#Add-material-css-theme)
     -   [Set View Encapsulation strategy](#Set-View-Encapsulation-strategy)
+    -   [Generate the environments files](#Generate-the-environments-files)
 
 # Generate a form component with the schematics command
 
@@ -319,3 +320,11 @@ Do you want to specify view encapsulation strategy?
 ```
 
 User may choose one of the values: None, Emulated, ShadowDom.
+
+## Generate the environments files
+
+```bash
+ng generate environments
+```
+
+This command will generate the environments folder that will contain 2 files: environment.ts and environment.development.ts
