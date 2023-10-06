@@ -3,6 +3,7 @@
 -   [Generate a form component with the schematics command](#generate-a-form-component-with-the-schematics-command)
     -   [Flags and options that can be used in the generation process](#flags-and-options-that-can-be-used-in-the-generation-process)
         -   [Generate a component with a custom name](#generate-a-component-with-a-custom-name)
+        -   [Select the element for which the form will be generated](#select-the-element-for-which-the-form-will-be-generated)
         -   [Exclude one or more properties from the generation](#exclude-one-or-more-properties-from-the-generation)
         -   [Multi-version support for Aspect Models](#multi-version-support-for-aspect-models)
         -   [Manual adaptions in _app.module.ts_](#manual-adaptions-in-appmodulets)
@@ -79,9 +80,25 @@ export class CustomFormComponent {} // <- provided name reflected in the compone
 
 ---
 
+## Select the element for which the form will be generated
+
+The form can be generated for the whole Aspect Model, and in this case the first level of properties and entities will be considered or the form can
+be generated for a specific entity.
+
+```bash
+Choose a specific Entity or Aspect to show as form: (Use arrow keys)
+> urn:samm:org.eclipse.examples.movement:1.0.0#Movement (Aspect)
+  urn:samm:org.eclipse.examples.movement:1.0.0#Entity (Entity)
+```
+
+The properties will be automatically read from the provided aspect model or entity, and you can select/deselect which of them
+should be removed from the form.
+
+---
+
 ## Exclude one or more properties from the generation
 
-One or more properties of an Aspect Model Element e.g. generating a form can be excluded during the initial setup when
+One or more properties of the selected Aspect Model Element or Entity can be excluded during the initial setup when
 the following question appears:
 
 ```bash
@@ -91,7 +108,7 @@ Choose the properties to hide in the form: (Press <space> to select, <a> to togg
 ```
 
 The properties will be automatically read from the provided aspect model, and you can select/deselect which of them
-should be removed from the card columns.
+should be removed from the form.
 
 ---
 
