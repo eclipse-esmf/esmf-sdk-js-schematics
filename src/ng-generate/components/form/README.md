@@ -12,9 +12,13 @@
     -   [Pre-load config file](#pre-load-config-file)
     -   [Skip Installation](#skip-install)
     -   [Overwrite](#overwrite)
-    -   [Add material css theme](#Add-material-css-theme)
-    -   [Set View Encapsulation strategy](#Set-View-Encapsulation-strategy)
-    -   [Generate the environments files](#Generate-the-environments-files)
+    -   [Add material css theme](#add-material-css-theme)
+    -   [Set View Encapsulation strategy](#set-View-Encapsulation-strategy)
+    -   [Generate the environments files](#generate-the-environments-files)
+-   [Output](#output)
+    -   [Form structure](#form-structure)
+    -   [Usage](#usage)
+    -   [Working with list-like controls](#working-with-list-like-controls)
 
 # Generate a form component with the schematics command
 
@@ -328,3 +332,100 @@ ng generate environments
 ```
 
 This command will generate the environments folder that will contain 2 files: environment.ts and environment.development.ts
+
+---
+
+# Output
+
+As a result, a set of components with form fields and respective controls will be generated, as well as necessary utils and types.
+
+---
+
+## Form structure
+
+Generated form structure may vary depending on the model: from a *Root Form Group* with a set of simple *Child Form Controls* to nested controls with `FormGroup`s and `FormArray`s.
+Despite the possible variations, each form consists of a *Root Form Group* and *Child Form Controls*, which are generated as separate components and can be accessed/reused directly if needed.
+
+Since the generated form is an Angular Reactive Form, all its methods are available for usage, according to the respective control type.
+
+---
+
+## Usage
+
+For simple scenarios, the root component of the generated form provides the following outputs:
+```typescript
+@Output() formSubmit: EventEmitter<Movement> = new EventEmitter();
+@Output() formCancel: EventEmitter<void> = new EventEmitter();
+```
+However, more complex scenarios, like patching form value, manually updating its validity, manipulating child controls, etc., may require a direct access to the *Root Form Group* or its *Child Form Controls*, that is why each control has been made public and can be imported and used directly.
+
+An example with root "Movement" form:
+```typescript
+import {MovementForm} from "./shared/components/movement-form/v100/movement-form.component";
+import {TrafficLight} from "./shared/types/movement/v100/movement.types";
+
+// ...
+
+export class AppComponent implements OnInit {
+    ngOnInit() {
+        MovementForm.disable();
+        MovementForm.patchValue(<any>{
+            isMoving: true,
+            position: {
+                latitude: 1,
+                longitude: 2,
+                altitude: 3
+            },
+            speed: 100,
+            speedLimitWarning: TrafficLight.Yellow
+        });
+        MovementForm.get('isMoving')?.addValidators([Validators.required])
+    }
+}
+```
+
+---
+
+## Working with list-like controls
+
+For elements which are represented by a collection of elements, a table will be generated.
+It is represented by a `FormArray` with child `FormControl`s, which contains the factual model, and the table itself acts as a visual representation of the model, or a view.
+
+Since it's not possible to predict a number of `FormControl`s in the `FormArray`, as well as all the potential use-cases, controls of this type should be handled explicitly.
+In order to provide a convenient way to communicate with the table and its respective form control, such components are accompanied by the following members:
+- `[NAME]`FormControl - a form control of type `FormArray` (empty by default)
+- `[NAME]`Events - a list of `Observable`s for each supported event
+
+Usage example:
+```typescript
+import {listPropertyEvents, listPropertyFormControl} from "./shared/components/complex-list-types-form/v100/list-property/list-property.component";
+
+// ...
+
+export class AppComponent implements OnInit {
+    ngOnInit() {
+        listPropertyEvents.add$.subscribe(() => {
+            listPropertyFormControl.push(new FormControl({
+                CharacteristicX: 1,
+                CharacteristicY: 2,
+                CharacteristicZ: 3
+            }))
+        });
+
+        listPropertyEvents.edit$.subscribe((selection) => {
+            selection.forEach(item => {
+                const control = listPropertyFormControl.at(item.controlIndex);
+                const newValue = {
+                    CharacteristicX: 1,
+                    CharacteristicY: 2,
+                    CharacteristicZ: 3
+                }
+                control.patchValue(newValue);
+            });
+        });
+        listPropertyEvents.delete$.subscribe((selection) => {
+            selection.forEach(item => listPropertyFormControl.removeAt(item.controlIndex));
+        });
+    }
+}
+```
