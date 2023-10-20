@@ -20,15 +20,19 @@ export class JSSdkLocal<%= classify(name) %>Service implements BrowserStorage {
     readonly KEY_PREFIX = 'JSSDK_';
 
     getItem<T = any>(key: string): T {
-        const item = localStorage.getItem(`${this.KEY_PREFIX}${key}`);
+        const item = localStorage.getItem(this.buildKey(key));
         return item ? JSON.parse(item) : undefined;
     }
 
     removeItem(key: string): void {
-        localStorage.removeItem(key);
+        localStorage.removeItem(this.buildKey(key));
     }
 
     setItem<T = any>(key: string, item: T): void {
-        localStorage.setItem(`${this.KEY_PREFIX}${key}`, JSON.stringify(item));
+        localStorage.setItem(this.buildKey(key), JSON.stringify(item));
+    }
+
+    private buildKey(key: string): string {
+        return `${this.KEY_PREFIX}${key}`;
     }
 }
