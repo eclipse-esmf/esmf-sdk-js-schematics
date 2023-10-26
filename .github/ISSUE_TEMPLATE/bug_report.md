@@ -7,15 +7,15 @@ assignees: ''
 
 ---
 
-**Describe the bug**
-A clear and concise description of what the bug is.
+**How: List of performed steps**
 
-**Where**
-Indicate the location of the bug (e.g., which component of the ESMF SDK JS schematics, which API call, which command
-etc.).
+**What: Actual result vs expected result**
 
-**Screenshots**
-If applicable, add screenshots to help explain your problem.
+**Where: (e.g. component, version, url, your system info)**
 
-**Additional context**
-Add any other context about the problem here.
+**Input (files/screenshots)**
+
+**Output (files/screenshots)**
+
+**Additional context (e.g. references)**
+
