@@ -38,7 +38,7 @@ export async function formPrompterQuestions(
     templateHelper: TemplateHelper,
     options: Schema,
     aspect: Aspect,
-    combineAnswers: Function,
+    combineAnswers: (...answers: any[]) => any,
     allAnswers: any
 ) {
     combineAnswers(

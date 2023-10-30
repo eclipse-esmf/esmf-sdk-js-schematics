@@ -13,9 +13,9 @@
 
 import {
     Aspect,
+    AspectModelLoader,
     BaseMetaModelElement,
     DefaultAspect,
-    DefaultCollection,
     DefaultEntity,
     DefaultProperty,
     DefaultSingleEntity,
@@ -227,7 +227,11 @@ export const requestExcludedProperties = (type: string, allAnswers: any, templat
     },
 });
 
-export const requestSelectedModelElement = (type: ComponentType, aspect: Aspect, conditionFunction: Function) => ({
+export const requestSelectedModelElement = (
+    type: ComponentType,
+    aspect: Aspect,
+    conditionFunction: (aspect: Aspect, loader: AspectModelLoader) => any
+) => ({
     type: 'list',
     name: 'selectedModelElementUrn',
     message: `Choose a specific Entity or Aspect to show as ${type}:`,
@@ -270,7 +274,7 @@ export const requestGenerateLabelsForExcludedProps = (answers: any) => ({
 });
 
 function getAllPropertiesFromAspectOrEntity(templateHelper: any, selectedElement: any, allAnswers: any) {
-    let allProperties: Array<any> = [];
+    const allProperties: Array<any> = [];
     templateHelper
         .getProperties({
             selectedModelElement: selectedElement,

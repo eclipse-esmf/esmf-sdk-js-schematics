@@ -42,7 +42,7 @@ export async function cardPrompterQuestions(
     templateHelper: TemplateHelper,
     options: Schema,
     aspect: Aspect,
-    combineAnswers: Function,
+    combineAnswers: (...answers: any[]) => any,
     allAnswers: any
 ) {
     combineAnswers(
