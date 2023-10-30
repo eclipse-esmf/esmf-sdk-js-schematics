@@ -256,7 +256,13 @@ function resolveJsCharacteristicType(characteristic: Characteristic, dataType: T
 
     if (dataType && dataType.isScalar) {
         const defaultScalarType = dataType as DefaultScalar;
-        return processScalarType(defaultScalarType);
+        const scalarType = processScalarType(defaultScalarType);
+
+        if (characteristic instanceof DefaultCollection) {
+            return `${scalarType}[]`;
+        }
+
+        return scalarType;
     } else {
         return classify(`${(dataType as Entity).name}`);
     }
