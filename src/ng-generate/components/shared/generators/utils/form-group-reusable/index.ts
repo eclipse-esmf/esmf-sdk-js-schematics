@@ -11,11 +11,17 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-import {apply, applyTemplates, MergeStrategy, mergeWith, move, Rule, SchematicContext, Tree, url} from '@angular-devkit/schematics';
+import {apply, applyTemplates, MergeStrategy, mergeWith, move, noop, Rule, SchematicContext, Tree, url} from '@angular-devkit/schematics';
 import {strings} from '@angular-devkit/core';
 
 export function generateFormGroupReusable(options: any): Rule {
     return (tree: Tree, _context: SchematicContext) => {
+        const tsPath = 'src/app/shared/utils/form-group-reusable.ts';
+
+        if (!options.overwrite && tree.exists(tsPath)) {
+            return noop();
+        }
+
         return mergeWith(
             apply(url('../shared/generators/utils/form-group-reusable/files'), [
                 applyTemplates({

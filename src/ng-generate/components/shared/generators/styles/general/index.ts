@@ -11,7 +11,7 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-import {apply, applyTemplates, MergeStrategy, mergeWith, move, Rule, SchematicContext, Tree, url} from '@angular-devkit/schematics';
+import {apply, applyTemplates, MergeStrategy, mergeWith, move, noop, Rule, SchematicContext, Tree, url} from '@angular-devkit/schematics';
 import {strings} from '@angular-devkit/core';
 
 export function generateGeneralStyle(options: any): Rule {
@@ -20,6 +20,12 @@ export function generateGeneralStyle(options: any): Rule {
         tree.exists(globalStylePath)
             ? tree.overwrite(globalStylePath, contentForGlobalStyles())
             : tree.create(globalStylePath, contentForGlobalStyles());
+
+        const scssPath = 'src/assets/scss/general.component.scss';
+
+        if (!options.overwrite && tree.exists(scssPath)) {
+            return noop();
+        }
 
         return mergeWith(
             apply(url('../shared/generators/styles/general/files'), [

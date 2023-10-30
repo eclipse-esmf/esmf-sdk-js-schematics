@@ -11,15 +11,7 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-import {
-    applyContentTemplate,
-    FileEntry,
-    Rule,
-    SchematicContext,
-    SchematicsException,
-    Tree,
-    url
-} from '@angular-devkit/schematics';
+import {applyContentTemplate, FileEntry, Rule, SchematicContext, SchematicsException, Tree, url} from '@angular-devkit/schematics';
 import {basename, dirname} from 'path';
 import {strings} from '@angular-devkit/core';
 import {Schema} from './schema';
@@ -98,9 +90,12 @@ export function include(this: IncludeContext, filepath: string, templateData: Sc
  * @param {string} [includeBaseDirectory] - Base directory for includes.
  * @returns {Object} Directory and filename details.
  */
-function getDirectoryAndFilename(filepath: string, includeBaseDirectory?: string): {
+function getDirectoryAndFilename(
+    filepath: string,
+    includeBaseDirectory?: string
+): {
     directory: string;
-    filename: string
+    filename: string;
 } {
     return {
         directory: includeBaseDirectory || dirname(filepath),

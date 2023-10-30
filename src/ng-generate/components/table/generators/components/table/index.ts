@@ -11,18 +11,7 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-import {
-    apply,
-    applyTemplates,
-    chain,
-    MergeStrategy,
-    mergeWith,
-    move,
-    Rule,
-    SchematicContext,
-    Tree,
-    url
-} from '@angular-devkit/schematics';
+import {apply, applyTemplates, chain, MergeStrategy, mergeWith, move, Rule, SchematicContext, Tree, url} from '@angular-devkit/schematics';
 import {strings} from '@angular-devkit/core';
 import {camelize, classify, dasherize} from '@angular-devkit/core/src/utils/strings';
 import {getAllEnumProps} from '../../../../../../utils/aspect-model';
@@ -30,7 +19,9 @@ import {generateChipList, generateCommandBar} from '../../../../shared/generator
 import {
     getCustomRowActions,
     getEnumProperties,
-    getEnumPropertyDefinitions, getTableColumValues, resolveDateTimeFormat,
+    getEnumPropertyDefinitions,
+    getTableColumValues,
+    resolveDateTimeFormat,
 } from '../../../../shared/utils';
 import {templateInclude} from '../../../../shared/include';
 import {Schema} from '../../../../shared/schema';
@@ -108,11 +99,11 @@ function getCustomColumnsInput(): string {
     return `${
         sharedOptions.customColumns && sharedOptions.customColumns.length > 0
             ? sharedOptions.customColumns
-                .map(
-                    (customColumn: string) =>
-                        `@Input("${camelize(customColumn)}Column") ${camelize(customColumn)}Template!: TemplateRef<any>;`
-                )
-                .join('')
+                  .map(
+                      (customColumn: string) =>
+                          `@Input("${camelize(customColumn)}Column") ${camelize(customColumn)}Template!: TemplateRef<any>;`
+                  )
+                  .join('')
             : ''
     }`;
 }
@@ -148,9 +139,9 @@ function getSharedCustomRows(): string {
                 `${
                     customRowActions.lastIndexOf('.') > -1
                         ? `iconRegistry.addSvgIcon('${customRowActions.replace(
-                            /\.[^/.]+$/,
-                            ''
-                        )}', sanitizer.bypassSecurityTrustResourceUrl('./assets/icons/${customRowActions}'));`
+                              /\.[^/.]+$/,
+                              ''
+                          )}', sanitizer.bypassSecurityTrustResourceUrl('./assets/icons/${customRowActions}'));`
                         : ``
                 }`
         )
@@ -166,17 +157,17 @@ function commonImports(): string {
             private storageService: JSSdkLocalStorageService,
             ${sharedOptions.hasFilters ? `public filterService: ${sharedOptions.filterServiceName},` : ''}
             ${
-        sharedOptions.isDateQuickFilter
-            ? 'private dateAdapter: DateAdapter<any>,@Inject(MAT_DATE_FORMATS) private dateFormats: MatDateFormats,'
-            : ''
-    }`;
+                sharedOptions.isDateQuickFilter
+                    ? 'private dateAdapter: DateAdapter<any>,@Inject(MAT_DATE_FORMATS) private dateFormats: MatDateFormats,'
+                    : ''
+            }`;
 }
 
 function getColumnTransKeyPrefix(): string {
     return sharedOptions.enableVersionSupport
         ? `${sharedOptions.selectedModelElement.name.toLowerCase()}.v${sharedOptions.templateHelper.formatAspectModelVersion(
-            sharedOptions.aspectModelVersion
-        )}.`
+              sharedOptions.aspectModelVersion
+          )}.`
         : ``;
 }
 
