@@ -220,8 +220,17 @@ export function getCustomRowActions(options: any): string {
 
 export function resolveJsPropertyType(property: Property): string {
     if (property.characteristic instanceof DefaultEither) {
-        const leftJsType = resolveJsCharacteristicType(property.characteristic.left, property.characteristic.effectiveLeftDataType);
-        const rightJsType = resolveJsCharacteristicType(property.characteristic.right, property.characteristic.effectiveRightDataType);
+        let leftJsType = resolveJsCharacteristicType(property.characteristic.left, property.characteristic.effectiveLeftDataType);
+        let rightJsType = resolveJsCharacteristicType(property.characteristic.right, property.characteristic.effectiveRightDataType);
+
+        if(property.characteristic.left instanceof DefaultCollection){
+            leftJsType = `Array<${leftJsType}>`;
+        }
+
+        if(property.characteristic.right instanceof DefaultCollection){
+            rightJsType = `Array<${rightJsType}>`;
+        }
+
         return `${leftJsType} | ${rightJsType}`;
     }
 
@@ -256,13 +265,7 @@ function resolveJsCharacteristicType(characteristic: Characteristic, dataType: T
 
     if (dataType && dataType.isScalar) {
         const defaultScalarType = dataType as DefaultScalar;
-        const scalarType = processScalarType(defaultScalarType);
-
-        if (characteristic instanceof DefaultCollection) {
-            return `${scalarType}[]`;
-        }
-
-        return scalarType;
+        return processScalarType(defaultScalarType);
     } else {
         return classify(`${(dataType as Entity).name}`);
     }

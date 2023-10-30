@@ -288,8 +288,8 @@ describe('Generation of types from aspect model', (): void => {
                 return visitor.getGeneratedTypeDefinitions();
             });
 
-        expect(generatedTypeDefinitions.includes('either1: string | number[]')).toBeTruthy();
-        expect(generatedTypeDefinitions.includes('either2: number[] | Right')).toBeTruthy();
+        expect(generatedTypeDefinitions.includes('either1: string | Array<number>')).toBeTruthy();
+        expect(generatedTypeDefinitions.includes('either2: Array<number> | Right')).toBeTruthy();
     });
 });
 
