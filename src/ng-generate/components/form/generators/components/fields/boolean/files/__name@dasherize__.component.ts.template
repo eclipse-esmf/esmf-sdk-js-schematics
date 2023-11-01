@@ -12,7 +12,7 @@ export const <%= options.fieldConfig.name %>FormControl = new FormControl(
     false,
     [
         <% for(let validator of options.fieldConfig.validators) { %>
-            <%= validator.definition %>
+            <%= validator.definition %>,
         <% } %>
     ]
 );
