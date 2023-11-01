@@ -15,10 +15,12 @@ import {
     Aspect,
     AspectModelLoader,
     BaseMetaModelElement,
+    Constraint,
     DefaultAspect,
     DefaultEntity,
     DefaultProperty,
     DefaultSingleEntity,
+    DefaultTrait,
     Entity,
     Property,
 } from '@esmf/aspect-model-loader';
@@ -227,6 +229,22 @@ export const requestExcludedProperties = (type: string, allAnswers: any, templat
     },
 });
 
+export const requestExcludedConstraints = (type: string, allAnswers: any, templateHelper: TemplateHelper, answers: any, aspect: Aspect) => {
+    const constraints = getAllConstraints(allAnswers, templateHelper, answers, aspect);
+
+    return {
+        type: 'checkbox',
+        name: 'excludedConstraints',
+        message: `Choose the constraints to ignore in the ${type}:`,
+        when: () => constraints.length,
+        choices: () =>
+            constraints.map(constraint => ({
+                name: constraint.aspectModelUrn,
+                value: constraint.aspectModelUrn,
+            })),
+    };
+};
+
 export const requestSelectedModelElement = (
     type: ComponentType,
     aspect: Aspect,
@@ -352,4 +370,25 @@ export async function getComplexPropertyElements(
     );
 
     return {complexProps: complexPropertyList};
+}
+
+function getAllConstraints(allAnswers: any, templateHelper: TemplateHelper, answers: any, aspect: Aspect): Constraint[] {
+    const selectedElement =
+        answers.selectedModelElementUrn && answers.selectedModelElementUrn.length > 0
+            ? (loader.findByUrn(answers.selectedModelElementUrn) as Entity)
+            : aspect;
+
+    const excludedPropertiesUrns = answers.excludedProperties.map((property: any) => property.propToExcludeAspectModelUrn);
+    const allProperties = getAllPropertiesFromAspectOrEntity(templateHelper, selectedElement, allAnswers);
+    const allowedPropertiesObjects = allProperties.filter(property => !excludedPropertiesUrns.includes(property.name));
+    const allowedProperties = allowedPropertiesObjects.map(property => loader.findByUrn(property.name) as Property);
+
+    // TODO: This works only for a simple structure, consider other cases, including complex types.
+    return allowedProperties.reduce((acc, cur) => {
+        if (cur.characteristic instanceof DefaultTrait) {
+            return cur.characteristic.constraints?.length ? [...acc, ...cur.characteristic.constraints] : acc;
+        }
+
+        return acc;
+    }, []);
 }

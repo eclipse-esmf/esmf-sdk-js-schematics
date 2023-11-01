@@ -15,6 +15,7 @@ import {ComponentType, Schema} from '../../../components/shared/schema';
 import {TemplateHelper} from '../../../../utils/template-helper';
 import inquirer from 'inquirer';
 import {
+    requestExcludedConstraints,
     requestExcludedProperties,
     requestOptionalMaterialTheme,
     requestOverwriteFiles,
@@ -22,7 +23,6 @@ import {
 } from '../shared/prompt-complex-questions';
 import {requestAspectModelVersionSupport, requestSetViewEncapsulation} from '../shared/prompt-simple-questions';
 import {Aspect, DefaultCollection, DefaultEntity} from '@esmf/aspect-model-loader';
-import {loader} from '../../utils';
 
 export const requestReadOnlyForm = (options: Schema) => ({
     type: 'confirm',
@@ -62,8 +62,12 @@ async function getUserSpecificFormConfigs(templateHelper: TemplateHelper, option
         requestSelectedModelElement(ComponentType.FORM, aspect, requestSelectedModelCondition),
     ]);
 
-    const seconsBatchAnswers = await inquirer.prompt([
+    const secondBatchAnswers = await inquirer.prompt([
         requestExcludedProperties(ComponentType.FORM, allAnswers, templateHelper, firstBatchAnswers, aspect),
+    ]);
+
+    const thirdBatchAnswers = await inquirer.prompt([
+        requestExcludedConstraints(ComponentType.FORM, allAnswers, templateHelper, {...firstBatchAnswers, ...secondBatchAnswers}, aspect),
         requestAspectModelVersionSupport,
         requestOptionalMaterialTheme(options),
         requestSetViewEncapsulation,
@@ -71,7 +75,7 @@ async function getUserSpecificFormConfigs(templateHelper: TemplateHelper, option
         requestOverwriteFiles(options),
     ]);
 
-    return {...firstBatchAnswers, ...seconsBatchAnswers};
+    return {...firstBatchAnswers, ...secondBatchAnswers, ...thirdBatchAnswers};
 }
 
 function requestSelectedModelCondition(aspect: Aspect, loader: any): boolean {
