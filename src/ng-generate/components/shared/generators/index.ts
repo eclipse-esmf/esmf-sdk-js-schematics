@@ -17,3 +17,4 @@ export * from './modules/index';
 export * from './pipes/index';
 export * from './services/index';
 export * from './styles/index';
+export * from './utils/index';

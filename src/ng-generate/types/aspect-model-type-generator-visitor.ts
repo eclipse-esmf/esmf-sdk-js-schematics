@@ -19,18 +19,16 @@ import {
     Characteristic,
     DefaultAspectModelVisitor,
     DefaultCollection,
-    DefaultEither,
     DefaultEntity,
     DefaultEntityInstance,
     DefaultEnumeration,
     DefaultProperty,
-    DefaultScalar,
     Entity,
     Enumeration,
     Property,
-    Type,
 } from '@esmf/aspect-model-loader';
 import {TypesSchema} from './schema';
+import {resolveJsPropertyType} from '../components/shared/utils';
 
 export function visitAspectModel(options: TypesSchema): Rule {
     return async (tree: Tree) => {
@@ -94,7 +92,10 @@ export class AspectModelTypeGeneratorVisitor extends DefaultAspectModelVisitor<B
         aspect.properties.forEach(property => {
             // Visit the property to eventually generate a new data type and return
             // the appropriate data type name.
-            const dataType = this.resolveJsPropertyType(property);
+            const dataType =
+                property.characteristic instanceof DefaultCollection
+                    ? `Array<${resolveJsPropertyType(property)}>`
+                    : resolveJsPropertyType(property);
             const variableName = camelize(property.name);
             lines.push(this.getJavaDoc(property));
             lines.push(`${variableName}${property.isOptional ? '?' : ''}: ${dataType}${dataType.includes(';') ? '' : ';'}\n`);
@@ -228,7 +229,7 @@ export class AspectModelTypeGeneratorVisitor extends DefaultAspectModelVisitor<B
         lines.push(`export interface ${entity.name} ${entity.extends ? `extends ${entity.extends?.name}` : ''} {\n`);
 
         entity.getOwnProperties().forEach((property: Property): void => {
-            const dataTypeName = this.resolveJsPropertyType(property) || 'any';
+            const dataTypeName = resolveJsPropertyType(property) || 'any';
             let variableName = '';
             if (property.name) {
                 variableName = camelize(property.name);
@@ -247,90 +248,6 @@ export class AspectModelTypeGeneratorVisitor extends DefaultAspectModelVisitor<B
         return entity;
     }
 
-    private resolveJsPropertyType(property: Property): string {
-        if (property.characteristic instanceof DefaultEither) {
-            const leftJsType = this.resolveJsCharacteristicType(
-                property.characteristic.left,
-                property.characteristic.effectiveLeftDataType
-            );
-            const rightJsType = this.resolveJsCharacteristicType(
-                property.characteristic.right,
-                property.characteristic.effectiveRightDataType
-            );
-            return `${leftJsType} | ${rightJsType}`;
-        }
-
-        return this.resolveJsCharacteristicType(property.characteristic, property.effectiveDataType);
-    }
-
-    private resolveJsCharacteristicType(characteristic: Characteristic, dataType: Type | undefined): string {
-        if (dataType === null) {
-            return '';
-        }
-
-        // In case of a multi-language text it has the data type langString but actual it must be handled as a
-        // map where the key ist the local and the value is the corresponding text
-        if (characteristic.name === 'MultiLanguageText') {
-            // Plain JSON object that has properties like 'en' or 'de'
-            return 'MultiLanguageText;';
-        }
-
-        // In case of enumeration, an enum is created. Use this enum as data type for the property.
-        if (characteristic instanceof DefaultEnumeration) {
-            return classify(characteristic.name);
-        }
-
-        if (dataType && dataType.isScalar) {
-            const defaultScalarType = dataType as DefaultScalar;
-            return this.processScalarType(defaultScalarType, this.determinePrefix(characteristic));
-        } else {
-            return classify(`${(dataType as Entity).name}${this.determinePrefix(characteristic)}`);
-        }
-    }
-
-    private determinePrefix(characteristic: Characteristic) {
-        let dataTypePostfix = '';
-        if (characteristic instanceof DefaultCollection) {
-            dataTypePostfix = '[]';
-        }
-        return dataTypePostfix;
-    }
-
-    private processScalarType(defaultScalarType: DefaultScalar, dataTypePostfix?: string): string {
-        switch (defaultScalarType.shortUrn) {
-            case 'decimal':
-            case 'integer':
-            case 'double':
-            case 'float':
-            case 'byte':
-            case 'short':
-            case 'int':
-            case 'long':
-            case 'unsignedByte':
-            case 'unsignedLong':
-            case 'unsignedInt':
-            case 'unsignedShort':
-            case 'positiveInteger':
-            case 'nonNegativeInteger':
-            case 'negativeInteger':
-            case 'nonPositiveInteger':
-                return 'number' + dataTypePostfix;
-            case 'langString':
-            case 'hexBinary':
-            case 'base64Binary':
-            case 'curie':
-            case 'anyUri':
-                return 'string' + dataTypePostfix;
-            case 'date':
-            case 'time':
-            case 'dateTime':
-            case 'dateTimeStamp':
-                return 'Date' + dataTypePostfix;
-            default:
-                return defaultScalarType.shortUrn + dataTypePostfix;
-        }
-    }
-
     private getJavaDoc(element: Aspect | Property | Characteristic | Entity) {
         const description = element.getDescription('en');
         if (description === undefined) {
@@ -339,8 +256,8 @@ export class AspectModelTypeGeneratorVisitor extends DefaultAspectModelVisitor<B
         if (element instanceof DefaultProperty) {
             return `/** ${description} */\n`;
         }
-        return `/** 
-                 * ${description} 
+        return `/**
+                 * ${description}
                  */\n`;
     }
 

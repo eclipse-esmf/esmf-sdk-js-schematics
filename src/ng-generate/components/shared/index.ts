@@ -38,7 +38,7 @@ import {
     generateTranslationModule,
     generateValidateInputDirective,
 } from './generators';
-import {APP_SHARED_MODULES, cardModules, tableModules, updateSharedModule} from '../../../utils/modules';
+import {APP_SHARED_MODULES, cardModules, formModules, tableModules, updateSharedModule} from '../../../utils/modules';
 import {WIZARD_CONFIG_FILE} from '../../prompter/index';
 
 export let options: Schema;
@@ -68,10 +68,10 @@ export function generateComponent(context: SchematicContext, schema: Schema, com
     }
 
     const generateTypesTaskId = context.addTask(new RunSchematicTask('types', options), prompterTaskId ? [prompterTaskId] : []);
-    const tableGenId = context.addTask(new RunSchematicTask(`${componentType}-generation`, options), [generateTypesTaskId]);
+    const componentGenId = context.addTask(new RunSchematicTask(`${componentType}-generation`, options), [generateTypesTaskId]);
 
     if (!options.skipInstall) {
-        context.addTask(new NodePackageInstallTask(), [tableGenId]);
+        context.addTask(new NodePackageInstallTask(), [componentGenId]);
     }
 }
 
@@ -250,11 +250,15 @@ export function generateGeneralFilesRules(): Array<Rule> {
  *
  * @returns {Array<Rule>} - The rules for adding and updating configuration files.
  */
-export function addAndUpdateConfigurationFilesRule() {
+export function addAndUpdateConfigurationFilesRule(): Rule[] {
     const componentModule =
         options.componentType === ComponentType.TABLE
             ? addToComponentModule(options.skipImport, options, tableModules(options))
-            : addToComponentModule(options.skipImport, options, cardModules(options));
+            : options.componentType === ComponentType.CARD
+            ? addToComponentModule(options.skipImport, options, cardModules(options))
+            : options.componentType === ComponentType.FORM
+            ? addToComponentModule(options.skipImport, options, formModules(options))
+            : ({} as Rule);
 
     return [
         addPackageJsonDependencies(options.skipImport, options.spinner, loadDependencies()),

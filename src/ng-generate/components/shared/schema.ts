@@ -18,6 +18,7 @@ import {Property} from '@esmf/aspect-model-loader';
 export enum ComponentType {
     TABLE = 'table',
     CARD = 'card',
+    FORM = 'form',
 }
 export interface ExcludedProperty {
     /**
@@ -67,6 +68,8 @@ export interface Schema extends ComponentSchema, DefaultSchema {
     getOptionalMaterialTheme: boolean;
     skipImport: boolean;
     componentType: ComponentType;
+    readOnlyForm: boolean;
+    selectedEl: string;
 }
 
 export interface Values extends Schema {

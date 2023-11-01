@@ -11,48 +11,33 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-import {Rule} from '@angular-devkit/schematics';
 import {Tree} from '@angular-devkit/schematics/src/tree/interface';
-import {Aspect, DefaultSingleEntity} from '@esmf/aspect-model-loader';
+import {Aspect} from '@esmf/aspect-model-loader';
 import * as fs from 'fs';
 import path from 'path';
 import inquirer from 'inquirer';
 import {lastValueFrom, Subscriber} from 'rxjs';
 import {TemplateHelper} from '../../utils/template-helper';
-import {Schema} from '../components/shared/schema';
-import {
-    pathDecision,
-    requestAspectModelUrnToLoad,
-    requestChooseLanguageForSearchAction,
-    requestComplexPropertyElements,
-    requestCustomCommandBarActions,
-    requestCustomRowActions,
-    requestDefaultSortingCol,
-    requestEnableCommandBarFunctions,
-    requestExcludedProperties,
-    requestGenerateLabelsForExcludedProps,
-    requestJSONPathSelectedModelElement,
-    requestOptionalMaterialTheme,
-    requestOverwriteFiles,
-    requestRowCheckboxes,
-    requestSelectedModelElement,
-} from './prompts-with-function';
+import {Schema, ComponentType} from '../components/shared/schema';
 
-import {handleComplexPropList, loader, reorderAspectModelUrnToLoad, writeConfigAndExit} from './utils';
-import {
-    anotherFile,
-    configFileName,
-    createOrImport,
-    importConfigFile,
-    requestAddCommandBar,
-    requestAspectModelVersionSupport,
-    requestCustomColumnNames,
-    requestCustomService,
-    requestCustomStyleImports,
-    requestEnableRemoteDataHandling,
-    requestSetViewEncapsulation,
-} from './prompts-without-function';
+import {loader, reorderAspectModelUrnToLoad, writeConfigAndExit} from './utils';
 import {virtualFs} from '@angular-devkit/core';
+import {anotherFile, configFileName, createOrImport, importConfigFile} from './prompts-questions/shared/prompt-simple-questions';
+import {tablePrompterQuestions} from './prompts-questions/table/prompt-questions';
+import {pathDecision, requestAspectModelUrnToLoad} from './prompts-questions/shared/prompt-complex-questions';
+import {formPrompterQuestions} from './prompts-questions/form/prompt-questions';
+import {cardPrompterQuestions} from './prompts-questions/card/prompt-questions';
+//
+
+// import {ComponentType, Schema} from '../shared/schema';
+// import {generateCardComponent} from './generators/components/card';
+// import {generateExportCardDialog} from './generators/components/export-dialog/index';
+
+// export default function (cardSchema: CardSchema): Rule {
+//     return (tree: Tree, context: SchematicContext) => {
+//         generateComponent(context, cardSchema, ComponentType.CARD);
+//     };
+//
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 inquirer.registerPrompt('fuzzypath', require('inquirer-fuzzy-path'));
@@ -63,7 +48,7 @@ inquirer.registerPrompt('search-list', require('inquirer-search-list'));
 
 export let WIZARD_CONFIG_FILE = 'wizard.config.json';
 
-let generationType: string = '';
+let generationType: ComponentType;
 
 let fromImport = false;
 let index = 1;
@@ -79,15 +64,12 @@ export let aspect: Aspect;
  * @param {Schema} options - The options Schema object for the schematic.
  * @param {string} type - The type of the generated component.
  *
- * @returns {Rule} - Returns a Rule that creates an Observable
- * that executes the prompting and writing of configurations.
- *
  * @throws {Error} - Will throw an error if an error occurs during execution.
  */
 export function generate(subscriber: Subscriber<Tree>, tree: Tree, options: Schema, type: string) {
     console.log('\x1b[33m%s\x1b[0m', 'Welcome to the TTL schematic UI generator, answer some questions to get you started:');
 
-    generationType = type;
+    generationType = type as ComponentType;
     initAnswers();
 
     runPrompts(subscriber, tree, new TemplateHelper(), options).finally(() => {
@@ -133,20 +115,44 @@ function initAnswers() {
 async function runPrompts(subscriber: Subscriber<Tree>, tree: Tree, templateHelper: TemplateHelper, options: Schema) {
     try {
         const answerConfigurationFileConfig = await getConfigurationFileConfig(subscriber, tree);
+
         if (!answerConfigurationFileConfig.importConfigFile) {
             const answerAspectModel = await getAspectModelUrnToLoad();
             aspect = await loadAspectModel(answerAspectModel.aspectModelUrnToLoad, tree);
-            const answerSelectedModelElement = await getSelectedModelElement();
-            const answerComplexPropertyElements = await getComplexPropertyElements(templateHelper);
-            const answerUserSpecificConfig = await getUserSpecificConfigs(tree, templateHelper, options);
-
-            combineAnswers(
-                answerConfigurationFileConfig,
-                answerAspectModel,
-                answerSelectedModelElement,
-                answerComplexPropertyElements,
-                answerUserSpecificConfig
-            );
+            switch (generationType) {
+                case ComponentType.TABLE:
+                    return tablePrompterQuestions(
+                        answerConfigurationFileConfig,
+                        answerAspectModel,
+                        templateHelper,
+                        options,
+                        aspect,
+                        combineAnswers,
+                        allAnswers
+                    );
+                case ComponentType.FORM:
+                    return formPrompterQuestions(
+                        answerConfigurationFileConfig,
+                        answerAspectModel,
+                        templateHelper,
+                        options,
+                        aspect,
+                        combineAnswers,
+                        allAnswers
+                    );
+                case ComponentType.CARD:
+                    return cardPrompterQuestions(
+                        answerConfigurationFileConfig,
+                        answerAspectModel,
+                        templateHelper,
+                        options,
+                        aspect,
+                        combineAnswers,
+                        allAnswers
+                    );
+                default:
+                    throw new Error('Invalid component type');
+            }
         }
     } catch (error) {
         console.error('An error occurred:', error);
@@ -299,96 +305,6 @@ async function loadAspectModel(aspectModelUrnToLoad: string, tree: Tree): Promis
 }
 
 /**
- * This function retrieves the selected model element by prompting the user
- * to choose from a list of available options.
- *
- * @returns {Promise} The selected model element.
- */
-async function getSelectedModelElement() {
-    return await inquirer.prompt([requestSelectedModelElement(generationType, aspect)]);
-}
-
-/**
- * Generates a list of complex property elements.
- *
- * @param {TemplateHelper} templateHelper - The helper object to resolve types and get properties.
- *
- * @returns {Promise<Object>} - Returns a Promise that resolves to an object containing complex property elements.
- */
-async function getComplexPropertyElements(templateHelper: TemplateHelper): Promise<any> {
-    allAnswers.selectedModelElementUrn = allAnswers.selectedModelElementUrn || templateHelper.resolveType(aspect).aspectModelUrn;
-
-    const properties = templateHelper.getProperties({
-        selectedModelElement: loader.findByUrn(allAnswers.selectedModelElementUrn),
-        excludedProperties: [],
-    });
-
-    const complexPropertyList = await Promise.all(
-        properties
-            .filter(property => property.effectiveDataType?.isComplex && property.characteristic instanceof DefaultSingleEntity)
-            .map(async property => {
-                const {complexPropertyList: complexPropList} = await inquirer.prompt([
-                    requestComplexPropertyElements(generationType, property),
-                ]);
-
-                return handleComplexPropList(property, complexPropList);
-            })
-    );
-
-    return {complexProps: complexPropertyList};
-}
-
-/**
- * This function fetches user specific configurations by prompting a set of questions.
- * The answers are grouped into two batches based on their dependency.
- *
- * @param {Tree} tree - Represents the file tree.
- * @param {TemplateHelper} templateHelper - An instance of the TemplateHelper to aid in handling templates.
- * @param {Schema} options - User defined options provided when running the script.
- * @returns {Promise<Object>} An object containing the user responses.
- */
-async function getUserSpecificConfigs(tree: Tree, templateHelper: TemplateHelper, options: Schema) {
-    const firstBatchAnswers = await inquirer.prompt([
-        requestJSONPathSelectedModelElement(aspect, allAnswers, tree),
-        requestExcludedProperties(generationType, aspect, allAnswers, templateHelper),
-    ]);
-
-    const secondBatchAnswers = await inquirer.prompt([
-        requestGenerateLabelsForExcludedProps(firstBatchAnswers),
-        requestDefaultSortingCol(aspect, allAnswers, templateHelper),
-        requestCustomColumnNames,
-        requestRowCheckboxes(generationType),
-        requestCustomRowActions(generationType),
-        requestAddCommandBar,
-        requestEnableCommandBarFunctions(aspect, allAnswers, templateHelper),
-        requestChooseLanguageForSearchAction(aspect, allAnswers, templateHelper),
-        requestCustomCommandBarActions(allAnswers, templateHelper),
-        requestEnableRemoteDataHandling,
-        requestCustomService,
-        requestAspectModelVersionSupport,
-        requestOptionalMaterialTheme(options),
-        requestCustomStyleImports,
-        requestSetViewEncapsulation,
-        requestOverwriteFiles(options),
-    ]);
-
-    return {...firstBatchAnswers, ...secondBatchAnswers};
-}
-
-/**
- * This function combines the answers from different inquirer.prompt() calls
- * into a single `allAnswers` object.
- *
- * @param {...any[]} answers - An array of answer objects, each being the result of an inquirer.prompt() call.
- */
-function combineAnswers(...answers: any[]) {
-    const assign = Object.assign({}, ...answers);
-    Object.keys(assign).forEach(key => {
-        allAnswers[key] = assign[key];
-    });
-}
-
-/**
  * Removes all temporary entries e.g. paths<xyz> or anotherFile<xyz> from the answers object
  *
  * @param allAnswers - An answer objects, being the result of all inquirer.prompt() calls.
@@ -403,5 +319,18 @@ function cleanUpOptionsObject(allAnswers: any) {
         ) {
             delete allAnswers[objectKey];
         }
+    });
+}
+
+/**
+ * This function combines the answers from different inquirer.prompt() calls
+ * into a single `allAnswers` object.
+ *
+ * @param {...any[]} answers - An array of answer objects, each being the result of an inquirer.prompt() call.
+ */
+function combineAnswers(...answers: any[]) {
+    const assign = Object.assign({}, ...answers);
+    Object.keys(assign).forEach(key => {
+        allAnswers[key] = assign[key];
     });
 }

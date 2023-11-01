@@ -1,0 +1,46 @@
+/** <%= options.generationDisclaimerText %> **/
+
+import {Attribute, Component, forwardRef} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {FormControl, FormsModule, NG_VALUE_ACCESSOR, ReactiveFormsModule, Validators} from '@angular/forms';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatInputModule} from '@angular/material/input';
+import {MatCheckboxModule} from "@angular/material/checkbox";
+import {FormControlReusable} from "<% if (options.enableVersionSupport) { %>../<% } %>../../../utils/form-control-reusable";
+
+export const <%= options.fieldConfig.name %>FormControl = new FormControl(
+    false,
+    [
+        <% for(let validator of options.fieldConfig.validators) { %>
+            <%= validator.definition %>
+        <% } %>
+    ]
+);
+
+@Component({
+    selector: '<%= options.fieldConfig.selector %>',
+    standalone: true,
+    imports: [CommonModule, FormsModule, MatFormFieldModule, MatInputModule, MatCheckboxModule, ReactiveFormsModule],
+    templateUrl: './<%= dasherize(options.fieldConfig.name) %>.component.html',
+    styleUrls: ['./<%= dasherize(options.fieldConfig.name) %>.component.scss'],
+    providers: [
+        {
+            provide: NG_VALUE_ACCESSOR,
+            useExisting: forwardRef(() => <%= classify(options.fieldConfig.name) %>Component),
+            multi: true,
+        }
+    ]
+})
+export class <%= classify(options.fieldConfig.name) %>Component extends FormControlReusable {
+    formControl = <%= options.fieldConfig.name %>FormControl;
+
+    constructor(@Attribute('formControlName') public formControlName: string) {
+        super();
+    }
+
+    get errorMessage() {
+        return this.formControl.hasError('required')
+            ? 'The field is required'
+            : 'The value is invalid or empty';
+    }
+}

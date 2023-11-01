@@ -1,0 +1,42 @@
+<fieldset>
+  <legend><%= options.fieldConfig.name %></legend>
+  <section class="table-actions" [class.disabled]="formArray.disabled">
+    <button mat-flat-button (click)="onAdd()">Add</button>
+    <button mat-flat-button (click)="onEdit(selection)" [disabled]="!isSelection">Edit</button>
+    <button mat-flat-button (click)="onDelete(selection)" [disabled]="!isSelection">Delete</button>
+  </section>
+
+  <ng-container *ngIf="dataSource.data.length; else empty">
+    <table mat-table [dataSource]="dataSource">
+      <ng-container matColumnDef="isSelected">
+        <th mat-header-cell *matHeaderCellDef>
+          <mat-checkbox [(ngModel)]="isAllChecked" [disabled]="formArray.disabled" (change)="selectAllRows($event)"></mat-checkbox>
+        </th>
+        <td mat-cell *matCellDef="let element">
+          <mat-checkbox [ngModel]="element.isSelected" [disabled]="formArray.disabled" (change)="selectRow(element, $event)"></mat-checkbox>
+        </td>
+      </ng-container>
+
+      <% if (options.fieldConfig.isScalarChild) { %>
+        <ng-container matColumnDef="value">
+          <th mat-header-cell *matHeaderCellDef>Value</th>
+          <td mat-cell *matCellDef="let element">{{ element.item }}</td>
+        </ng-container>
+      <% } else { %>
+        <% for (let childConfig of options.fieldConfig.children) { %>
+          <ng-container matColumnDef="<%= childConfig.name %>">
+            <th mat-header-cell *matHeaderCellDef><%= classify(childConfig.name) %></th>
+            <td mat-cell *matCellDef="let element">{{ element.item.<%= childConfig.name %> }}</td>
+          </ng-container>
+        <% } %>
+      <% } %>
+
+      <tr mat-header-row *matHeaderRowDef="columns; sticky: true"></tr>
+      <tr mat-row *matRowDef="let row; columns: columns"></tr>
+    </table>
+  </ng-container>
+
+  <ng-template #empty>
+    <p class="table-notification">No data found</p>
+  </ng-template>
+</fieldset>

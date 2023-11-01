@@ -1,0 +1,40 @@
+/** <%= options.generationDisclaimerText %> **/
+
+import {Component, EventEmitter, Output, <% if (options.readOnlyForm) { %>OnInit<% } %>} from '@angular/core';
+import {FormGroup} from '@angular/forms';
+import {<%= options.selectedModelTypeName %>} from '<%= options.typePath %>';
+<% for (let childConfig of options.childConfigs) {
+    %>import {<%= childConfig.name %>FormControl} from "./<%= childConfig.nameDasherized %>/<%= childConfig.nameDasherized %>.component";
+<% } %>
+
+export const <%= options.selectedModelTypeName %>Form = new FormGroup({
+    <% for (let childConfig of options.childConfigs) {
+        %><%= childConfig.name %>: <%= childConfig.name %>FormControl,
+    <% } %>
+})
+
+@Component({
+    selector: '<%= options.prefix %>-<%= dasherize(name) %>',
+    templateUrl: './<%= dasherize(name) %>.component.html',
+    styleUrls: ['./<%= dasherize(name) %>.component.scss']
+})
+export class <%= classify(name) %>Component <% if (options.readOnlyForm) { %>implements OnInit<% } %> {
+    @Output() formSubmit: EventEmitter<<%= options.selectedModelTypeName %>> = new EventEmitter();
+    @Output() formCancel: EventEmitter<void> = new EventEmitter();
+
+    form: FormGroup = <%= options.selectedModelTypeName %>Form;
+
+    <% if (options.readOnlyForm) { %>
+        ngOnInit() {
+            this.form.disable();
+        }
+    <% } %>
+
+    onCancel(): void {
+        this.formCancel.emit();
+    }
+
+    onSubmit(form: FormGroup): void {
+        this.formSubmit.emit(form.value);
+    }
+}

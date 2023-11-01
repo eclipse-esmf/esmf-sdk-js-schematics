@@ -90,7 +90,13 @@ export function include(this: IncludeContext, filepath: string, templateData: Sc
  * @param {string} [includeBaseDirectory] - Base directory for includes.
  * @returns {Object} Directory and filename details.
  */
-function getDirectoryAndFilename(filepath: string, includeBaseDirectory?: string): {directory: string; filename: string} {
+function getDirectoryAndFilename(
+    filepath: string,
+    includeBaseDirectory?: string
+): {
+    directory: string;
+    filename: string;
+} {
     return {
         directory: includeBaseDirectory || dirname(filepath),
         filename: includeBaseDirectory ? filepath : basename(filepath),
@@ -133,6 +139,7 @@ function generateContentTemplate(templateData: Schema, file: FileEntry): FileEnt
         dasherize: strings.dasherize,
         camelize: strings.camelize,
         options: {...templateData},
+        name: templateData.name,
     })(file);
 
     if (!result) {

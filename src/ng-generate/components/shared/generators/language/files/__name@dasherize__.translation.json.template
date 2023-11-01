@@ -9,6 +9,8 @@
 
         <% if (options.enableVersionSupport) { %>
             },
+        <% } else { %>
+            ,
         <% } %>
     <% } %>
 

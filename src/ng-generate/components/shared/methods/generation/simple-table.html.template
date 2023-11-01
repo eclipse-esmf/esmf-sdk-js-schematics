@@ -1,0 +1,136 @@
+<div data-test="table-container" class="mat-table-container">
+
+    <div>
+        <button mat-raised-button color="primary" (click)="addRow()">Add</button>
+        <button mat-raised-button color="accent" [disabled]="selection.selected.length === -1" (click)="editRow()">Edit</button>
+        <button mat-raised-button color="warn" [disabled]="selection.selected.length === -1" (click)="deleteRow()">Delete</button>
+    </div>
+
+    <table mat-table class="full-width-table" [dataSource]="dataSource" aria-label="Elements" data-test="table">
+        <!-- Row shown when there is no matching data that will be provided to the wrapper table. -->
+            <tr data-test="no-data-table-row" class="mat-row" *matNoDataRow>
+                <td *ngIf="!dataSource.data.length" class="mat-cell" [colSpan]="displayedColumns.length" data-test="no-data-table-cell">
+                    <span data-test="no-data-message">{{noDataMessage || 'No data'}}</span>
+                </td>
+            </tr>
+
+            <%
+                let tableColumValuesFunc = options.tableColumValues(options.listProps, options);
+                let propertyColumns = tableColumValuesFunc.map(val => val.property.name);
+            %>
+
+            <ng-container matColumnDef="checkboxes" data-test="checkboxes-container">
+                <th mat-header-cell *matHeaderCellDef data-test="table-header-checkbox">Select</th>
+
+                <td mat-cell *matCellDef="let row" data-test="table-cell-checkbox">
+                    <mat-checkbox data-test="cell-checkbox"
+                                  (click)="$event.stopPropagation()"
+                                  (mousedown)="$event.preventDefault()"
+                                  (change)="$event ? checkboxClicked(row,
+
+                                  <% if (propertyColumns.length === 1) { %>
+                                      '<%= propertyColumns[0] %>'
+                                  <% } else { %>
+                                      ['<%= propertyColumns.join(', ') %>']
+                                  <% } %>
+
+                                  ) : null"
+                                  [checked]="selection.isSelected(row)"></mat-checkbox>
+                </td>
+            </ng-container>
+
+            <% for(let value of tableColumValuesFunc) { %>
+                <%
+                    let language = options.templateHelper.isMultiStringProperty(value.property) ? '[currentLanguage]' : '';
+                    let propertyName = options.templateHelper.isEnumPropertyWithEntityValues(value.property)
+                        ? value.property.name + '?.' + options.templateHelper.getEnumEntityInstancePayloadKey(value.property)
+                        : value.property.name;
+                    let cellPropertyPath = `${options.jsonAccessPath}${value.complexPrefix}${propertyName}`;
+                    let isEmptyValue = `row.${cellPropertyPath} === null || row.${cellPropertyPath} === undefined`;
+                    let propertyLocaleKeyPath = `${options.templateHelper.getVersionedAccessPrefix(options)}${options.isAspectSelected ? options.jsonAccessPath : ''}${value.complexPrefix}${value.property.name}`;
+                    let datePipe = options.templateHelper.isDateTimeProperty(value.property) ? `| date: ${options.resolveDateTimeFormat(options, value.property)}` : '';
+                    let descriptionPipe = options.templateHelper.isEnumPropertyWithEntityValues(value.property) ? ` | showDescription:get${classify(value.property.name)}Value` : '';
+                    let cellContent = `!(${isEmptyValue}) ? (row.${cellPropertyPath}${descriptionPipe}${language}${datePipe})  : '-'`;
+                %>
+
+                <% if (value.property.characteristic.elementCharacteristic?.dataType.isComplex || (value.property.characteristic.dataType !== null && value.property.characteristic.dataType.isComplex)) { %>
+                            <ng-container formGroupName="<%= value.property.name %>">
+                              <div formArrayName="rows">
+                <% } %>
+
+                <!-- <%= cellPropertyPath %> Column -->
+                <ng-container data-test="table-column" matColumnDef="<%= cellPropertyPath %>">
+                    <th data-test="table-header" mat-header-cell *matHeaderCellDef
+                        <%= options.templateHelper.isNumberProperty(value.property) ? `class="table-header-number"` : '' %>
+
+                        <% if (options.tableColumValues(options.listProps, options).length - 1 > value.index) { %>
+                            [resizeColumn]="true" [index]="<%= value.index %>" (dragging)='dragging = $event'
+                        <% } %>
+                    >
+                        <span [matTooltip]=" '<%= propertyLocaleKeyPath %>.description' | translate"
+                              [matTooltipDisabled]="headerTooltipsOff"
+                              matTooltipPosition="above"
+                              data-test="table-header-text">
+                                {{ '<%= propertyLocaleKeyPath %>.preferredName' | translate }}
+                        </span>
+                    </th>
+
+                    <td data-test="table-cell"
+
+                        <% if(options.templateHelper.isEnumPropertyWithEntityValues(value.property)) { %>
+                            [matTooltip]="!('<%= isEmptyValue %>') ? (row.<%= cellPropertyPath %><%= descriptionPipe %>:true<%= language %>) :''" [matTooltipDisabled]="'<%= isEmptyValue %>'"
+                        <% } %>
+
+                        mat-cell *matCellDef="let row; let i = index" [formGroupName]="i"
+
+                        <% if(options.templateHelper.isNumberProperty(value.property)) { %>
+                            class="table-cell-number"
+                        <% } %>
+                    >
+
+                        <% if(value.property.characteristic.elementCharacteristic?.dataType.isScalar || (value.property.characteristic.dataType !== null && value.property.characteristic.dataType.isScalar)) { %>
+                             <input value="{{ row }}" formControlName="<%= value.property.name %>" readonly/>
+                        <% } else if(value.property.characteristic.elementCharacteristic?.dataType.isComplex || (value.property.characteristic.dataType !== null && value.property.characteristic.dataType.isComplex)) { %>
+                            <% let dataTypeName = value.property.characteristic.elementCharacteristic? value.property.characteristic.elementCharacteristic.dataType.name : value.property.characteristic.dataType.name; %>
+                            <input formControlName="<%= dataTypeName %>" readonly/>
+                        <% } %>
+
+                        <mat-icon data-test="copy-to-clipboard-icon" *ngIf="!(<%= isEmptyValue %>)" class="material-icons copy-to-clipboard"
+                                  (click)="copyToClipboard(row.<%= cellPropertyPath %><%= language %>, $event)">
+                                      content_copy
+                        </mat-icon>
+                    </td>
+                </ng-container>
+
+                <% if (value.property.characteristic.elementCharacteristic?.dataType.isComplex || (value.property.characteristic.dataType !== null && value.property.characteristic.dataType.isComplex)) { %>
+                        </div>
+                    </ng-container>
+                <% } %>
+            <% } %>
+
+            <tr data-test="table-header-row" mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+            <tr data-test="table-row" mat-row *matRowDef="let row; columns: displayedColumns;"
+                [class.selected-row]="selection.isSelected(row) && highlightSelectedRow"
+                (click)="rowClicked(row,
+
+                <% if (propertyColumns.length === 1) { %>
+                    '<%= propertyColumns[0] %>'
+                <% } else { %>
+                    ['<%= propertyColumns.join(', ') %>']
+                <% } %>
+
+                , $event)"
+                (contextmenu)="rowClicked(row,
+
+                <% if (propertyColumns.length === 1) { %>
+                    '<%= propertyColumns[0] %>'
+                <% } else { %>
+                    ['<%= propertyColumns.join(', ') %>']
+                <% } %>
+
+                , $event)"
+                (dblclick)="rowDblClicked(row, $event)"></tr>
+    </table>
+</div>
+
+
