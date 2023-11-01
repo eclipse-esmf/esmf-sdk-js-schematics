@@ -51,7 +51,7 @@ export class DatePartialFormFieldStrategy extends FormFieldStrategy {
         return {
             ...this.getBaseFormFieldConfig(),
             exampleValue: this.parent.exampleValue || '',
-            validators: [...this.getBaseValidatorsConfigs()],
+            validators: this.getValidatorsConfigs(),
             placeholder: this.getPlaceholder(),
         };
     }

@@ -47,7 +47,7 @@ export class NumberFormFieldStrategy extends FormFieldStrategy {
             ...this.getBaseFormFieldConfig(),
             exampleValue: this.parent.exampleValue || '',
             unitName: untypedChild.unit?.name || '',
-            validators: [...this.getBaseValidatorsConfigs()],
+            validators: this.getValidatorsConfigs(),
         };
     }
 }

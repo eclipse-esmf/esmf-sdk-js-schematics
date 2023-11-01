@@ -11,7 +11,7 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-import {Characteristic, Property} from '@esmf/aspect-model-loader';
+import {Characteristic, Constraint, Property} from '@esmf/aspect-model-loader';
 import {apply, applyTemplates, chain, MergeStrategy, mergeWith, move, Rule, SchematicContext, url} from '@angular-devkit/schematics';
 import {strings} from '@angular-devkit/core';
 import {templateInclude} from '../../../../shared/include';
@@ -61,9 +61,14 @@ export class FormFieldStrategy {
         public context: SchematicContext,
         public parent: Property,
         public child: Characteristic,
-        public fieldName: string
+        public fieldName: string,
+        public constraints: Constraint[]
     ) {
         this.options = {...options};
+    }
+
+    getValidatorsConfigs(): ValidatorConfig[] {
+        return [...this.getBaseValidatorsConfigs(), ...this.getConstraintValidatorsConfigs()];
     }
 
     getBaseValidatorsConfigs(): ValidatorConfig[] {
@@ -73,9 +78,24 @@ export class FormFieldStrategy {
             validatorsConfigs.push({
                 definition: 'Validators.required',
                 errorCode: 'required',
-                errorMessage: `${this.fieldName} is required.`,
+                errorMessage: `${this.fieldName} is required`,
             });
         }
+
+        return validatorsConfigs;
+    }
+
+    getConstraintValidatorsConfigs(): ValidatorConfig[] {
+        const applicableConstraints: Constraint[] = this.constraints.filter(
+            constraint => !this.options.excludedConstraints.includes(constraint.aspectModelUrn)
+        );
+
+        // TODO: Replace with real validation logic
+        const validatorsConfigs: ValidatorConfig[] = applicableConstraints.map(constraint => ({
+            definition: 'Validators.maxLength(Infinity)',
+            errorCode: 'maxLength',
+            errorMessage: `[${this.fieldName} "maxLength" error]`,
+        }));
 
         return validatorsConfigs;
     }

@@ -40,7 +40,7 @@ export class DateTimeFormFieldStrategy extends FormFieldStrategy {
         return {
             ...this.getBaseFormFieldConfig(),
             exampleValue: this.parent.exampleValue || '',
-            validators: [...this.getBaseValidatorsConfigs()],
+            validators: this.getValidatorsConfigs(),
             dataFormat: this.getDataFormat(),
         };
     }

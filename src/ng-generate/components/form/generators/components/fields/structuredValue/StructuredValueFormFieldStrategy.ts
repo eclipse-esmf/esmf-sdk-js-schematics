@@ -29,7 +29,7 @@ export class StructuredValueFormFieldStrategy extends FormFieldStrategy {
         return {
             ...this.getBaseFormFieldConfig(),
             deconstructionRule: this.child.deconstructionRule,
-            validators: [...this.getBaseValidatorsConfigs()],
+            validators: this.getValidatorsConfigs(),
             children: this.getChildConfigs(),
         };
     }

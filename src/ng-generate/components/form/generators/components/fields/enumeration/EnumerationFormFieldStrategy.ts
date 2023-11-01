@@ -29,7 +29,7 @@ export class EnumerationFormFieldStrategy extends FormFieldStrategy {
             ...this.getBaseFormFieldConfig(),
             exampleValue: this.parent.exampleValue || '',
             values: typedChild.values,
-            validators: [...this.getBaseValidatorsConfigs()],
+            validators: this.getValidatorsConfigs(),
         };
     }
 }

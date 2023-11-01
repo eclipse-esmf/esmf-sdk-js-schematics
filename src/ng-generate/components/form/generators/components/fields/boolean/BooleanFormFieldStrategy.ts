@@ -26,7 +26,7 @@ export class BooleanFormFieldStrategy extends FormFieldStrategy {
     buildConfig(): FormFieldConfig {
         return {
             ...this.getBaseFormFieldConfig(),
-            validators: [...this.getBaseValidatorsConfigs()],
+            validators: this.getValidatorsConfigs(),
         };
     }
 }
