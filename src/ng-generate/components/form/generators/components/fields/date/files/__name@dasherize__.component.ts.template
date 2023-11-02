@@ -2,7 +2,7 @@
 
 import {Attribute, Component, forwardRef, Input} from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {FormControl, FormBuilder, FormsModule, NG_VALUE_ACCESSOR, ReactiveFormsModule, Validators} from '@angular/forms';
+import {FormControl, FormBuilder, FormsModule, NG_VALUE_ACCESSOR, ReactiveFormsModule, ValidatorFn, Validators} from '@angular/forms';
 import {MatDatepickerModule} from '@angular/material/datepicker';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatInputModule} from '@angular/material/input';
@@ -11,14 +11,13 @@ import {ThemePalette, DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE} from '@ang
 import {MAT_MOMENT_DATE_ADAPTER_OPTIONS, MAT_MOMENT_DATE_FORMATS, MomentDateAdapter} from '@angular/material-moment-adapter';
 import {isMoment} from 'moment';
 
-export const <%= options.fieldConfig.name %>FormControl = new FormControl(
-    null,
-    [
-        <% for(let validator of options.fieldConfig.validators) { %>
-            <%= validator.definition %>,
-        <% } %>
-    ]
-);
+export const validators: {[key: string]: ValidatorFn} = {
+  <% for(let validator of options.fieldConfig.validators) { %>
+    <%= validator.name %>: <%= validator.definition %>,
+  <% } %>
+}
+
+export const <%= options.fieldConfig.name %>FormControl = new FormControl(null, Object.values(validators));
 
 @Component({
     selector: '<%= options.fieldConfig.selector %>',

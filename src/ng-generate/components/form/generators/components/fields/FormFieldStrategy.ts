@@ -19,9 +19,9 @@ import {addToComponentModule} from '../../../../../../utils/angular';
 import {getFormFieldStrategy} from './index';
 
 export interface ValidatorConfig {
+    name: string;
     definition: string;
     errorCode: string;
-    errorMessage: string;
 }
 
 export interface BaseFormFieldConfig {
@@ -76,9 +76,9 @@ export class FormFieldStrategy {
 
         if (!this.parent.isOptional) {
             validatorsConfigs.push({
+                name: `required`,
                 definition: 'Validators.required',
                 errorCode: 'required',
-                errorMessage: `${this.fieldName} is required`,
             });
         }
 
@@ -92,9 +92,9 @@ export class FormFieldStrategy {
 
         // TODO: Replace with real validation logic
         const validatorsConfigs: ValidatorConfig[] = applicableConstraints.map(constraint => ({
+            name: constraint.name,
             definition: 'Validators.maxLength(Infinity)',
             errorCode: 'maxLength',
-            errorMessage: `[${this.fieldName} "maxLength" error]`,
         }));
 
         return validatorsConfigs;
