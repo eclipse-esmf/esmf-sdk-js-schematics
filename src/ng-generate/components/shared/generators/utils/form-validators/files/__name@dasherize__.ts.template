@@ -1,0 +1,118 @@
+/** <%= options.generationDisclaimerText %> **/
+
+import {AbstractControl, ValidationErrors, ValidatorFn} from '@angular/forms';
+import * as charsetDetector from 'charset-detector';
+
+type BoundDefinition = 'OPEN' | 'AT_LEAST' | 'GREATER_THAN' | 'LESS_THAN' | 'AT_MOST';
+type Encoding = 'US-ASCII' | 'ISO-8859-1' | 'UTF-8' | 'UTF-16' | 'UTF-16BE' | 'UTF-16LE';
+
+export class FormValidators {
+    static encodingValidator(encoding: Encoding): ValidatorFn {
+        const utf16Validator = (control: AbstractControl): ValidationErrors | null => {
+            const value = control.value;
+
+            if (!value) {
+                return null;
+            }
+
+            const encoder = new TextEncoder();
+            const uint8Array = encoder.encode(value);
+
+            const charsetMatch = charsetDetector(uint8Array);
+            const utf16BeCharsetMatch = charsetMatch.find(charset => charset.charsetName === 'UTF-16BE');
+            const utf16LeCharsetMatch = charsetMatch.find(charset => charset.charsetName === 'UTF-16LE');
+            const isMatch = utf16BeCharsetMatch && utf16LeCharsetMatch;
+
+            return isMatch ? null : {encoding: true};
+        };
+
+        const defaultValidator = (control: AbstractControl): ValidationErrors | null => {
+            const value = control.value;
+
+            if (!value) {
+                return null;
+            }
+
+            const encoder = new TextEncoder();
+            const uint8Array = encoder.encode(value);
+
+            const charsetMatch = charsetDetector(uint8Array);
+            const isMatch = !!charsetMatch.find(charset => charset.charsetName === encoding);
+
+            return isMatch ? null : {encoding: true};
+        };
+
+        return encoding === 'UTF-16' ? utf16Validator : defaultValidator;
+    }
+
+    static fixedPointValidator(integerLength: number, scaleLength: number): ValidatorFn {
+        return (control: AbstractControl): ValidationErrors | null => {
+            const value = control.value;
+
+            if (!value) {
+                return null;
+            }
+
+            const stringValue = typeof value === "string"
+                ? value
+                : value.toString
+                ? value.toString()
+                : JSON.stringify(value);
+
+            const chunks = stringValue.split('.');
+            const integerValueLength = chunks[0]?.length ?? 0;
+            const scaleValueLength = chunks[1]?.length ?? 0;
+            const isMatch = chunks.length === 2 && integerValueLength === integerLength && scaleValueLength === scaleLength;
+
+            return isMatch ? null : {fixedPoint: true};
+        }
+    }
+
+    static lengthValidator(min: number | undefined, max: number | undefined): ValidatorFn {
+        return (control: AbstractControl): ValidationErrors | null => {
+            const value = control.value;
+
+            if (!value) {
+                return null;
+            }
+
+            const length = value.length;
+            const minStatement = min !== undefined ? length >= min : true;
+            const maxStatement = max !== undefined ? length <= max : true;
+            const isMatch = minStatement && maxStatement;
+
+            return isMatch ? null : {length: true};
+        }
+    }
+
+    static rangeValidator(
+        min: number | undefined | null,
+        lowerBoundDefinition: BoundDefinition,
+        max: number | undefined | null,
+        upperBoundDefinition: BoundDefinition
+    ): ValidatorFn {
+        return (control: AbstractControl): ValidationErrors | null => {
+            const value = control.value;
+
+            if (!value && value !== 0) {
+                return null;
+            }
+
+            let minStatement = true;
+            if (min !== undefined && min !== null) {
+                minStatement =
+                    lowerBoundDefinition === 'AT_LEAST' ? value >= min : lowerBoundDefinition === 'GREATER_THAN' ? value > min : true;
+            }
+
+            let maxStatement = true;
+            if (max !== undefined && max !== null) {
+                maxStatement =
+                    upperBoundDefinition === 'AT_MOST' ? value <= max : upperBoundDefinition === 'LESS_THAN' ? value < max : true;
+            }
+
+            const isMatch = minStatement && maxStatement;
+
+            return isMatch ? null : {length: true};
+        };
+    }
+}

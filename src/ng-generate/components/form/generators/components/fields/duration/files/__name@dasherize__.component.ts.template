@@ -6,6 +6,7 @@ import {FormControl, FormsModule, NG_VALUE_ACCESSOR, ReactiveFormsModule, Valida
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatInputModule} from '@angular/material/input';
 import {FormControlReusable} from "<% if (options.enableVersionSupport) { %>../<% } %>../../../utils/form-control-reusable";
+import {FormValidators} from "<% if (options.enableVersionSupport) { %>../<% } %>../../../utils/form-validators";
 
 export const validators: {[key: string]: ValidatorFn} = {
   <% for(let validator of options.fieldConfig.validators) { %>

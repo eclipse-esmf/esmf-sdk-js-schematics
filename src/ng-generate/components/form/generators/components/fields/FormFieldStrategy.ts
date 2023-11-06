@@ -11,12 +11,13 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-import {Characteristic, Constraint, Property} from '@esmf/aspect-model-loader';
+import {Characteristic, Constraint, DefaultConstraint, Property} from '@esmf/aspect-model-loader';
 import {apply, applyTemplates, chain, MergeStrategy, mergeWith, move, Rule, SchematicContext, url} from '@angular-devkit/schematics';
 import {strings} from '@angular-devkit/core';
 import {templateInclude} from '../../../../shared/include';
 import {addToComponentModule} from '../../../../../../utils/angular';
 import {getFormFieldStrategy} from './index';
+import {getValidatorStrategy} from '../validators/index';
 
 export interface ValidatorConfig {
     name: string;
@@ -43,7 +44,7 @@ export interface FormFieldConfig extends BaseFormFieldConfig {
     isScalarChild?: boolean;
 }
 
-export class FormFieldStrategy {
+export abstract class FormFieldStrategy {
     pathToFiles: string;
     hasChildren: boolean;
     options: any;
@@ -87,17 +88,19 @@ export class FormFieldStrategy {
 
     getConstraintValidatorsConfigs(): ValidatorConfig[] {
         const applicableConstraints: Constraint[] = this.constraints.filter(
-            constraint => !this.options.excludedConstraints.includes(constraint.aspectModelUrn)
+            constraint =>
+                // Check that it's not excluded explicitly
+                !this.options.excludedConstraints.includes(constraint.aspectModelUrn) &&
+                // It's not a direct instance of "DefaultConstraint" (it contains no validation rules)
+                constraint.constructor !== DefaultConstraint
         );
 
-        // TODO: Replace with real validation logic
-        const validatorsConfigs: ValidatorConfig[] = applicableConstraints.map(constraint => ({
-            name: constraint.name,
-            definition: 'Validators.maxLength(Infinity)',
-            errorCode: 'maxLength',
-        }));
+        return applicableConstraints.reduce((acc, constraint) => {
+            const validatorStrategy = getValidatorStrategy(constraint);
+            const validatorsConfigs = validatorStrategy.getValidatorsConfigs();
 
-        return validatorsConfigs;
+            return [...acc, ...validatorsConfigs];
+        }, []);
     }
 
     getBaseFormFieldConfig(): BaseFormFieldConfig {

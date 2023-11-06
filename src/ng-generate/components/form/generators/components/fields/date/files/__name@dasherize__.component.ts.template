@@ -7,6 +7,7 @@ import {MatDatepickerModule} from '@angular/material/datepicker';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatInputModule} from '@angular/material/input';
 import {FormControlReusable} from "<% if (options.enableVersionSupport) { %>../<% } %>../../../utils/form-control-reusable";
+import {FormValidators} from "<% if (options.enableVersionSupport) { %>../<% } %>../../../utils/form-validators";
 import {ThemePalette, DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE} from '@angular/material/core';
 import {MAT_MOMENT_DATE_ADAPTER_OPTIONS, MAT_MOMENT_DATE_FORMATS, MomentDateAdapter} from '@angular/material-moment-adapter';
 import {isMoment} from 'moment';

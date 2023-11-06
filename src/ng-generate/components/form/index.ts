@@ -36,6 +36,7 @@ import {generateFormControlReusable} from '../shared/generators/utils/form-contr
 import {
     generateDestroyedSubject,
     generateFormGroupReusable,
+    generateFormValidators,
     generateGeneralStyle,
     generateSharedModule,
     generateTranslationModule,
@@ -66,6 +67,7 @@ export function generateForm(formSchema: Schema): Rule {
         ...addAndUpdateConfigurationFilesRule(),
         ...utilsGeneration(),
         addDateTimePickerDependenciesRule(),
+        addFormValidatorsDependenciesRule(),
         formatAllFilesRule(),
     ]);
 }
@@ -90,6 +92,7 @@ function utilsGeneration(): Array<Rule> {
         generateFormGroupReusable(options),
         generateFormArrayReusable(options),
         generateDestroyedSubject(options),
+        generateFormValidators(options),
     ];
 }
 
@@ -106,6 +109,25 @@ function addDateTimePickerDependenciesRule(): Rule {
             type: NodeDependencyType.Default,
             version: '^16.0.1',
             name: '@angular-material-components/moment-adapter',
+            overwrite: false,
+        },
+    ];
+
+    return addPackageJsonDependencies(options.skipImport, options.spinner, loadDependencies);
+}
+
+function addFormValidatorsDependenciesRule(): Rule {
+    const loadDependencies = [
+        {
+            type: NodeDependencyType.Default,
+            version: '^0.0.2',
+            name: 'charset-detector',
+            overwrite: false,
+        },
+        {
+            type: NodeDependencyType.Dev,
+            version: '^0.0.2',
+            name: '@types/charset-detector',
             overwrite: false,
         },
     ];
