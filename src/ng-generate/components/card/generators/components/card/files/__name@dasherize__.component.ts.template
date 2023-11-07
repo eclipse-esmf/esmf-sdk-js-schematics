@@ -38,7 +38,7 @@ import {<%= options.filterServiceName %>, SortCard} from './<%= dasherize(name) 
 
 <% if (options.hasSearchBar || options.enableRemoteDataHandling) { %>
     import {takeUntil} from "rxjs/operators";
-    import {<% if (options.enableRemoteDataHandling) { %>catchError, finalize, tap, <% } %>Subject} from 'rxjs';
+    import {<% if (options.enableRemoteDataHandling) { %>catchError, finalize, tap, Subscription,<% } %>Subject} from 'rxjs';
 <% } %>
 
 import {MatPaginator} from "@angular/material/paginator";
@@ -116,7 +116,10 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit<% i
 
     <% if (options.hasSearchBar || options.enableRemoteDataHandling) { %>
         private readonly destroy$ = new Subject<void>();
-        private requestSubscription: Subscription;
+    <% } %>
+
+    <% if (options.hasSearchBar && options.enableRemoteDataHandling) { %>
+        private requestSubscription: Subscription = = new Subscription();
     <% } %>
 
     <% if (options.enableRemoteDataHandling) { %>
