@@ -72,7 +72,7 @@ import {<%= classify(name) %>ColumnMenuComponent} from './<%= dasherize(name) %>
     import {filter, takeUntil} from 'rxjs/operators';
 <% } %>
 
-import {<% if (options.enableRemoteDataHandling) { %>catchError, finalize, tap, <% } %>Subject} from 'rxjs';
+import {<% if (options.enableRemoteDataHandling) { %>catchError, finalize, tap, Subscription,<% } %>Subject} from 'rxjs';
 
 <% if (options.enableRemoteDataHandling) { %>
     <%= options.include('/remote-handling/imports.ts.template') %>
@@ -222,7 +222,10 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
 
     <% if (options.hasSearchBar || options.enableRemoteDataHandling) { %>
         private readonly ngUnsubscribe = new Subject<void>();
-        private requestSubscription: Subscription;
+    <% } %>
+
+    <% if (options.hasSearchBar && options.enableRemoteDataHandling) { %>
+        private requestSubscription: Subscription = = new Subscription();
     <% } %>
 
     <% if (options.enableRemoteDataHandling) { %>
