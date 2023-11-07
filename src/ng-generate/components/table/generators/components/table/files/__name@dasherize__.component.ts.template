@@ -224,8 +224,8 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
         private readonly ngUnsubscribe = new Subject<void>();
     <% } %>
 
-    <% if (options.hasSearchBar && options.enableRemoteDataHandling) { %>
-        private requestSubscription: Subscription = = new Subscription();
+    <% if (options.enableRemoteDataHandling) { %>
+        private requestSubscription: Subscription = new Subscription();
     <% } %>
 
     <% if (options.enableRemoteDataHandling) { %>

@@ -118,8 +118,8 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit<% i
         private readonly destroy$ = new Subject<void>();
     <% } %>
 
-    <% if (options.hasSearchBar && options.enableRemoteDataHandling) { %>
-        private requestSubscription: Subscription = = new Subscription();
+    <% if (options.enableRemoteDataHandling) { %>
+        private requestSubscription: Subscription = new Subscription();
     <% } %>
 
     <% if (options.enableRemoteDataHandling) { %>
