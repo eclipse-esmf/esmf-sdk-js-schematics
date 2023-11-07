@@ -28,16 +28,14 @@ export class EncodingValidatorStrategy extends ValidatorStrategy {
             ? [
                   {
                       name: this.constraint.name,
-                      definition: `Validators.pattern(/^[\x00-\x7F]*$/)`,
-                      errorCode: 'encoding',
+                      definition: `FormValidators.encodingValidator('US-ASCII')`,
                   },
               ]
             : type === 'ISO-8859-1'
             ? [
                   {
                       name: this.constraint.name,
-                      definition: `Validators.pattern(/^[\x00-\xFF]*$/)`,
-                      errorCode: 'encoding',
+                      definition: `FormValidators.encodingValidator('ISO-8859-1')`,
                   },
               ]
             : type === 'UTF-8'
@@ -45,7 +43,6 @@ export class EncodingValidatorStrategy extends ValidatorStrategy {
                   {
                       name: this.constraint.name,
                       definition: `FormValidators.encodingValidator('UTF-8')`,
-                      errorCode: 'encoding',
                   },
               ]
             : type === 'UTF-16'
@@ -53,7 +50,6 @@ export class EncodingValidatorStrategy extends ValidatorStrategy {
                   {
                       name: this.constraint.name,
                       definition: `FormValidators.encodingValidator('UTF-16')`,
-                      errorCode: 'encoding',
                   },
               ]
             : type === 'UTF-16BE'
@@ -61,7 +57,6 @@ export class EncodingValidatorStrategy extends ValidatorStrategy {
                   {
                       name: this.constraint.name,
                       definition: `FormValidators.encodingValidator('UTF-16BE')`,
-                      errorCode: 'encoding',
                   },
               ]
             : type === 'UTF-16LE'
@@ -69,7 +64,6 @@ export class EncodingValidatorStrategy extends ValidatorStrategy {
                   {
                       name: this.constraint.name,
                       definition: `FormValidators.encodingValidator('UTF-16LE')`,
-                      errorCode: 'encoding',
                   },
               ]
             : [];

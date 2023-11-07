@@ -6,6 +6,7 @@ import {FormControl, FormBuilder, FormsModule, NG_VALUE_ACCESSOR, ReactiveFormsM
 import {MatDatepickerModule} from '@angular/material/datepicker';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatInputModule} from '@angular/material/input';
+import {TranslateModule} from "@ngx-translate/core";
 import {FormControlReusable} from "<% if (options.enableVersionSupport) { %>../<% } %>../../../utils/form-control-reusable";
 import {FormValidators} from "<% if (options.enableVersionSupport) { %>../<% } %>../../../utils/form-validators";
 import {ThemePalette, DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE} from '@angular/material/core';
@@ -23,7 +24,7 @@ export const <%= options.fieldConfig.name %>FormControl = new FormControl(null, 
 @Component({
     selector: '<%= options.fieldConfig.selector %>',
     standalone: true,
-    imports: [CommonModule, FormsModule, MatDatepickerModule, MatFormFieldModule, MatInputModule, ReactiveFormsModule],
+    imports: [CommonModule, FormsModule, MatDatepickerModule, MatFormFieldModule, MatInputModule, ReactiveFormsModule, TranslateModule],
     templateUrl: './<%= dasherize(options.fieldConfig.name) %>.component.html',
     styleUrls: ['./<%= dasherize(options.fieldConfig.name) %>.component.scss'],
     providers: [
@@ -48,12 +49,6 @@ export class <%= classify(options.fieldConfig.name) %>Component extends FormCont
 
     constructor(@Attribute('formControlName') public formControlName: string) {
         super();
-    }
-
-    get errorMessage() {
-        return this.formControl.hasError('required')
-            ? 'The field is required'
-            : 'The value is invalid or empty';
     }
 
     override set value(val: any) {

@@ -16,5 +16,9 @@
        %><mat-hint align="start">exampleValue: <%= options.fieldConfig.exampleValue %></mat-hint>
     <% } %>
 
-    <mat-error *ngIf="formControl.invalid">{{ errorMessage }}</mat-error>
+    <mat-error *ngIf="formControl.invalid">
+        <ng-container *ngIf="error as err">
+            {{ err.translationKey | translate: err.translationParams }}
+        </ng-container>
+    </mat-error>
 </mat-form-field>

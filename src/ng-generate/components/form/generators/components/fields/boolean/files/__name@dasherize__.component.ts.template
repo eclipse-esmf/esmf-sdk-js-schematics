@@ -37,10 +37,4 @@ export class <%= classify(options.fieldConfig.name) %>Component extends FormCont
     constructor(@Attribute('formControlName') public formControlName: string) {
         super();
     }
-
-    get errorMessage() {
-        return this.formControl.hasError('required')
-            ? 'The field is required'
-            : 'The value is invalid or empty';
-    }
 }

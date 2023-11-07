@@ -1,7 +1,14 @@
 /** <%= options.generationDisclaimerText %> **/
 import {ControlValueAccessor} from '@angular/forms';
+import {FormControl} from '@angular/forms';
+
+interface CustomControlValidationError {
+    translationKey: string;
+    translationParams: {[key: string]: any};
+}
 
 export abstract class FormControlReusable implements ControlValueAccessor {
+    abstract formControl: FormControl<any>
     abstract formControlName: string;
     val: any;
 
@@ -16,6 +23,23 @@ export abstract class FormControlReusable implements ControlValueAccessor {
 
     get value(): any {
         return this.val;
+    }
+
+    get error(): CustomControlValidationError {
+        if (this.formControl.errors && this.formControl.errors['required']) {
+            return {
+                translationKey: 'validation.required',
+                translationParams: {},
+            };
+        }
+
+        const errors = Object.values(this.formControl.errors ?? []);
+        const error = errors.find(value => !!value);
+
+        return error ?? {
+            translationKey: 'validation.default',
+            translationParams: {},
+        };
     }
 
     writeValue(value: any): void {

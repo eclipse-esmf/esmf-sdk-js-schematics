@@ -31,7 +31,6 @@ export class LengthValidatorStrategy extends ValidatorStrategy {
             {
                 name: this.constraint.name,
                 definition: `FormValidators.lengthValidator(${typedConstraint.minValue}, ${typedConstraint.maxValue})`,
-                errorCode: 'length',
             },
         ];
     }

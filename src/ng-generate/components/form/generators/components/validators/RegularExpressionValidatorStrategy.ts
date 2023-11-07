@@ -30,8 +30,7 @@ export class RegularExpressionValidatorStrategy extends ValidatorStrategy {
         return [
             {
                 name: this.constraint.name,
-                definition: `Validators.pattern(${typedConstraint.value})`,
-                errorCode: 'regular_expression',
+                definition: `FormValidators.regularExpression(${typedConstraint.value})`,
             },
         ];
     }

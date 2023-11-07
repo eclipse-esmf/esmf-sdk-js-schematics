@@ -27,7 +27,6 @@ export class FixedPointValidatorStrategy extends ValidatorStrategy {
             {
                 name: this.constraint.name,
                 definition: `FormValidators.fixedPointValidator(${typedConstraint.integer}, ${typedConstraint.scale})`,
-                errorCode: 'fixed_point',
             },
         ];
     }

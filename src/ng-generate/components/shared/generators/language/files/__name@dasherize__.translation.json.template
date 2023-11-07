@@ -79,7 +79,20 @@
         "blankSpace": "Input can only contain blank space between characters",
         "empty_string_columns_array": "You have to select at least one column to search in",
         "min_char_no": "Minimum number of characters is",
-        "max_char_no": "Maximum number of characters is"
+        "max_char_no": "Maximum number of characters is",
+        "default": "Field is not valid",
+        "encoding": "Value has to be in \"{{encoding}}\" encoding",
+        "fixed_point_integer": "Integer part has to be {{integerLength}} digits long",
+        "fixed_point_parts": "Value has to consist of 2 parts separated by a dot",
+        "fixed_point_scale": "Scale part has to be {{scaleLength}} digits long",
+        "length_max": "Value has to have a maximum length of {{max}} characters",
+        "length_min": "Value has to be at least {{min}} characters long",
+        "range_max_inclusive": "Value has to be less than or equal to {{max}}",
+        "range_max": "Value has to be less than {{max}}",
+        "range_min_inclusive": "Value has to be greater than or equal to {{min}}",
+        "range_min": "Value has to be greater than {{min}}",
+        "regular_expression": "Value has to match the following pattern: {{pattern}}",
+        "required": "Field is required"
     }
 
     ,

@@ -8,6 +8,15 @@ type Encoding = 'US-ASCII' | 'ISO-8859-1' | 'UTF-8' | 'UTF-16' | 'UTF-16BE' | 'U
 
 export class FormValidators {
     static encodingValidator(encoding: Encoding): ValidatorFn {
+        const error = {
+            encoding: {
+                translationKey: 'validation.encoding',
+                translationParams: {
+                    encoding
+                },
+            }
+        };
+
         const utf16Validator = (control: AbstractControl): ValidationErrors | null => {
             const value = control.value;
 
@@ -23,7 +32,33 @@ export class FormValidators {
             const utf16LeCharsetMatch = charsetMatch.find(charset => charset.charsetName === 'UTF-16LE');
             const isMatch = utf16BeCharsetMatch && utf16LeCharsetMatch;
 
-            return isMatch ? null : {encoding: true};
+            return isMatch ? null : error;
+        };
+
+        const usAsciiValidator = (control: AbstractControl): ValidationErrors | null => {
+            const value = control.value;
+
+            if (!value) {
+                return null;
+            }
+
+            const pattern = /^[\x00-\x7F]*$/;
+            const isMatch = pattern.test(value);
+
+            return isMatch ? null : error;
+        };
+
+        const iso88591Validator = (control: AbstractControl): ValidationErrors | null => {
+            const value = control.value;
+
+            if (!value) {
+                return null;
+            }
+
+            const pattern = /^[\x00-\xFF]*$/;
+            const isMatch = pattern.test(value);
+
+            return isMatch ? null : error;
         };
 
         const defaultValidator = (control: AbstractControl): ValidationErrors | null => {
@@ -39,10 +74,16 @@ export class FormValidators {
             const charsetMatch = charsetDetector(uint8Array);
             const isMatch = !!charsetMatch.find(charset => charset.charsetName === encoding);
 
-            return isMatch ? null : {encoding: true};
+            return isMatch ? null : error;
         };
 
-        return encoding === 'UTF-16' ? utf16Validator : defaultValidator;
+        return encoding === 'UTF-16'
+            ? utf16Validator
+            : encoding === 'US-ASCII'
+            ? usAsciiValidator
+            : encoding === 'ISO-8859-1'
+            ? iso88591Validator
+            : defaultValidator;
     }
 
     static fixedPointValidator(integerLength: number, scaleLength: number): ValidatorFn {
@@ -62,9 +103,33 @@ export class FormValidators {
             const chunks = stringValue.split('.');
             const integerValueLength = chunks[0]?.length ?? 0;
             const scaleValueLength = chunks[1]?.length ?? 0;
-            const isMatch = chunks.length === 2 && integerValueLength === integerLength && scaleValueLength === scaleLength;
 
-            return isMatch ? null : {fixedPoint: true};
+            return chunks.length !== 2
+                ? {
+                    fixedPoint: {
+                        translationKey: 'validation.fixed_point_parts',
+                        translationParams: {},
+                    }
+                }
+                : integerValueLength !== integerLength
+                ? {
+                    fixedPoint: {
+                        translationKey: 'validation.fixed_point_integer',
+                        translationParams: {
+                            integerLength
+                        },
+                    }
+                }
+                : scaleValueLength !== scaleLength
+                ? {
+                    fixedPoint: {
+                        translationKey: 'validation.fixed_point_scale',
+                        translationParams: {
+                            scaleLength
+                        },
+                    }
+                }
+                : null;
         }
     }
 
@@ -79,9 +144,26 @@ export class FormValidators {
             const length = value.length;
             const minStatement = min !== undefined ? length >= min : true;
             const maxStatement = max !== undefined ? length <= max : true;
-            const isMatch = minStatement && maxStatement;
 
-            return isMatch ? null : {length: true};
+            return !minStatement
+                ? {
+                    lengthMin: {
+                        translationKey: 'validation.length_min',
+                        translationParams: {
+                            min
+                        },
+                    }
+                }
+                : !maxStatement
+                ? {
+                    lengthMax: {
+                        translationKey: 'validation.length_max',
+                        translationParams: {
+                            max
+                        },
+                    }
+                }
+                : null;
         }
     }
 
@@ -110,9 +192,48 @@ export class FormValidators {
                     upperBoundDefinition === 'AT_MOST' ? value <= max : upperBoundDefinition === 'LESS_THAN' ? value < max : true;
             }
 
-            const isMatch = minStatement && maxStatement;
+            return !minStatement
+                ? {
+                    rangeMin: {
+                        translationKey: lowerBoundDefinition === 'AT_LEAST' ? 'validation.range_min_inclusive' : 'validation.range_min',
+                        translationParams: {
+                            min
+                        },
+                    }
+                }
+                : !maxStatement
+                ? {
+                    rangeMax: {
+                        translationKey: upperBoundDefinition === 'AT_MOST' ? 'validation.range_max_inclusive' : 'validation.range_max',
+                        translationParams: {
+                            max
+                        },
+                    }
+                }
+                : null
+        };
+    }
 
-            return isMatch ? null : {length: true};
+    static regularExpression(pattern: RegExp): ValidatorFn {
+        return (control: AbstractControl): ValidationErrors | null => {
+            const value = control.value;
+
+            if (!value && value !== 0) {
+                return null;
+            }
+
+            const isMatch = pattern.test(value);
+
+            return isMatch
+                ? null
+                : {
+                    regularExpression: {
+                        translationKey: 'validation.regular_expression',
+                        translationParams: {
+                            pattern: pattern.source,
+                        },
+                    }
+                  };
         };
     }
 }

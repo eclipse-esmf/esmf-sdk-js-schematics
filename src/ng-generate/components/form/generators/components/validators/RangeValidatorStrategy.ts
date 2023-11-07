@@ -31,7 +31,6 @@ export class RangeValidatorStrategy extends ValidatorStrategy {
             {
                 name: this.constraint.name,
                 definition: `FormValidators.rangeValidator(${typedConstraint.minValue}, "${typedConstraint.lowerBoundDefinition}", ${typedConstraint.maxValue}, "${typedConstraint.upperBoundDefinition}")`,
-                errorCode: 'range',
             },
         ];
     }

@@ -22,7 +22,6 @@ import {getValidatorStrategy} from '../validators/index';
 export interface ValidatorConfig {
     name: string;
     definition: string;
-    errorCode: string;
 }
 
 export interface BaseFormFieldConfig {
@@ -79,7 +78,6 @@ export abstract class FormFieldStrategy {
             validatorsConfigs.push({
                 name: `required`,
                 definition: 'Validators.required',
-                errorCode: 'required',
             });
         }
 
