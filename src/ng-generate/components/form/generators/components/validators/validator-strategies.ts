@@ -27,3 +27,4 @@ export const VALIDATOR_STRATEGIES = [
 ];
 
 export const VALIDATOR_DEFAULT_STRATEGY = DefaultValidatorStrategy;
+export type ValidatorStrategyClass = typeof VALIDATOR_STRATEGIES;

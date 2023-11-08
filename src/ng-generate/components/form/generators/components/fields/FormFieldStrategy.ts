@@ -18,6 +18,7 @@ import {templateInclude} from '../../../../shared/include';
 import {addToComponentModule} from '../../../../../../utils/angular';
 import {getFormFieldStrategy} from './index';
 import {getValidatorStrategy} from '../validators/index';
+import {ValidatorStrategyClass} from '../validators/validator-strategies';
 
 export interface ValidatorConfig {
     name: string;
@@ -67,8 +68,8 @@ export abstract class FormFieldStrategy {
         this.options = {...options};
     }
 
-    getValidatorsConfigs(): ValidatorConfig[] {
-        return [...this.getBaseValidatorsConfigs(), ...this.getConstraintValidatorsConfigs()];
+    getValidatorsConfigs(ignoreStrategies: ValidatorStrategyClass = []): ValidatorConfig[] {
+        return [...this.getBaseValidatorsConfigs(), ...this.getConstraintValidatorsConfigs(ignoreStrategies)];
     }
 
     getBaseValidatorsConfigs(): ValidatorConfig[] {
@@ -84,7 +85,7 @@ export abstract class FormFieldStrategy {
         return validatorsConfigs;
     }
 
-    getConstraintValidatorsConfigs(): ValidatorConfig[] {
+    getConstraintValidatorsConfigs(ignoreStrategies: ValidatorStrategyClass): ValidatorConfig[] {
         const applicableConstraints: Constraint[] = this.constraints.filter(
             constraint =>
                 // Check that it's not excluded explicitly
@@ -95,9 +96,13 @@ export abstract class FormFieldStrategy {
 
         return applicableConstraints.reduce((acc, constraint) => {
             const validatorStrategy = getValidatorStrategy(constraint);
-            const validatorsConfigs = validatorStrategy.getValidatorsConfigs();
+            const isIgnoredStrategy = !!ignoreStrategies.find(ignoredStrategy => validatorStrategy instanceof ignoredStrategy);
 
-            return [...acc, ...validatorsConfigs];
+            if (isIgnoredStrategy) {
+                return acc;
+            }
+
+            return [...acc, ...validatorStrategy.getValidatorsConfigs()];
         }, []);
     }
 

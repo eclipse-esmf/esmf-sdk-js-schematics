@@ -13,6 +13,7 @@
 
 import {Characteristic} from '@esmf/aspect-model-loader';
 import {FormFieldConfig, FormFieldStrategy} from '../FormFieldStrategy';
+import {RangeValidatorStrategy} from '../../validators/RangeValidatorStrategy';
 
 const typesConfigs = [
     {
@@ -51,7 +52,7 @@ export class DatePartialFormFieldStrategy extends FormFieldStrategy {
         return {
             ...this.getBaseFormFieldConfig(),
             exampleValue: this.parent.exampleValue || '',
-            validators: this.getValidatorsConfigs(),
+            validators: this.getValidatorsConfigs([RangeValidatorStrategy]),
             placeholder: this.getPlaceholder(),
         };
     }
