@@ -18,6 +18,7 @@ import {
     DefaultEnumeration,
     DefaultScalar,
     DefaultSingleEntity,
+    DefaultTrait,
     Entity,
     Property,
     Type,
@@ -219,19 +220,22 @@ export function getCustomRowActions(options: any): string {
 }
 
 export function resolveJsPropertyType(property: Property): string {
-    if (property.characteristic instanceof DefaultEither) {
-        let leftJsType = resolveJsCharacteristicType(property.characteristic.left, property.characteristic.effectiveLeftDataType);
-        let rightJsType = resolveJsCharacteristicType(property.characteristic.right, property.characteristic.effectiveRightDataType);
+    const characteristic =
+        property.characteristic instanceof DefaultTrait ? property.characteristic.baseCharacteristic : property.characteristic;
 
-        if (property.characteristic.left instanceof DefaultCollection) {
+    if (characteristic instanceof DefaultEither) {
+        let leftJsType = resolveJsCharacteristicType(characteristic.left, characteristic.effectiveLeftDataType);
+        let rightJsType = resolveJsCharacteristicType(characteristic.right, characteristic.effectiveRightDataType);
+
+        if (characteristic.left instanceof DefaultCollection) {
             leftJsType = `Array<${leftJsType}>`;
         }
 
-        if (property.characteristic.right instanceof DefaultCollection) {
+        if (characteristic.right instanceof DefaultCollection) {
             rightJsType = `Array<${rightJsType}>`;
         }
 
-        return `${leftJsType} | ${rightJsType}`;
+        return leftJsType !== rightJsType ? `${leftJsType} | ${rightJsType}` : leftJsType;
     }
 
     if (property.characteristic instanceof DefaultCollection) {
