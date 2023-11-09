@@ -15,11 +15,19 @@ import {
     Aspect,
     AspectModelLoader,
     BaseMetaModelElement,
+    Characteristic,
     Constraint,
     DefaultAspect,
+    DefaultCollection,
+    DefaultEither,
     DefaultEntity,
+    DefaultList,
     DefaultProperty,
+    DefaultPropertyInstanceDefinition,
+    DefaultSet,
     DefaultSingleEntity,
+    DefaultSortedSet,
+    DefaultStructuredValue,
     DefaultTrait,
     Entity,
     Property,
@@ -383,12 +391,49 @@ function getAllConstraints(allAnswers: any, templateHelper: TemplateHelper, answ
     const allowedPropertiesObjects = allProperties.filter(property => !excludedPropertiesUrns.includes(property.name));
     const allowedProperties = allowedPropertiesObjects.map(property => loader.findByUrn(property.name) as Property);
 
-    // TODO: This works only for a simple structure, consider other cases, including complex types.
-    return allowedProperties.reduce((acc, cur) => {
-        if (cur.characteristic instanceof DefaultTrait) {
-            return cur.characteristic.constraints?.length ? [...acc, ...cur.characteristic.constraints] : acc;
-        }
+    return allowedProperties.reduce((acc, property) => [...acc, ...getConstraintsFromSubTree(property)], []);
+}
 
-        return acc;
-    }, []);
+function getConstraintsFromSubTree(property: Property): Constraint[] {
+    const constraints: Constraint[] = [];
+
+    constraints.push(...getConstraintsFromElement(property.characteristic));
+    constraints.push(...getConstraintsFromComplexElement(property.characteristic));
+
+    if (property.characteristic instanceof DefaultTrait) {
+        constraints.push(...getConstraintsFromComplexElement(property.characteristic.baseCharacteristic));
+    }
+
+    return constraints;
+}
+
+function getConstraintsFromElement(element: BaseMetaModelElement | undefined): Constraint[] {
+    return element instanceof DefaultTrait && element.constraints?.length ? element.constraints : [];
+}
+
+function getConstraintsFromComplexElement(characteristic: Characteristic): Constraint[] {
+    if (
+        characteristic instanceof DefaultSet ||
+        characteristic instanceof DefaultSortedSet ||
+        characteristic instanceof DefaultCollection ||
+        characteristic instanceof DefaultList
+    ) {
+        return getConstraintsFromElement(characteristic.elementCharacteristic);
+    }
+
+    if (characteristic instanceof DefaultEither) {
+        return [...getConstraintsFromElement(characteristic.left), ...getConstraintsFromElement(characteristic.right)];
+    }
+
+    if (characteristic instanceof DefaultStructuredValue) {
+        return characteristic.elements.reduce(
+            (acc, element) =>
+                element instanceof DefaultPropertyInstanceDefinition
+                    ? [...acc, ...getConstraintsFromElement(element.wrappedProperty.characteristic)]
+                    : acc,
+            []
+        );
+    }
+
+    return [];
 }
