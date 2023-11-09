@@ -11,7 +11,7 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-import {Characteristic, Constraint, DefaultConstraint, Property} from '@esmf/aspect-model-loader';
+import {Characteristic, Constraint, DefaultConstraint, DefaultTrait, Property} from '@esmf/aspect-model-loader';
 import {apply, applyTemplates, chain, MergeStrategy, mergeWith, move, Rule, SchematicContext, url} from '@angular-devkit/schematics';
 import {strings} from '@angular-devkit/core';
 import {templateInclude} from '../../../../shared/include';
@@ -175,6 +175,12 @@ export abstract class FormFieldStrategy {
     }
 
     getChildStrategy(parent: Property, child: Characteristic): FormFieldStrategy {
-        return getFormFieldStrategy(this.options, this.context, this.parent, child, child.name);
+        return getFormFieldStrategy(
+            this.options,
+            this.context,
+            this.parent,
+            child,
+            child instanceof DefaultTrait ? child.baseCharacteristic.name : child.name
+        );
     }
 }
