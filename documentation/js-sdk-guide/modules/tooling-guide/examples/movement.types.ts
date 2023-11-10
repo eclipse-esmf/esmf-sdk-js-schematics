@@ -11,35 +11,36 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-/**
- * Aspect for movement information
- */
-export interface Movement {
-    /** Flag indicating if the position is changing */
-    moving: boolean;
-    /** Indicates if speed limit is adhered to. */
-    speedLimitWarning: WarningLevel;
-    /** Indicates a position */
-    position: SpatialPosition;
+export interface MultiLanguageText {
+    /** key defines the locale. Value is the translated text for that locale. */
+    [key: string]: string;
 }
 
-/**
- * Represents if speed of position change is within specification (green), within tolerance (yellow), or outside specification (red).
- */
-export enum WarningLevel {
+/** Aspect for movement information */
+export interface Movement {
+    /** Flag indicating whether the asset is currently moving */
+    isMoving: boolean;
+    /** Indicates a position */
+    position: SpatialPosition;
+    /** speed of vehicle */
+    speed: number;
+    /** Indicates if the speed limit is adhered to. */
+    speedLimitWarning: TrafficLight;
+}
+
+/** Represents latitude, longitude and altitude information in the WGS84 geodetic reference datum */
+export interface SpatialPosition {
+    /** latitude coordinate in space (WGS84) */
+    latitude: number;
+    /** longitude coordinate in space (WGS84) */
+    longitude: number;
+    /** Elevation above sea level zero */
+    altitude?: number;
+}
+
+/** Represents if speed of position change is within specification (green), within tolerance (yellow), or outside specification (red). */
+export enum TrafficLight {
     Green = 'green',
     Yellow = 'yellow',
     Red = 'red',
-}
-
-/**
- * Position in space, described along three axis, with the third axis optional, if all positions are in a plane.
- */
-export interface SpatialPosition {
-    /** x coordinate in space */
-    x: number;
-    /** y coordinate in space */
-    y: number;
-    /** z coordinate in space */
-    z: number;
 }
