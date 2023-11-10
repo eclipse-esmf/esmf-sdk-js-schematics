@@ -206,7 +206,7 @@ File _app/shared/types/movement.types.ts_
 
 ```typescript
 export interface Movement {
-    moving: boolean;
+    isMoving: boolean;
     speed: number;
     speedLimitWarning: TrafficLight;
     position: SpatialPosition;
