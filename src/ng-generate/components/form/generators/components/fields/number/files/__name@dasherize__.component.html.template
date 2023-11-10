@@ -5,7 +5,7 @@
         matInput
         placeholder=""
         [formControl]="formControl"
-        data-test="<%= options.fieldConfig.name %>-number-input"
+        data-test="<%= options.fieldConfig.name %>-number"
         (ngModelChange)="value = $event"
     />
     <% if (options.fieldConfig.unitName) {

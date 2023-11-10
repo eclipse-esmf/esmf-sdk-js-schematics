@@ -1,7 +1,7 @@
 <form [formGroup]="formGroup">
     <fieldset class="form-group">
         <legend
-         data-test="<%= options.fieldConfig.name %>-date-input"
+         data-test="<%= options.fieldConfig.name %>-date"
         ><%= options.fieldConfig.name %></legend>
         <% if (options.fieldConfig.deconstructionRule) {
             %><p class="form-info">Deconstruction rule: <code>{{deconstructionRule}}</code></p>

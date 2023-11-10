@@ -1,9 +1,9 @@
 <fieldset>
   <legend><%= options.fieldConfig.name %></legend>
   <section class="table-actions" [class.disabled]="formArray.disabled">
-    <button mat-flat-button (click)="onAdd()" data-test="btn-add">Add</button>
-    <button mat-flat-button (click)="onEdit(selection)" [disabled]="!isSelection" data-test="btn-edit">Edit</button>
-    <button mat-flat-button (click)="onDelete(selection)" [disabled]="!isSelection" data-test="btn-delete">Delete</button>
+    <button mat-flat-button (click)="onAdd()" data-test="<%= options.fieldConfig.name %>-btn-add">Add</button>
+    <button mat-flat-button (click)="onEdit(selection)" [disabled]="!isSelection" data-test="<%= options.fieldConfig.name %>-btn-edit">Edit</button>
+    <button mat-flat-button (click)="onDelete(selection)" [disabled]="!isSelection" data-test="<%= options.fieldConfig.name %>-btn-delete">Delete</button>
   </section>
 
   <ng-container *ngIf="dataSource.data.length; else empty">

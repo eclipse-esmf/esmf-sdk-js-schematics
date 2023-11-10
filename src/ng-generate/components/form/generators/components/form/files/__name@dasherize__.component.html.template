@@ -8,7 +8,7 @@
     <% } %></section>
 
     <section class="form-actions" [class.disabled]="form.disabled">
-        <button mat-flat-button (click)="onCancel()" data-test="btn-cancel-form">Cancel</button>
-        <button mat-flat-button color="primary" [disabled]="form.invalid" (click)="onSubmit(form)" data-test="btn-submit-form">Submit</button>
+        <button mat-flat-button (click)="onCancel()" data-test="<%= options.name %>-btn-cancel-form">Cancel</button>
+        <button mat-flat-button color="primary" [disabled]="form.invalid" (click)="onSubmit(form)" data-test="<%= options.name %>-btn-submit-form">Submit</button>
     </section>
 </form>

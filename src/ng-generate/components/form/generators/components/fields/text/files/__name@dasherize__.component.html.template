@@ -6,7 +6,7 @@
         placeholder=""
         [formControl]="formControl"
         (ngModelChange)="value = $event"
-        data-test="<%= options.fieldConfig.name %>-input"
+        data-test="<%= options.fieldConfig.name %>"
     />
     <% if (options.fieldConfig.unitName) {
         %><span matTextSuffix>unit:<%= options.fieldConfig.unitName %></span>
