@@ -1,4 +1,4 @@
-<form [formGroup]="form" class="<%= options.name %>">
+<form [formGroup]="form" class="<%= options.name %>" data-test="<%= options.name %>">
     <section class="form-fields"><% for (let childConfig of options.childConfigs) {
         %><% if (childConfig.isList === true) { %>
            <<%= options.prefix %>-<%= dasherize(childConfig.name) %> formArrayName="<%= childConfig.name %>"></<%= options.prefix %>-<%= dasherize(childConfig.name) %>>
@@ -8,7 +8,7 @@
     <% } %></section>
 
     <section class="form-actions" [class.disabled]="form.disabled">
-        <button mat-flat-button (click)="onCancel()">Cancel</button>
-        <button mat-flat-button color="primary" [disabled]="form.invalid" (click)="onSubmit(form)">Submit</button>
+        <button mat-flat-button (click)="onCancel()" data-test="btn-cancel-form">Cancel</button>
+        <button mat-flat-button color="primary" [disabled]="form.invalid" (click)="onSubmit(form)" data-test="btn-submit-form">Submit</button>
     </section>
 </form>

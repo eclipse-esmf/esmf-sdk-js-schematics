@@ -1,12 +1,15 @@
 <form [formGroup]="formGroup">
     <fieldset class="form-group">
-        <legend><%= options.fieldConfig.name %></legend>
+        <legend
+         data-test="<%= options.fieldConfig.name %>-date-input"
+        ><%= options.fieldConfig.name %></legend>
         <% if (options.fieldConfig.deconstructionRule) {
             %><p class="form-info">Deconstruction rule: <code>{{deconstructionRule}}</code></p>
         <% } %>
         <section class="form-fields">
             <% for (let childConfig of options.fieldConfig.children) {
-                %><<%= childConfig.selector %> formControlName="<%= childConfig.name %>"></<%= childConfig.selector %>>
+                %><<%= childConfig.selector %> formControlName="<%= childConfig.name %>"
+                ></<%= childConfig.selector %>>
             <% } %>
         </section>
     </fieldset>

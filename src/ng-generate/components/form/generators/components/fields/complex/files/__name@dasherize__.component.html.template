@@ -3,7 +3,7 @@
         <legend><%= options.fieldConfig.name %></legend>
         <section class="form-fields">
             <% for (let childConfig of options.fieldConfig.children) {
-                %><<%= childConfig.selector %> formControlName="<%= childConfig.name %>"></<%= childConfig.selector %>>
+                %><<%= childConfig.selector %> formControlName="<%= childConfig.name %>" data-test="<%= childConfig.name %>-field"></<%= childConfig.selector %>>
             <% } %>
         </section>
     </fieldset>
