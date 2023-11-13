@@ -1,5 +1,5 @@
 <form [formGroup]="formGroup">
-    <fieldset class="form-group" data-test="<%= options.fieldConfig.name %>">
+    <fieldset class="form-group" data-test="<%= options.fieldConfig.name %>-either">
         <legend><%= options.fieldConfig.name %></legend>
         <section class="form-fields">
             <% for (let childConfig of options.fieldConfig.children) {

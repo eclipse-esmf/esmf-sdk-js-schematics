@@ -4,7 +4,7 @@
         type="text"
         matInput
         placeholder="<%= options.fieldConfig.placeholder %>"
-        data-test="<%= options.fieldConfig.placeholder %>"
+        data-test="<%= options.fieldConfig.name %>"
         [formControl]="formControl"
         (ngModelChange)="value = $event"
     />
