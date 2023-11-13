@@ -2,4 +2,5 @@
     class="form-field"
     [formControl]="formControl"
     (ngModelChange)="value = $event"
+    data-test="<%= options.fieldConfig.name %>-checkbox"
 ><%= options.fieldConfig.name %></mat-checkbox>
