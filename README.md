@@ -206,21 +206,22 @@ File _app/shared/types/movement.types.ts_
 
 ```typescript
 export interface Movement {
-    moving: boolean;
-    speedLimitWarning: WarningLevel;
+    isMoving: boolean;
+    speed: number;
+    speedLimitWarning: TrafficLight;
     position: SpatialPosition;
 }
 
-export enum WarningLevel {
+export enum TrafficLight {
     Green = 'green',
     Yellow = 'yellow',
     Red = 'red',
 }
 
 export interface SpatialPosition {
-    x: number;
-    y: number;
-    z: number;
+    latitude: number;
+    longitude: number;
+    altitude?: number;
 }
 ```
 

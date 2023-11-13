@@ -101,7 +101,7 @@ describe('Generation of types from aspect model', (): void => {
         // Check the interface definition for the aspect
         expect(generatedTypeDefinitions).toMatch(/export interface TestXSDCoreTypes/);
 
-        // see https://eclipse-esmf.github.io/samm-specification/2.0.0/index.html
+        // see https://eclipse-esmf.github.io/samm-specification/2.1.0/index.html
         // Core Types
         expect(generatedTypeDefinitions).toMatch(/a\s*:\s*string\s*;/);
         expect(generatedTypeDefinitions).toMatch(/b\s*:\s*boolean\s*;/);
@@ -122,7 +122,7 @@ describe('Generation of types from aspect model', (): void => {
         // Check the interface definition for the aspect
         expect(generatedTypeDefinitions).toMatch(/export interface TestXSDFloatingPointNumberTypes/);
 
-        // see https://eclipse-esmf.github.io/samm-specification/2.0.0/index.html
+        // see https://eclipse-esmf.github.io/samm-specification/2.1.0/index.html
         // IEEE Floating-Point number types
         expect(generatedTypeDefinitions).toMatch(/a\s*:\s*number\s*;/);
         expect(generatedTypeDefinitions).toMatch(/b\s*:\s*number\s*;/);
@@ -141,7 +141,7 @@ describe('Generation of types from aspect model', (): void => {
         // Check the interface definition for the aspect
         expect(generatedTypeDefinitions).toMatch(/export interface TestXSDTimeAndDateTypes/);
 
-        // see https://eclipse-esmf.github.io/samm-specification/2.0.0/index.html
+        // see https://eclipse-esmf.github.io/samm-specification/2.1.0/index.html
         // Time and Date types
         expect(generatedTypeDefinitions).toMatch(/a\s*:\s*Date\s*;/);
         expect(generatedTypeDefinitions).toMatch(/b\s*:\s*Date\s*;/);
@@ -162,7 +162,7 @@ describe('Generation of types from aspect model', (): void => {
         // Check the interface definition for the aspect
         expect(generatedTypeDefinitions).toMatch(/export interface TestXSDLimitedIntegerNumberTypes/);
 
-        // see https://eclipse-esmf.github.io/samm-specification/2.0.0/index.html
+        // see https://eclipse-esmf.github.io/samm-specification/2.1.0/index.html
         // Limited-range Integer Numbers
         expect(generatedTypeDefinitions).toMatch(/a\s*:\s*number\s*;/);
         expect(generatedTypeDefinitions).toMatch(/b\s*:\s*number\s*;/);
@@ -193,7 +193,7 @@ describe('Generation of types from aspect model', (): void => {
         // Check the interface definition for the aspect
         expect(generatedTypeDefinitions).toMatch(/export interface TestXSDMiscellaneousTypes/);
 
-        // see https://eclipse-esmf.github.io/samm-specification/2.0.0/index.html
+        // see https://eclipse-esmf.github.io/samm-specification/2.1.0/index.html
         // Miscellaneous Types
         expect(generatedTypeDefinitions).toMatch(/a\s*:\s*string\s*;/);
         expect(generatedTypeDefinitions).toMatch(/b\s*:\s*string\s*;/);
