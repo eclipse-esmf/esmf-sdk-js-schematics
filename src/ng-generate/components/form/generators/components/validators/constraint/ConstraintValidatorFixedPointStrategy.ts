@@ -11,22 +11,26 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-import {ValidatorStrategy} from './ValidatorStrategy';
+import {ConstraintValidatorStrategy} from './ConstraintValidatorStrategy';
 import {Constraint, DefaultFixedPointConstraint} from '@esmf/aspect-model-loader';
-import {ValidatorConfig} from '../fields/FormFieldStrategy';
+import {ValidatorConfig, ValidatorType} from '../../fields/FormFieldStrategy';
 
-export class FixedPointValidatorStrategy extends ValidatorStrategy {
+export class ConstraintValidatorFixedPointStrategy extends ConstraintValidatorStrategy {
     static isTargetStrategy(constraint: Constraint): boolean {
         return constraint instanceof DefaultFixedPointConstraint;
     }
 
     getValidatorsConfigs(): ValidatorConfig[] {
         const typedConstraint = this.constraint as DefaultFixedPointConstraint;
+        const isApplyToChildren = this.isList() || this.isComplex();
 
         return [
             {
                 name: this.constraint.name,
-                definition: `FormValidators.fixedPointValidator(${typedConstraint.integer}, ${typedConstraint.scale})`,
+                type: ValidatorType.FixedPoint,
+                definition: isApplyToChildren
+                    ? `FormValidators.applyToChildren(FormValidators.fixedPointValidator(${typedConstraint.integer}, ${typedConstraint.scale}))`
+                    : `FormValidators.fixedPointValidator(${typedConstraint.integer}, ${typedConstraint.scale})`,
             },
         ];
     }

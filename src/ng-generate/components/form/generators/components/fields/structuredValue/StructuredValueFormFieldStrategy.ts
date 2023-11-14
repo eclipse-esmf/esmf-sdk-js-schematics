@@ -12,8 +12,9 @@
  */
 
 import {Characteristic, DefaultPropertyInstanceDefinition, DefaultStructuredValue, Property} from '@esmf/aspect-model-loader';
-import {FormFieldConfig, FormFieldStrategy} from '../FormFieldStrategy';
+import {FormFieldConfig, FormFieldStrategy, ValidatorConfig, ValidatorType} from '../FormFieldStrategy';
 import {getFormFieldStrategy} from '../index';
+import {DefaultProperty} from '@esmf/aspect-model-loader/dist/aspect-meta-model/default-property';
 
 export class StructuredValueFormFieldStrategy extends FormFieldStrategy {
     pathToFiles = './generators/components/fields/structuredValue/files';
@@ -29,7 +30,7 @@ export class StructuredValueFormFieldStrategy extends FormFieldStrategy {
         return {
             ...this.getBaseFormFieldConfig(),
             deconstructionRule: this.child.deconstructionRule,
-            validators: this.getValidatorsConfigs(),
+            validators: [...this.getValidatorsConfigs(), this.deconstructionRuleGroupValidatorConfig(this.child)],
             children: this.getChildConfigs(),
         };
     }
@@ -43,5 +44,20 @@ export class StructuredValueFormFieldStrategy extends FormFieldStrategy {
 
     getChildStrategy(parent: Property, child: Characteristic): FormFieldStrategy {
         return getFormFieldStrategy(this.options, this.context, parent, child, parent.name);
+    }
+
+    deconstructionRuleGroupValidatorConfig(element: DefaultStructuredValue): ValidatorConfig {
+        const elements = element.elements.filter(el => el && typeof el !== 'string') as DefaultProperty[];
+        const rules = element.deconstructionRule.split('@').map(rule => `/${rule}/`);
+        const deconstructionRulesConfigs = rules.map((rule, i) => `{ name: "${elements[i]?.name ?? ''}", rule: ${rule} }`);
+
+        return {
+            name: 'deconstructionRule',
+            type: ValidatorType.DeconstructionRule,
+            definition: `FormValidators.deconstructionRuleValidator([
+            ${deconstructionRulesConfigs.join(',\n')}
+        ])`,
+            isDirectGroupValidator: true,
+        };
     }
 }

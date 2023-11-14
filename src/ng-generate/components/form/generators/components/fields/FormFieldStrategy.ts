@@ -17,12 +17,25 @@ import {strings} from '@angular-devkit/core';
 import {templateInclude} from '../../../../shared/include';
 import {addToComponentModule} from '../../../../../../utils/angular';
 import {getFormFieldStrategy} from './index';
-import {getValidatorStrategy} from '../validators/index';
-import {ValidatorStrategyClass} from '../validators/validator-strategies';
+import {getConstraintValidatorStrategy} from '../validators/constraint/index';
+import {ConstraintValidatorStrategyClass} from '../validators/constraint/constraint-validator-strategies';
+
+export enum ValidatorType {
+    DeconstructionRule = 'DeconstructionRule',
+    Encoding = 'Encoding',
+    FixedPoint = 'FixedPoint',
+    Length = 'Length',
+    Range = 'Range',
+    Required = 'Required',
+    RegExp = 'RegExp',
+    UniqueValues = 'UniqueValues',
+}
 
 export interface ValidatorConfig {
     name: string;
+    type: ValidatorType;
     definition: string;
+    isDirectGroupValidator?: boolean;
 }
 
 export interface BaseFormFieldConfig {
@@ -48,6 +61,7 @@ export abstract class FormFieldStrategy {
     pathToFiles: string;
     hasChildren: boolean;
     options: any;
+    isList: boolean = false;
 
     static isTargetStrategy(child: Characteristic): boolean {
         throw new Error('An implementation of the method has to be provided by a derived class');
@@ -68,7 +82,7 @@ export abstract class FormFieldStrategy {
         this.options = {...options};
     }
 
-    getValidatorsConfigs(ignoreStrategies: ValidatorStrategyClass = []): ValidatorConfig[] {
+    getValidatorsConfigs(ignoreStrategies: ConstraintValidatorStrategyClass = []): ValidatorConfig[] {
         return [...this.getBaseValidatorsConfigs(), ...this.getConstraintValidatorsConfigs(ignoreStrategies)];
     }
 
@@ -78,6 +92,7 @@ export abstract class FormFieldStrategy {
         if (!this.parent.isOptional) {
             validatorsConfigs.push({
                 name: `required`,
+                type: ValidatorType.Required,
                 definition: 'Validators.required',
             });
         }
@@ -85,7 +100,7 @@ export abstract class FormFieldStrategy {
         return validatorsConfigs;
     }
 
-    getConstraintValidatorsConfigs(ignoreStrategies: ValidatorStrategyClass): ValidatorConfig[] {
+    getConstraintValidatorsConfigs(ignoreStrategies: ConstraintValidatorStrategyClass): ValidatorConfig[] {
         const applicableConstraints: Constraint[] = this.constraints.filter(
             constraint =>
                 // Check that it's not excluded explicitly
@@ -95,7 +110,7 @@ export abstract class FormFieldStrategy {
         );
 
         return applicableConstraints.reduce((acc, constraint) => {
-            const validatorStrategy = getValidatorStrategy(constraint);
+            const validatorStrategy = getConstraintValidatorStrategy(constraint, this.child);
             const isIgnoredStrategy = !!ignoreStrategies.find(ignoredStrategy => validatorStrategy instanceof ignoredStrategy);
 
             if (isIgnoredStrategy) {

@@ -9,8 +9,13 @@ import {
     NG_VALIDATORS,
     NG_VALUE_ACCESSOR,
     ReactiveFormsModule,
+    ValidatorFn,
+    Validators,
 } from '@angular/forms';
+import {MatFormFieldModule} from "@angular/material/form-field";
+import {TranslateModule} from "@ngx-translate/core";
 import {FormGroupReusable} from '<% if (options.enableVersionSupport) { %>../<% } %>../../../utils/form-group-reusable';
+import {FormValidators} from '<% if (options.enableVersionSupport) { %>../<% } %>../../../utils/form-validators';
 <% for (let childConfig of options.fieldConfig.children) {
     %>import {<%= classify(childConfig.name) %>Component, <%= childConfig.name %>FormControl} from '../<%= childConfig.nameDasherized %>/<%= childConfig.nameDasherized %>.component';
 <% } %>
@@ -21,12 +26,18 @@ export interface <%= options.fieldConfig.name %> {
     <% } %>
 }
 
+export const validators: {[key: string]: ValidatorFn} = {
+    <% for(let validator of options.fieldConfig.validators) { %>
+        <%= validator.name %>: (<%= validator.definition %>),
+    <% } %>
+};
+
 export const <%= options.fieldConfig.name %>FormControl = new FormControl<<%= options.fieldConfig.name %> | null>(null);
 export const <%= options.fieldConfig.name %>FormGroup = new FormGroup<<%= options.fieldConfig.name %>>({
     <% for (let childConfig of options.fieldConfig.children) {
         %><%= childConfig.name %>: <%= childConfig.name %>FormControl,
     <% } %>
-});
+}, Object.values(validators));
 
 @Component({
     selector: '<%= options.fieldConfig.selector %>',
@@ -35,6 +46,8 @@ export const <%= options.fieldConfig.name %>FormGroup = new FormGroup<<%= option
         CommonModule,
         FormsModule,
         ReactiveFormsModule,
+        MatFormFieldModule,
+        TranslateModule,
         <% for (let childConfig of options.fieldConfig.children) {
             %><%= classify(childConfig.name) %>Component,
         <% } %>

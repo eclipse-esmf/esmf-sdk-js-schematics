@@ -11,11 +11,11 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-import {ValidatorStrategy} from './ValidatorStrategy';
+import {ConstraintValidatorStrategy} from './ConstraintValidatorStrategy';
 import {Constraint, DefaultRangeConstraint} from '@esmf/aspect-model-loader';
-import {ValidatorConfig} from '../fields/FormFieldStrategy';
+import {ValidatorConfig, ValidatorType} from '../../fields/FormFieldStrategy';
 
-export class RangeValidatorStrategy extends ValidatorStrategy {
+export class ConstraintValidatorRangeStrategy extends ConstraintValidatorStrategy {
     static isTargetStrategy(constraint: Constraint): boolean {
         return constraint instanceof DefaultRangeConstraint;
     }
@@ -27,10 +27,15 @@ export class RangeValidatorStrategy extends ValidatorStrategy {
             return [];
         }
 
+        const isApplyToChildren = this.isList() || this.isComplex();
+
         return [
             {
                 name: this.constraint.name,
-                definition: `FormValidators.rangeValidator(${typedConstraint.minValue}, "${typedConstraint.lowerBoundDefinition}", ${typedConstraint.maxValue}, "${typedConstraint.upperBoundDefinition}")`,
+                type: ValidatorType.Range,
+                definition: isApplyToChildren
+                    ? `FormValidators.applyToChildren(FormValidators.rangeValidator(${typedConstraint.minValue}, "${typedConstraint.lowerBoundDefinition}", ${typedConstraint.maxValue}, "${typedConstraint.upperBoundDefinition}"))`
+                    : `FormValidators.rangeValidator(${typedConstraint.minValue}, "${typedConstraint.lowerBoundDefinition}", ${typedConstraint.maxValue}, "${typedConstraint.upperBoundDefinition}")`,
             },
         ];
     }

@@ -1,11 +1,6 @@
 /** <%= options.generationDisclaimerText %> **/
-import {ControlValueAccessor} from '@angular/forms';
-import {FormControl} from '@angular/forms';
-
-interface CustomControlValidationError {
-    translationKey: string;
-    translationParams: {[key: string]: any};
-}
+import {ControlValueAccessor, FormControl} from '@angular/forms';
+import {CustomControlValidationError} from "./form-validators";
 
 export abstract class FormControlReusable implements ControlValueAccessor {
     abstract formControl: FormControl<any>

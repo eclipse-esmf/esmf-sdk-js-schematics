@@ -11,11 +11,11 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-import {ValidatorStrategy} from './ValidatorStrategy';
+import {ConstraintValidatorStrategy} from './ConstraintValidatorStrategy';
 import {Constraint, DefaultLengthConstraint} from '@esmf/aspect-model-loader';
-import {ValidatorConfig} from '../fields/FormFieldStrategy';
+import {ValidatorConfig, ValidatorType} from '../../fields/FormFieldStrategy';
 
-export class LengthValidatorStrategy extends ValidatorStrategy {
+export class ConstraintValidatorLengthStrategy extends ConstraintValidatorStrategy {
     static isTargetStrategy(constraint: Constraint): boolean {
         return constraint instanceof DefaultLengthConstraint;
     }
@@ -30,7 +30,12 @@ export class LengthValidatorStrategy extends ValidatorStrategy {
         return [
             {
                 name: this.constraint.name,
-                definition: `FormValidators.lengthValidator(${typedConstraint.minValue}, ${typedConstraint.maxValue})`,
+                type: ValidatorType.Length,
+                definition: this.isList()
+                    ? `FormValidators.listLengthValidator(${typedConstraint.minValue}, ${typedConstraint.maxValue})`
+                    : this.isComplex()
+                    ? `FormValidators.applyToChildren(FormValidators.lengthValidator(${typedConstraint.minValue}, ${typedConstraint.maxValue}))`
+                    : `FormValidators.lengthValidator(${typedConstraint.minValue}, ${typedConstraint.maxValue})`,
             },
         ];
     }

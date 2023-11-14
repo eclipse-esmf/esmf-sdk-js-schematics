@@ -13,7 +13,7 @@
 
 import {Characteristic} from '@esmf/aspect-model-loader';
 import {FormFieldConfig, FormFieldStrategy} from '../FormFieldStrategy';
-import {RangeValidatorStrategy} from '../../validators/RangeValidatorStrategy';
+import {ConstraintValidatorRangeStrategy} from '../../validators/constraint/ConstraintValidatorRangeStrategy';
 
 const DEFAULT_FORMAT = 'yyyy-MM-DD';
 const typesConfigs = [
@@ -37,7 +37,7 @@ export class DateFormFieldStrategy extends FormFieldStrategy {
         return {
             ...this.getBaseFormFieldConfig(),
             exampleValue: this.parent.exampleValue || '',
-            validators: this.getValidatorsConfigs([RangeValidatorStrategy]),
+            validators: this.getValidatorsConfigs([ConstraintValidatorRangeStrategy]),
             dataFormat: this.getDataFormat(),
         };
     }

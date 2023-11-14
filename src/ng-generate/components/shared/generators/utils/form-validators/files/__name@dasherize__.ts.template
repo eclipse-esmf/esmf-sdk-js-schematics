@@ -1,12 +1,127 @@
 /** <%= options.generationDisclaimerText %> **/
 
-import {AbstractControl, ValidationErrors, ValidatorFn} from '@angular/forms';
+import {AbstractControl, FormArray, FormGroup, ValidationErrors, ValidatorFn} from '@angular/forms';
 import * as charsetDetector from 'charset-detector';
+
+export interface CustomControlValidationError {
+    translationKey: string;
+    translationParams: {[key: string]: any};
+}
 
 type BoundDefinition = 'OPEN' | 'AT_LEAST' | 'GREATER_THAN' | 'LESS_THAN' | 'AT_MOST';
 type Encoding = 'US-ASCII' | 'ISO-8859-1' | 'UTF-8' | 'UTF-16' | 'UTF-16BE' | 'UTF-16LE';
 
 export class FormValidators {
+    static applyToChildren(validator: ValidatorFn): ValidatorFn {
+        return (control: AbstractControl): ValidationErrors | null => {
+            const group = control as FormGroup;
+            const controls = Object.values(group.controls);
+
+            const validationErrors = controls
+                .map(c => {
+                  const errors = validator(c);
+
+                  if (errors) {
+                      c.setErrors(errors);
+                  }
+
+                  return errors;
+                })
+                .filter(c => !!c);
+
+            return validationErrors[0] ?? null;
+        };
+    }
+
+    static uniqueValuesValidator(): ValidatorFn {
+        return (control: AbstractControl): ValidationErrors | null => {
+            const group = control as FormGroup;
+
+            if (!group.value) {
+                return null;
+            }
+
+            const values = Object.values(group.value).filter(value => !!value);
+            const isUnique = new Set(values).size === values.length;
+
+            return !isUnique ? {
+                lengthMin: {
+                    translationKey: 'validation.group_unique_values',
+                    translationParams: {},
+                    isGroupSpecificError: true
+                },
+            }
+            : null;
+        };
+    }
+
+    static listLengthValidator(min: number | undefined, max: number | undefined): ValidatorFn {
+        return (control: AbstractControl): ValidationErrors | null => {
+            const array = control as FormArray;
+
+            if (!array.value) {
+                return null;
+            }
+
+            const length = array.value.length
+            const minStatement = min !== undefined ? length >= min : true;
+            const maxStatement = max !== undefined ? length <= max : true;
+
+            return !minStatement
+                ? {
+                    lengthMin: {
+                        translationKey: 'validation.list_length_min',
+                        translationParams: {
+                            min
+                        },
+                        isGroupSpecificError: true
+                    }
+                }
+                : !maxStatement
+                ? {
+                    lengthMax: {
+                        translationKey: 'validation.list_length_max',
+                        translationParams: {
+                            max
+                        },
+                        isGroupSpecificError: true
+                    }
+                }
+                : null;
+        };
+    }
+
+    static deconstructionRuleValidator(rules: {name: string; rule: RegExp}[]): ValidatorFn {
+        return (control: AbstractControl): ValidationErrors | null => {
+            const group = control as FormGroup;
+
+            if (!group.value) {
+                return null;
+            }
+
+            const validationErrors = rules
+                .map(({name, rule}) => {
+                    const control = group.get(name);
+
+                    if (!control) {
+                        return null;
+                    }
+
+                    const validator = FormValidators.regularExpression(rule);
+                    const errors = validator(control);
+
+                    if (errors) {
+                        control.setErrors(errors);
+                    }
+
+                    return errors;
+                })
+                .filter(c => !!c);
+
+            return validationErrors[0] ?? null;
+        };
+    }
+
     static encodingValidator(encoding: Encoding): ValidatorFn {
         const error = {
             encoding: {

@@ -11,11 +11,11 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-import {ValidatorStrategy} from './ValidatorStrategy';
+import {ConstraintValidatorStrategy} from './ConstraintValidatorStrategy';
 import {Constraint, DefaultRegularExpressionConstraint} from '@esmf/aspect-model-loader';
-import {ValidatorConfig} from '../fields/FormFieldStrategy';
+import {ValidatorConfig, ValidatorType} from '../../fields/FormFieldStrategy';
 
-export class RegularExpressionValidatorStrategy extends ValidatorStrategy {
+export class ConstraintValidatorRegularExpressionStrategy extends ConstraintValidatorStrategy {
     static isTargetStrategy(constraint: Constraint): boolean {
         return constraint instanceof DefaultRegularExpressionConstraint;
     }
@@ -27,10 +27,15 @@ export class RegularExpressionValidatorStrategy extends ValidatorStrategy {
             return [];
         }
 
+        const isApplyToChildren = this.isList() || this.isComplex();
+
         return [
             {
                 name: this.constraint.name,
-                definition: `FormValidators.regularExpression(${typedConstraint.value})`,
+                type: ValidatorType.RegExp,
+                definition: isApplyToChildren
+                    ? `FormValidators.applyToChildren(FormValidators.regularExpression(${typedConstraint.value}))`
+                    : `FormValidators.regularExpression(${typedConstraint.value})`,
             },
         ];
     }

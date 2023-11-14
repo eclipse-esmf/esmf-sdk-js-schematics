@@ -1,9 +1,20 @@
-<fieldset>
+<fieldset [class.invalid]="formArray.invalid && formArray.touched" (click)="formArray.markAsTouched()">
   <legend><%= options.fieldConfig.name %></legend>
-  <section class="table-actions" [class.disabled]="formArray.disabled">
-    <button mat-flat-button (click)="onAdd()" data-test="<%= options.fieldConfig.name %>-btn-add">Add</button>
-    <button mat-flat-button (click)="onEdit(selection)" [disabled]="!isSelection" data-test="<%= options.fieldConfig.name %>-btn-edit">Edit</button>
-    <button mat-flat-button (click)="onDelete(selection)" [disabled]="!isSelection" data-test="<%= options.fieldConfig.name %>-btn-delete">Delete</button>
+
+  <section class="table-header">
+    <section class="table-error">
+      <mat-error *ngIf="formArray.invalid && formArray.touched && groupSpecificError as err">
+        <ng-container *ngIf="err">
+          {{ err.translationKey | translate : err.translationParams }}
+        </ng-container>
+      </mat-error>
+    </section>
+
+    <section class="table-actions" [class.disabled]="formArray.disabled">
+      <button mat-flat-button (click)="onAdd()" data-test="<%= options.fieldConfig.name %>-btn-add">Add</button>
+      <button mat-flat-button (click)="onEdit(selection)" [disabled]="!isSelection" data-test="<%= options.fieldConfig.name %>-btn-edit">Edit</button>
+      <button mat-flat-button (click)="onDelete(selection)" [disabled]="!isSelection" data-test="<%= options.fieldConfig.name %>-btn-delete">Delete</button>
+    </section>
   </section>
 
   <ng-container *ngIf="dataSource.data.length; else empty">

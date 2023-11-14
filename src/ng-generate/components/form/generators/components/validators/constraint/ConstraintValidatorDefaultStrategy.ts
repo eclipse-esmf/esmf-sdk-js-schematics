@@ -11,11 +11,11 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-import {ValidatorStrategy} from './ValidatorStrategy';
+import {ConstraintValidatorStrategy} from './ConstraintValidatorStrategy';
 import {Constraint} from '@esmf/aspect-model-loader';
-import {ValidatorConfig} from '../fields/FormFieldStrategy';
+import {ValidatorConfig} from '../../fields/FormFieldStrategy';
 
-export class DefaultValidatorStrategy extends ValidatorStrategy {
+export class ConstraintValidatorDefaultStrategy extends ConstraintValidatorStrategy {
     static isTargetStrategy(constraint: Constraint): boolean {
         return true;
     }
