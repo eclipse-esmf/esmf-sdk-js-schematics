@@ -5,6 +5,7 @@
         -   [Generate a component with a custom name](#generate-a-component-with-a-custom-name)
         -   [Select the element for which the form will be generated](#select-the-element-for-which-the-form-will-be-generated)
         -   [Exclude one or more properties from the generation](#exclude-one-or-more-properties-from-the-generation)
+        -   [Exclude one or more constraints from the generation](#exclude-one-or-more-constraints-from-the-generation)
         -   [Multi-version support for Aspect Models](#multi-version-support-for-aspect-models)
         -   [Manual adaptions in _app.module.ts_](#manual-adaptions-in-appmodulets)
         -   [Show form as read only](#show-form-as-read-only)
@@ -17,6 +18,14 @@
     -   [Generate the environments files](#generate-the-environments-files)
 -   [Output](#output)
     -   [Form structure](#form-structure)
+    -   [Validation](#validation)
+        -   [Base validators](#base-validators)
+        -   [Constraint validators](#constraint-validators)
+            -   [Supported Constraint types](#supported-constraint-types)
+            -   [Unsupported Constraint types](#unsupported-constraint-types)
+        -   [Type-specific validators](#type-specific-validators)
+            -   [Supported complex field types](#supported-complex-field-types)
+            -   [Supported scalar field types](#supported-scalar-field-types)
     -   [Usage](#usage)
     -   [Working with list-like controls](#working-with-list-like-controls)
 
@@ -114,6 +123,24 @@ Choose the properties to hide in the form: (Press <space> to select, <a> to togg
 
 The properties will be automatically read from the provided aspect model, and you can select/deselect which of them
 should be removed from the form.
+
+---
+
+## Exclude one or more constraints from the generation
+
+One or more constraints can be excluded during the initial setup when
+the following question appears:
+
+```bash
+Choose the constraints to ignore in the form: (Press <space> to select, <a> to toggle all, <i> to invert selection, and <enter> to proceed)
+>( ) urn:samm:org.eclipse.digitaltwin:1.0.0#LengthConstraintEitherRight
+ ( ) urn:samm:org.eclipse.digitaltwin:1.0.0#RangeConstraintCollection
+```
+
+The constraints will be automatically read from the corresponding subtree of the selected element (Aspect Model Element or Entity),
+and can be select/deselect in order to ignore/keep them in the generated form.
+
+If a constraint relates to a subtree of previously excluded property, it will not be shown in the list during this step.
 
 ---
 
@@ -347,6 +374,48 @@ Generated form structure may vary depending on the model: from a *Root Form Grou
 Despite the possible variations, each form consists of a *Root Form Group* and *Child Form Controls*, which are generated as separate components and can be accessed/reused directly if needed.
 
 Since the generated form is an Angular Reactive Form, all its methods are available for usage, according to the respective control type.
+
+---
+
+## Validation
+
+Each form field or form group can have multiple validators depending on the subtree structure.
+
+### Base validators
+
+Each field/group can be marked as "required" depending on whether the corresponding element in the parsed model is considered as optional or not (has `"isOptional": true | false`).
+
+### Constraint validators
+
+During the generation process, validation rules from constraints will be extracted and applied to the corresponding form elements (individual fields or groups) if they were not explicitly excluded in one of the prompter questions.
+
+#### Supported Constraint types
+
+* EncodingConstraint
+* FixedPointConstraint
+* LengthConstraint
+* RangeConstraint
+* RegularExpressionConstraint
+
+#### Unsupported Constraint types
+
+* LanguageConstraint
+* LocaleConstraint
+* RangeConstraint (for dates)
+
+### Type-specific validators
+
+Since some fields can imply additional restrictions depending on the corresponding element type or its configuration, additional validators will be applied to the respective form control.
+A typical example of such case could be "Either" characteristic, which expects values of child controls to be unique.
+
+#### Supported complex field types
+
+* Either
+* StructuredValue
+
+#### Supported scalar field types
+
+NONE
 
 ---
 
