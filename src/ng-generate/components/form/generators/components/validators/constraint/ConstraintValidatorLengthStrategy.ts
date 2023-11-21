@@ -36,6 +36,7 @@ export class ConstraintValidatorLengthStrategy extends ConstraintValidatorStrate
                     : this.isComplex()
                     ? `FormValidators.applyToChildren(FormValidators.lengthValidator(${typedConstraint.minValue}, ${typedConstraint.maxValue}))`
                     : `FormValidators.lengthValidator(${typedConstraint.minValue}, ${typedConstraint.maxValue})`,
+                isDirectGroupValidator: false,
             },
         ];
     }

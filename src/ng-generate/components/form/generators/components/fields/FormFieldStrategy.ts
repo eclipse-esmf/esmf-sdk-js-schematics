@@ -35,7 +35,7 @@ export interface ValidatorConfig {
     name: string;
     type: ValidatorType;
     definition: string;
-    isDirectGroupValidator?: boolean;
+    isDirectGroupValidator: boolean;
 }
 
 export interface BaseFormFieldConfig {
@@ -82,8 +82,12 @@ export abstract class FormFieldStrategy {
         this.options = {...options};
     }
 
-    getValidatorsConfigs(ignoreStrategies: ConstraintValidatorStrategyClass = []): ValidatorConfig[] {
-        return [...this.getBaseValidatorsConfigs(), ...this.getConstraintValidatorsConfigs(ignoreStrategies)];
+    getValidatorsConfigs(ignoreConstraintValidatorStrategies: ConstraintValidatorStrategyClass = []): ValidatorConfig[] {
+        return [
+            ...this.getBaseValidatorsConfigs(),
+            ...this.getDataTypeValidatorsConfigs(),
+            ...this.getConstraintValidatorsConfigs(ignoreConstraintValidatorStrategies),
+        ];
     }
 
     getBaseValidatorsConfigs(): ValidatorConfig[] {
@@ -94,10 +98,15 @@ export abstract class FormFieldStrategy {
                 name: `required`,
                 type: ValidatorType.Required,
                 definition: 'Validators.required',
+                isDirectGroupValidator: false,
             });
         }
 
         return validatorsConfigs;
+    }
+
+    getDataTypeValidatorsConfigs(): ValidatorConfig[] {
+        return [];
     }
 
     getConstraintValidatorsConfigs(ignoreStrategies: ConstraintValidatorStrategyClass): ValidatorConfig[] {

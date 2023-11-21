@@ -30,9 +30,13 @@ export class StructuredValueFormFieldStrategy extends FormFieldStrategy {
         return {
             ...this.getBaseFormFieldConfig(),
             deconstructionRule: this.child.deconstructionRule,
-            validators: [...this.getValidatorsConfigs(), this.deconstructionRuleGroupValidatorConfig(this.child)],
+            validators: this.getValidatorsConfigs(),
             children: this.getChildConfigs(),
         };
+    }
+
+    getDataTypeValidatorsConfigs(): ValidatorConfig[] {
+        return [this.deconstructionRuleGroupValidatorConfig(this.child)];
     }
 
     getChildStrategies(): FormFieldStrategy[] {

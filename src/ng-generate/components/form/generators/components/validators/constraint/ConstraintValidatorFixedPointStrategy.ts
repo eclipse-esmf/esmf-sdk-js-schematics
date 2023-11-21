@@ -31,6 +31,7 @@ export class ConstraintValidatorFixedPointStrategy extends ConstraintValidatorSt
                 definition: isApplyToChildren
                     ? `FormValidators.applyToChildren(FormValidators.fixedPointValidator(${typedConstraint.integer}, ${typedConstraint.scale}))`
                     : `FormValidators.fixedPointValidator(${typedConstraint.integer}, ${typedConstraint.scale})`,
+                isDirectGroupValidator: false,
             },
         ];
     }

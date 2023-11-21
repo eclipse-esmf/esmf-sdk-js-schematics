@@ -33,6 +33,7 @@ export class ConstraintValidatorEncodingStrategy extends ConstraintValidatorStra
                       definition: isApplyToChildren
                           ? `FormValidators.applyToChildren(FormValidators.encodingValidator('US-ASCII'))`
                           : `FormValidators.encodingValidator('US-ASCII')`,
+                      isDirectGroupValidator: false,
                   },
               ]
             : type === 'ISO-8859-1'
@@ -43,6 +44,7 @@ export class ConstraintValidatorEncodingStrategy extends ConstraintValidatorStra
                       definition: isApplyToChildren
                           ? `FormValidators.applyToChildren(FormValidators.encodingValidator('ISO-8859-1'))`
                           : `FormValidators.encodingValidator('ISO-8859-1')`,
+                      isDirectGroupValidator: false,
                   },
               ]
             : type === 'UTF-8'
@@ -53,6 +55,7 @@ export class ConstraintValidatorEncodingStrategy extends ConstraintValidatorStra
                       definition: isApplyToChildren
                           ? `FormValidators.applyToChildren(FormValidators.encodingValidator('UTF-8'))`
                           : `FormValidators.encodingValidator('UTF-8')`,
+                      isDirectGroupValidator: false,
                   },
               ]
             : type === 'UTF-16'
@@ -63,6 +66,7 @@ export class ConstraintValidatorEncodingStrategy extends ConstraintValidatorStra
                       definition: isApplyToChildren
                           ? `FormValidators.applyToChildren(FormValidators.encodingValidator('UTF-16'))`
                           : `FormValidators.encodingValidator('UTF-16')`,
+                      isDirectGroupValidator: false,
                   },
               ]
             : type === 'UTF-16BE'
@@ -73,6 +77,7 @@ export class ConstraintValidatorEncodingStrategy extends ConstraintValidatorStra
                       definition: isApplyToChildren
                           ? `FormValidators.applyToChildren(FormValidators.encodingValidator('UTF-16BE'))`
                           : `FormValidators.encodingValidator('UTF-16BE')`,
+                      isDirectGroupValidator: false,
                   },
               ]
             : type === 'UTF-16LE'
@@ -83,6 +88,7 @@ export class ConstraintValidatorEncodingStrategy extends ConstraintValidatorStra
                       definition: isApplyToChildren
                           ? `FormValidators.applyToChildren(FormValidators.encodingValidator('UTF-16LE'))`
                           : `FormValidators.encodingValidator('UTF-16LE')`,
+                      isDirectGroupValidator: false,
                   },
               ]
             : [];

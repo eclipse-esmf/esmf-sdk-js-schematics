@@ -36,6 +36,7 @@ export class ConstraintValidatorRangeStrategy extends ConstraintValidatorStrateg
                 definition: isApplyToChildren
                     ? `FormValidators.applyToChildren(FormValidators.rangeValidator(${typedConstraint.minValue}, "${typedConstraint.lowerBoundDefinition}", ${typedConstraint.maxValue}, "${typedConstraint.upperBoundDefinition}"))`
                     : `FormValidators.rangeValidator(${typedConstraint.minValue}, "${typedConstraint.lowerBoundDefinition}", ${typedConstraint.maxValue}, "${typedConstraint.upperBoundDefinition}")`,
+                isDirectGroupValidator: false,
             },
         ];
     }
