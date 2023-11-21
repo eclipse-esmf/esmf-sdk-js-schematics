@@ -348,7 +348,435 @@ export class FormValidators {
                             pattern: pattern.source,
                         },
                     }
-                  };
+                };
         };
+    }
+
+    static byteValidator(): ValidatorFn {
+        return (control: AbstractControl): ValidationErrors | null => {
+            const value = control.value;
+
+            if (!value) {
+                return null;
+            }
+
+            const pattern = /^[-+]?[0-9]+$/;
+            const maxInclusive = 127;
+            const minInclusive = -128;
+
+            const isMatch = pattern.test(value) && value >= minInclusive && value <= maxInclusive;
+
+            return isMatch
+                ? null
+                : {
+                    byte: {
+                        translationKey: 'validation.byte',
+                        translationParams: {},
+                    }
+                };
+        }
+    }
+
+    static floatValidator(): ValidatorFn {
+        return (control: AbstractControl): ValidationErrors | null => {
+            const value = control.value;
+
+            if (!value) {
+                return null;
+            }
+
+            const pattern = /^\s*([-+]?(?:\d+\.\d+|\.\d+|\d+)(?:[eE][-+]?\d+)?|([-+]?)INF|NaN)\s*$/;
+            const isMatch = pattern.test(value);
+
+            return isMatch
+                ? null
+                : {
+                    byte: {
+                        translationKey: 'validation.float',
+                        translationParams: {},
+                    }
+                };
+        }
+    }
+
+    static decimalValidator(): ValidatorFn {
+        return (control: AbstractControl): ValidationErrors | null => {
+            const value = control.value;
+
+            if (!value) {
+                return null;
+            }
+
+            const pattern = /^\s*([-+]?\d+(\.\d*)?|\.\d+)([eE][-+]?\d+)?\s*$/
+            const isMatch = pattern.test(value);
+
+            return isMatch
+                ? null
+                : {
+                    byte: {
+                        translationKey: 'validation.decimal',
+                        translationParams: {},
+                    }
+                };
+        }
+    }
+
+    static doubleValidator(): ValidatorFn {
+        return (control: AbstractControl): ValidationErrors | null => {
+            const value = control.value;
+
+            if (!value) {
+                return null;
+            }
+
+            const pattern = /^\s*([-+]?(?:\d+\.\d+|\.\d+|\d+)(?:[eE][-+]?\d+)?|([-+]?)INF|NaN)\s*$/;
+            const isMatch = pattern.test(value);
+
+            return isMatch
+                ? null
+                : {
+                    byte: {
+                        translationKey: 'validation.double',
+                        translationParams: {},
+                    }
+                };
+        }
+    }
+
+    static integerValidator(): ValidatorFn {
+        return (control: AbstractControl): ValidationErrors | null => {
+            const value = control.value;
+
+            if (!value) {
+                return null;
+            }
+
+            const pattern = /^[+-]?\d+$/;
+            const isMatch = pattern.test(value);
+
+            return isMatch
+                ? null
+                : {
+                    byte: {
+                        translationKey: 'validation.integer',
+                        translationParams: {},
+                    }
+                };
+        }
+    }
+
+    static intValidator(): ValidatorFn {
+        return (control: AbstractControl): ValidationErrors | null => {
+            const value = control.value;
+
+            if (!value) {
+                return null;
+            }
+
+            const pattern = /^[+-]?\d+$/;
+            const maxInclusive = 2147483647;
+            const minInclusive = -2147483648;
+
+            const isMatch = pattern.test(value) && value >= minInclusive && value <= maxInclusive;
+
+            return isMatch
+                ? null
+                : {
+                    byte: {
+                        translationKey: 'validation.int',
+                        translationParams: {},
+                    }
+                };
+        }
+    }
+
+    static positiveIntegerValidator(): ValidatorFn {
+        return (control: AbstractControl): ValidationErrors | null => {
+            const value = control.value;
+
+            if (!value) {
+                return null;
+            }
+
+            const pattern = /^[+-]?\d+$/;
+            const minInclusive = 1;
+            const isMatch = pattern.test(value) && value >= minInclusive;
+
+            return isMatch
+                ? null
+                : {
+                    byte: {
+                        translationKey: 'validation.positive_integer',
+                        translationParams: {},
+                    }
+                };
+        }
+    }
+
+    static longValidator(): ValidatorFn {
+        return (control: AbstractControl): ValidationErrors | null => {
+            const value = control.value;
+
+            if (!value) {
+                return null;
+            }
+
+            const error = {
+              byte: {
+                translationKey: 'validation.long',
+                translationParams: {},
+              },
+            };
+
+            if (!+value && +value !== 0) {
+              return error;
+            }
+
+            const pattern = /^[+-]?\d+$/;
+            const isPatternMatch = pattern.test(value);
+
+            if (!isPatternMatch) {
+              return error;
+            }
+
+            const maxInclusive = BigInt('9223372036854775807');
+            const minInclusive = BigInt('-9223372036854775808');
+            const bigIntValue = BigInt(value);
+
+            const isMatch = isPatternMatch && bigIntValue >= minInclusive && bigIntValue <= maxInclusive;
+
+            return isMatch
+                ? null
+                : error;
+        };
+    }
+
+    static negativeIntegerValidator(): ValidatorFn {
+        return (control: AbstractControl): ValidationErrors | null => {
+            const value = control.value;
+
+            if (!value) {
+                return null;
+            }
+
+            const pattern = /^[+-]?\d+$/;
+            const maxInclusive = -1;
+            const isMatch = pattern.test(value) && value <= maxInclusive;
+
+            return isMatch
+                ? null
+                : {
+                    byte: {
+                        translationKey: 'validation.negative_integer',
+                        translationParams: {},
+                    }
+                };
+        }
+    }
+
+    static nonPositiveIntegerValidator(): ValidatorFn {
+        return (control: AbstractControl): ValidationErrors | null => {
+            const value = control.value;
+
+            if (!value) {
+                return null;
+            }
+
+            const pattern = /^[+-]?\d+$/;
+            const maxInclusive = 0;
+            const isMatch = pattern.test(value) && value <= maxInclusive;
+
+            return isMatch
+                ? null
+                : {
+                    byte: {
+                        translationKey: 'validation.non_positive_integer',
+                        translationParams: {},
+                    }
+                };
+        }
+    }
+
+    static nonNegativeIntegerValidator(): ValidatorFn {
+        return (control: AbstractControl): ValidationErrors | null => {
+            const value = control.value;
+
+            if (!value) {
+                return null;
+            }
+
+            const pattern = /^[+-]?\d+$/;
+            const minInclusive = 0;
+            const isMatch = pattern.test(value) && value >= minInclusive;
+
+            return isMatch
+                ? null
+                : {
+                    byte: {
+                        translationKey: 'validation.non_negative_integer',
+                        translationParams: {},
+                    }
+                };
+        }
+    }
+
+    static shortValidator(): ValidatorFn {
+        return (control: AbstractControl): ValidationErrors | null => {
+            const value = control.value;
+
+            if (!value) {
+                return null;
+            }
+
+            const pattern = /^[+-]?\d+$/;
+            const maxInclusive = 32767;
+            const minInclusive = -32768;
+
+            const isMatch = pattern.test(value) && value >= minInclusive && value <= maxInclusive;
+
+            return isMatch
+                ? null
+                : {
+                    byte: {
+                        translationKey: 'validation.short',
+                        translationParams: {},
+                    }
+                };
+        }
+    }
+
+    static unsignedIntValidator(): ValidatorFn {
+        return (control: AbstractControl): ValidationErrors | null => {
+            const value = control.value;
+
+            if (!value) {
+                return null;
+            }
+
+            const pattern = /^[+-]?\d+$/;
+            const maxInclusive = 4294967295;
+            const minInclusive = 0;
+
+            const isMatch = pattern.test(value) && value >= minInclusive && value <= maxInclusive;
+
+            return isMatch
+                ? null
+                : {
+                    byte: {
+                        translationKey: 'validation.unsigned_int',
+                        translationParams: {},
+                    }
+                };
+        }
+    }
+
+    static unsignedByteValidator(): ValidatorFn {
+        return (control: AbstractControl): ValidationErrors | null => {
+            const value = control.value;
+
+            if (!value) {
+                return null;
+            }
+
+            const pattern = /^[+-]?\d+$/;
+            const maxInclusive = 255;
+            const minInclusive = 0;
+
+            const isMatch = pattern.test(value) && value >= minInclusive && value <= maxInclusive;
+
+            return isMatch
+                ? null
+                : {
+                    byte: {
+                        translationKey: 'validation.unsigned_byte',
+                        translationParams: {},
+                    }
+                };
+        }
+    }
+
+    static unsignedLongValidator(): ValidatorFn {
+        return (control: AbstractControl): ValidationErrors | null => {
+            const value = control.value;
+
+            if (!value) {
+                return null;
+            }
+
+            const error = {
+              byte: {
+                translationKey: 'validation.unsigned_long',
+                translationParams: {},
+              },
+            };
+
+            if (!+value && +value !== 0) {
+              return error;
+            }
+
+            const pattern = /^[+-]?\d+$/;
+            const isPatternMatch = pattern.test(value);
+
+            if (!isPatternMatch) {
+              return error;
+            }
+
+            const maxInclusive = BigInt('18446744073709551615');
+            const minInclusive = BigInt('0');
+            const bigIntValue = BigInt(value);
+
+            const isMatch = isPatternMatch && bigIntValue >= minInclusive && bigIntValue <= maxInclusive;
+
+            return isMatch
+                ? null
+                : error;
+        };
+    }
+
+    static unsignedShortValidator(): ValidatorFn {
+        return (control: AbstractControl): ValidationErrors | null => {
+            const value = control.value;
+
+            if (!value) {
+                return null;
+            }
+
+            const pattern = /^[+-]?\d+$/;
+            const maxInclusive = 65535;
+            const minInclusive = 0;
+
+            const isMatch = pattern.test(value) && value >= minInclusive && value <= maxInclusive;
+
+            return isMatch
+                ? null
+                : {
+                    byte: {
+                        translationKey: 'validation.unsigned_short',
+                        translationParams: {},
+                    }
+                };
+        }
+    }
+
+    static numberValidator(): ValidatorFn {
+        return (control: AbstractControl): ValidationErrors | null => {
+            const value = control.value;
+
+            if (!value) {
+                return null;
+            }
+
+            const pattern = /^-?\d*\.?\d+$/;
+            const isMatch = pattern.test(value);
+
+            return isMatch
+                ? null
+                : {
+                    byte: {
+                        translationKey: 'validation.number',
+                        translationParams: {},
+                    }
+                };
+        }
     }
 }

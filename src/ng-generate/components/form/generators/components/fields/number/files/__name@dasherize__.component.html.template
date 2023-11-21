@@ -1,7 +1,7 @@
 <mat-form-field class="form-field">
     <mat-label><%= options.fieldConfig.name %></mat-label>
     <input
-        type="number"
+        type="text"
         matInput
         placeholder=""
         [formControl]="formControl"

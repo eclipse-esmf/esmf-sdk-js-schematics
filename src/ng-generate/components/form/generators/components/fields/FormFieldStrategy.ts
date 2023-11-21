@@ -21,14 +21,31 @@ import {getConstraintValidatorStrategy} from '../validators/constraint/index';
 import {ConstraintValidatorStrategyClass} from '../validators/constraint/constraint-validator-strategies';
 
 export enum ValidatorType {
+    Byte = 'Byte',
+    Decimal = 'Decimal',
     DeconstructionRule = 'DeconstructionRule',
+    Double = 'Double',
     Encoding = 'Encoding',
     FixedPoint = 'FixedPoint',
+    Float = 'Float',
+    Int = 'Int',
+    Integer = 'Integer',
     Length = 'Length',
+    Long = 'Long',
+    NegativeInteger = 'NegativeInteger',
+    NonNegativeInteger = 'NonNegativeInteger',
+    NonPositiveInteger = 'NonPositiveInteger',
+    Number = 'Number',
+    PositiveInteger = 'PositiveInteger',
     Range = 'Range',
     Required = 'Required',
     RegExp = 'RegExp',
+    Short = 'Short',
     UniqueValues = 'UniqueValues',
+    UnsignedByte = 'UnsignedByte',
+    UnsignedInt = 'UnsignedInt',
+    UnsignedLong = 'UnsignedLong',
+    UnsignedShort = 'UnsignedShort',
 }
 
 export interface ValidatorConfig {
