@@ -24,8 +24,10 @@
             -   [Supported Constraint types](#supported-constraint-types)
             -   [Unsupported Constraint types](#unsupported-constraint-types)
         -   [Type-specific validators](#type-specific-validators)
-            -   [Supported complex field types](#supported-complex-field-types)
-            -   [Supported scalar field types](#supported-scalar-field-types)
+            -   [Supported complex data types](#supported-complex-data-types)
+            -   [Unsupported complex data types](#unsupported-complex-data-types)
+            -   [Supported scalar data types](#supported-scalar-data-types)
+            -   [Unsupported scalar data types](#unsupported-scalar-data-types)
     -   [Usage](#usage)
     -   [Working with list-like controls](#working-with-list-like-controls)
 
@@ -379,7 +381,7 @@ Since the generated form is an Angular Reactive Form, all its methods are availa
 
 ## Validation
 
-Each form field or form group can have multiple validators depending on the subtree structure.
+Each form field or form group can have multiple validators depending on the subtree structure, taking into consideration element's data type, associated constraints, etc.
 
 ### Base validators
 
@@ -389,12 +391,17 @@ Each field/group can be marked as "required" depending on whether the correspond
 
 During the generation process, validation rules from constraints will be extracted and applied to the corresponding form elements (individual fields or groups) if they were not explicitly excluded in one of the prompter questions.
 
+When dealing with complex data types, the validation rules from constraints are applied to its children in most cases, however, there are exceptions.
+For instance, [Length Constraint](https://eclipse-esmf.github.io/samm-specification/snapshot/characteristics.html#length-constraint) is applied directly to a group when working with Collection Characteristics (Collection, Set, Sorted Set, List).
+
+Consult [ESMF documentation](https://eclipse-esmf.github.io/samm-specification/snapshot/characteristics.html#constraints) for more details on how different types of constraints work with different element types.
+
 #### Supported Constraint types
 
 * EncodingConstraint
 * FixedPointConstraint
 * LengthConstraint
-* RangeConstraint
+* RangeConstraint (except dates)
 * RegularExpressionConstraint
 
 #### Unsupported Constraint types
@@ -406,16 +413,57 @@ During the generation process, validation rules from constraints will be extract
 ### Type-specific validators
 
 Since some fields can imply additional restrictions depending on the corresponding element type or its configuration, additional validators will be applied to the respective form control.
-A typical example of such case could be "Either" characteristic, which expects values of child controls to be unique.
+A typical example of such case could be "Either" characteristic, which expects values of its child controls to be specified and unique.
 
-#### Supported complex field types
+#### Supported complex data types
 
 * Either
 * StructuredValue
 
-#### Supported scalar field types
+#### Unsupported complex data types
 
-NONE
+_None/Unknown_
+
+#### Supported scalar data types
+
+* xsd:string
+* xsd:boolean
+* xsd:decimal
+* xsd:integer
+* xsd:double
+* xsd:float
+* xsd:byte
+* xsd:short
+* xsd:int
+* xsd:long
+* xsd:unsignedByte
+* xsd:unsignedShort
+* xsd:unsignedInt
+* xsd:unsignedLong
+* xsd:positiveInteger
+* xsd:nonNegativeInteger
+* xsd:negativeInteger
+* xsd:nonPositiveInteger
+* xsd:gYear
+* xsd:gMonth
+* xsd:gDay
+* xsd:gYearMonth
+* xsd:gMonthDay
+* xsd:duration
+* xsd:yearMonthDuration
+* xsd:dayTimeDuration
+* xsd:time
+* xsd:hexBinary
+* xsd:base64Binary
+* xsd:anyURI
+* samm:curie
+* rdf:langString
+
+#### Unsupported scalar data types
+
+* xsd:date
+* xsd:dateTime
+* xsd:dateTimeStamp
 
 ---
 
