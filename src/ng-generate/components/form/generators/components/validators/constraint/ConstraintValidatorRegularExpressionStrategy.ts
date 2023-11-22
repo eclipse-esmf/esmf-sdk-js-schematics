@@ -36,7 +36,7 @@ export class ConstraintValidatorRegularExpressionStrategy extends ConstraintVali
                 definition: isApplyToChildren
                     ? `FormValidators.applyToChildren(FormValidators.regularExpression(${typedConstraint.value}))`
                     : `FormValidators.regularExpression(${typedConstraint.value})`,
-                isDirectGroupValidator: false,
+                isDirectGroupValidator: !isApplyToChildren,
             },
         ];
     }

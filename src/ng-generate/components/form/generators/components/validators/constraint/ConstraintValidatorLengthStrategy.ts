@@ -27,6 +27,8 @@ export class ConstraintValidatorLengthStrategy extends ConstraintValidatorStrate
             return [];
         }
 
+        const isApplyToChildren = this.isList() || this.isComplex();
+
         return [
             {
                 name: this.constraint.name,
@@ -36,7 +38,7 @@ export class ConstraintValidatorLengthStrategy extends ConstraintValidatorStrate
                     : this.isComplex()
                     ? `FormValidators.applyToChildren(FormValidators.lengthValidator(${typedConstraint.minValue}, ${typedConstraint.maxValue}))`
                     : `FormValidators.lengthValidator(${typedConstraint.minValue}, ${typedConstraint.maxValue})`,
-                isDirectGroupValidator: false,
+                isDirectGroupValidator: !isApplyToChildren,
             },
         ];
     }
