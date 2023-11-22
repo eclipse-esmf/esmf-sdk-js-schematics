@@ -779,4 +779,202 @@ export class FormValidators {
                 };
         }
     }
+
+    static gDayValidator(): ValidatorFn {
+        return (control: AbstractControl): ValidationErrors | null => {
+            const value = control.value;
+
+            if (!value) {
+                return null;
+            }
+
+            const pattern = /^---(0[1-9]|[12][0-9]|3[01])(Z|(\+|-)((0[0-9]|1[0-3]):[0-5][0-9]|14:00))?$/;
+            const isMatch = pattern.test(value);
+
+            return isMatch
+                ? null
+                : {
+                    byte: {
+                        translationKey: 'validation.g_day',
+                        translationParams: {},
+                    }
+                };
+        }
+    }
+
+    static gMonthValidator(): ValidatorFn {
+        return (control: AbstractControl): ValidationErrors | null => {
+            const value = control.value;
+
+            if (!value) {
+                return null;
+            }
+
+            const pattern = /^--(0[1-9]|1[0-2])(Z|(\+|-)((0[0-9]|1[0-3]):[0-5][0-9]|14:00))?$/;
+            const isMatch = pattern.test(value);
+
+            return isMatch
+                ? null
+                : {
+                    byte: {
+                        translationKey: 'validation.g_month',
+                        translationParams: {},
+                    }
+                };
+        }
+    }
+
+    static gMonthDayValidator(): ValidatorFn {
+        return (control: AbstractControl): ValidationErrors | null => {
+            const value = control.value;
+
+            if (!value) {
+                return null;
+            }
+
+            const pattern = /^--(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])(Z|(\+|-)((0[0-9]|1[0-3]):[0-5][0-9]|14:00))?$/;
+            const isMatch = pattern.test(value);
+
+            return isMatch
+                ? null
+                : {
+                    byte: {
+                        translationKey: 'validation.g_month_day',
+                        translationParams: {},
+                    }
+                };
+        }
+    }
+
+    static gYearValidator(): ValidatorFn {
+        return (control: AbstractControl): ValidationErrors | null => {
+            const value = control.value;
+
+            if (!value) {
+                return null;
+            }
+
+            const pattern = /^-?([1-9][0-9]{3,}|0[0-9]{3})(Z|(\+|-)((0[0-9]|1[0-3]):[0-5][0-9]|14:00))?$/;
+            const isMatch = pattern.test(value);
+
+            return isMatch
+                ? null
+                : {
+                    byte: {
+                        translationKey: 'validation.g_year',
+                        translationParams: {},
+                    }
+                };
+        }
+    }
+
+    static gYearMonthValidator(): ValidatorFn {
+        return (control: AbstractControl): ValidationErrors | null => {
+            const value = control.value;
+
+            if (!value) {
+                return null;
+            }
+
+            const pattern = /^-?([1-9][0-9]{3,}|0[0-9]{3})-(0[1-9]|1[0-2])(Z|(\+|-)((0[0-9]|1[0-3]):[0-5][0-9]|14:00))?$/;
+            const isMatch = pattern.test(value);
+
+            return isMatch
+                ? null
+                : {
+                    byte: {
+                        translationKey: 'validation.g_year_month',
+                        translationParams: {},
+                    }
+                };
+        }
+    }
+
+    static durationValidator(): ValidatorFn {
+        return (control: AbstractControl): ValidationErrors | null => {
+            const value = control.value;
+
+            if (!value) {
+                return null;
+            }
+
+            const pattern = /^-?P(\d+Y)?(\d+M)?(\d+D)?(T(\d+H)?(\d+M)?(\d+(\.\d+)?S)?)?$/;
+            const isMatch = pattern.test(value);
+
+            return isMatch
+                ? null
+                : {
+                    byte: {
+                        translationKey: 'validation.duration',
+                        translationParams: {},
+                    }
+                };
+        }
+    }
+
+    static dayTimeDurationValidator(): ValidatorFn {
+        return (control: AbstractControl): ValidationErrors | null => {
+            const value = control.value;
+
+            if (!value) {
+                return null;
+            }
+
+            const pattern = /^-?P(\d+D)?(T(\d+H)?(\d+M)?(\d+(\.\d+)?S)?)?$/;
+            const isMatch = pattern.test(value);
+
+            return isMatch
+                ? null
+                : {
+                    byte: {
+                        translationKey: 'validation.day_time_duration',
+                        translationParams: {},
+                    }
+                };
+        }
+    }
+
+    static yearMonthDurationValidator(): ValidatorFn {
+        return (control: AbstractControl): ValidationErrors | null => {
+            const value = control.value;
+
+            if (!value) {
+                return null;
+            }
+
+            const pattern = /^-?P((\d+Y\d+M)|(\d+Y)|(\d+M))$/;
+            const isMatch = pattern.test(value);
+
+            return isMatch
+                ? null
+                : {
+                    byte: {
+                        translationKey: 'validation.year_month_duration',
+                        translationParams: {},
+                    }
+                };
+        }
+    }
+
+    static timeValidator(): ValidatorFn {
+        return (control: AbstractControl): ValidationErrors | null => {
+            const value = control.value;
+
+            if (!value) {
+                return null;
+            }
+
+            const pattern = /^(([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9](\.[0-9]+)?|(24:00:00(\.0+)?))(Z|(\+|-)((0[0-9]|1[0-3]):[0-5][0-9]|14:00))?$/;
+            const isMatch = pattern.test(value);
+
+            return isMatch
+                ? null
+                : {
+                    byte: {
+                        translationKey: 'validation.time',
+                        translationParams: {},
+                    }
+                };
+        }
+    }
 }

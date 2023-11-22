@@ -22,12 +22,19 @@ import {ConstraintValidatorStrategyClass} from '../validators/constraint/constra
 
 export enum ValidatorType {
     Byte = 'Byte',
+    DayTimeDuration = 'DayTimeDuration',
     Decimal = 'Decimal',
     DeconstructionRule = 'DeconstructionRule',
     Double = 'Double',
+    Duration = 'Duration',
     Encoding = 'Encoding',
     FixedPoint = 'FixedPoint',
     Float = 'Float',
+    GDay = 'GDay',
+    GMonth = 'GMonth',
+    GMonthDay = 'GMonthDay',
+    GYear = 'GYear',
+    GYearMonth = 'GYearMonth',
     Int = 'Int',
     Integer = 'Integer',
     Length = 'Length',
@@ -41,11 +48,13 @@ export enum ValidatorType {
     Required = 'Required',
     RegExp = 'RegExp',
     Short = 'Short',
+    Time = 'Time',
     UniqueValues = 'UniqueValues',
     UnsignedByte = 'UnsignedByte',
     UnsignedInt = 'UnsignedInt',
     UnsignedLong = 'UnsignedLong',
     UnsignedShort = 'UnsignedShort',
+    YearMonthDuration = 'YearMonthDuration',
 }
 
 export interface ValidatorConfig {

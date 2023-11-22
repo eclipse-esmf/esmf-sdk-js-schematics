@@ -12,7 +12,7 @@
  */
 
 import {Characteristic} from '@esmf/aspect-model-loader';
-import {FormFieldConfig, FormFieldStrategy} from '../FormFieldStrategy';
+import {FormFieldConfig, FormFieldStrategy, ValidatorConfig, ValidatorType} from '../FormFieldStrategy';
 import {ConstraintValidatorRangeStrategy} from '../../validators/constraint/ConstraintValidatorRangeStrategy';
 
 const typesConfigs = [
@@ -60,5 +60,56 @@ export class DatePartialFormFieldStrategy extends FormFieldStrategy {
     getPlaceholder(): string | undefined {
         const urn = DatePartialFormFieldStrategy.getShortUrn(this.child);
         return typesConfigs.find(dt => dt.type === urn)?.placeholder;
+    }
+
+    getDataTypeValidatorsConfigs(): ValidatorConfig[] {
+        const urn = FormFieldStrategy.getShortUrn(this.child);
+
+        return urn === 'gDay'
+            ? [
+                  {
+                      name: 'gDay',
+                      type: ValidatorType.GDay,
+                      definition: 'FormValidators.gDayValidator()',
+                      isDirectGroupValidator: false,
+                  },
+              ]
+            : urn === 'gMonth'
+            ? [
+                  {
+                      name: 'gMonth',
+                      type: ValidatorType.GMonth,
+                      definition: 'FormValidators.gMonthValidator()',
+                      isDirectGroupValidator: false,
+                  },
+              ]
+            : urn === 'gYear'
+            ? [
+                  {
+                      name: 'gYear',
+                      type: ValidatorType.GYear,
+                      definition: 'FormValidators.gYearValidator()',
+                      isDirectGroupValidator: false,
+                  },
+              ]
+            : urn === 'gMonthDay'
+            ? [
+                  {
+                      name: 'gMonthDay',
+                      type: ValidatorType.GMonthDay,
+                      definition: 'FormValidators.gMonthDayValidator()',
+                      isDirectGroupValidator: false,
+                  },
+              ]
+            : urn === 'gYearMonth'
+            ? [
+                  {
+                      name: 'gYearMonth',
+                      type: ValidatorType.GYearMonth,
+                      definition: 'FormValidators.gYearMonthValidator()',
+                      isDirectGroupValidator: false,
+                  },
+              ]
+            : [];
     }
 }

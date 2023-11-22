@@ -12,17 +12,17 @@
  */
 
 import {Characteristic} from '@esmf/aspect-model-loader';
-import {FormFieldConfig, FormFieldStrategy} from '../FormFieldStrategy';
+import {FormFieldConfig, FormFieldStrategy, ValidatorConfig, ValidatorType} from '../FormFieldStrategy';
 import {ConstraintValidatorRangeStrategy} from '../../validators/constraint/ConstraintValidatorRangeStrategy';
 
 const typesConfigs = [
     {
-        type: 'dayTimeDuration',
-        placeholder: "'P30D', 'P1DT5H', 'PT1H5M0S'",
-    },
-    {
         type: 'duration',
         placeholder: "'P30D', '-P1Y2M3DT1H', 'PT1H5M0S'",
+    },
+    {
+        type: 'dayTimeDuration',
+        placeholder: "'P30D', 'P1DT5H', 'PT1H5M0S'",
     },
     {
         type: 'yearMonthDuration',
@@ -52,5 +52,38 @@ export class DurationFormFieldStrategy extends FormFieldStrategy {
     getPlaceholder(): string | undefined {
         const urn = DurationFormFieldStrategy.getShortUrn(this.child);
         return typesConfigs.find(dt => dt.type === urn)?.placeholder;
+    }
+
+    getDataTypeValidatorsConfigs(): ValidatorConfig[] {
+        const urn = FormFieldStrategy.getShortUrn(this.child);
+
+        return urn === 'duration'
+            ? [
+                  {
+                      name: 'duration',
+                      type: ValidatorType.Duration,
+                      definition: 'FormValidators.durationValidator()',
+                      isDirectGroupValidator: false,
+                  },
+              ]
+            : urn === 'dayTimeDuration'
+            ? [
+                  {
+                      name: 'dayTimeDuration',
+                      type: ValidatorType.DayTimeDuration,
+                      definition: 'FormValidators.dayTimeDurationValidator()',
+                      isDirectGroupValidator: false,
+                  },
+              ]
+            : urn === 'yearMonthDuration'
+            ? [
+                  {
+                      name: 'yearMonthDuration',
+                      type: ValidatorType.YearMonthDuration,
+                      definition: 'FormValidators.yearMonthDurationValidator()',
+                      isDirectGroupValidator: false,
+                  },
+              ]
+            : [];
     }
 }
