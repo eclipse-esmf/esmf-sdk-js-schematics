@@ -13,5 +13,6 @@ SPDX-License-Identifier: MPL-2.0
 ** xref:table-generation.adoc[Generating a table component]
 ** xref:table-custom-column.adoc[Generating a table with custom columns]
 ** xref:card-generation.adoc[Generating a card which you can add a custom content template]
+** xref:form-generation.adoc[Generate Dynamic Forms from Aspect Model]
 ** xref:types.adoc[Generating interfaces]
 
