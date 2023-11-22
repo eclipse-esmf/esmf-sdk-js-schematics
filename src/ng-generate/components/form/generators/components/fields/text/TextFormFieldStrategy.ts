@@ -12,7 +12,7 @@
  */
 
 import {Characteristic} from '@esmf/aspect-model-loader';
-import {FormFieldConfig, FormFieldStrategy} from '../FormFieldStrategy';
+import {FormFieldConfig, FormFieldStrategy, ValidatorConfig, ValidatorType} from '../FormFieldStrategy';
 
 export class TextFormFieldStrategy extends FormFieldStrategy {
     pathToFiles = './generators/components/fields/text/files';
@@ -32,5 +32,47 @@ export class TextFormFieldStrategy extends FormFieldStrategy {
             unitName: untypedChild.unit?.name || '',
             validators: this.getValidatorsConfigs(),
         };
+    }
+
+    getDataTypeValidatorsConfigs(): ValidatorConfig[] {
+        const urn = FormFieldStrategy.getShortUrn(this.child);
+
+        return urn === 'hexBinary'
+            ? [
+                  {
+                      name: 'hexBinary',
+                      type: ValidatorType.HexBinary,
+                      definition: 'FormValidators.hexBinaryValidator()',
+                      isDirectGroupValidator: false,
+                  },
+              ]
+            : urn === 'base64Binary'
+            ? [
+                  {
+                      name: 'base64Binary',
+                      type: ValidatorType.Base64Binary,
+                      definition: 'FormValidators.base64BinaryValidator()',
+                      isDirectGroupValidator: false,
+                  },
+              ]
+            : urn === 'anyURI'
+            ? [
+                  {
+                      name: 'anyURI',
+                      type: ValidatorType.AnyURI,
+                      definition: 'FormValidators.anyUriValidator()',
+                      isDirectGroupValidator: false,
+                  },
+              ]
+            : urn === 'curie'
+            ? [
+                  {
+                      name: 'curie',
+                      type: ValidatorType.Curie,
+                      definition: 'FormValidators.curieValidator()',
+                      isDirectGroupValidator: false,
+                  },
+              ]
+            : [];
     }
 }

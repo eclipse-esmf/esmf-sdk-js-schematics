@@ -21,7 +21,10 @@ import {getConstraintValidatorStrategy} from '../validators/constraint/index';
 import {ConstraintValidatorStrategyClass} from '../validators/constraint/constraint-validator-strategies';
 
 export enum ValidatorType {
+    AnyURI = 'AnyURI',
+    Base64Binary = 'Base64Binary',
     Byte = 'Byte',
+    Curie = 'Curie',
     DayTimeDuration = 'DayTimeDuration',
     Decimal = 'Decimal',
     DeconstructionRule = 'DeconstructionRule',
@@ -35,8 +38,10 @@ export enum ValidatorType {
     GMonthDay = 'GMonthDay',
     GYear = 'GYear',
     GYearMonth = 'GYearMonth',
+    HexBinary = 'HexBinary',
     Int = 'Int',
     Integer = 'Integer',
+    LangString = 'LangString',
     Length = 'Length',
     Long = 'Long',
     NegativeInteger = 'NegativeInteger',

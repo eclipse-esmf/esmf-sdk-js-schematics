@@ -12,7 +12,7 @@
  */
 
 import {Characteristic} from '@esmf/aspect-model-loader';
-import {FormFieldConfig, FormFieldStrategy} from '../FormFieldStrategy';
+import {FormFieldConfig, FormFieldStrategy, ValidatorConfig, ValidatorType} from '../FormFieldStrategy';
 
 export class TextAreaFormFieldStrategy extends FormFieldStrategy {
     pathToFiles = './generators/components/fields/textArea/files';
@@ -32,5 +32,20 @@ export class TextAreaFormFieldStrategy extends FormFieldStrategy {
             unitName: untypedChild.unit?.name || '',
             validators: this.getValidatorsConfigs(),
         };
+    }
+
+    getDataTypeValidatorsConfigs(): ValidatorConfig[] {
+        const urn = FormFieldStrategy.getShortUrn(this.child);
+
+        return urn === 'langString'
+            ? [
+                  {
+                      name: 'langString',
+                      type: ValidatorType.LangString,
+                      definition: 'FormValidators.langStringValidator()',
+                      isDirectGroupValidator: false,
+                  },
+              ]
+            : [];
     }
 }
