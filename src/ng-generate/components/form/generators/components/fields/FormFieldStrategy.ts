@@ -19,55 +19,7 @@ import {addToComponentModule} from '../../../../../../utils/angular';
 import {getFormFieldStrategy} from './index';
 import {getConstraintValidatorStrategy} from '../validators/constraint/index';
 import {ConstraintValidatorStrategyClass} from '../validators/constraint/constraint-validator-strategies';
-
-export enum ValidatorType {
-    AnyURI = 'AnyURI',
-    Base64Binary = 'Base64Binary',
-    Byte = 'Byte',
-    Curie = 'Curie',
-    DayTimeDuration = 'DayTimeDuration',
-    Decimal = 'Decimal',
-    DeconstructionRule = 'DeconstructionRule',
-    Double = 'Double',
-    Duration = 'Duration',
-    Encoding = 'Encoding',
-    FixedPoint = 'FixedPoint',
-    Float = 'Float',
-    GDay = 'GDay',
-    GMonth = 'GMonth',
-    GMonthDay = 'GMonthDay',
-    GYear = 'GYear',
-    GYearMonth = 'GYearMonth',
-    HexBinary = 'HexBinary',
-    Int = 'Int',
-    Integer = 'Integer',
-    LangString = 'LangString',
-    Length = 'Length',
-    Long = 'Long',
-    NegativeInteger = 'NegativeInteger',
-    NonNegativeInteger = 'NonNegativeInteger',
-    NonPositiveInteger = 'NonPositiveInteger',
-    Number = 'Number',
-    PositiveInteger = 'PositiveInteger',
-    Range = 'Range',
-    Required = 'Required',
-    RegExp = 'RegExp',
-    Short = 'Short',
-    Time = 'Time',
-    UniqueValues = 'UniqueValues',
-    UnsignedByte = 'UnsignedByte',
-    UnsignedInt = 'UnsignedInt',
-    UnsignedLong = 'UnsignedLong',
-    UnsignedShort = 'UnsignedShort',
-    YearMonthDuration = 'YearMonthDuration',
-}
-
-export interface ValidatorConfig {
-    name: string;
-    type: ValidatorType;
-    definition: string;
-    isDirectGroupValidator: boolean;
-}
+import {DataType, GenericValidator, ValidatorConfig} from '../validators/validatorsTypes';
 
 export interface BaseFormFieldConfig {
     name: string;
@@ -92,14 +44,14 @@ export abstract class FormFieldStrategy {
     pathToFiles: string;
     hasChildren: boolean;
     options: any;
-    isList: boolean = false;
+    isList = false;
 
     static isTargetStrategy(child: Characteristic): boolean {
         throw new Error('An implementation of the method has to be provided by a derived class');
     }
 
-    static getShortUrn(child: Characteristic): string | undefined {
-        return child.dataType?.shortUrn;
+    static getShortUrn(child: Characteristic): DataType {
+        return child.dataType?.shortUrn as DataType;
     }
 
     constructor(
@@ -126,8 +78,7 @@ export abstract class FormFieldStrategy {
 
         if (!this.parent.isOptional) {
             validatorsConfigs.push({
-                name: `required`,
-                type: ValidatorType.Required,
+                name: GenericValidator.Required,
                 definition: 'Validators.required',
                 isDirectGroupValidator: false,
             });

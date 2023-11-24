@@ -12,24 +12,25 @@
  */
 
 import {Characteristic} from '@esmf/aspect-model-loader';
-import {FormFieldConfig, FormFieldStrategy, ValidatorConfig, ValidatorType} from '../FormFieldStrategy';
+import {FormFieldConfig, FormFieldStrategy} from '../FormFieldStrategy';
 import {ConstraintValidatorRangeStrategy} from '../../validators/constraint/ConstraintValidatorRangeStrategy';
+import {DataType, DataTypeValidator, ValidatorConfig} from '../../validators/validatorsTypes';
 
 const typesConfigs = [
     {
-        type: 'time',
+        type: DataType.Time,
         placeholder: "'14:23:00', '14:23:00.527634Z', '14:23:00+03:00'",
     },
 ];
-const supportedTypes = typesConfigs.map(dt => dt.type);
+const supportedTypes: DataType[] = typesConfigs.map(dt => dt.type);
 
 export class TimeFormFieldStrategy extends FormFieldStrategy {
     pathToFiles = './generators/components/fields/time/files';
     hasChildren = false;
 
     static isTargetStrategy(child: Characteristic): boolean {
-        const urn = this.getShortUrn(child);
-        return urn ? supportedTypes.includes(urn) : false;
+        const type = this.getShortUrn(child);
+        return type ? supportedTypes.includes(type) : false;
     }
 
     buildConfig(): FormFieldConfig {
@@ -45,18 +46,17 @@ export class TimeFormFieldStrategy extends FormFieldStrategy {
     }
 
     getPlaceholder(): string | undefined {
-        const urn = TimeFormFieldStrategy.getShortUrn(this.child);
-        return typesConfigs.find(dt => dt.type === urn)?.placeholder;
+        const type = TimeFormFieldStrategy.getShortUrn(this.child);
+        return typesConfigs.find(dt => dt.type === type)?.placeholder;
     }
 
     getDataTypeValidatorsConfigs(): ValidatorConfig[] {
-        const urn = FormFieldStrategy.getShortUrn(this.child);
+        const type = FormFieldStrategy.getShortUrn(this.child);
 
-        return urn === 'time'
+        return type === DataType.Time
             ? [
                   {
-                      name: 'time',
-                      type: ValidatorType.Time,
+                      name: DataTypeValidator.Time,
                       definition: 'FormValidators.timeValidator()',
                       isDirectGroupValidator: false,
                   },

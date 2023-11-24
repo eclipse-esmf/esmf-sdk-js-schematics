@@ -13,7 +13,7 @@
 
 import {ConstraintValidatorStrategy} from './ConstraintValidatorStrategy';
 import {Constraint, DefaultFixedPointConstraint} from '@esmf/aspect-model-loader';
-import {ValidatorConfig, ValidatorType} from '../../fields/FormFieldStrategy';
+import {ValidatorConfig} from '../validatorsTypes';
 
 export class ConstraintValidatorFixedPointStrategy extends ConstraintValidatorStrategy {
     static isTargetStrategy(constraint: Constraint): boolean {
@@ -27,7 +27,6 @@ export class ConstraintValidatorFixedPointStrategy extends ConstraintValidatorSt
         return [
             {
                 name: this.constraint.name,
-                type: ValidatorType.FixedPoint,
                 definition: isApplyToChildren
                     ? `FormValidators.applyToChildren(FormValidators.fixedPointValidator(${typedConstraint.integer}, ${typedConstraint.scale}))`
                     : `FormValidators.fixedPointValidator(${typedConstraint.integer}, ${typedConstraint.scale})`,

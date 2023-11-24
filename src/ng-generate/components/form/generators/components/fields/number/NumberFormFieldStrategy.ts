@@ -12,31 +12,32 @@
  */
 
 import {Characteristic} from '@esmf/aspect-model-loader';
-import {FormFieldConfig, FormFieldStrategy, ValidatorConfig, ValidatorType} from '../FormFieldStrategy';
+import {FormFieldConfig, FormFieldStrategy} from '../FormFieldStrategy';
+import {DataType, DataTypeValidator, GenericValidator, ValidatorConfig} from '../../validators/validatorsTypes';
 
 export class NumberFormFieldStrategy extends FormFieldStrategy {
     pathToFiles = './generators/components/fields/number/files';
     hasChildren = false;
 
     static isTargetStrategy(child: Characteristic): boolean {
-        const urn = this.getShortUrn(child);
+        const type = this.getShortUrn(child);
         return (
-            urn === 'byte' ||
-            urn === 'float' ||
-            urn === 'decimal' ||
-            urn === 'double' ||
-            urn === 'integer' ||
-            urn === 'int' ||
-            urn === 'positiveInteger' ||
-            urn === 'long' ||
-            urn === 'negativeInteger' ||
-            urn === 'nonPositiveInteger' ||
-            urn === 'nonNegativeInteger' ||
-            urn === 'short' ||
-            urn === 'unsignedInt' ||
-            urn === 'unsignedByte' ||
-            urn === 'unsignedLong' ||
-            urn === 'unsignedShort'
+            type === DataType.Byte ||
+            type === DataType.Float ||
+            type === DataType.Decimal ||
+            type === DataType.Double ||
+            type === DataType.Integer ||
+            type === DataType.Int ||
+            type === DataType.PositiveInteger ||
+            type === DataType.Long ||
+            type === DataType.NegativeInteger ||
+            type === DataType.NonPositiveInteger ||
+            type === DataType.NonNegativeInteger ||
+            type === DataType.Short ||
+            type === DataType.UnsignedInt ||
+            type === DataType.UnsignedByte ||
+            type === DataType.UnsignedLong ||
+            type === DataType.UnsignedShort
         );
     }
 
@@ -52,156 +53,139 @@ export class NumberFormFieldStrategy extends FormFieldStrategy {
     }
 
     getDataTypeValidatorsConfigs(): ValidatorConfig[] {
-        const urn = FormFieldStrategy.getShortUrn(this.child);
+        const type = FormFieldStrategy.getShortUrn(this.child);
 
-        return urn === 'byte'
+        return type === DataType.Byte
             ? [
                   {
-                      name: 'byte',
-                      type: ValidatorType.Byte,
+                      name: DataTypeValidator.Byte,
                       definition: 'FormValidators.byteValidator()',
                       isDirectGroupValidator: false,
                   },
               ]
-            : urn === 'float'
+            : type === DataType.Float
             ? [
                   {
-                      name: 'float',
-                      type: ValidatorType.Float,
+                      name: DataTypeValidator.Float,
                       definition: 'FormValidators.floatValidator()',
                       isDirectGroupValidator: false,
                   },
               ]
-            : urn === 'decimal'
+            : type === DataType.Decimal
             ? [
                   {
-                      name: 'decimal',
-                      type: ValidatorType.Decimal,
+                      name: DataTypeValidator.Decimal,
                       definition: 'FormValidators.decimalValidator()',
                       isDirectGroupValidator: false,
                   },
               ]
-            : urn === 'double'
+            : type === DataType.Double
             ? [
                   {
-                      name: 'double',
-                      type: ValidatorType.Double,
+                      name: DataTypeValidator.Double,
                       definition: 'FormValidators.doubleValidator()',
                       isDirectGroupValidator: false,
                   },
               ]
-            : urn === 'integer'
+            : type === DataType.Integer
             ? [
                   {
-                      name: 'integer',
-                      type: ValidatorType.Integer,
+                      name: DataTypeValidator.Integer,
                       definition: 'FormValidators.integerValidator()',
                       isDirectGroupValidator: false,
                   },
               ]
-            : urn === 'int'
+            : type === DataType.Int
             ? [
                   {
-                      name: 'int',
-                      type: ValidatorType.Int,
+                      name: DataTypeValidator.Int,
                       definition: 'FormValidators.intValidator()',
                       isDirectGroupValidator: false,
                   },
               ]
-            : urn === 'positiveInteger'
+            : type === DataType.PositiveInteger
             ? [
                   {
-                      name: 'positiveInteger',
-                      type: ValidatorType.PositiveInteger,
+                      name: DataTypeValidator.PositiveInteger,
                       definition: 'FormValidators.positiveIntegerValidator()',
                       isDirectGroupValidator: false,
                   },
               ]
-            : urn === 'long'
+            : type === DataType.Long
             ? [
                   {
-                      name: 'long',
-                      type: ValidatorType.Long,
+                      name: DataTypeValidator.Long,
                       definition: 'FormValidators.longValidator()',
                       isDirectGroupValidator: false,
                   },
               ]
-            : urn === 'negativeInteger'
+            : type === DataType.NegativeInteger
             ? [
                   {
-                      name: 'negativeInteger',
-                      type: ValidatorType.NegativeInteger,
+                      name: DataTypeValidator.NegativeInteger,
                       definition: 'FormValidators.negativeIntegerValidator()',
                       isDirectGroupValidator: false,
                   },
               ]
-            : urn === 'nonPositiveInteger'
+            : type === DataType.NonPositiveInteger
             ? [
                   {
-                      name: 'nonPositiveInteger',
-                      type: ValidatorType.NonPositiveInteger,
+                      name: DataTypeValidator.NonPositiveInteger,
                       definition: 'FormValidators.nonPositiveIntegerValidator()',
                       isDirectGroupValidator: false,
                   },
               ]
-            : urn === 'nonNegativeInteger'
+            : type === DataType.NonNegativeInteger
             ? [
                   {
-                      name: 'nonNegativeInteger',
-                      type: ValidatorType.NonNegativeInteger,
+                      name: DataTypeValidator.NonNegativeInteger,
                       definition: 'FormValidators.nonNegativeIntegerValidator()',
                       isDirectGroupValidator: false,
                   },
               ]
-            : urn === 'short'
+            : type === DataType.Short
             ? [
                   {
-                      name: 'short',
-                      type: ValidatorType.Short,
+                      name: DataTypeValidator.Short,
                       definition: 'FormValidators.shortValidator()',
                       isDirectGroupValidator: false,
                   },
               ]
-            : urn === 'unsignedInt'
+            : type === DataType.UnsignedInt
             ? [
                   {
-                      name: 'unsignedInt',
-                      type: ValidatorType.UnsignedInt,
+                      name: DataTypeValidator.UnsignedInt,
                       definition: 'FormValidators.unsignedIntValidator()',
                       isDirectGroupValidator: false,
                   },
               ]
-            : urn === 'unsignedByte'
+            : type === DataType.UnsignedByte
             ? [
                   {
-                      name: 'unsignedByte',
-                      type: ValidatorType.UnsignedByte,
+                      name: DataTypeValidator.UnsignedByte,
                       definition: 'FormValidators.unsignedByteValidator()',
                       isDirectGroupValidator: false,
                   },
               ]
-            : urn === 'unsignedLong'
+            : type === DataType.UnsignedLong
             ? [
                   {
-                      name: 'unsignedLong',
-                      type: ValidatorType.UnsignedLong,
+                      name: DataTypeValidator.UnsignedLong,
                       definition: 'FormValidators.unsignedLongValidator()',
                       isDirectGroupValidator: false,
                   },
               ]
-            : urn === 'unsignedShort'
+            : type === DataType.UnsignedShort
             ? [
                   {
-                      name: 'unsignedShort',
-                      type: ValidatorType.UnsignedShort,
+                      name: DataTypeValidator.UnsignedShort,
                       definition: 'FormValidators.unsignedShortValidator()',
                       isDirectGroupValidator: false,
                   },
               ]
             : [
                   {
-                      name: 'number',
-                      type: ValidatorType.Number,
+                      name: GenericValidator.Number,
                       definition: 'FormValidators.numberValidator()',
                       isDirectGroupValidator: false,
                   },

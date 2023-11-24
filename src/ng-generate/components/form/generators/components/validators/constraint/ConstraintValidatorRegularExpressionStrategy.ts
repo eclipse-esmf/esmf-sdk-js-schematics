@@ -13,7 +13,7 @@
 
 import {ConstraintValidatorStrategy} from './ConstraintValidatorStrategy';
 import {Constraint, DefaultRegularExpressionConstraint} from '@esmf/aspect-model-loader';
-import {ValidatorConfig, ValidatorType} from '../../fields/FormFieldStrategy';
+import {ValidatorConfig} from '../validatorsTypes';
 
 export class ConstraintValidatorRegularExpressionStrategy extends ConstraintValidatorStrategy {
     static isTargetStrategy(constraint: Constraint): boolean {
@@ -32,7 +32,6 @@ export class ConstraintValidatorRegularExpressionStrategy extends ConstraintVali
         return [
             {
                 name: this.constraint.name,
-                type: ValidatorType.RegExp,
                 definition: isApplyToChildren
                     ? `FormValidators.applyToChildren(FormValidators.regularExpression(${typedConstraint.value}))`
                     : `FormValidators.regularExpression(${typedConstraint.value})`,

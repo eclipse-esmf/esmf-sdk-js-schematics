@@ -13,7 +13,7 @@
 
 import {ConstraintValidatorStrategy} from './ConstraintValidatorStrategy';
 import {Constraint, DefaultLengthConstraint} from '@esmf/aspect-model-loader';
-import {ValidatorConfig, ValidatorType} from '../../fields/FormFieldStrategy';
+import {ValidatorConfig} from '../validatorsTypes';
 
 export class ConstraintValidatorLengthStrategy extends ConstraintValidatorStrategy {
     static isTargetStrategy(constraint: Constraint): boolean {
@@ -32,7 +32,6 @@ export class ConstraintValidatorLengthStrategy extends ConstraintValidatorStrate
         return [
             {
                 name: this.constraint.name,
-                type: ValidatorType.Length,
                 definition: this.isList()
                     ? `FormValidators.listLengthValidator(${typedConstraint.minValue}, ${typedConstraint.maxValue})`
                     : this.isComplex()

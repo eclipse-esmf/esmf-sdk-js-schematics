@@ -13,7 +13,7 @@
 
 import {ConstraintValidatorStrategy} from './ConstraintValidatorStrategy';
 import {Constraint} from '@esmf/aspect-model-loader';
-import {ValidatorConfig} from '../../fields/FormFieldStrategy';
+import {ValidatorConfig} from '../validatorsTypes';
 
 export class ConstraintValidatorDefaultStrategy extends ConstraintValidatorStrategy {
     static isTargetStrategy(constraint: Constraint): boolean {

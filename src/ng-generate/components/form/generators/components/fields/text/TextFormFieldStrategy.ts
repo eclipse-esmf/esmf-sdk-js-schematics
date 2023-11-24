@@ -12,15 +12,22 @@
  */
 
 import {Characteristic} from '@esmf/aspect-model-loader';
-import {FormFieldConfig, FormFieldStrategy, ValidatorConfig, ValidatorType} from '../FormFieldStrategy';
+import {FormFieldConfig, FormFieldStrategy} from '../FormFieldStrategy';
+import {DataType, DataTypeValidator, ValidatorConfig} from '../../validators/validatorsTypes';
 
 export class TextFormFieldStrategy extends FormFieldStrategy {
     pathToFiles = './generators/components/fields/text/files';
     hasChildren = false;
 
     static isTargetStrategy(child: Characteristic): boolean {
-        const urn = this.getShortUrn(child);
-        return urn === 'string' || urn === 'anyURI' || urn === 'hexBinary' || urn === 'curie' || urn === 'base64Binary';
+        const type = this.getShortUrn(child);
+        return (
+            type === DataType.String ||
+            type === DataType.AnyURI ||
+            type === DataType.HexBinary ||
+            type === DataType.Curie ||
+            type === DataType.Base64Binary
+        );
     }
 
     buildConfig(): FormFieldConfig {
@@ -35,40 +42,36 @@ export class TextFormFieldStrategy extends FormFieldStrategy {
     }
 
     getDataTypeValidatorsConfigs(): ValidatorConfig[] {
-        const urn = FormFieldStrategy.getShortUrn(this.child);
+        const type = FormFieldStrategy.getShortUrn(this.child);
 
-        return urn === 'hexBinary'
+        return type === DataType.HexBinary
             ? [
                   {
-                      name: 'hexBinary',
-                      type: ValidatorType.HexBinary,
+                      name: DataTypeValidator.HexBinary,
                       definition: 'FormValidators.hexBinaryValidator()',
                       isDirectGroupValidator: false,
                   },
               ]
-            : urn === 'base64Binary'
+            : type === DataType.Base64Binary
             ? [
                   {
-                      name: 'base64Binary',
-                      type: ValidatorType.Base64Binary,
+                      name: DataTypeValidator.Base64Binary,
                       definition: 'FormValidators.base64BinaryValidator()',
                       isDirectGroupValidator: false,
                   },
               ]
-            : urn === 'anyURI'
+            : type === DataType.AnyURI
             ? [
                   {
-                      name: 'anyURI',
-                      type: ValidatorType.AnyURI,
+                      name: DataTypeValidator.AnyURI,
                       definition: 'FormValidators.anyUriValidator()',
                       isDirectGroupValidator: false,
                   },
               ]
-            : urn === 'curie'
+            : type === DataType.Curie
             ? [
                   {
-                      name: 'curie',
-                      type: ValidatorType.Curie,
+                      name: DataTypeValidator.Curie,
                       definition: 'FormValidators.curieValidator()',
                       isDirectGroupValidator: false,
                   },

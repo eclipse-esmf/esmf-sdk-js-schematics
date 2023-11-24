@@ -13,14 +13,15 @@
 
 import {Characteristic} from '@esmf/aspect-model-loader';
 import {FormFieldConfig, FormFieldStrategy} from '../FormFieldStrategy';
+import {DataType} from '../../validators/validatorsTypes';
 
 export class BooleanFormFieldStrategy extends FormFieldStrategy {
     pathToFiles = './generators/components/fields/boolean/files';
     hasChildren = false;
 
     static isTargetStrategy(child: Characteristic): boolean {
-        const urn = this.getShortUrn(child);
-        return urn === 'boolean';
+        const type = this.getShortUrn(child);
+        return type === DataType.Boolean;
     }
 
     buildConfig(): FormFieldConfig {

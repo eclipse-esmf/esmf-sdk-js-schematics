@@ -12,9 +12,10 @@
  */
 
 import {Characteristic, DefaultPropertyInstanceDefinition, DefaultStructuredValue, Property} from '@esmf/aspect-model-loader';
-import {FormFieldConfig, FormFieldStrategy, ValidatorConfig, ValidatorType} from '../FormFieldStrategy';
+import {FormFieldConfig, FormFieldStrategy} from '../FormFieldStrategy';
 import {getFormFieldStrategy} from '../index';
 import {DefaultProperty} from '@esmf/aspect-model-loader/dist/aspect-meta-model/default-property';
+import {GenericValidator, ValidatorConfig} from '../../validators/validatorsTypes';
 
 export class StructuredValueFormFieldStrategy extends FormFieldStrategy {
     pathToFiles = './generators/components/fields/structuredValue/files';
@@ -56,8 +57,7 @@ export class StructuredValueFormFieldStrategy extends FormFieldStrategy {
         const deconstructionRulesConfigs = rules.map((rule, i) => `{ name: "${elements[i]?.name ?? ''}", rule: ${rule} }`);
 
         return {
-            name: 'deconstructionRule',
-            type: ValidatorType.DeconstructionRule,
+            name: GenericValidator.DeconstructionRule,
             definition: `FormValidators.deconstructionRuleValidator([
             ${deconstructionRulesConfigs.join(',\n')}
         ])`,

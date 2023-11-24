@@ -12,40 +12,41 @@
  */
 
 import {Characteristic} from '@esmf/aspect-model-loader';
-import {FormFieldConfig, FormFieldStrategy, ValidatorConfig, ValidatorType} from '../FormFieldStrategy';
+import {FormFieldConfig, FormFieldStrategy} from '../FormFieldStrategy';
 import {ConstraintValidatorRangeStrategy} from '../../validators/constraint/ConstraintValidatorRangeStrategy';
+import {DataType, DataTypeValidator, ValidatorConfig} from '../../validators/validatorsTypes';
 
 const typesConfigs = [
     {
-        type: 'gDay',
+        type: DataType.GDay,
         placeholder: "'---04', '---04+03:00'",
     },
     {
-        type: 'gMonth',
+        type: DataType.GMonth,
         placeholder: "'--04', '--04+03:00'",
     },
     {
-        type: 'gYear',
+        type: DataType.GYear,
         placeholder: "'2000', '2000+03:00'",
     },
     {
-        type: 'gMonthDay',
+        type: DataType.GMonthDay,
         placeholder: "'--01-01', '--01-01+03:00'",
     },
     {
-        type: 'gYearMonth',
+        type: DataType.GYearMonth,
         placeholder: "'2000-01', '2000-01+03:00'",
     },
 ];
-const supportedTypes = typesConfigs.map(dt => dt.type);
+const supportedTypes: DataType[] = typesConfigs.map(dt => dt.type);
 
 export class DatePartialFormFieldStrategy extends FormFieldStrategy {
     pathToFiles = './generators/components/fields/duration/files';
     hasChildren = false;
 
     static isTargetStrategy(child: Characteristic): boolean {
-        const urn = this.getShortUrn(child);
-        return urn ? supportedTypes.includes(urn) : false;
+        const type = this.getShortUrn(child);
+        return type ? supportedTypes.includes(type) : false;
     }
 
     buildConfig(): FormFieldConfig {
@@ -58,54 +59,49 @@ export class DatePartialFormFieldStrategy extends FormFieldStrategy {
     }
 
     getPlaceholder(): string | undefined {
-        const urn = DatePartialFormFieldStrategy.getShortUrn(this.child);
-        return typesConfigs.find(dt => dt.type === urn)?.placeholder;
+        const type = DatePartialFormFieldStrategy.getShortUrn(this.child);
+        return typesConfigs.find(dt => dt.type === type)?.placeholder;
     }
 
     getDataTypeValidatorsConfigs(): ValidatorConfig[] {
-        const urn = FormFieldStrategy.getShortUrn(this.child);
+        const type = FormFieldStrategy.getShortUrn(this.child);
 
-        return urn === 'gDay'
+        return type === DataType.GDay
             ? [
                   {
-                      name: 'gDay',
-                      type: ValidatorType.GDay,
+                      name: DataTypeValidator.GDay,
                       definition: 'FormValidators.gDayValidator()',
                       isDirectGroupValidator: false,
                   },
               ]
-            : urn === 'gMonth'
+            : type === DataType.GMonth
             ? [
                   {
-                      name: 'gMonth',
-                      type: ValidatorType.GMonth,
+                      name: DataTypeValidator.GMonth,
                       definition: 'FormValidators.gMonthValidator()',
                       isDirectGroupValidator: false,
                   },
               ]
-            : urn === 'gYear'
+            : type === DataType.GYear
             ? [
                   {
-                      name: 'gYear',
-                      type: ValidatorType.GYear,
+                      name: DataTypeValidator.GYear,
                       definition: 'FormValidators.gYearValidator()',
                       isDirectGroupValidator: false,
                   },
               ]
-            : urn === 'gMonthDay'
+            : type === DataType.GMonthDay
             ? [
                   {
-                      name: 'gMonthDay',
-                      type: ValidatorType.GMonthDay,
+                      name: DataTypeValidator.GMonthDay,
                       definition: 'FormValidators.gMonthDayValidator()',
                       isDirectGroupValidator: false,
                   },
               ]
-            : urn === 'gYearMonth'
+            : type === DataType.GYearMonth
             ? [
                   {
-                      name: 'gYearMonth',
-                      type: ValidatorType.GYearMonth,
+                      name: DataTypeValidator.GYearMonth,
                       definition: 'FormValidators.gYearMonthValidator()',
                       isDirectGroupValidator: false,
                   },

@@ -21,7 +21,7 @@ import {
     DefaultSortedSet,
     DefaultStructuredValue,
 } from '@esmf/aspect-model-loader';
-import {ValidatorConfig} from '../../fields/FormFieldStrategy';
+import {ValidatorConfig} from '../validatorsTypes';
 
 export abstract class ConstraintValidatorStrategy {
     static isTargetStrategy(constraint: Constraint): boolean {

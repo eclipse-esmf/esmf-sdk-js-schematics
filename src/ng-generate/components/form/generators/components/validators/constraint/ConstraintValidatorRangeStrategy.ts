@@ -13,7 +13,7 @@
 
 import {ConstraintValidatorStrategy} from './ConstraintValidatorStrategy';
 import {Constraint, DefaultRangeConstraint} from '@esmf/aspect-model-loader';
-import {ValidatorConfig, ValidatorType} from '../../fields/FormFieldStrategy';
+import {ValidatorConfig} from '../validatorsTypes';
 
 export class ConstraintValidatorRangeStrategy extends ConstraintValidatorStrategy {
     static isTargetStrategy(constraint: Constraint): boolean {
@@ -32,7 +32,6 @@ export class ConstraintValidatorRangeStrategy extends ConstraintValidatorStrateg
         return [
             {
                 name: this.constraint.name,
-                type: ValidatorType.Range,
                 definition: isApplyToChildren
                     ? `FormValidators.applyToChildren(FormValidators.rangeValidator(${typedConstraint.minValue}, "${typedConstraint.lowerBoundDefinition}", ${typedConstraint.maxValue}, "${typedConstraint.upperBoundDefinition}"))`
                     : `FormValidators.rangeValidator(${typedConstraint.minValue}, "${typedConstraint.lowerBoundDefinition}", ${typedConstraint.maxValue}, "${typedConstraint.upperBoundDefinition}")`,

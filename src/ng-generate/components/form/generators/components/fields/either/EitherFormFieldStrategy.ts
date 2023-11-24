@@ -12,7 +12,8 @@
  */
 
 import {Characteristic, DefaultEither} from '@esmf/aspect-model-loader';
-import {FormFieldConfig, FormFieldStrategy, ValidatorConfig, ValidatorType} from '../FormFieldStrategy';
+import {FormFieldConfig, FormFieldStrategy} from '../FormFieldStrategy';
+import {GenericValidator, ValidatorConfig} from '../../validators/validatorsTypes';
 
 export class EitherFormFieldStrategy extends FormFieldStrategy {
     pathToFiles = './generators/components/fields/either/files';
@@ -33,8 +34,7 @@ export class EitherFormFieldStrategy extends FormFieldStrategy {
     getDataTypeValidatorsConfigs(): ValidatorConfig[] {
         return [
             {
-                name: 'uniqueValues',
-                type: ValidatorType.UniqueValues,
+                name: GenericValidator.UniqueValues,
                 definition: 'FormValidators.uniqueValuesValidator()',
                 isDirectGroupValidator: true,
             },
