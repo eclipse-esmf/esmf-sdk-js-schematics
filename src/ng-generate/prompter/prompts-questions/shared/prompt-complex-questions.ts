@@ -386,7 +386,9 @@ function getAllConstraints(allAnswers: any, templateHelper: TemplateHelper, answ
             ? (loader.findByUrn(answers.selectedModelElementUrn) as Entity)
             : aspect;
 
-    const excludedPropertiesUrns = answers.excludedProperties.map((property: any) => property.propToExcludeAspectModelUrn);
+    const excludedPropertiesUrns = answers.excludedProperties
+        ? answers.excludedProperties.map((property: any) => property.propToExcludeAspectModelUrn)
+        : [];
     const allProperties = getAllPropertiesFromAspectOrEntity(templateHelper, selectedElement, allAnswers);
     const allowedPropertiesObjects = allProperties.filter(property => !excludedPropertiesUrns.includes(property.name));
     const allowedProperties = allowedPropertiesObjects.map(property => loader.findByUrn(property.name) as Property);
