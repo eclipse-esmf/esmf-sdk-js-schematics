@@ -1030,7 +1030,7 @@ export class FormValidators {
                 return null;
             }
 
-            const pattern = /^[^\s]+$/;
+            const pattern = /^(?!.*#.*#.*$)(?!.*%[^A-Fa-f0-9]|%[A-Fa-f0-9]{1}$)[^\s]+$/;
             const isMatch = pattern.test(value);
 
             return isMatch
@@ -1052,7 +1052,7 @@ export class FormValidators {
                 return null;
             }
 
-            const pattern = /^[\w\-\.]+:.*$/;
+            const pattern = /^(?:\[[\w-]+:[^\[\]]+\]|(?::[\w-]+)|(?:[\w-]+:)?[\w'"#+-]+)$/;
             const isMatch = pattern.test(value);
 
             return isMatch
