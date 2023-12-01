@@ -20,7 +20,7 @@ export abstract class FormArrayReusable extends mixinDestroyedSubject() implemen
             };
         }
 
-        const errors = this.formArray.errors as any[] ?? [];
+        const errors = Object.values(this.formArray.errors ?? {});
         const error = errors.find(value => !!value);
 
         return error ?? null;

@@ -3,7 +3,7 @@
 
   <section class="table-header">
     <section class="table-error">
-      <mat-error *ngIf="formArray.invalid && formArray.touched && groupSpecificError as err">
+      <mat-error *ngIf="formArray.invalid && formArray.touched && error as err">
         <ng-container *ngIf="err">
           {{ err.translationKey | translate : err.translationParams }}
         </ng-container>
