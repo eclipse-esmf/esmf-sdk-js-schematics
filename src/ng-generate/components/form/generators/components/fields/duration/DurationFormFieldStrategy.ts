@@ -13,43 +13,75 @@
 
 import {Characteristic} from '@esmf/aspect-model-loader';
 import {FormFieldConfig, FormFieldStrategy} from '../FormFieldStrategy';
+import {ConstraintValidatorRangeStrategy} from '../../validators/constraint/ConstraintValidatorRangeStrategy';
+import {DataType, DataTypeValidator, ValidatorConfig} from '../../validators/validatorsTypes';
 
 const typesConfigs = [
     {
-        type: 'dayTimeDuration',
-        placeholder: "'P30D', 'P1DT5H', 'PT1H5M0S'",
-    },
-    {
-        type: 'duration',
+        type: DataType.Duration,
         placeholder: "'P30D', '-P1Y2M3DT1H', 'PT1H5M0S'",
     },
     {
-        type: 'yearMonthDuration',
+        type: DataType.DayTimeDuration,
+        placeholder: "'P30D', 'P1DT5H', 'PT1H5M0S'",
+    },
+    {
+        type: DataType.YearMonthDuration,
         placeholder: "'P10M', 'P5Y2M'",
     },
 ];
-const supportedTypes = typesConfigs.map(dt => dt.type);
+const supportedTypes: DataType[] = typesConfigs.map(dt => dt.type);
 
 export class DurationFormFieldStrategy extends FormFieldStrategy {
     pathToFiles = './generators/components/fields/duration/files';
     hasChildren = false;
 
     static isTargetStrategy(child: Characteristic): boolean {
-        const urn = this.getShortUrn(child);
-        return urn ? supportedTypes.includes(urn) : false;
+        const type = this.getShortUrn(child);
+        return type ? supportedTypes.includes(type) : false;
     }
 
     buildConfig(): FormFieldConfig {
         return {
             ...this.getBaseFormFieldConfig(),
             exampleValue: this.parent.exampleValue || '',
-            validators: [...this.getBaseValidatorsConfigs()],
+            validators: this.getValidatorsConfigs([ConstraintValidatorRangeStrategy]),
             placeholder: this.getPlaceholder(),
         };
     }
 
     getPlaceholder(): string | undefined {
-        const urn = DurationFormFieldStrategy.getShortUrn(this.child);
-        return typesConfigs.find(dt => dt.type === urn)?.placeholder;
+        const type = DurationFormFieldStrategy.getShortUrn(this.child);
+        return typesConfigs.find(dt => dt.type === type)?.placeholder;
+    }
+
+    getDataTypeValidatorsConfigs(): ValidatorConfig[] {
+        const type = FormFieldStrategy.getShortUrn(this.child);
+
+        return type === DataType.Duration
+            ? [
+                  {
+                      name: DataTypeValidator.Duration,
+                      definition: 'FormValidators.durationValidator()',
+                      isDirectGroupValidator: false,
+                  },
+              ]
+            : type === DataType.DayTimeDuration
+            ? [
+                  {
+                      name: DataTypeValidator.DayTimeDuration,
+                      definition: 'FormValidators.dayTimeDurationValidator()',
+                      isDirectGroupValidator: false,
+                  },
+              ]
+            : type === DataType.YearMonthDuration
+            ? [
+                  {
+                      name: DataTypeValidator.YearMonthDuration,
+                      definition: 'FormValidators.yearMonthDurationValidator()',
+                      isDirectGroupValidator: false,
+                  },
+              ]
+            : [];
     }
 }

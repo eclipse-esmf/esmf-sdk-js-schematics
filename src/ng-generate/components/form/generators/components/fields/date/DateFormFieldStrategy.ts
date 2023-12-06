@@ -13,37 +13,39 @@
 
 import {Characteristic} from '@esmf/aspect-model-loader';
 import {FormFieldConfig, FormFieldStrategy} from '../FormFieldStrategy';
+import {ConstraintValidatorRangeStrategy} from '../../validators/constraint/ConstraintValidatorRangeStrategy';
+import {DataType} from '../../validators/validatorsTypes';
 
 const DEFAULT_FORMAT = 'yyyy-MM-DD';
 const typesConfigs = [
     {
-        type: 'date',
+        type: DataType.Date,
         format: 'yyyy-MM-DD',
     },
 ];
-const supportedTypes = typesConfigs.map(dt => dt.type);
+const supportedTypes: DataType[] = typesConfigs.map(dt => dt.type);
 
 export class DateFormFieldStrategy extends FormFieldStrategy {
     pathToFiles = './generators/components/fields/date/files';
     hasChildren = false;
 
     static isTargetStrategy(child: Characteristic): boolean {
-        const urn = this.getShortUrn(child);
-        return urn ? supportedTypes.includes(urn) : false;
+        const type = this.getShortUrn(child);
+        return type ? supportedTypes.includes(type) : false;
     }
 
     buildConfig(): FormFieldConfig {
         return {
             ...this.getBaseFormFieldConfig(),
             exampleValue: this.parent.exampleValue || '',
-            validators: [...this.getBaseValidatorsConfigs()],
+            validators: this.getValidatorsConfigs([ConstraintValidatorRangeStrategy]),
             dataFormat: this.getDataFormat(),
         };
     }
 
     getDataFormat(): string {
-        const urn = DateFormFieldStrategy.getShortUrn(this.child);
-        const format = typesConfigs.find(dt => dt.type === urn)?.format;
+        const type = DateFormFieldStrategy.getShortUrn(this.child);
+        const format = typesConfigs.find(dt => dt.type === type)?.format;
         return format || DEFAULT_FORMAT;
     }
 }

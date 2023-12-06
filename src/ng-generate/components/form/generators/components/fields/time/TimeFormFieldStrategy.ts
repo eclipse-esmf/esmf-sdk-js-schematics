@@ -13,14 +13,24 @@
 
 import {Characteristic} from '@esmf/aspect-model-loader';
 import {FormFieldConfig, FormFieldStrategy} from '../FormFieldStrategy';
+import {ConstraintValidatorRangeStrategy} from '../../validators/constraint/ConstraintValidatorRangeStrategy';
+import {DataType, DataTypeValidator, ValidatorConfig} from '../../validators/validatorsTypes';
+
+const typesConfigs = [
+    {
+        type: DataType.Time,
+        placeholder: "'14:23:00', '14:23:00.527634Z', '14:23:00+03:00'",
+    },
+];
+const supportedTypes: DataType[] = typesConfigs.map(dt => dt.type);
 
 export class TimeFormFieldStrategy extends FormFieldStrategy {
     pathToFiles = './generators/components/fields/time/files';
     hasChildren = false;
 
     static isTargetStrategy(child: Characteristic): boolean {
-        const urn = this.getShortUrn(child);
-        return urn === 'time';
+        const type = this.getShortUrn(child);
+        return type ? supportedTypes.includes(type) : false;
     }
 
     buildConfig(): FormFieldConfig {
@@ -30,7 +40,27 @@ export class TimeFormFieldStrategy extends FormFieldStrategy {
             ...this.getBaseFormFieldConfig(),
             exampleValue: this.parent.exampleValue || '',
             unitName: untypedChild.unit?.name || '',
-            validators: [...this.getBaseValidatorsConfigs()],
+            validators: this.getValidatorsConfigs([ConstraintValidatorRangeStrategy]),
+            placeholder: this.getPlaceholder(),
         };
+    }
+
+    getPlaceholder(): string | undefined {
+        const type = TimeFormFieldStrategy.getShortUrn(this.child);
+        return typesConfigs.find(dt => dt.type === type)?.placeholder;
+    }
+
+    getDataTypeValidatorsConfigs(): ValidatorConfig[] {
+        const type = FormFieldStrategy.getShortUrn(this.child);
+
+        return type === DataType.Time
+            ? [
+                  {
+                      name: DataTypeValidator.Time,
+                      definition: 'FormValidators.timeValidator()',
+                      isDirectGroupValidator: false,
+                  },
+              ]
+            : [];
     }
 }

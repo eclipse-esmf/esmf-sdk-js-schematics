@@ -1,5 +1,14 @@
 <form [formGroup]="formGroup">
-    <fieldset class="form-group" data-test="<%= options.fieldConfig.name %>-either">
+    <fieldset
+        class="form-group"
+        [class.invalid]="formGroup.invalid && formGroup.touched"
+        data-test="<%= options.fieldConfig.name %>-either">
+        <mat-error *ngIf="formGroup.invalid && formGroup.touched && groupSpecificError as err">
+            <ng-container *ngIf="err">
+                {{ err.translationKey | translate : err.translationParams }}
+            </ng-container>
+        </mat-error>
+
         <legend><%= options.fieldConfig.name %></legend>
         <section class="form-fields">
             <% for (let childConfig of options.fieldConfig.children) {

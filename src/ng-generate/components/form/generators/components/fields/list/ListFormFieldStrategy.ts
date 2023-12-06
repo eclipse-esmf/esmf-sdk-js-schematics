@@ -33,7 +33,7 @@ export class ListFormFieldStrategy extends FormFieldStrategy {
     buildConfig(): FormFieldConfig {
         return {
             ...this.getBaseFormFieldConfig(),
-            validators: [...this.getBaseValidatorsConfigs()],
+            validators: this.getValidatorsConfigs(),
             children: this.getChildConfigs(),
             isList: this.isList,
             isScalarChild: this.isScalarChild(),

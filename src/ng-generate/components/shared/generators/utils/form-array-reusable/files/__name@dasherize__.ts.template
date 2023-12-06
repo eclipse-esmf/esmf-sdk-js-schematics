@@ -2,6 +2,7 @@
 import {AbstractControl, ControlValueAccessor, FormArray, ValidationErrors, Validator} from '@angular/forms';
 import {takeUntil} from 'rxjs';
 import {mixinDestroyedSubject} from './destroyed-subject.mixin';
+import {CustomControlValidationError} from "./form-validators";
 
 export abstract class FormArrayReusable extends mixinDestroyedSubject() implements ControlValueAccessor, Validator {
     abstract formArray: FormArray;
@@ -9,6 +10,34 @@ export abstract class FormArrayReusable extends mixinDestroyedSubject() implemen
 
     protected constructor() {
         super();
+    }
+
+    get error(): CustomControlValidationError {
+        if (this.formArray.errors && this.formArray.errors['required']) {
+            return {
+                translationKey: 'validation.required',
+                translationParams: {},
+            };
+        }
+
+        const errors = Object.values(this.formArray.errors ?? {});
+        const error = errors.find(value => !!value);
+
+        return error ?? null;
+    }
+
+    get groupSpecificError(): CustomControlValidationError {
+        if (this.formArray.errors && this.formArray.errors['required']) {
+            return {
+                translationKey: 'validation.required',
+                translationParams: {},
+            };
+        }
+
+        const errors = Object.values(this.formArray.errors ?? []);
+        const error = errors.find(value => !!value && value.isGroupSpecificError);
+
+        return error ?? null;
     }
 
     registerOnChange(fn: any): void {

@@ -312,6 +312,7 @@ The form schematics can be used for form generation.
 4. Multiple aspect models selection
 5. Wizard output to regenerate the same form without going through the wizard again
 6. Possibility to set the form as read only
+7. Validation rules for form fields and groups (partial support)
 
 ### How to generate a form component with the schematics command
 

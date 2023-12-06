@@ -11,18 +11,15 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-import {Characteristic, Property} from '@esmf/aspect-model-loader';
+import {Characteristic, Constraint, DefaultConstraint, DefaultTrait, Property} from '@esmf/aspect-model-loader';
 import {apply, applyTemplates, chain, MergeStrategy, mergeWith, move, Rule, SchematicContext, url} from '@angular-devkit/schematics';
 import {strings} from '@angular-devkit/core';
 import {templateInclude} from '../../../../shared/include';
 import {addToComponentModule} from '../../../../../../utils/angular';
 import {getFormFieldStrategy} from './index';
-
-export interface ValidatorConfig {
-    definition: string;
-    errorCode: string;
-    errorMessage: string;
-}
+import {getConstraintValidatorStrategy} from '../validators/constraint/index';
+import {ConstraintValidatorStrategyClass} from '../validators/constraint/constraint-validator-strategies';
+import {DataType, GenericValidator, ValidatorConfig} from '../validators/validatorsTypes';
 
 export interface BaseFormFieldConfig {
     name: string;
@@ -43,17 +40,18 @@ export interface FormFieldConfig extends BaseFormFieldConfig {
     isScalarChild?: boolean;
 }
 
-export class FormFieldStrategy {
+export abstract class FormFieldStrategy {
     pathToFiles: string;
     hasChildren: boolean;
     options: any;
+    isList = false;
 
     static isTargetStrategy(child: Characteristic): boolean {
         throw new Error('An implementation of the method has to be provided by a derived class');
     }
 
-    static getShortUrn(child: Characteristic): string | undefined {
-        return child.dataType?.shortUrn;
+    static getShortUrn(child: Characteristic): DataType {
+        return child.dataType?.shortUrn as DataType;
     }
 
     constructor(
@@ -61,9 +59,18 @@ export class FormFieldStrategy {
         public context: SchematicContext,
         public parent: Property,
         public child: Characteristic,
-        public fieldName: string
+        public fieldName: string,
+        public constraints: Constraint[]
     ) {
         this.options = {...options};
+    }
+
+    getValidatorsConfigs(ignoreConstraintValidatorStrategies: ConstraintValidatorStrategyClass = []): ValidatorConfig[] {
+        return [
+            ...this.getBaseValidatorsConfigs(),
+            ...this.getDataTypeValidatorsConfigs(),
+            ...this.getConstraintValidatorsConfigs(ignoreConstraintValidatorStrategies),
+        ];
     }
 
     getBaseValidatorsConfigs(): ValidatorConfig[] {
@@ -71,13 +78,38 @@ export class FormFieldStrategy {
 
         if (!this.parent.isOptional) {
             validatorsConfigs.push({
+                name: GenericValidator.Required,
                 definition: 'Validators.required',
-                errorCode: 'required',
-                errorMessage: `${this.fieldName} is required.`,
+                isDirectGroupValidator: false,
             });
         }
 
         return validatorsConfigs;
+    }
+
+    getDataTypeValidatorsConfigs(): ValidatorConfig[] {
+        return [];
+    }
+
+    getConstraintValidatorsConfigs(ignoreStrategies: ConstraintValidatorStrategyClass): ValidatorConfig[] {
+        const applicableConstraints: Constraint[] = this.constraints.filter(
+            constraint =>
+                // Check that it's not excluded explicitly
+                !this.options.excludedConstraints.includes(constraint.aspectModelUrn) &&
+                // It's not a direct instance of "DefaultConstraint" (it contains no validation rules)
+                constraint.constructor !== DefaultConstraint
+        );
+
+        return applicableConstraints.reduce((acc, constraint) => {
+            const validatorStrategy = getConstraintValidatorStrategy(constraint, this.child);
+            const isIgnoredStrategy = !!ignoreStrategies.find(ignoredStrategy => validatorStrategy instanceof ignoredStrategy);
+
+            if (isIgnoredStrategy) {
+                return acc;
+            }
+
+            return [...acc, ...validatorStrategy.getValidatorsConfigs()];
+        }, []);
     }
 
     getBaseFormFieldConfig(): BaseFormFieldConfig {
@@ -149,6 +181,12 @@ export class FormFieldStrategy {
     }
 
     getChildStrategy(parent: Property, child: Characteristic): FormFieldStrategy {
-        return getFormFieldStrategy(this.options, this.context, this.parent, child, child.name);
+        return getFormFieldStrategy(
+            this.options,
+            this.context,
+            this.parent,
+            child,
+            child instanceof DefaultTrait ? child.baseCharacteristic.name : child.name
+        );
     }
 }

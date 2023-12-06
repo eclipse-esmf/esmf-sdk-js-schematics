@@ -13,4 +13,5 @@
 
 export * from './form-control-reusable';
 export * from './form-group-reusable';
+export * from './form-validators';
 export * from './destroyed-subject';

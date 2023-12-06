@@ -13,14 +13,15 @@
 
 import {Characteristic} from '@esmf/aspect-model-loader';
 import {FormFieldConfig, FormFieldStrategy} from '../FormFieldStrategy';
+import {DataType, DataTypeValidator, ValidatorConfig} from '../../validators/validatorsTypes';
 
 export class TextAreaFormFieldStrategy extends FormFieldStrategy {
     pathToFiles = './generators/components/fields/textArea/files';
     hasChildren = false;
 
     static isTargetStrategy(child: Characteristic): boolean {
-        const urn = this.getShortUrn(child);
-        return urn === 'langString';
+        const type = this.getShortUrn(child);
+        return type === DataType.LangString;
     }
 
     buildConfig(): FormFieldConfig {
@@ -30,7 +31,21 @@ export class TextAreaFormFieldStrategy extends FormFieldStrategy {
             ...this.getBaseFormFieldConfig(),
             exampleValue: this.parent.exampleValue || '',
             unitName: untypedChild.unit?.name || '',
-            validators: [...this.getBaseValidatorsConfigs()],
+            validators: this.getValidatorsConfigs(),
         };
+    }
+
+    getDataTypeValidatorsConfigs(): ValidatorConfig[] {
+        const type = FormFieldStrategy.getShortUrn(this.child);
+
+        return type === DataType.LangString
+            ? [
+                  {
+                      name: DataTypeValidator.LangString,
+                      definition: 'FormValidators.langStringValidator()',
+                      isDirectGroupValidator: false,
+                  },
+              ]
+            : [];
     }
 }

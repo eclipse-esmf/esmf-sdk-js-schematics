@@ -13,41 +13,43 @@
 
 import {Characteristic} from '@esmf/aspect-model-loader';
 import {FormFieldConfig, FormFieldStrategy} from '../FormFieldStrategy';
+import {ConstraintValidatorRangeStrategy} from '../../validators/constraint/ConstraintValidatorRangeStrategy';
+import {DataType} from '../../validators/validatorsTypes';
 
 const DEFAULT_FORMAT = 'YYYY-MM-DDTHH:mm:ss.SSSSSSZ';
 const typesConfigs = [
     {
-        type: 'dateTime',
+        type: DataType.DateTime,
         format: 'YYYY-MM-DDTHH:mm:ss.SSSSSSZ',
     },
     {
-        type: 'dateTimeStamp',
+        type: DataType.DateTimeStamp,
         format: 'YYYY-MM-DDTHH:mm:ss.SSSSSZ',
     },
 ];
-const supportedTypes = typesConfigs.map(dt => dt.type);
+const supportedTypes: DataType[] = typesConfigs.map(dt => dt.type);
 
 export class DateTimeFormFieldStrategy extends FormFieldStrategy {
     pathToFiles = './generators/components/fields/dateTime/files';
     hasChildren = false;
 
     static isTargetStrategy(child: Characteristic): boolean {
-        const urn = this.getShortUrn(child);
-        return urn ? supportedTypes.includes(urn) : false;
+        const type = this.getShortUrn(child);
+        return type ? supportedTypes.includes(type) : false;
     }
 
     buildConfig(): FormFieldConfig {
         return {
             ...this.getBaseFormFieldConfig(),
             exampleValue: this.parent.exampleValue || '',
-            validators: [...this.getBaseValidatorsConfigs()],
+            validators: this.getValidatorsConfigs([ConstraintValidatorRangeStrategy]),
             dataFormat: this.getDataFormat(),
         };
     }
 
     getDataFormat(): string {
-        const urn = DateTimeFormFieldStrategy.getShortUrn(this.child);
-        const format = typesConfigs.find(dt => dt.type === urn)?.format;
+        const type = DateTimeFormFieldStrategy.getShortUrn(this.child);
+        const format = typesConfigs.find(dt => dt.type === type)?.format;
         return format || DEFAULT_FORMAT;
     }
 }

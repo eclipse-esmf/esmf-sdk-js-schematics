@@ -147,6 +147,10 @@ export function generateTranslationFiles(options: Schema): Rule {
             ...element.properties.flatMap(property => property.localesDescriptions),
         ]);
 
+        if (!languages.size) {
+            languages.add('en');
+        }
+
         const aspectModelPath = `/${dasherize(options.name).toLowerCase()}`;
         const versionPath = options.enableVersionSupport ? `/v${options.aspectModelVersion.replace(/\./g, '')}` : '';
         const assetsPath = `${baseAssetsPath}${aspectModelPath}${versionPath}`;

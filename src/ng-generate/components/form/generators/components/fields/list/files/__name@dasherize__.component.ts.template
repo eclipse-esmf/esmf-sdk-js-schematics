@@ -2,8 +2,20 @@
 
 import {Attribute, Component, forwardRef, OnInit} from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {FormControl, FormArray, FormsModule, NG_VALIDATORS, NG_VALUE_ACCESSOR, ReactiveFormsModule} from '@angular/forms';
+import {
+    FormControl,
+    FormArray,
+    FormsModule,
+    NG_VALIDATORS,
+    NG_VALUE_ACCESSOR,
+    ReactiveFormsModule,
+    ValidatorFn,
+    Validators
+} from '@angular/forms';
+import {MatFormFieldModule} from "@angular/material/form-field";
+import {TranslateModule} from "@ngx-translate/core";
 import {FormArrayReusable} from '<% if (options.enableVersionSupport) { %>../<% } %>../../../utils/form-array-reusable';
+import {FormValidators} from "<% if (options.enableVersionSupport) { %>../<% } %>../../../utils/form-validators";
 import {MatTableDataSource, MatTableModule} from "@angular/material/table";
 import {MatCheckboxChange, MatCheckboxModule} from "@angular/material/checkbox";
 import {MatButtonModule} from "@angular/material/button";
@@ -12,7 +24,17 @@ import {takeUntil} from "rxjs/operators";
 
 export type <%= classify(options.fieldConfig.name) %>Item = any;
 export type <%= classify(options.fieldConfig.name) %>FormControl = FormArray<FormControl<<%= classify(options.fieldConfig.name) %>Item>>;
-export const <%= options.fieldConfig.name %>FormControl: <%= classify(options.fieldConfig.name) %>FormControl = new FormArray<FormControl<<%= classify(options.fieldConfig.name) %>Item>>([]);
+
+export const validators: {[key: string]: ValidatorFn} = {
+    <% for(let validator of options.fieldConfig.validators) { %>
+        <%= validator.name %>: (<%= validator.definition %>),
+    <% } %>
+};
+
+export const <%= options.fieldConfig.name %>FormControl: <%= classify(options.fieldConfig.name) %>FormControl = new FormArray<FormControl<<%= classify(options.fieldConfig.name) %>Item>>(
+    [],
+    Object.values(validators)
+);
 
 const <%= options.fieldConfig.name %>EventsSubjects = {
   add: new Subject<void>(),
@@ -46,7 +68,9 @@ export type DataSourceSelection = DataSourceSelectionItem[];
         ReactiveFormsModule,
         MatTableModule,
         MatCheckboxModule,
-        MatButtonModule
+        MatButtonModule,
+        MatFormFieldModule,
+        TranslateModule,
     ],
     templateUrl: './<%= dasherize(options.fieldConfig.name) %>.component.html',
     styleUrls: ['./<%= dasherize(options.fieldConfig.name) %>.component.scss'],

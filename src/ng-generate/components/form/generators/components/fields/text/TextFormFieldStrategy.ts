@@ -13,14 +13,21 @@
 
 import {Characteristic} from '@esmf/aspect-model-loader';
 import {FormFieldConfig, FormFieldStrategy} from '../FormFieldStrategy';
+import {DataType, DataTypeValidator, ValidatorConfig} from '../../validators/validatorsTypes';
 
 export class TextFormFieldStrategy extends FormFieldStrategy {
     pathToFiles = './generators/components/fields/text/files';
     hasChildren = false;
 
     static isTargetStrategy(child: Characteristic): boolean {
-        const urn = this.getShortUrn(child);
-        return urn === 'string' || urn === 'anyURI' || urn === 'hexBinary' || urn === 'curie' || urn === 'base64Binary';
+        const type = this.getShortUrn(child);
+        return (
+            type === DataType.String ||
+            type === DataType.AnyURI ||
+            type === DataType.HexBinary ||
+            type === DataType.Curie ||
+            type === DataType.Base64Binary
+        );
     }
 
     buildConfig(): FormFieldConfig {
@@ -30,7 +37,45 @@ export class TextFormFieldStrategy extends FormFieldStrategy {
             ...this.getBaseFormFieldConfig(),
             exampleValue: this.parent.exampleValue || '',
             unitName: untypedChild.unit?.name || '',
-            validators: [...this.getBaseValidatorsConfigs()],
+            validators: this.getValidatorsConfigs(),
         };
+    }
+
+    getDataTypeValidatorsConfigs(): ValidatorConfig[] {
+        const type = FormFieldStrategy.getShortUrn(this.child);
+
+        return type === DataType.HexBinary
+            ? [
+                  {
+                      name: DataTypeValidator.HexBinary,
+                      definition: 'FormValidators.hexBinaryValidator()',
+                      isDirectGroupValidator: false,
+                  },
+              ]
+            : type === DataType.Base64Binary
+            ? [
+                  {
+                      name: DataTypeValidator.Base64Binary,
+                      definition: 'FormValidators.base64BinaryValidator()',
+                      isDirectGroupValidator: false,
+                  },
+              ]
+            : type === DataType.AnyURI
+            ? [
+                  {
+                      name: DataTypeValidator.AnyURI,
+                      definition: 'FormValidators.anyUriValidator()',
+                      isDirectGroupValidator: false,
+                  },
+              ]
+            : type === DataType.Curie
+            ? [
+                  {
+                      name: DataTypeValidator.Curie,
+                      definition: 'FormValidators.curieValidator()',
+                      isDirectGroupValidator: false,
+                  },
+              ]
+            : [];
     }
 }

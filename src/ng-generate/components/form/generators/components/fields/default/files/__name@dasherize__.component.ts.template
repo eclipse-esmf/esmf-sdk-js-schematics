@@ -2,24 +2,25 @@
 
 import {Attribute, Component, forwardRef} from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {FormControl, FormsModule, NG_VALUE_ACCESSOR, ReactiveFormsModule, Validators} from '@angular/forms';
+import {FormControl, FormsModule, NG_VALUE_ACCESSOR, ReactiveFormsModule, ValidatorFn, Validators} from '@angular/forms';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatInputModule} from '@angular/material/input';
+import {TranslateModule} from "@ngx-translate/core";
 import {FormControlReusable} from "<% if (options.enableVersionSupport) { %>../<% } %>../../../utils/form-control-reusable";
+import {FormValidators} from "<% if (options.enableVersionSupport) { %>../<% } %>../../../utils/form-validators";
 
-export const <%= options.fieldConfig.name %>FormControl = new FormControl(
-    null,
-    [
-        <% for(let validator of options.fieldConfig.validators) { %>
-            <%= validator.definition %>
-        <% } %>
-    ]
-);
+export const validators: {[key: string]: ValidatorFn} = {
+  <% for(let validator of options.fieldConfig.validators) { %>
+    <%= validator.name %>: <%= validator.definition %>,
+  <% } %>
+}
+
+export const <%= options.fieldConfig.name %>FormControl = new FormControl(null, Object.values(validators));
 
 @Component({
     selector: '<%= options.fieldConfig.selector %>',
     standalone: true,
-    imports: [CommonModule, FormsModule, MatFormFieldModule, MatInputModule, ReactiveFormsModule],
+    imports: [CommonModule, FormsModule, MatFormFieldModule, MatInputModule, ReactiveFormsModule, TranslateModule],
     templateUrl: './<%= dasherize(options.fieldConfig.name) %>.component.html',
     styleUrls: ['./<%= dasherize(options.fieldConfig.name) %>.component.scss'],
     providers: [
@@ -35,11 +36,5 @@ export class <%= classify(options.fieldConfig.name) %>Component extends FormCont
 
     constructor(@Attribute('formControlName') public formControlName: string) {
         super();
-    }
-
-    get errorMessage() {
-        return this.formControl.hasError('required')
-            ? 'The field is required'
-            : 'The value is invalid or empty';
     }
 }

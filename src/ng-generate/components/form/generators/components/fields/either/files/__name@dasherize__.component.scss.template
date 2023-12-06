@@ -1,6 +1,10 @@
 .form-group {
     padding: 0 1rem;
     margin-bottom: 1rem;
+
+    &.invalid {
+        border-color: #f44336;
+    }
 }
 
 .form-fields > * {
