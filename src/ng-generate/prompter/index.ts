@@ -18,26 +18,20 @@ import path from 'path';
 import inquirer from 'inquirer';
 import {lastValueFrom, Subscriber} from 'rxjs';
 import {TemplateHelper} from '../../utils/template-helper';
-import {Schema, ComponentType} from '../components/shared/schema';
+import {ComponentType, Schema} from '../components/shared/schema';
 
 import {loader, reorderAspectModelUrnToLoad, writeConfigAndExit} from './utils';
 import {virtualFs} from '@angular-devkit/core';
-import {anotherFile, configFileName, createOrImport, importConfigFile} from './prompts-questions/shared/prompt-simple-questions';
+import {
+    anotherFile,
+    configFileName,
+    createOrImport,
+    importConfigFile
+} from './prompts-questions/shared/prompt-simple-questions';
 import {tablePrompterQuestions} from './prompts-questions/table/prompt-questions';
-import {pathDecision, requestAspectModelUrnToLoad} from './prompts-questions/shared/prompt-complex-questions';
+import {pathDecision, requestAspectModelWithAspect} from './prompts-questions/shared/prompt-complex-questions';
 import {formPrompterQuestions} from './prompts-questions/form/prompt-questions';
 import {cardPrompterQuestions} from './prompts-questions/card/prompt-questions';
-//
-
-// import {ComponentType, Schema} from '../shared/schema';
-// import {generateCardComponent} from './generators/components/card';
-// import {generateExportCardDialog} from './generators/components/export-dialog/index';
-
-// export default function (cardSchema: CardSchema): Rule {
-//     return (tree: Tree, context: SchematicContext) => {
-//         generateComponent(context, cardSchema, ComponentType.CARD);
-//     };
-//
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 inquirer.registerPrompt('fuzzypath', require('inquirer-fuzzy-path'));
@@ -117,13 +111,13 @@ async function runPrompts(subscriber: Subscriber<Tree>, tree: Tree, templateHelp
         const answerConfigurationFileConfig = await getConfigurationFileConfig(subscriber, tree);
 
         if (!answerConfigurationFileConfig.importConfigFile) {
-            const answerAspectModel = await getAspectModelUrnToLoad();
-            aspect = await loadAspectModel(answerAspectModel.aspectModelUrnToLoad, tree);
+            const answerAspectModelWithMainAspect = await getAspectModelWithMainAspect();
+            aspect = await loadAspectModel(answerAspectModelWithMainAspect.aspectModelUrnToLoad, tree);
             switch (generationType) {
                 case ComponentType.TABLE:
                     return tablePrompterQuestions(
                         answerConfigurationFileConfig,
-                        answerAspectModel,
+                        answerAspectModelWithMainAspect,
                         templateHelper,
                         options,
                         aspect,
@@ -133,7 +127,7 @@ async function runPrompts(subscriber: Subscriber<Tree>, tree: Tree, templateHelp
                 case ComponentType.FORM:
                     return formPrompterQuestions(
                         answerConfigurationFileConfig,
-                        answerAspectModel,
+                        answerAspectModelWithMainAspect,
                         templateHelper,
                         options,
                         aspect,
@@ -143,7 +137,7 @@ async function runPrompts(subscriber: Subscriber<Tree>, tree: Tree, templateHelp
                 case ComponentType.CARD:
                     return cardPrompterQuestions(
                         answerConfigurationFileConfig,
-                        answerAspectModel,
+                        answerAspectModelWithMainAspect,
                         templateHelper,
                         options,
                         aspect,
@@ -258,18 +252,19 @@ async function askAnotherFile() {
 }
 
 /**
- * Prompts the user for the Aspect Model URN and then loads the Aspect Model.
+ * Asynchronously prompts the user for input and retrieves an aspect model along with its main aspect.
  *
- * @returns {Promise<any>} - A Promise that resolves with the user's answer to the Aspect Model URN prompt.
+ * @returns {Promise<any>} A promise that resolves with the user's input data as an object.
+ *
  */
-async function getAspectModelUrnToLoad(): Promise<any> {
-    return await inquirer.prompt([requestAspectModelUrnToLoad(allAnswers)]);
+async function getAspectModelWithMainAspect(): Promise<any> {
+    return await inquirer.prompt([requestAspectModelWithAspect(allAnswers)]);
 }
 
 /**
  * Loads the aspect model.
  *
- * @param {string} aspectModelUrnToLoad - The aspect model URN to load.
+ * @param {string} pathToAspectModelWithMainAspect - The path of the Aspect Model with main Aspect to load.
  * @param {Tree} tree - The tree of files.
  *
  * @returns {Promise<Aspect>} Returns a Promise that resolves to an Aspect.
@@ -279,10 +274,10 @@ async function getAspectModelUrnToLoad(): Promise<any> {
  *
  * @throws Will throw an error if loading the aspect model fails.
  */
-async function loadAspectModel(aspectModelUrnToLoad: string, tree: Tree): Promise<Aspect> {
+async function loadAspectModel(pathToAspectModelWithMainAspect: string, tree: Tree): Promise<Aspect> {
     if (aspect) return aspect;
 
-    allAnswers.aspectModelTFiles = reorderAspectModelUrnToLoad(allAnswers.aspectModelTFiles, aspectModelUrnToLoad, tree);
+    allAnswers.aspectModelTFiles = reorderAspectModelUrnToLoad(allAnswers.aspectModelTFiles, pathToAspectModelWithMainAspect);
 
     try {
         const ttlFileContents: string[] = allAnswers.aspectModelTFiles
@@ -294,7 +289,7 @@ async function loadAspectModel(aspectModelUrnToLoad: string, tree: Tree): Promis
             });
 
         if (ttlFileContents.length > 1) {
-            return await lastValueFrom<Aspect>(loader.load(aspectModelUrnToLoad, ...ttlFileContents));
+            return await lastValueFrom<Aspect>(loader.load('', ...ttlFileContents));
         }
 
         return await lastValueFrom(loader.loadSelfContainedModel(ttlFileContents[0]));
