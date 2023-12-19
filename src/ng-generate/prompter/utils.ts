@@ -37,11 +37,10 @@ export const loader = new AspectModelLoader();
  *
  * @param {Array<string>} aspectModelTFiles - The array of TTL file URNs.
  * @param {string} aspectModelUrnToLoad - The URN of the TTL file to be moved to the beginning of the array.
- * @param {any} tree - A tree data structure (not currently used in this function).
  *
  * @returns {Array<string>} The reordered array of TTL file URNs.
  */
-export function reorderAspectModelUrnToLoad(aspectModelTFiles: Array<string>, aspectModelUrnToLoad: string, tree: any): Array<string> {
+export function reorderAspectModelUrnToLoad(aspectModelTFiles: Array<string>, aspectModelUrnToLoad: string): Array<string> {
     if (aspectModelTFiles.includes(aspectModelUrnToLoad)) {
         return [aspectModelUrnToLoad, ...aspectModelTFiles.filter((item: string) => item !== aspectModelUrnToLoad)];
     }

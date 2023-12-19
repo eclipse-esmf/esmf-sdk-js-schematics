@@ -174,7 +174,7 @@ export const requestCustomCommandBarActions = (answers: any, templateHelper: Tem
     when: () => answers.addCommandBar && templateHelper.isAddCustomCommandBarActions(answers.enabledCommandBarFunctions),
 });
 
-export const requestAspectModelUrnToLoad = (allAnswers: any) => ({
+export const requestAspectModelWithAspect = (allAnswers: any) => ({
     type: 'list',
     name: 'aspectModelUrnToLoad',
     message: 'Choose the .ttl file which includes the Aspect to load:',
