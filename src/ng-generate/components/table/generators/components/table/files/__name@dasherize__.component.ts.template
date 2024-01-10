@@ -9,13 +9,13 @@ import {
     SimpleChanges,
     HostBinding,
     Inject,
+    OnChanges,
     OnInit,
     AfterViewChecked,
     TemplateRef,
     ElementRef,
     ViewEncapsulation,
     <% if (options.enableRemoteDataHandling || options.hasSearchBar) { %>OnDestroy,<% } %>
-    <% if (!options.enableRemoteDataHandling) { %>OnChanges,<% } %>
     <% if (options.enableRemoteDataHandling) { %>ChangeDetectorRef,<% } %>
     <% if (options.changeDetection !== 'Default') { %>ChangeDetectionStrategy,<% } %>
 } from '@angular/core';
@@ -105,7 +105,7 @@ export enum <%= classify(name) %>Column {
     <% if (options.changeDetection) { %>, changeDetection: ChangeDetectionStrategy.<%= options.changeDetection %><% } %>
     <% if (options.viewEncapsulation) { %>,encapsulation: ViewEncapsulation.<%= options.viewEncapsulation %><% } else { %>,encapsulation: ViewEncapsulation.None<% } %>
 })
-export class <%= classify(name) %>Component implements OnInit, AfterViewInit, AfterViewChecked<% if (!options.enableRemoteDataHandling) { %>, OnChanges<% } %><% if (options.hasSearchBar || options.enableRemoteDataHandling) { %>, OnDestroy<% } %> {
+export class <%= classify(name) %>Component implements OnInit, AfterViewInit, AfterViewChecked, OnChanges<% if (options.hasSearchBar || options.enableRemoteDataHandling) { %>, OnDestroy<% } %> {
     <% if (options.hasSearchBar) { %>@Input() initialSearchString = '';<% } %>
     <%= customRowActionInput %>
     <% if (options.dateProperties) { %>@Input() tableDateFormat = 'short';<% } %>
@@ -256,13 +256,25 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
         <% } %>
     }
 
-    <% if (!options.enableRemoteDataHandling) { %>
-       ngOnChanges(changes: SimpleChanges): void {
-          if (this.table) {
-              this.applyFilters();
-          }
-       }
-    <% } %>
+    ngOnChanges(changes: SimpleChanges): void {
+        <% if (options.enableRemoteDataHandling) { %>
+            if (
+                (changes?.remoteAPI?.currentValue && !changes.remoteAPI.isFirstChange()) ||
+                (changes?.customFilterExtension?.currentValue && !changes.customFilterExtension.isFirstChange())
+            ) {
+                if (this.paginator.pageIndex !== 0) {
+                    this.paginator.firstPage();
+                } else {
+                    this.applyFilters();
+                }
+            }
+        <% } else { %>
+            if (this.table) {
+                this.applyFilters();
+            }
+        <% } %>
+   }
+
 
     <% if (options.hasSearchBar || options.enableRemoteDataHandling) { %>
         ngOnDestroy(): void {
