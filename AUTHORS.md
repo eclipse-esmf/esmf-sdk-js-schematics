@@ -10,5 +10,6 @@ The following people have contributed to this repository:
 * Arun Kumar Rajapal
 * Wolfgang Klenk
 * Pavel Shalamkov
+* [Anton Shabatin](https://github.com/sha4be), Robert Bosch GmbH, Anton.Shabatin@bosch.com
 
 Please add yourself to this list, if you contribute to the content.
