@@ -110,6 +110,7 @@ private requestData() {
             <% } %>
             throw new Error(error.message);
         }),
-        finalize(() => this.<% if (options.componentType === 'card') { %>card<% } else { %>table<% } %>UpdateFinishedEvent.emit()))
+        finalize(() => this.<% if (options.componentType === 'card') { %>card<% } else { %>table<% } %>UpdateFinishedEvent.emit())),
+        takeUntil(this.ngUnsubscribe)
     .subscribe();
 }
