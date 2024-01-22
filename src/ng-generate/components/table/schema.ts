@@ -12,9 +12,18 @@
  */
 
 import {Values} from '../shared/schema';
+import data from './schema.json';
 
 export interface TableSchema extends Values {
     customRowActions: string[];
     addRowCheckboxes: boolean;
     customColumns: Array<string>;
+}
+
+export interface ITableDefaultsSchema {
+    // defaultTestValue: boolean; this value should be defined in schema.json
+}
+
+export class TableDefaultsSchema implements ITableDefaultsSchema {
+    // defaultTestValue = data.properties.defaultTestValue.default;
 }
