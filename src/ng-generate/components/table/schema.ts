@@ -20,10 +20,7 @@ export interface TableSchema extends Values {
     customColumns: Array<string>;
 }
 
-export interface ITableDefaultsSchema {
-    // defaultTestValue: boolean; this value should be defined in schema.json
-}
-
-export class TableDefaultsSchema implements ITableDefaultsSchema {
-    // defaultTestValue = data.properties.defaultTestValue.default;
-}
+export interface ConfigurationDefaultsSchema {}
+// class to define default values that are not asked in the prompter
+//  defaultValue = data.properties.defaultValue.default;
+export class TableDefaultsSchema implements ConfigurationDefaultsSchema {}

@@ -36,7 +36,7 @@ import {
     requestEnableRemoteDataHandling,
     requestSetViewEncapsulation,
 } from '../shared/prompt-simple-questions';
-import {ITableDefaultsSchema, TableDefaultsSchema} from '../../../components/table/schema';
+import {ConfigurationDefaultsSchema, TableDefaultsSchema} from '../../../components/table/schema';
 
 export async function tablePrompterQuestions(
     answerConfigurationFileConfig: any,
@@ -48,7 +48,7 @@ export async function tablePrompterQuestions(
     allAnswers: any
 ) {
     // check if TableDefaultsSchema interface has values
-    const defaults: ITableDefaultsSchema = new TableDefaultsSchema();
+    const defaults: ConfigurationDefaultsSchema = new TableDefaultsSchema();
 
     if (Object.keys(defaults).length > 0) {
         combineAnswers(
