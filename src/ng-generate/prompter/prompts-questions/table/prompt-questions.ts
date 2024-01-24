@@ -36,6 +36,7 @@ import {
     requestEnableRemoteDataHandling,
     requestSetViewEncapsulation,
 } from '../shared/prompt-simple-questions';
+import {ConfigurationDefaultsSchema, TableDefaultsSchema} from '../../../components/table/schema';
 
 export async function tablePrompterQuestions(
     answerConfigurationFileConfig: any,
@@ -46,11 +47,22 @@ export async function tablePrompterQuestions(
     combineAnswers: (...answers: any[]) => any,
     allAnswers: any
 ) {
-    combineAnswers(
-        answerConfigurationFileConfig,
-        answerAspectModel,
-        await getUserSpecificTableConfigs(templateHelper, options, aspect, allAnswers)
-    );
+    // check if TableDefaultsSchema interface has values
+    const defaults: ConfigurationDefaultsSchema = new TableDefaultsSchema();
+
+    if (Object.keys(defaults).length > 0) {
+        combineAnswers(
+            answerConfigurationFileConfig,
+            answerAspectModel,
+            await getUserSpecificTableConfigs(templateHelper, options, aspect, allAnswers, defaults)
+        );
+    } else {
+        combineAnswers(
+            answerConfigurationFileConfig,
+            answerAspectModel,
+            await getUserSpecificTableConfigs(templateHelper, options, aspect, allAnswers)
+        );
+    }
 }
 
 /**
@@ -62,7 +74,13 @@ export async function tablePrompterQuestions(
  * @param {Schema} options - User defined options provided when running the script.
  * @returns {Promise<Object>} An object containing the user responses.
  */
-async function getUserSpecificTableConfigs(templateHelper: TemplateHelper, options: Schema, aspect: Aspect, allAnswers: any) {
+async function getUserSpecificTableConfigs(
+    templateHelper: TemplateHelper,
+    options: Schema,
+    aspect: Aspect,
+    allAnswers: any,
+    defaults?: any
+) {
     const firstBatchAnswers = await inquirer.prompt([
         requestSelectedModelElement(ComponentType.TABLE, aspect, requestSelectedModelCondition),
     ]);
@@ -93,7 +111,9 @@ async function getUserSpecificTableConfigs(templateHelper: TemplateHelper, optio
         requestOverwriteFiles(options),
     ]);
 
-    return {...firstBatchAnswers, ...secondBatchAnswers, ...thirdBatchAnswers, ...fourthBatchAnswers};
+    return defaults
+        ? {...firstBatchAnswers, ...secondBatchAnswers, ...thirdBatchAnswers, ...fourthBatchAnswers, ...defaults}
+        : {...firstBatchAnswers, ...secondBatchAnswers, ...thirdBatchAnswers, ...fourthBatchAnswers};
 }
 
 export const requestCustomRowActions = {

@@ -45,6 +45,7 @@ The schematics' collection for this package includes dynamic generation of:
 -   internationalization, using [i18n](https://angular.io/guide/i18n).
 -   custom table components based on any aspect model loaded.
 -   proper types of properties and entities used.
+-   default configurations can be set in config file even if they are not asked in the prompter
 
 ## SDK schematics uses ESMF Aspect Model Loader library
 

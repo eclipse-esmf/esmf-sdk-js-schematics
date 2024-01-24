@@ -12,9 +12,15 @@
  */
 
 import {Values} from '../shared/schema';
+import data from './schema.json';
 
 export interface TableSchema extends Values {
     customRowActions: string[];
     addRowCheckboxes: boolean;
     customColumns: Array<string>;
 }
+
+export interface ConfigurationDefaultsSchema {}
+// class to define default values that are not asked in the prompter
+//  defaultValue = data.properties.defaultValue.default;
+export class TableDefaultsSchema implements ConfigurationDefaultsSchema {}
