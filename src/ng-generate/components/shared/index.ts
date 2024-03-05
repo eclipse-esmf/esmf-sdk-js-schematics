@@ -15,8 +15,13 @@ import {dasherize} from '@angular-devkit/core/src/utils/strings';
 import {chain, Rule, SchematicContext, Tree} from '@angular-devkit/schematics';
 import {NodePackageInstallTask, RunSchematicTask} from '@angular-devkit/schematics/tasks';
 import {JSONFile} from '@schematics/angular/utility/json-file';
-import {addToAppModule, addToAppSharedModule, addToComponentModule, wrapBuildComponentExecution} from '../../../utils/angular';
-import {generateTranslationFiles, loadAspectModel, loadRDF, validateUrns} from '../../../utils/aspect-model';
+import {
+    addToAppModule,
+    addToAppSharedModule,
+    addToComponentModule,
+    wrapBuildComponentExecution
+} from '../../../utils/angular';
+import {loadAspectModel, loadRDF, validateUrns} from '../../../utils/aspect-model';
 import {formatGeneratedFiles, loadAndApplyConfigFile} from '../../../utils/file';
 import {
     addPackageJsonDependencies,
@@ -35,7 +40,7 @@ import {
     generateHorizontalOverflowDirective,
     generateSharedModule,
     generateShowDescriptionPipe,
-    generateTranslationModule,
+    generateTranslationFiles,
     generateValidateInputDirective,
 } from './generators';
 import {APP_SHARED_MODULES, cardModules, formModules, tableModules, updateSharedModule} from '../../../utils/modules';
@@ -232,7 +237,7 @@ export function setTemplateOptionValuesRule(): Rule {
 export function generateGeneralFilesRules(): Array<Rule> {
     return [
         generateSharedModule(options),
-        generateTranslationModule(options),
+        generateTranslationFiles(options),
         generateFilterService(options),
         generateGeneralStyle(options),
         generateTranslationFiles(options),
@@ -255,10 +260,10 @@ export function addAndUpdateConfigurationFilesRule(): Rule[] {
         options.componentType === ComponentType.TABLE
             ? addToComponentModule(options.skipImport, options, tableModules(options))
             : options.componentType === ComponentType.CARD
-            ? addToComponentModule(options.skipImport, options, cardModules(options))
-            : options.componentType === ComponentType.FORM
-            ? addToComponentModule(options.skipImport, options, formModules(options))
-            : ({} as Rule);
+                ? addToComponentModule(options.skipImport, options, cardModules(options))
+                : options.componentType === ComponentType.FORM
+                    ? addToComponentModule(options.skipImport, options, formModules(options))
+                    : ({} as Rule);
 
     return [
         addPackageJsonDependencies(options.skipImport, options.spinner, loadDependencies()),

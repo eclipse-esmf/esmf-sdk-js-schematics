@@ -90,7 +90,7 @@ function getCompareLogicForProperty(
     } else if (isEnumProperty && isStringProperty) {
         return `case '${propName}': return this.compare(a.${propName}.toString(),b.${propName}.toString(), isSortingAsc);`;
     } else if (isMultiStringProperty) {
-        return `case '${propName}': return this.compare(a.${propName} ? a.${propName}[this.translateService.currentLang] : '', b.${propName} ? b.${propName}[this.translateService.currentLang] : '', isSortingAsc);`;
+        return `case '${propName}': return this.compare(a.${propName} ? a.${propName}[this.translateService.getActiveLang()] : '', b.${propName} ? b.${propName}[this.translateService.getActiveLang()] : '', isSortingAsc);`;
     } else {
         return `case '${propName}': return this.compare(a.${propName}, b.${propName}, isSortingAsc);`;
     }

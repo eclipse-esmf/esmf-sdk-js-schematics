@@ -11,26 +11,56 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-import {apply, applyTemplates, MergeStrategy, mergeWith, move, noop, Rule, SchematicContext, Tree, url} from '@angular-devkit/schematics';
+import {
+    apply,
+    applyTemplates,
+    chain,
+    MergeStrategy,
+    mergeWith,
+    move,
+    Rule,
+    SchematicContext,
+    Tree,
+    url
+} from '@angular-devkit/schematics';
 import {strings} from '@angular-devkit/core';
+import {Schema} from "../../../schema";
 
-export function generateTranslationModule(options: any): Rule {
+export function generateTranslationFiles(options: any): Rule {
     return (tree: Tree, _context: SchematicContext) => {
-        if (tree.exists('src/app/shared/app-shared.module.ts')) {
-            return noop();
-        }
-
-        return mergeWith(
-            apply(url('../shared/generators/modules/translation/files'), [
-                applyTemplates({
-                    classify: strings.classify,
-                    dasherize: strings.dasherize,
-                    options: options,
-                    name: 'app-shared',
-                }),
-                move('src/app/shared'),
-            ]),
-            options.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error
-        );
+        return chain([
+            generateModuleDefinition(options, _context),
+            generateProviderDefinition(options, _context),
+        ])(tree, _context);
     };
+}
+
+function generateModuleDefinition(options: Schema, _context: SchematicContext): Rule {
+    return mergeWith(
+        apply(url('../shared/generators/modules/translation/module-files'), [
+            applyTemplates({
+                classify: strings.classify,
+                dasherize: strings.dasherize,
+                options: options,
+                name: 'app-shared',
+            }),
+            move('src/app/shared'),
+        ]),
+        options.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error
+    );
+}
+
+function generateProviderDefinition(options: Schema, _context: SchematicContext): Rule {
+    return mergeWith(
+        apply(url('../shared/generators/modules/translation/provider-files'), [
+            applyTemplates({
+                classify: strings.classify,
+                dasherize: strings.dasherize,
+                options: options,
+                name: 'trans-loco-http-loader',
+            }),
+            move('src/app/shared'),
+        ]),
+        options.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error
+    );
 }

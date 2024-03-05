@@ -57,7 +57,7 @@ At the table column, add a *ng-container* statement as follows:
 ----
 <!-- speedLimitWarning Column -->
 <ng-container matColumnDef="speedLimitWarning">
-  <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ 'movement.v100.speedLimitWarning.preferredName' | translate }}</th>
+  <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ 'movement.v100.speedLimitWarning.preferredName' | transloco }}</th>
 
   <td mat-cell *matCellDef="let row">
     <!-- {{ row.speedLimitWarning || '-' }} -->
@@ -172,7 +172,7 @@ You can **directly** integrate this component in the respective column of the ta
 ----
 <!-- batteryLevel Column -->
 <ng-container matColumnDef="batteryLevel">
-  <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ 'movement.v100.batteryLevel.preferredName' | translate }}</th>
+  <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ 'movement.v100.batteryLevel.preferredName' | transloco }}</th>
 
   <td mat-cell *matCellDef="let row">
     <app-svg-bar-indicator [indicatorValue]="row.batteryLevel"></app-svg-bar-indicator>

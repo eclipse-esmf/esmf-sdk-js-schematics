@@ -314,7 +314,7 @@ Make sure moment.js and dateAdaptor are correctly installed
 
 In app.component.ts, it is required to set the default language:
 
-    constructor(lang: TranslateService) {
+    constructor(lang: TranslocoService) {
         lang.use(lang.defaultLang);
     }
 

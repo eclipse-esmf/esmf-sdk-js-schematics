@@ -56,11 +56,11 @@
                             [resizeColumn]="true" [index]="<%= value.index %>" (dragging)='dragging = $event'
                         <% } %>
                     >
-                        <span [matTooltip]=" '<%= propertyLocaleKeyPath %>.description' | translate"
+                        <span [matTooltip]=" '<%= propertyLocaleKeyPath %>.description' | transloco"
                               [matTooltipDisabled]="headerTooltipsOff"
                               matTooltipPosition="above"
                               data-test="table-header-text">
-                                {{ '<%= propertyLocaleKeyPath %>.preferredName' | translate }}
+                                {{ '<%= propertyLocaleKeyPath %>.preferredName' | transloco }}
                         </span>
                     </th>
 
@@ -97,11 +97,11 @@
                     <ng-container data-test="custom-column-container" matColumnDef="<%= columnName %>">
                         <% if(options.enableVersionSupport) { %>
                             <th data-test="custom-column-header" mat-header-cell *matHeaderCellDef mat-sort-header>
-                                {{'<%= options.selectedModelTypeName.toLowerCase() %>.v<%= options.formatedAspectModelVersion %>.customColumn.<%= columnName %>' | translate}}
+                                {{'<%= options.selectedModelTypeName.toLowerCase() %>.v<%= options.formatedAspectModelVersion %>.customColumn.<%= columnName %>' | transloco}}
                             </th>
                         <% } else { %>
                             <th data-test="custom-column-header" mat-header-cell *matHeaderCellDef mat-sort-header>
-                                {{ '<%= options.selectedModelTypeName.toLowerCase() %>.customColumn.<%= columnName %>' | translate }}
+                                {{ '<%= options.selectedModelTypeName.toLowerCase() %>.customColumn.<%= columnName %>' | transloco }}
                             </th>
                         <% } %>
 
@@ -122,7 +122,7 @@
                         (menuOpened)="initOpenedColumnMenuDialog()"
                         aria-label="Menu for the table"
                         class="mat-table-menu-button">
-                            <mat-icon data-test="mat-table-menu-icon" [matTooltip]="'tableActions.openColumnsMenu' | translate" class="material-icons">settings</mat-icon>
+                            <mat-icon data-test="mat-table-menu-icon" [matTooltip]="'tableActions.openColumnsMenu' | transloco" class="material-icons">settings</mat-icon>
                     </button>
                 </th>
 

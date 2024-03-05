@@ -158,7 +158,7 @@ export function getCustomRowActions(options: any): string {
           mat-header-cell 
           *matHeaderCellDef 
           [style.min-width.px]="customRowActionsLength <= visibleRowActionsIcons ? ${options.customRowActions.length * 30 + 15} : 80">
-            {{ '${options.templateHelper.getVersionedAccessPrefix(options)}customRowActions.preferredName' | translate}}
+            {{ '${options.templateHelper.getVersionedAccessPrefix(options)}customRowActions.preferredName' | transloco}}
       </th>
       <td data-test="custom-actions-row" mat-cell *matCellDef="let row">
       <ng-container data-test="custom-actions-container" *ngIf="customRowActionsLength <= visibleRowActionsIcons; else customActionsButton">
@@ -170,9 +170,9 @@ export function getCustomRowActions(options: any): string {
                   formattedActionKebab
               )}Visible" (click)="executeCustomAction($event, '${formattedActionKebab}', row)" style="cursor: pointer;" matTooltip="{{ '${options.templateHelper.getVersionedAccessPrefix(
                   options
-              )}${formattedActionKebab}.customRowAction' | translate }}" aria-hidden="false" attr.aria-label="{{ '${options.templateHelper.getVersionedAccessPrefix(
+              )}${formattedActionKebab}.customRowAction' | transloco }}" aria-hidden="false" attr.aria-label="{{ '${options.templateHelper.getVersionedAccessPrefix(
                   options
-              )}${formattedActionKebab}.customRowAction' | translate }}"`;
+              )}${formattedActionKebab}.customRowAction' | transloco }}"`;
               return `${action.lastIndexOf('.') > -1 ? `<mat-icon svgIcon="${formattedAction}" ${commonParts}></mat-icon>` : ''}${
                   action.lastIndexOf('.') === -1 ? `<mat-icon ${commonParts} class="material-icons">${action}</mat-icon>` : ''
               }
@@ -196,9 +196,9 @@ export function getCustomRowActions(options: any): string {
                       const classifiedAction = classify(formattedActionKebab);
                       const commonParts = `style="cursor: pointer;" matTooltip="{{ '${options.templateHelper.getVersionedAccessPrefix(
                           options
-                      )}${formattedActionKebab}.customRowAction' | translate }}" aria-hidden="false" attr.aria-label="{{ '${options.templateHelper.getVersionedAccessPrefix(
+                      )}${formattedActionKebab}.customRowAction' | transloco }}" aria-hidden="false" attr.aria-label="{{ '${options.templateHelper.getVersionedAccessPrefix(
                           options
-                      )}${formattedActionKebab}.customRowAction' | translate }}"`;
+                      )}${formattedActionKebab}.customRowAction' | transloco }}"`;
                       const iconTemplate =
                           action.lastIndexOf('.') === -1
                               ? `<mat-icon data-test="custom-action-icon" ${commonParts} class="material-icons">${formattedAction}</mat-icon>`
@@ -208,7 +208,7 @@ export function getCustomRowActions(options: any): string {
                           ${iconTemplate}
                           <span data-test="custom-action-text" style="vertical-align: middle">{{ '${options.templateHelper.getVersionedAccessPrefix(
                               options
-                          )}${formattedActionKebab}.customRowAction' | translate}}</span>
+                          )}${formattedActionKebab}.customRowAction' | transloco}}</span>
                       </button>
                      `;
                   })

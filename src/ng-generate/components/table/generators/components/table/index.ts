@@ -132,7 +132,7 @@ function hasCustomActions(): boolean {
 }
 
 function getSharedCustomRows(): string {
-    return `this.currentLanguage = this.translateService.currentLang; 
+    return `this.currentLanguage = this.translateService.getActiveLang(); 
     ${[...sharedOptions.customRowActions, ...sharedOptions.customCommandBarActions]
         .map(
             (customRowActions: string) =>
@@ -151,7 +151,7 @@ function getSharedCustomRows(): string {
 function commonImports(): string {
     return `${hasCustomActions() ? `iconRegistry: MatIconRegistry,` : ``}
             private sanitizer: DomSanitizer,
-            private translateService: TranslateService,
+            private translateService: TranslocoService,
             public dialog: MatDialog,
             private clipboard: Clipboard,
             private storageService: JSSdkLocalStorageService,

@@ -248,7 +248,7 @@ this.activeFilters
 
 const getChipLabelEnum = (filterProp: PropValue) => {
     const templateWithEntities = (propName: string) =>
-        `\`${'${selected} - ${this.translateService.instant(this.'}${propName}Options.filter(option => option.value === selected).map(option => option.translationKey).join(''))}\``;
+        `\`${'${selected} - ${this.translateService.translate(this.'}${propName}Options.filter(option => option.value === selected).map(option => option.translationKey).join(''))}\``;
 
     const templateWithoutEntities = `\`${'${selected}'}\``;
 

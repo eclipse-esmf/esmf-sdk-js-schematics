@@ -15,7 +15,7 @@ import {
   ContentChild,
   TemplateRef
 } from '@angular/core';
-import {TranslateService} from "@ngx-translate/core";
+import {TranslocoService} from '@ngneat/transloco';
 
 import {
     <%= classify(options.selectedModelTypeName) %>
@@ -123,22 +123,22 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit<% i
     <% } %>
 
     <% if (options.enableRemoteDataHandling) { %>
-        constructor(private translateService: TranslateService,
+        constructor(private translateService: TranslocoService,
                     private filterService: <%= classify(name) %>FilterService,
                     <% if (options.addCommandBar) { %>
                         public dialog: MatDialog,
                     <% } %>
                     private <% if (options.customRemoteService) { %>custom<% } %><%= classify(name) %>Service: <% if (options.customRemoteService) { %>Custom<% } %><%= classify(name) %>Service) {
-            this.currentLanguage = this.translateService.currentLang;
+            this.currentLanguage = this.translateService.getActiveLang();
         }
     <% } else { %>
-        constructor(private translateService: TranslateService,
+        constructor(private translateService: TranslocoService,
                     private <%= camelize(name) %>Service: <%= classify(name) %>Service,
                     private filterService: <%= classify(name) %>FilterService,
                     <% if (options.addCommandBar) { %>
                         public dialog: MatDialog,
                     <% } %>) {
-            this.currentLanguage = this.translateService.currentLang;
+            this.currentLanguage = this.translateService.getActiveLang();
         }
      <% } %>
 
@@ -327,7 +327,7 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit<% i
         private exportToCsv(exportData: Array<<%= options.aspectModelTypeName %>>) {
             const headersCSV = unparse({
                 fields: this.<%= camelize(name) %>CardValues.map(columnName => {
-                    const translatedHeader = this.translateService.instant(`<%= options.aspectModelTypeName.toLowerCase() %>.${columnName}.preferredName`);
+                    const translatedHeader = this.translateService.translate(`<%= options.aspectModelTypeName.toLowerCase() %>.${columnName}.preferredName`);
                     return translatedHeader !== `<%= options.aspectModelTypeName.toLowerCase() %>.${columnName}.preferredName` ? translatedHeader : columnName;
                 }),
                 data: [],

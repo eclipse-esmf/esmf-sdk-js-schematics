@@ -62,8 +62,7 @@
     "@angular/material": "17.x",
     "@angular/platform-browser": "17.x",
     "@angular/platform-browser-dynamic": "17.x",
-    "@ngx-translate/core": "15.x",
-    "@ngx-translate/http-loader": "8.x",
+    "@ngneat/transloco": "6.x",
     "ngx-i18n-combine": "1.x",
     "rxjs": "7.x"
   },

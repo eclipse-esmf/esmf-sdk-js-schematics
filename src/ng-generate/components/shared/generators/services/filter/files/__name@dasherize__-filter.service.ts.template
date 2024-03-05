@@ -17,7 +17,7 @@
     } from 'rollun-ts-rql';
 <% } %>
 
-<% if (options.hasSearchBar || options.isDateQuickFilter) { %>import {TranslateService} from '@ngx-translate/core';<% } %>
+<% if (options.hasSearchBar || options.isDateQuickFilter) { %>import { TranslocoService } from '@ngneat/transloco';<% } %>
 
 import {AbstractControl, FormControl, ValidationErrors, ValidatorFn} from '@angular/forms';
 import {Injectable<% if (options.isDateQuickFilter) { %>, Inject<% } %>} from '@angular/core';
@@ -158,7 +158,7 @@ export class <%= classify(name) %>FilterService {
             private dateAdapter: DateAdapter<any>,
         <% } %>
         <% if (options.isDateQuickFilter || options.hasSearchBar) { %>
-            private translateService: TranslateService
+            private translateService: TranslocoService
         <% } %>
     ){}
 
@@ -235,8 +235,8 @@ export class <%= classify(name) %>FilterService {
 
             private getFilterContext(): string {
                 return this.selectedStringColumn.value === this.advancedSearchAllValue
-                    ? this.translateService.instant('allTextFields')
-                    : this.translateService.instant(`<%= options.translationPath %>` + this.selectedStringColumn.value + '.preferredName');
+                    ? this.translateService.translate('allTextFields')
+                    : this.translateService.translate(`<%= options.translationPath %>` + this.selectedStringColumn.value + '.preferredName');
             }
 
             private filterData(data: Array<Movement>, searchFilters: FilterType[]): Array<Movement> {
@@ -257,8 +257,8 @@ export class <%= classify(name) %>FilterService {
             applyStringSearchFilter(query: AbstractLogicalNode): void {
                 if (this.searchString.value && this.searchString.value !== '' && !this.activeFilters.find(elem => elem.prop === this.selectedStringColumn.value && elem.filterValue === this.searchString.value)) {
                     const label = ` in ${ this.selectedStringColumn.value === this.advancedSearchAllValue ?
-                    this.translateService.instant('allTextFields') :
-                        this.translateService.instant(`<%= options.translationPath %>` + this.selectedStringColumn.value + '.preferredName')}`;
+                    this.translateService.translate('allTextFields') :
+                        this.translateService.translate(`<%= options.translationPath %>` + this.selectedStringColumn.value + '.preferredName')}`;
                          this.activeFilters.push(<FilterType> {
                             removable: true,
                             type: FilterEnums.Search,
@@ -313,7 +313,7 @@ export class <%= classify(name) %>FilterService {
         private getFormattedDate(theDate: string) {
             return this.dateFormats.display.dateInput !== 'L'
                 ? this.dateAdapter.format(moment(theDate).toDate(), this.dateFormats.display.dateInput)
-                : new Date(theDate).toLocaleDateString( this.translateService.currentLang, {timeZone: 'UTC'});
+                : new Date(theDate).toLocaleDateString( this.translateService.getActiveLang(), {timeZone: 'UTC'});
         }
     <% } %>
 }

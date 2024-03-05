@@ -56,7 +56,7 @@ import {<%= classify(name) %>DataSource} from './<%= dasherize(name) %>-datasour
 
 import {DomSanitizer} from '@angular/platform-browser';
 import {SelectionModel} from '@angular/cdk/collections';
-import {TranslateService} from '@ngx-translate/core';
+import { TranslocoService } from '@ngneat/transloco';
 import {JSSdkLocalStorageService} from "<% if (options.enableVersionSupport) { %>../<% } %>../../services/storage.service";
 import {<%= classify(name) %>ColumnMenuComponent} from './<%= dasherize(name) %>-column-menu.component';
 
@@ -584,7 +584,7 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
                 fields: headersToExport
                 <% if (!options.isAspectSelected) { %>.map(columnName => columnName.split('.').pop())<% } %>
                 .map(columnName => {
-                    const translatedHeader = this.translateService.instant(`<%= columnTransKeyPrefix %>${columnName}.preferredName`);
+                    const translatedHeader = this.translateService.translate(`<%= columnTransKeyPrefix %>${columnName}.preferredName`);
                     return translatedHeader !== `<%= columnTransKeyPrefix %>${columnName}.preferredName` ? translatedHeader : columnName;
                 }),
                 data: [],
