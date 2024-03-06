@@ -212,8 +212,12 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
     <% if (options.hasSearchBar) { %>
         highlightString: string[] = [];
 
-        get highlightConfig(): Config | undefined {
-            return this.configs.find((config: Config) => config.name.includes('highlight'));
+        get highlightConfigColor(): string | undefined {
+            return this.configs.find((config: Config) => config.name.includes('highlight'))?.color;
+        }
+
+        get highlightConfigSelector(): boolean | undefined {
+           return this.configs.find((config: Config) => config.name.includes('highlight'))?.selected;
         }
     <% } %>
 
