@@ -285,7 +285,6 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
     <% } %>
 
     ngAfterViewInit(): void {
-        <% if (options.enableRemoteDataHandling) { %>this.applyFilters();<% } %>
         this.dataSource.paginator = this.paginator;
         this.dataSource.sort = this.sort;
         this.pageChange();
