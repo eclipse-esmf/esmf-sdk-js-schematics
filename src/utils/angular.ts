@@ -11,14 +11,14 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-import {Rule, SchematicContext, Tree} from '@angular-devkit/schematics';
+import {Rule, Tree} from '@angular-devkit/schematics';
 import {
     addDeclarationToModule,
     addExportToModule,
     addModuleImportToModule,
     buildComponent,
     findModuleFromOptions,
-    parseSourceFile,
+    parseSourceFile
 } from '@angular/cdk/schematics';
 import {MODULE_EXT} from '@schematics/angular/utility/find-module';
 import {Schema} from '../ng-generate/components/shared/schema';
@@ -64,7 +64,7 @@ export function addToAppSharedModule(skipImport: SkipHandler | boolean, modules:
         project: 'esmf',
         name: 'AppSharedModule',
         module: `app-shared${MODULE_EXT}`,
-        path: '/src/app/shared',
+        path: '/src/app/shared'
     };
     return addToModule(appModule, skipImport, modules);
 }
@@ -136,7 +136,7 @@ export async function addToExportsArray(
 // forces to the error with prettier that no files are found.
 // add options for module and flat to ensure correct import path
 export function wrapBuildComponentExecution(options: Schema): Rule {
-    return async (tree: Tree, context: SchematicContext) => {
+    return async () => {
         options.module = options.module || 'app.module';
         options.flat = true;
         return buildComponent(Object.assign({}, options));

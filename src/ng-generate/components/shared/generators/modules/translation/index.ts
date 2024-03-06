@@ -18,6 +18,7 @@ import {
     MergeStrategy,
     mergeWith,
     move,
+    noop,
     Rule,
     SchematicContext,
     Tree,
@@ -25,14 +26,23 @@ import {
 } from '@angular-devkit/schematics';
 import {strings} from '@angular-devkit/core';
 import {Schema} from "../../../schema";
+import {parseSourceFile} from "@angular/cdk/schematics";
 
 export function generateTranslationFiles(options: any): Rule {
     return (tree: Tree, _context: SchematicContext) => {
+        if (isTranslocoProviderDefined(tree, 'src/app/shared/app-shared.module.ts')) {
+            return noop();
+        }
+
         return chain([
             generateModuleDefinition(options, _context),
             generateProviderDefinition(options, _context),
         ])(tree, _context);
     };
+}
+
+function isTranslocoProviderDefined(tree: Tree, modulePath: string): boolean {
+    return tree.exists(modulePath) && parseSourceFile(tree, modulePath).text.includes(transLocoProviderInformation());
 }
 
 function generateModuleDefinition(options: Schema, _context: SchematicContext): Rule {
@@ -42,6 +52,7 @@ function generateModuleDefinition(options: Schema, _context: SchematicContext): 
                 classify: strings.classify,
                 dasherize: strings.dasherize,
                 options: options,
+                providerInfo: transLocoProviderInformation(),
                 name: 'app-shared',
             }),
             move('src/app/shared'),
@@ -63,4 +74,16 @@ function generateProviderDefinition(options: Schema, _context: SchematicContext)
         ]),
         options.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error
     );
+}
+
+function transLocoProviderInformation(): string {
+    return `provideTransloco({
+      config: {
+        availableLangs: ['en'],
+        defaultLang: 'en',
+        reRenderOnLangChange: true,
+        prodMode: !isDevMode(),
+      },
+      loader: TransLocoHttpLoader,
+    })`;
 }

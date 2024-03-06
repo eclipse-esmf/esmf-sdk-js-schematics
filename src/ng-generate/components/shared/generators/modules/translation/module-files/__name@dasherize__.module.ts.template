@@ -11,15 +11,7 @@ export const baseUrl = (environment as any).baseUrl || '';
     imports: [TranslocoModule],
     exports: [TranslocoModule],
     providers: [
-        provideTransloco({
-            config: {
-            availableLangs: ['en'],
-            defaultLang: 'en',
-            reRenderOnLangChange: true,
-            prodMode: !isDevMode(),
-          },
-          loader: TransLocoHttpLoader
-        }),
+        <%= providerInfo %>
     ],
     })
 export class <%= classify(name) %>Module {}
