@@ -16,8 +16,7 @@ import {
     ElementRef,
     ViewEncapsulation,
     <% if (options.enableRemoteDataHandling || options.hasSearchBar) { %>OnDestroy,<% } %>
-    <% if (options.enableRemoteDataHandling) { %>ChangeDetectorRef,<% } %>
-    <% if (options.changeDetection !== 'Default') { %>ChangeDetectionStrategy,<% } %>
+    <% if (options.changeDetection) { %>ChangeDetectionStrategy,<% } %>
 } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort, SortDirection } from '@angular/material/sort';
@@ -213,8 +212,12 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
     <% if (options.hasSearchBar) { %>
         highlightString: string[] = [];
 
-        get highlightConfig(): Config | undefined {
-            return this.configs.find((config: Config) => config.name.includes('highlight'));
+        get highlightConfigColor(): string | undefined {
+            return this.configs.find((config: Config) => config.name.includes('highlight'))?.color;
+        }
+
+        get highlightConfigSelector(): boolean | undefined {
+           return this.configs.find((config: Config) => config.name.includes('highlight'))?.selected;
         }
     <% } %>
 
@@ -230,7 +233,7 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
 
     <% if (options.enableRemoteDataHandling) { %>
         constructor(<%= commonImports %>
-        private <% if (options.customRemoteService) { %>custom<% } %><%= classify(name) %>Service: <% if (options.customRemoteService) { %>Custom<% } %><%= classify(name) %>Service, private cd: ChangeDetectorRef) {
+        private <% if (options.customRemoteService) { %>custom<% } %><%= classify(name) %>Service: <% if (options.customRemoteService) { %>Custom<% } %><%= classify(name) %>Service) {
             this.dataSource = new <%= classify(name) %>DataSource();
             <%= sharedCustomRows %>
         }
@@ -285,7 +288,6 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
     <% } %>
 
     ngAfterViewInit(): void {
-        <% if (options.enableRemoteDataHandling) { %>this.applyFilters();<% } %>
         this.dataSource.paginator = this.paginator;
         this.dataSource.sort = this.sort;
         this.pageChange();
