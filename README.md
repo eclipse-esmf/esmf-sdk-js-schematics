@@ -68,7 +68,7 @@ In order to generate code based on the available schematics, the following steps
 1. Install [node](https://nodejs.org/en/) (LTS version).
 
 2. Schematics are part of the Angular ecosystem so angular-cli must be installed by running this command in a terminal:
-   Run `npm install -g @angular/cli@16`
+   Run `npm install -g @angular/cli@17`
 
 For more info on schematics, use the following command:
 
@@ -92,7 +92,7 @@ cd demo-schematic
 3. run (if not already installed):
 
 ```bash
-npm install -g @angular-devkit/schematics-cli@16
+npm install -g @angular-devkit/schematics-cli@17
 ```
 
 4. Optionally add some .ttl files in the same folder in order to use in the schema generation process. The schematic
@@ -231,7 +231,7 @@ export interface SpatialPosition {
 ## The _table_ schematics
 
 The table schematics can be used for table generation. This is achieved by using the table provided in
-the [angular material package](https://v16.material.angular.io/components/table/overview).
+the [angular material package](https://v17.material.angular.io/components/table/overview).
 
 ### Features provided by the schematics table
 
@@ -269,7 +269,7 @@ the [angular material package](https://v16.material.angular.io/components/table/
 ## The _card_ schematics
 
 The card schematics can be used for card generation. This is achieved by using the card provided in
-the [angular material package](https://v16.material.angular.io/components/card/overview).
+the [angular material package](https://v17.material.angular.io/components/card/overview).
 
 ### Features provided by the schematics card
 
