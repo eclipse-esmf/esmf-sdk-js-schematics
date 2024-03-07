@@ -259,7 +259,7 @@ schematics ../<folder of the scheamtics project>/src/collection.json:i18n --dry-
 ng generate @esmf/semantic-ui-schematics:i18n --dry-run=false
 ```
 
-This command will install in demo project the following libraries: "@ngx-translate/core": "~15.0.0", "@ngx-translate/http-loader": "~8.0.0","ngx-i18n-combine": "~1.1.0"
+This command will install in demo project the following libraries: "@ngneat/transloco": "6.x", "ngx-i18n-combine": "^1.x"
 And the translation file will be generated: en.movement-form.translation.json
 
 ## Pre-load config file
