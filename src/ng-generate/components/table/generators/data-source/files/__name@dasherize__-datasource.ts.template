@@ -4,7 +4,7 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { Observable, BehaviorSubject } from 'rxjs';
 import {<%= options.aspectModelTypeName %>} from '<%= options.typePath %>';
-<% if (!options.enableRemoteDataHandling) { %>import {TranslateService} from '@ngx-translate/core';<% } %>
+<% if (!options.enableRemoteDataHandling) { %>import { TranslocoService } from '@ngneat/transloco';<% } %>
 
 /**
  * Data source for the <%= classify(name) %> view. This class should
@@ -21,7 +21,7 @@ export class <%= classify(name) %>DataSource extends DataSource<<%= options.aspe
   private _data: Array<<%= options.aspectModelTypeName %>> = new Array<<%= options.aspectModelTypeName %>>();
   private _dataSubject = new BehaviorSubject<Array< <%= options.aspectModelTypeName %>>>([]);
 
-  constructor(<% if (!options.enableRemoteDataHandling) { %>private translateService: TranslateService<% } %>) {
+  constructor(<% if (!options.enableRemoteDataHandling) { %>private translateService: TranslocoService<% } %>) {
     super();
   }
 

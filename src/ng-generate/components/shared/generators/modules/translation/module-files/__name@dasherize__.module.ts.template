@@ -1,0 +1,17 @@
+/** <%= options.generationDisclaimerText %> **/
+
+import {isDevMode, NgModule} from '@angular/core';
+import {environment} from "../../environments/environment";
+import {provideTransloco, TranslocoModule} from '@ngneat/transloco';
+import {TransLocoHttpLoader} from './trans-loco-http-loader';
+
+export const baseUrl = (environment as any).baseUrl || '';
+
+@NgModule({
+    imports: [TranslocoModule],
+    exports: [TranslocoModule],
+    providers: [
+        <%= providerInfo %>
+    ],
+    })
+export class <%= classify(name) %>Module {}

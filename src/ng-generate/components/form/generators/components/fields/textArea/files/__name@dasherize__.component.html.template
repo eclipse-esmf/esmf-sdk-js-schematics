@@ -16,7 +16,7 @@
 
     <mat-error *ngIf="formControl.invalid">
         <ng-container *ngIf="error as err">
-            {{ err.translationKey | translate: err.translationParams }}
+            {{ err.translationKey | transloco: err.translationParams }}
         </ng-container>
     </mat-error>
 </mat-form-field>

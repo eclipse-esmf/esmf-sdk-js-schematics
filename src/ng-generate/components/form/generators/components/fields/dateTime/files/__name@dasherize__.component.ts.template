@@ -6,7 +6,7 @@ import {FormControl, FormsModule, NG_VALUE_ACCESSOR, ReactiveFormsModule, Valida
 import {MatDatepickerModule} from '@angular/material/datepicker';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatInputModule} from '@angular/material/input';
-import {TranslateModule} from "@ngx-translate/core";
+import {TranslocoModule} from '@ngneat/transloco';
 import {FormControlReusable} from "<% if (options.enableVersionSupport) { %>../<% } %>../../../utils/form-control-reusable";
 import {FormValidators} from "<% if (options.enableVersionSupport) { %>../<% } %>../../../utils/form-validators";
 import {ThemePalette, MAT_DATE_LOCALE} from '@angular/material/core';
@@ -39,7 +39,7 @@ export const <%= options.fieldConfig.name %>FormControl = new FormControl(null, 
         ReactiveFormsModule,
         NgxMatDatetimePickerModule,
         NgxMatMomentModule,
-        TranslateModule,
+        TranslocoModule,
     ],
     templateUrl: './<%= dasherize(options.fieldConfig.name) %>.component.html',
     styleUrls: ['./<%= dasherize(options.fieldConfig.name) %>.component.scss'],

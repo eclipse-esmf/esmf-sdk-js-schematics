@@ -2,7 +2,7 @@
 import {NgModule} from '@angular/core';
 import {<%= classify(name) %>Component} from './<%= dasherize(name) %>.component';
 <% if (options.componentType === 'card') { %>
-    import {TranslateModule} from '@ngx-translate/core';
+    import {TranslocoModule} from '@ngneat/transloco';
 <% } %>
 
 <% if (options.addCommandBar) { %>
@@ -60,7 +60,7 @@ import {AppSharedModule} from 'src/app/shared/app-shared.module';
             <% } %>
         <% } %>
         <% if (options.componentType === 'card') { %>
-            , TranslateModule
+            , TranslocoModule
         <% } %>
     ],
 })

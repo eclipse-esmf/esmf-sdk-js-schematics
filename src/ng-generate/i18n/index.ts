@@ -18,7 +18,7 @@ import {NodeDependencyType} from '@schematics/angular/utility/dependencies';
 import {TemplateHelper} from '../../utils/template-helper';
 import {formatGeneratedFiles} from '../../utils/file';
 import ora from 'ora';
-import {generateTranslationModule} from '../components/shared/generators';
+import {generateTranslationFiles} from '../components/shared/generators';
 import {NodePackageInstallTask} from '@angular-devkit/schematics/tasks';
 
 /**
@@ -35,7 +35,7 @@ export default function (options: Schema): Rule {
     return chain([
         addPackageJsonDependencies(options.skipImport, spinner, dependencies),
         addPackageJsonScripts(scripts),
-        generateTranslationModule(options),
+        generateTranslationFiles(options),
         formatGeneratedFiles(
             {
                 getPath() {
@@ -50,8 +50,7 @@ export default function (options: Schema): Rule {
 }
 
 const dependencies = [
-    {type: NodeDependencyType.Default, version: '~13.0.0', name: '@ngx-translate/core', overwrite: false},
-    {type: NodeDependencyType.Default, version: '~8.0.0', name: '@ngx-translate/http-loader', overwrite: true},
+    {type: NodeDependencyType.Default, version: '^6.0.4', name: '@ngneat/transloco', overwrite: false},
     {type: NodeDependencyType.Default, version: '~1.1.0', name: 'ngx-i18n-combine', overwrite: false},
 ];
 

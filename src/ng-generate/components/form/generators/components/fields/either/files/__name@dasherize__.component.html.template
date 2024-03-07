@@ -5,7 +5,7 @@
         data-test="<%= options.fieldConfig.name %>-either">
         <mat-error *ngIf="formGroup.invalid && formGroup.touched && groupSpecificError as err">
             <ng-container *ngIf="err">
-                {{ err.translationKey | translate : err.translationParams }}
+                {{ err.translationKey | transloco : err.translationParams }}
             </ng-container>
         </mat-error>
 

@@ -67,11 +67,11 @@
                             [resizeColumn]="true" [index]="<%= value.index %>" (dragging)='dragging = $event'
                         <% } %>
                     >
-                        <span [matTooltip]=" '<%= propertyLocaleKeyPath %>.description' | translate"
+                        <span [matTooltip]=" '<%= propertyLocaleKeyPath %>.description' | transloco"
                               [matTooltipDisabled]="headerTooltipsOff"
                               matTooltipPosition="above"
                               data-test="table-header-text">
-                                {{ '<%= propertyLocaleKeyPath %>.preferredName' | translate }}
+                                {{ '<%= propertyLocaleKeyPath %>.preferredName' | transloco }}
                         </span>
                     </th>
 

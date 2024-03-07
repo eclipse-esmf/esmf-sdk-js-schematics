@@ -166,7 +166,7 @@ ng generate environments
 8. add default translation language to root component.
 
 ```typescript
-constructor(private translate: TranslateService)
+constructor(private translate: TranslocoService)
 {
     translate.use(translate.defaultLang);
 }
