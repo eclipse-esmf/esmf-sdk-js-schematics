@@ -169,7 +169,6 @@ function setDateFormGroups(values: PropValue[]) {
 
 function setDateQuickFilters(values: PropValue[]) {
     const template = (value: any) => {
-        debugger
         const datePicker = sharedOptions.datePickers
             .find((element: any) => element.propertyUrn === value.property.aspectModelUrn)?.datePicker.type;
         const required = datePicker === 'startAndEndDatePicker' ? ', Validators.required' : '';
