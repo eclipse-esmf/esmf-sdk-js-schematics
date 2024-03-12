@@ -11,11 +11,22 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-import {apply, applyTemplates, MergeStrategy, mergeWith, move, noop, Rule, SchematicContext, Tree, url} from '@angular-devkit/schematics';
+import {
+    apply,
+    applyTemplates,
+    MergeStrategy,
+    mergeWith,
+    move,
+    noop,
+    Rule,
+    SchematicContext,
+    Tree,
+    url
+} from '@angular-devkit/schematics';
 import {strings} from '@angular-devkit/core';
 import {DefaultSingleEntity, Property} from '@esmf/aspect-model-loader';
 import {classify} from '@angular-devkit/core/src/utils/strings';
-import {getAllEnumProps, PropValue} from '../../../../../../utils/aspect-model';
+import {DatePicker, getAllEnumProps, PropValue} from '../../../../../../utils/aspect-model';
 import {ComponentType} from '../../../schema';
 
 let sharedOptions: any = {};
@@ -47,7 +58,8 @@ export function generateFilterService(options: any): Rule {
                     getEnumProperties: getEnumProperties(),
                     setEnumQuickFilter: setEnumQuickFilter(enumValues),
                     setEnumRemoveFilter: setEnumRemoveFilter(enumValues),
-                    setDataQuickFilter: setDataQuickFilter(dataValues),
+                    setDateFormGroups: setDateFormGroups(dataValues),
+                    setDateQuickFilters: setDateQuickFilters(dataValues),
                     setDataRemoveFilter: setDataRemoveFilter(dataValues),
                     getEnumFilterRemote: getEnumFilterRemote(enumValues),
                     getEnumFilterNotRemote: getEnumFilterNotRemote(enumValues),
@@ -126,8 +138,8 @@ function setEnumQuickFilter(values: PropValue[]) {
         ${value.propertyName}Options: Array<any> = ${
         value.enumWithEntities
             ? `${classify(value.characteristic)}.getValueDescriptionList('${
-                  value.complexPropObj ? value.complexPropObj.complexProp + '.' : ''
-              }${value.property.name}')`
+                value.complexPropObj ? value.complexPropObj.complexProp + '.' : ''
+            }${value.property.name}')`
             : `Object.values(${classify(value.characteristic)})`
     };`;
 
@@ -148,14 +160,31 @@ function setEnumRemoveFilter(values: PropValue[]) {
     return `case FilterEnums.Enum: ${filterStatements} ${filterRemovalStatement} ${endStatement}`;
 }
 
-function setDataQuickFilter(values: PropValue[]) {
+function setDateFormGroups(values: PropValue[]) {
     const template = (value: any) => `
-        ${value.propertyName}Group = new FormGroup({
-            start: new FormControl(),
-            end: new FormControl()
-        });`;
+        ${value.propertyName}Group;`;
 
     return values.map(template).join('');
+}
+
+function setDateQuickFilters(values: PropValue[]) {
+    const template = (value: any) => {
+        debugger
+        const datePicker = sharedOptions.datePickers
+            .find((element: any) => element.propertyUrn === value.property.aspectModelUrn)?.datePicker.type;
+        const required = datePicker === 'startAndEndDatePicker' ? ', Validators.required' : '';
+
+        return `this.${value.propertyName}Group = this.fb.group({
+            from: [null${required}],
+            to: [null${required}]
+        })`
+    }
+
+    return values.map(template).join('');
+}
+
+function datePickerType(datePickers: Array<DatePicker>, property: Property): string | undefined {
+    return
 }
 
 function setDataRemoveFilter(values: PropValue[]) {
@@ -257,24 +286,48 @@ const getChipLabelEnum = (filterProp: PropValue) => {
 
 function getDateRemote(values: PropValue[]): string {
     const template = (value: any) => `
-        if (this.${value.propertyName}Group.value.end && this.${value.propertyName}Group.value.start) {
-            const eDate = new Date(this.${value.propertyName}Group.value.end).setHours(23, 59, 59, 999);
-            const endDate = this.createDateAsUTC(new Date(eDate));
-            const startDate = this.createDateAsUTC(new Date(this.${value.propertyName}Group.value.start));
+            const conditions = [];
+            const {to, from} = this[\`${value.propertyName}Group\`].value;
 
-            query.addNode(new And([new Le('${sharedOptions.jsonAccessPath}${value.propertyValue}', \`\${endDate}\`), new Ge('${sharedOptions.jsonAccessPath}${value.propertyValue}', \`\${startDate}\`)]));
-            const filter = this.activeFilters.find(af => af.prop === '${value.propertyValue}');
-            const newLabel =\`${value.propertyValue}: from \${this.getFormattedDate(startDate)} to \${this.getFormattedDate(endDate)}\`;
+            const startDateUTC: Date | null = from ? this.createDateAsUTC(new Date(from)).toISOString() : null;
+            let endDateUTC: Date | null = to ? this.createDateAsUTC(new Date(to)) : null;
 
-            if(!filter) {
-                this.activeFilters.push(<FilterType>{
+            if (endDateUTC) {
+                endDateUTC = new Date(endDate.setHours(23, 59, 59, 999));
+                endDateUTC = endDate.toISOString();
+            }
+
+            if (startDateUTC) {
+                conditions.push(new Ge(\`${sharedOptions.jsonAccessPath}${value.propertyValue}\`, \`\${startDateUTC}\`));
+            }
+            if (endDateUTC) {
+                conditions.push(new Le(\`${sharedOptions.jsonAccessPath}${value.propertyValue}\`, \`\${endDateUTC}\`));
+            }
+            if (conditions.length > 0) {
+                query.addNode(conditions.length > 1 ? new And(conditions) : conditions[0]);
+            }
+
+            const filterIndex = this.activeFilters.findIndex(af => af.prop === value.propertyValue);
+
+            let label = \`${value.propertyValue}:\`;
+
+            if (startDateUTC && endDateUTC) {
+               label += \` \${this.getFormattedDate(startDateUTC)} - \${this.getFormattedDate(endDateUTC)}\`;
+            } else if (endDateUTC) {
+               label += \` to \${this.getFormattedDate(endDateUTC)}\`;
+            } else if (startDateUTC) {
+                label += \` from \${this.getFormattedDate(startDateUTC)}\`;
+            }
+        
+            if (filterIndex === -1) {
+                this.activeFilters.push({
                     removable: true,
                     type: FilterEnums.Date,
-                    label: newLabel, 
-                    prop: '${value.propertyValue}' 
+                    label,
+                    prop: value.propertyValue
                 });
             } else {
-                filter.label = newLabel;
+               this.activeFilters[filterIndex].label = label;
             }
         }`;
 
@@ -288,29 +341,34 @@ function getDateRemote(values: PropValue[]): string {
 
 function getDateNotRemote(values: PropValue[]): string {
     const dateFilterLogic = (value: any) => `
-    if (this.${value.propertyName}Group.value.start !== null && this.${value.propertyName}Group.value.end !== null) {
-      const startDate = this.createDateAsUTC(new Date(this.${value.propertyName}Group.value.start));
-      const beginningOfDay = new Date(this.${value.propertyName}Group.value.end).setHours(23, 59, 59, 999);
-      const endDate = this.createDateAsUTC(new Date(beginningOfDay));
-      filteredData = filteredData.filter(item => ((new Date(endDate) >= new Date(item.${value.propertyValue}) && new Date(item.${value.propertyValue}) >= new Date(startDate))));
-      this.updateActiveFilters('${value.propertyValue}', \`${value.propertyValue}: from \${this.getFormattedDate(startDate)} to \${this.getFormattedDate(endDate)}\`);
-    } else if (this.${value.propertyName}Group.value.end !== null) {
-      const beginningOfDay = new Date(this.${value.propertyName}Group.value.end).setHours(23, 59, 59, 999);
-      const endDate = this.createDateAsUTC(new Date(beginningOfDay));
-      filteredData = filteredData.filter(item => ((new Date(item.${value.propertyValue}) <= new Date(endDate))));
-      this.updateActiveFilters('${value.propertyValue}', \`${value.propertyValue}: until \${this.getFormattedDate(endDate)}\`);
-    } else if (this.${value.propertyName}Group.value.start !== null) {
-      const startDate = this.createDateAsUTC(new Date(this.${value.propertyName}Group.value.start));
-      filteredData = filteredData.filter(item => ((new Date(item.${value.propertyValue}) >= new Date(startDate))));
-      this.updateActiveFilters('${value.propertyValue}', \`${value.propertyValue}: from \${this.getFormattedDate(startDate)}\`);
+    const {from, to} = this.${value.propertyName}Group.value;
+   
+    const startDate: Date | null = from ? this.createDateAsUTC(new Date(from)) : null;
+    let endDate: Date | null = to ? this.createDateAsUTC(new Date(to)) : null;
+
+    if (endDate) {
+        endDate = new Date(endDate.setHours(23, 59, 59, 999));
+    }
+
+    const filteredData = data.filter(item => {
+        const itemDate = new Date(item.${value.propertyValue});
+        return (!startDate || itemDate >= startDate) && (!endDate || itemDate <= endDate);
+    });
+
+    if (startDate && endDate) {
+        this.updateActiveFilters('${value.propertyValue}', \`${value.propertyValue}: \${this.getFormattedDate(startDate.toISOString())} - \${this.getFormattedDate(endDate.toISOString())}\`);
+    } else if (endDate) {
+        this.updateActiveFilters('${value.propertyValue}', \`${value.propertyValue}: until \${this.getFormattedDate(endDate.toISOString())}\`);
+    } else if (startDate) {
+        this.updateActiveFilters('${value.propertyValue}', \`${value.propertyValue}: from \${this.getFormattedDate(startDate.toISOString())}\`);
     }`;
 
     return `
         applyDateFilter(data: Array<any>): Array<any> {
-          let filteredData = data;
           ${values.map(dateFilterLogic).join('')}
           return filteredData;
         }
+
         updateActiveFilters(prop: string, label: string) {
           const filter =  this.activeFilters.find(af=> af.prop === prop);
           if(!filter) {

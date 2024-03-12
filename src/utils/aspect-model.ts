@@ -36,6 +36,13 @@ export type PropValue = {
     complexPropObj?: {complexProp: string; properties: Property[]};
 };
 
+export type DatePicker = {
+    propertyUrn: string;
+    datePicker: {
+        type: string;
+    };
+};
+
 export const assetsPath = 'assets/i18n/shared/components';
 export const baseAssetsPath = `src/${assetsPath}`;
 

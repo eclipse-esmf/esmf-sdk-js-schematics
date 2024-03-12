@@ -75,8 +75,8 @@ export class <%= classify(name) %>CommandBarComponent {
     }
 
     triggerReloadFilter(): void {
-        this.reloadFilter.emit();
-    }
+        <%= checkAndEmitReload %>
+   }
 
     <% if (options.componentType === 'card') { %>
         setSortingProperty(value: string) {

@@ -45,8 +45,12 @@
     <% if (options.isEnumQuickFilter || options.isDateQuickFilter) { %>
         ,
         "date": {
-            "start": "Start date",
-            "end": "End date"
+            "from": "from",
+            "to": "to"
+            "fromError": "From date cannot be greater than to date",
+            "toError": "To date cannot be less than from date",
+            "fromRequired": "From is required",
+            "toRequired": "To is required"
         }
     <% } %>
 

@@ -23,7 +23,7 @@ import {AbstractControl, FormControl, ValidationErrors, ValidatorFn} from '@angu
 import {Injectable<% if (options.isDateQuickFilter) { %>, Inject<% } %>} from '@angular/core';
 
 <% if (options.isDateQuickFilter) { %>
-    import { FormGroup } from '@angular/forms';
+    import {FormBuilder, Validators} from '@angular/forms';
     import {DateAdapter, MAT_DATE_FORMATS, MatDateFormats} from "@angular/material/core";
     import * as moment from 'moment';
 <% } %>
@@ -143,7 +143,7 @@ export class <%= classify(name) %>FilterService {
         <% } %>
 
         <% if (options.isDateQuickFilter) { %>
-            <%= setDataQuickFilter %>
+            <%= setDateFormGroups %>
         <% } %>
     <% } %>
 
@@ -156,11 +156,14 @@ export class <%= classify(name) %>FilterService {
         <% if (options.isDateQuickFilter) { %>
             @Inject(MAT_DATE_FORMATS) private dateFormats: MatDateFormats,
             private dateAdapter: DateAdapter<any>,
+            private fb: FormBuilder,
         <% } %>
         <% if (options.isDateQuickFilter || options.hasSearchBar) { %>
             private translateService: TranslocoService
         <% } %>
-    ){}
+    ){
+        <%= setDateQuickFilters %>
+    }
 
     <% if (options.hasSearchBar) { %>
         searchStringInit(initialValue: string, regexValidator: string, minCharNo: number, maxCharNo: number) {
@@ -307,7 +310,7 @@ export class <%= classify(name) %>FilterService {
         <% } %>
 
         private createDateAsUTC(date: Date) {
-            return new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), date.getHours(), date.getMinutes(), date.getSeconds())).toISOString();
+            return new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), date.getHours(), date.getMinutes(), date.getSeconds()));
         }
 
         private getFormattedDate(theDate: string) {

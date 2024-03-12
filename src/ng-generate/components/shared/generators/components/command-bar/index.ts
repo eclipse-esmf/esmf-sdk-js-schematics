@@ -15,10 +15,12 @@ import {apply, applyTemplates, MergeStrategy, mergeWith, move, Rule, SchematicCo
 import {strings} from '@angular-devkit/core';
 import {DefaultSingleEntity, Property} from '@esmf/aspect-model-loader';
 import {classify} from '@angular-devkit/core/src/utils/strings';
+import {DatePicker} from "../../../../../../utils/aspect-model";
 
 type PropValue = {
     propertyValue: string;
     propertyName: string;
+    propertyUrn: string;
     isEnum?: boolean;
     enumWithEntities?: boolean;
     isDate?: boolean;
@@ -26,6 +28,7 @@ type PropValue = {
 
 export function generateCommandBar(options: any, allProps: Array<Property>): Rule {
     return (tree: Tree, _context: SchematicContext) => {
+        const propValues = getPropertiesToCreateFilters(options, allProps);
         return mergeWith(
             apply(url('../shared/generators/components/command-bar/files'), [
                 applyTemplates({
@@ -35,7 +38,9 @@ export function generateCommandBar(options: any, allProps: Array<Property>): Rul
                     options: options,
                     name: options.name,
                     spinalCaseFunc: options.templateHelper.spinalCase,
-                    propValues: getPropertiesToCreateFilters(options, allProps),
+                    propValues: propValues,
+                    checkAndEmitReload: checkAndEmitReload(options, propValues),
+                    datePickerType: datePickerType,
                 }),
                 move(options.path),
             ]),
@@ -61,6 +66,7 @@ function getPropertiesToCreateFilters(options: any, allProps: Array<Property>): 
                     propertyValues.push({
                         propertyName: `${complexPropObj.complexProp}${classify(complexProp.name)}`,
                         propertyValue: `${complexPropObj.complexProp}.${complexProp.name}`,
+                        propertyUrn: complexProp.aspectModelUrn,
                         isEnum: options.templateHelper.isEnumProperty(complexProp),
                         enumWithEntities: options.templateHelper.isEnumPropertyWithEntityValues(complexProp),
                         isDate: options.templateHelper.isDateTimeProperty(complexProp),
@@ -71,6 +77,7 @@ function getPropertiesToCreateFilters(options: any, allProps: Array<Property>): 
             propertyValues.push({
                 propertyName: property.name,
                 propertyValue: property.name,
+                propertyUrn: property.aspectModelUrn,
                 isEnum: options.templateHelper.isEnumProperty(property),
                 enumWithEntities: options.templateHelper.isEnumPropertyWithEntityValues(property),
                 isDate: options.templateHelper.isDateTimeProperty(property),
@@ -79,4 +86,17 @@ function getPropertiesToCreateFilters(options: any, allProps: Array<Property>): 
     });
 
     return propertyValues;
+}
+
+function datePickerType(datePickers: Array<DatePicker>, propertyValue: PropValue ): string | undefined {
+    return datePickers.find((value: any) => value.propertyUrn === propertyValue.propertyUrn)?.datePicker.type;
+}
+
+function checkAndEmitReload(options: any, propValues: Array<PropValue> ): string {
+    const validDateFilters: string[] = propValues.filter(property => {
+        return options.isDateQuickFilter && property.isDate && datePickerType(options.datePickers, property) === "startAndEndDatePicker";
+    }).map(property => `this.filterService.${property.propertyName}Group.valid`);
+
+
+    return validDateFilters.length > 0 ? `if(${validDateFilters.join(' && ')}) { this.reloadFilter.emit(); }` : 'this.reloadFilter.emit();';
 }

@@ -51,25 +51,46 @@
 
     <% for(let property of propValues) { %>
         <% if (options.isDateQuickFilter && property.isDate) { %>
-            <mat-form-field data-test="form-field-date-time" appearance="fill">
-              <mat-label
-                data-test="date-time-label">{{ '<%= options.versionedAccessPrefix %><%= property.propertyValue %>.preferredName' | transloco }}</mat-label>
-              <mat-date-range-input data-test="date-range-input" [rangePicker]="<%= property.propertyName %>Picker"
-                                    [formGroup]="filterService.<%= property.propertyName %>Group">
-                <input data-test="start-date-input" matStartDate [placeholder]="'date.start' | transloco" formControlName="start">
-                <input data-test="end-date-input" matEndDate [placeholder]="'date.end' | transloco" formControlName="end"
-                       (dateChange)="triggerReloadFilter()">
-              </mat-date-range-input>
-              <mat-datepicker-toggle data-test="datepicker-toggle" matSuffix [for]="<%= property.propertyName %>Picker"></mat-datepicker-toggle>
-              <mat-date-range-picker data-test="date-range-picker" #<%= property.propertyName %>Picker>
-                <mat-date-range-picker-actions data-test="date-range-picker-actions">
-                  <button data-test="date-picker-cancel-button" mat-button
-                          matDateRangePickerCancel>{{ 'cancel' | transloco }}</button>
-                  <button data-test="date-picker-apply-button" mat-raised-button color="primary"
-                          matDateRangePickerApply>{{ 'apply' | transloco }}</button>
-                </mat-date-range-picker-actions>
-              </mat-date-range-picker>
-            </mat-form-field>
+            <% if ((datePickerType(options.datePickers, property) === "startAndEndDatePicker") || (datePickerType(options.datePickers, property) === "startOrEndDatePicker")) { %>
+                <mat-form-field data-test="form-field-date-time" appearance="fill">
+                    <mat-label data-test="date-time-label">{{ '<%= options.versionedAccessPrefix %><%= property.propertyValue %>.preferredName' | transloco }}</mat-label>
+                    <mat-date-range-input data-test="date-range-input" [rangePicker]="<%= property.propertyName %>Picker" [formGroup]="filterService.<%= property.propertyName %>Group">
+                        <input data-test="start-date-input" matStartDate [placeholder]="'date.from' | transloco" formControlName="from"
+                            <% } else if (datePickerType(options.datePickers, property) === "startOrEndDatePicker") { %>
+                                (dateChange)="triggerReloadFilter()"
+                            <% } %>
+                        >
+                        <input data-test="end-date-input" matEndDate [placeholder]="'date.to' | transloco" formControlName="to" (dateChange)="triggerReloadFilter()">
+                    </mat-date-range-input>
+                    <mat-datepicker-toggle data-test="datepicker-toggle" matSuffix [for]="<%= property.propertyName %>Picker"></mat-datepicker-toggle>
+                        <mat-date-range-picker data-test="date-range-picker" #<%= property.propertyName %>Picker>
+                            <mat-date-range-picker-actions data-test="date-range-picker-actions">
+                            <button data-test="date-picker-cancel-button" mat-button matDateRangePickerCancel>{{ 'cancel' | transloco }}</button>
+                            <button data-test="date-picker-apply-button" mat-raised-button color="primary" matDateRangePickerApply>{{ 'apply' | transloco }}</button>
+                        </mat-date-range-picker-actions>
+                    </mat-date-range-picker>
+                    <mat-error *ngIf="filterService.<%= property.propertyName %>Group.get('from')?.hasError('matStartDateInvalid')">{{ 'date.fromError' | transloco }}</mat-error>
+                    <mat-error *ngIf="filterService.<%= property.propertyName %>Group.get('to')?.hasError('matEndDateInvalid')">{{ 'date.toError' | transloco }}</mat-error>
+                    <% if (datePickerType(options.datePickers, property) === "startAndEndDatePicker") { %>
+                        <mat-error *ngIf="filterService.<%= property.propertyName %>Group.get('from')?.hasError('required')">{{ 'date.fromRequired' | transloco }}</mat-error>
+                        <mat-error *ngIf="filterService.<%= property.propertyName %>Group.get('to')?.hasError('required')">{{ 'date.toRequired' | transloco }}</mat-error>
+                    <% } %>
+                </mat-form-field>
+            <% } else if (datePickerType(options.datePickers, property) === "singleDatePicker") { %>
+                <mat-form-field data-test="form-field-date-time" appearance="fill" [formGroup]="filterService.<%= property.propertyName %>Group">
+                    <mat-label data-test="date-time-label">{{ '<%= options.versionedAccessPrefix %><%= property.propertyValue %>.preferredName' | transloco }}</mat-label>
+                    <input matInput [matDatepicker]="<%= property.propertyName %>Picker" [placeholder]="'date.from' | transloco" formControlName="to" (dateChange)="triggerReloadFilter()">
+                    <mat-datepicker-toggle data-test="datepicker-toggle" matIconSuffix [for]="<%= property.propertyName %>Picker"></mat-datepicker-toggle>
+                    <mat-datepicker data-test="date-range-picker" #<%= property.propertyName %>Picker>
+                        <mat-datepicker-actions data-test="date-range-picker-actions">
+                            <button data-test="date-picker-cancel-button" mat-button matDatepickerCancel>{{ 'cancel' | transloco }}</button>
+                            <button data-test="date-picker-apply-button" mat-raised-button color="primary" matDatepickerApply>
+                                {{ 'apply' | transloco }}
+                            </button>
+                        </mat-datepicker-actions>
+                    </mat-datepicker>
+                </mat-form-field>
+            <% } %>
         <% } %>
         <% if (options.isEnumQuickFilter && property.isEnum) { %>
             <mat-form-field data-test="form-field-select" appearance="fill">
