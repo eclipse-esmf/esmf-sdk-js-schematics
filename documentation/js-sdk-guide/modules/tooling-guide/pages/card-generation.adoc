@@ -107,6 +107,22 @@ Once the search functionality has been enabled, the next step is to choose the d
 
 image::choose-language.png[width=100%]
 
+=== _Quick Filters for Properties of Type Date_
+
+When the option "Quick filters for properties of type date" is selected, an additional step appears that allows the selection of each property of type date. During this step, you can choose the specific type of filter to apply for these date properties.
+
+image::schema.choose-date-picker-type.png[width=100%]
+
+There are three options available for selection:
+
+Single Date Picker: This option allows the selection of a single date, acting as a "from" date. It's suitable for scenarios where a specific starting point needs to be defined.
+
+Range Date Picker: With this option, you can select either a single "from" or "to" date. It offers flexibility in filtering by enabling the specification of either the start or the end of a date range.
+
+Date Range Picker: This option requires the selection of both "from" and "to" dates, defining a complete date range. It's ideal for situations where a precise period needs to be specified for filtering.
+
+Each of these options provides a different way to apply date-based filtering, enhancing the user's ability to narrow down the data according to specific time frames.
+
 === _Data handling_
 
 After generating a component, you can pass the data from the parent to the child components and also the other way around. There is a prompt present which determines if the data should be handled on the client side or remote via an API call.
