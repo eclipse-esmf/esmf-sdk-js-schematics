@@ -108,8 +108,6 @@ export const formModules = (options: Schema) => [
     {name: 'MatInputModule', fromLib: '@angular/material/input'},
     {name: 'MatDatepickerModule', fromLib: '@angular/material/datepicker'},
     {name: 'MatCheckboxModule', fromLib: '@angular/material/checkbox'},
-    {name: 'NgxMatDatetimePickerModule', fromLib: '@angular-material-components/datetime-picker'},
-    {name: 'NgxMatNativeDateModule', fromLib: '@angular-material-components/datetime-picker'},
     {name: 'MatNativeDateModule', fromLib: '@angular/material/core'},
 ];
 

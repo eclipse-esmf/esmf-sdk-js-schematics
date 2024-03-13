@@ -1,10 +1,10 @@
 <mat-form-field class="form-field">
     <mat-label><%= options.fieldConfig.name %></mat-label>
-    <input matInput [ngxMatDatetimePicker]="<%= options.fieldConfig.name %>picker" [formControl]="formControl" (ngModelChange)="value = $event"
+    <input matInput [matDatepicker]="<%= options.fieldConfig.name %>picker" [formControl]="formControl" (ngModelChange)="value = $event"
     data-test="<%= options.fieldConfig.name %>-picker"
      />
-    <ngx-mat-datepicker-toggle matSuffix [for]="<%= options.fieldConfig.name %>picker"></ngx-mat-datepicker-toggle>
-    <ngx-mat-datetime-picker #<%= options.fieldConfig.name %>picker [color]="color"></ngx-mat-datetime-picker>
+    <mat-datepicker-toggle matSuffix [for]="<%= options.fieldConfig.name %>picker"></mat-datepicker-toggle>
+    <mat-datepicker #<%= options.fieldConfig.name %>picker [color]="color"></mat-datepicker>
 
     <% if (options.fieldConfig.exampleValue) {
         %><mat-hint align="start">exampleValue: <%= options.fieldConfig.exampleValue %></mat-hint>

@@ -10,14 +10,7 @@ import {TranslocoModule} from '@ngneat/transloco';
 import {FormControlReusable} from "<% if (options.enableVersionSupport) { %>../<% } %>../../../utils/form-control-reusable";
 import {FormValidators} from "<% if (options.enableVersionSupport) { %>../<% } %>../../../utils/form-validators";
 import {ThemePalette, MAT_DATE_LOCALE} from '@angular/material/core';
-import {
-    NgxMatMomentAdapter,
-    NGX_MAT_MOMENT_DATE_ADAPTER_OPTIONS,
-    NGX_MAT_MOMENT_FORMATS,
-    NgxMatMomentModule,
-} from '@angular-material-components/moment-adapter';
 import {isMoment} from 'moment';
-import {NGX_MAT_DATE_FORMATS, NgxMatDateAdapter, NgxMatDatetimePickerModule} from '@angular-material-components/datetime-picker';
 
 export const validators: {[key: string]: ValidatorFn} = {
   <% for(let validator of options.fieldConfig.validators) { %>
@@ -37,8 +30,6 @@ export const <%= options.fieldConfig.name %>FormControl = new FormControl(null, 
         MatFormFieldModule,
         MatInputModule,
         ReactiveFormsModule,
-        NgxMatDatetimePickerModule,
-        NgxMatMomentModule,
         TranslocoModule,
     ],
     templateUrl: './<%= dasherize(options.fieldConfig.name) %>.component.html',
@@ -48,14 +39,7 @@ export const <%= options.fieldConfig.name %>FormControl = new FormControl(null, 
             provide: NG_VALUE_ACCESSOR,
             useExisting: forwardRef(() => <%= classify(options.fieldConfig.name) %>Component),
             multi: true,
-        },
-        {
-            provide: NgxMatDateAdapter,
-            useClass: NgxMatMomentAdapter,
-            deps: [MAT_DATE_LOCALE, NGX_MAT_MOMENT_DATE_ADAPTER_OPTIONS],
-        },
-        {provide: NGX_MAT_DATE_FORMATS, useValue: NGX_MAT_MOMENT_FORMATS},
-        {provide: MAT_DATE_LOCALE, useValue: 'en-GB'},
+        }
     ],
 })
 export class <%= classify(options.fieldConfig.name) %>Component extends FormControlReusable {

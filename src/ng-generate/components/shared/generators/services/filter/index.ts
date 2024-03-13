@@ -174,9 +174,9 @@ function setDateQuickFilters(values: PropValue[]) {
         const required = datePicker === 'startAndEndDatePicker' ? ', Validators.required' : '';
 
         return `this.${value.propertyName}Group = this.fb.group({
-            from: [null${required}],
-            to: [null${required}]
-        })`
+            ${value.propertyName}From: [null${required}],
+            ${value.propertyName}To: [null${required}]
+        });`
     }
 
     return values.map(template).join('');
@@ -190,7 +190,6 @@ function setDataRemoveFilter(values: PropValue[]) {
     const template = (value: any) =>
         `if(filter.prop === '${value.propertyValue}') {
             this.${value.propertyName}Group.reset();  
-            this.${value.propertyName}Group.reset();
         }`;
 
     const filtersLogic = values.map(template).join('');
@@ -286,21 +285,21 @@ const getChipLabelEnum = (filterProp: PropValue) => {
 function getDateRemote(values: PropValue[]): string {
     const template = (value: any) => `
             const conditions = [];
-            const {to, from} = this[\`${value.propertyName}Group\`].value;
+            const {${value.propertyName}To, ${value.propertyName}From} = this[\`${value.propertyName}Group\`].value;
 
-            const startDateUTC: Date | null = from ? this.createDateAsUTC(new Date(from)).toISOString() : null;
-            let endDateUTC: Date | null = to ? this.createDateAsUTC(new Date(to)) : null;
+            const ${value.propertyName}StartDateUTC: Date | null = ${value.propertyName}From ? this.createDateAsUTC(new Date(${value.propertyName}From)).toISOString() : null;
+            let ${value.propertyName}EndDateUTC: Date | null = ${value.propertyName}To ? this.createDateAsUTC(new Date(${value.propertyName}To)) : null;
 
-            if (endDateUTC) {
-                endDateUTC = new Date(endDate.setHours(23, 59, 59, 999));
-                endDateUTC = endDate.toISOString();
+            if (${value.propertyName}EndDateUTC) {
+                ${value.propertyName}EndDateUTC = new Date(endDate.setHours(23, 59, 59, 999));
+                ${value.propertyName}EndDateUTC = endDate.toISOString();
             }
 
-            if (startDateUTC) {
-                conditions.push(new Ge(\`${sharedOptions.jsonAccessPath}${value.propertyValue}\`, \`\${startDateUTC}\`));
+            if (${value.propertyName}StartDateUTC) {
+                conditions.push(new Ge(\`${sharedOptions.jsonAccessPath}${value.propertyValue}\`, \`\${${value.propertyName}StartDateUTC}\`));
             }
-            if (endDateUTC) {
-                conditions.push(new Le(\`${sharedOptions.jsonAccessPath}${value.propertyValue}\`, \`\${endDateUTC}\`));
+            if (${value.propertyName}EndDateUTC) {
+                conditions.push(new Le(\`${sharedOptions.jsonAccessPath}${value.propertyValue}\`, \`\${${value.propertyName}EndDateUTC}\`));
             }
             if (conditions.length > 0) {
                 query.addNode(conditions.length > 1 ? new And(conditions) : conditions[0]);
@@ -310,12 +309,12 @@ function getDateRemote(values: PropValue[]): string {
 
             let label = \`${value.propertyValue}:\`;
 
-            if (startDateUTC && endDateUTC) {
-               label += \` \${this.getFormattedDate(startDateUTC)} - \${this.getFormattedDate(endDateUTC)}\`;
-            } else if (endDateUTC) {
-               label += \` to \${this.getFormattedDate(endDateUTC)}\`;
-            } else if (startDateUTC) {
-                label += \` from \${this.getFormattedDate(startDateUTC)}\`;
+            if (${value.propertyName}StartDateUTC && ${value.propertyName}EndDateUTC) {
+               label += \` \${this.getFormattedDate(${value.propertyName}StartDateUTC)} - \${this.getFormattedDate(${value.propertyName}EndDateUTC)}\`;
+            } else if (${value.propertyName}EndDateUTC) {
+               label += \` to \${this.getFormattedDate(${value.propertyName}EndDateUTC)}\`;
+            } else if (${value.propertyName}StartDateUTC) {
+                label += \` from \${this.getFormattedDate(${value.propertyName}StartDateUTC)}\`;
             }
         
             if (filterIndex === -1) {
@@ -339,33 +338,36 @@ function getDateRemote(values: PropValue[]): string {
 }
 
 function getDateNotRemote(values: PropValue[]): string {
-    const dateFilterLogic = (value: any) => `
-    const {from, to} = this.${value.propertyName}Group.value;
-   
-    const startDate: Date | null = from ? this.createDateAsUTC(new Date(from)) : null;
-    let endDate: Date | null = to ? this.createDateAsUTC(new Date(to)) : null;
+    const dateFilterLogic = (value: any, index: number) => `
+    const {${value.propertyName}From, ${value.propertyName}To} = this.${value.propertyName}Group.value;
 
-    if (endDate) {
-        endDate = new Date(endDate.setHours(23, 59, 59, 999));
+    const ${value.propertyName}StartDate: Date | null = ${value.propertyName}From ? this.createDateAsUTC(new Date(${value.propertyName}From)) : null;
+    let ${value.propertyName}EndDate: Date | null = ${value.propertyName}To ? this.createDateAsUTC(new Date(${value.propertyName}To)) : null;
+
+    if (${value.propertyName}EndDate) {
+        ${value.propertyName}EndDate = new Date(${value.propertyName}EndDate.setHours(23, 59, 59, 999));
     }
-
-    const filteredData = data.filter(item => {
+ 
+    ${filteredData(values, index)}.filter(item => {
         const itemDate = new Date(item.${value.propertyValue});
-        return (!startDate || itemDate >= startDate) && (!endDate || itemDate <= endDate);
+        return (!${value.propertyName}StartDate || itemDate >= ${value.propertyName}StartDate) && (!${value.propertyName}EndDate || itemDate <= ${value.propertyName}EndDate);
     });
 
-    if (startDate && endDate) {
-        this.updateActiveFilters('${value.propertyValue}', \`${value.propertyValue}: \${this.getFormattedDate(startDate.toISOString())} - \${this.getFormattedDate(endDate.toISOString())}\`);
-    } else if (endDate) {
-        this.updateActiveFilters('${value.propertyValue}', \`${value.propertyValue}: until \${this.getFormattedDate(endDate.toISOString())}\`);
-    } else if (startDate) {
-        this.updateActiveFilters('${value.propertyValue}', \`${value.propertyValue}: from \${this.getFormattedDate(startDate.toISOString())}\`);
+    if (${value.propertyName}StartDate && ${value.propertyName}EndDate) {
+        this.updateActiveFilters('${value.propertyValue}', \`${value.propertyValue}: \${this.getFormattedDate(${value.propertyName}StartDate.toISOString())} - \${this.getFormattedDate(${value.propertyName}EndDate.toISOString())}\`);
+    } else if (${value.propertyName}EndDate) {
+        this.updateActiveFilters('${value.propertyValue}', \`${value.propertyValue}: until \${this.getFormattedDate(${value.propertyName}EndDate.toISOString())}\`);
+    } else if (${value.propertyName}StartDate) {
+        this.updateActiveFilters('${value.propertyValue}', \`${value.propertyValue}: from \${this.getFormattedDate(${value.propertyName}StartDate.toISOString())}\`);
     }`;
 
     return `
         applyDateFilter(data: Array<any>): Array<any> {
           ${values.map(dateFilterLogic).join('')}
           return filteredData;
+        }
+        
+        private dateInformation (prop: string, label: string) {
         }
 
         updateActiveFilters(prop: string, label: string) {
@@ -381,4 +383,14 @@ function getDateNotRemote(values: PropValue[]): string {
             filter.label = label;
           }
         }`;
+}
+
+function filteredData(values: PropValue[], index: number): string {
+    if (values.length === 1) {
+        return 'const filteredData = data';
+    } else if (values.length > 1 && index === 0) {
+        return 'let filteredData = data';
+    }
+
+    return 'filteredData = filteredData'
 }
