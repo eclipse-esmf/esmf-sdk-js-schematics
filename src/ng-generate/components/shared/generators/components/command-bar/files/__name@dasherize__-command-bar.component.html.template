@@ -56,7 +56,7 @@
                     <mat-label data-test="date-time-label">{{ '<%= options.versionedAccessPrefix %><%= property.propertyValue %>.preferredName' | transloco }}</mat-label>
                     <mat-date-range-input data-test="date-range-input" [rangePicker]="<%= property.propertyName %>Picker" [formGroup]="filterService.<%= property.propertyName %>Group">
                         <input data-test="start-date-input" matStartDate [placeholder]="'date.from' | transloco" formControlName="from"
-                            <% } else if (datePickerType(options.datePickers, property) === "startOrEndDatePicker") { %>
+                            <% if (datePickerType(options.datePickers, property) === "startOrEndDatePicker") { %>
                                 (dateChange)="triggerReloadFilter()"
                             <% } %>
                         >
@@ -79,7 +79,7 @@
             <% } else if (datePickerType(options.datePickers, property) === "singleDatePicker") { %>
                 <mat-form-field data-test="form-field-date-time" appearance="fill" [formGroup]="filterService.<%= property.propertyName %>Group">
                     <mat-label data-test="date-time-label">{{ '<%= options.versionedAccessPrefix %><%= property.propertyValue %>.preferredName' | transloco }}</mat-label>
-                    <input matInput [matDatepicker]="<%= property.propertyName %>Picker" [placeholder]="'date.from' | transloco" formControlName="to" (dateChange)="triggerReloadFilter()">
+                    <input matInput [matDatepicker]="<%= property.propertyName %>Picker" [placeholder]="'date.from' | transloco" formControlName="from" (dateChange)="triggerReloadFilter()">
                     <mat-datepicker-toggle data-test="datepicker-toggle" matIconSuffix [for]="<%= property.propertyName %>Picker"></mat-datepicker-toggle>
                     <mat-datepicker data-test="date-range-picker" #<%= property.propertyName %>Picker>
                         <mat-datepicker-actions data-test="date-range-picker-actions">
@@ -109,7 +109,7 @@
                 </div>
                 <div data-test="filter-actions-container" class="filter-actions-container">
 
-                  <button data-test="filter-cancel-button" mat-button (click)="<%= property.propertyName %>Select.close();">
+                  <button data-test="filter-cancel-button" mat-button (click)="<%= property.propertyName %>Select.close()">
                     <span data-test="filter-cancel-text">{{ 'cancel' | transloco }}</span>
                   </button>
 
