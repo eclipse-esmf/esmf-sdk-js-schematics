@@ -46,7 +46,7 @@
         ,
         "date": {
             "from": "from",
-            "to": "to"
+            "to": "to",
             "fromError": "From date cannot be greater than to date",
             "toError": "To date cannot be less than from date",
             "fromRequired": "From is required",
