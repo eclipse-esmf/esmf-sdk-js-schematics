@@ -17,7 +17,7 @@ NOTE: Before generating a table component refer to the xref:internationalization
 In the example, a brand-new application was generated using the command:
 
 [source]
-ng new app demo-schematics
+ng new app demo-schematics --no-standalone
 
 A schematics will be generated using the following command:
 

@@ -70,6 +70,12 @@ In order to generate code based on the available schematics, the following steps
 2. Schematics are part of the Angular ecosystem so angular-cli must be installed by running this command in a terminal:
    Run `npm install -g @angular/cli@17`
 
+3. To create an Angular application without generating a new project structure that lacks app.module.ts and other essential files, use the --no-standalone flag. 
+   This approach ensures the creation of a fully structured Angular project. Execute the following command in your terminal:
+    Run `ng new <your-project-name> --no-standalone`
+
+```bash
+
 For more info on schematics, use the following command:
 
 ```bash
@@ -161,15 +167,6 @@ en.movement-table.translation.json, en.json.
 
 ```bash
 ng generate environments
-```
-
-8. add default translation language to root component.
-
-```typescript
-constructor(private translate: TranslocoService)
-{
-    translate.use(translate.defaultLang);
-}
 ```
 
 ## Overview of the schematics commands

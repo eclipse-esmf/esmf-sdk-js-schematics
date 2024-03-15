@@ -6,7 +6,13 @@ import {HttpClient} from '@angular/common/http';
 <% } %>
 
 import {<%= classify(options.aspectModelTypeName) %>} from '<%= options.typePath %>';
-import {environment} from 'src/environments/environment';
+
+<% if (options.versionedAccessPrefix) { %>
+    import {environment} from '../../../../../environment';
+<% } else { %>
+    import {environment} from '../../../../environment';
+<% } %>
+
 import {Injectable} from '@angular/core';
 import {TranslocoService} from '@ngneat/transloco';
 
