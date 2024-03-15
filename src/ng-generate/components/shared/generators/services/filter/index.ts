@@ -172,7 +172,7 @@ function setDateQuickFilters(values: PropValue[]) {
         const datePicker = sharedOptions.datePickers?.find((element: any) =>
             element.propertyUrn === value.property.aspectModelUrn)?.datePicker.type;
 
-        if (datePicker) {
+        if (sharedOptions.isDateQuickFilter && datePicker) {
             const required = datePicker === 'startAndEndDatePicker' ? ', Validators.required' : '';
 
             return `this.${value.propertyName}Group = this.fb.group({
