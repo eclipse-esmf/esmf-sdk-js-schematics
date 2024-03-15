@@ -21,7 +21,7 @@ import {
     addToComponentModule,
     wrapBuildComponentExecution
 } from '../../../utils/angular';
-import {loadAspectModel, loadRDF, validateUrns} from '../../../utils/aspect-model';
+import {generateTranslationFiles, loadAspectModel, loadRDF, validateUrns} from '../../../utils/aspect-model';
 import {formatGeneratedFiles, loadAndApplyConfigFile} from '../../../utils/file';
 import {
     addPackageJsonDependencies,
@@ -40,7 +40,7 @@ import {
     generateHorizontalOverflowDirective,
     generateSharedModule,
     generateShowDescriptionPipe,
-    generateTranslationFiles,
+    generateTranslationModule,
     generateValidateInputDirective,
 } from './generators';
 import {APP_SHARED_MODULES, cardModules, formModules, tableModules, updateSharedModule} from '../../../utils/modules';
@@ -237,7 +237,7 @@ export function setTemplateOptionValuesRule(): Rule {
 export function generateGeneralFilesRules(): Array<Rule> {
     return [
         generateSharedModule(options),
-        generateTranslationFiles(options),
+        generateTranslationModule(options),
         generateFilterService(options),
         generateGeneralStyle(options),
         generateTranslationFiles(options),

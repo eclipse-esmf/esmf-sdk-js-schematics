@@ -28,7 +28,7 @@ import {strings} from '@angular-devkit/core';
 import {Schema} from "../../../schema";
 import {parseSourceFile} from "@angular/cdk/schematics";
 
-export function generateTranslationFiles(options: any): Rule {
+export function generateTranslationModule(options: any): Rule {
     return (tree: Tree, _context: SchematicContext) => {
         if (isTranslocoProviderDefined(tree, 'src/app/shared/app-shared.module.ts')) {
             return noop();

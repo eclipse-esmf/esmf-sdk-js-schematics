@@ -18,7 +18,7 @@ import {NodeDependencyType} from '@schematics/angular/utility/dependencies';
 import {TemplateHelper} from '../../utils/template-helper';
 import {formatGeneratedFiles} from '../../utils/file';
 import ora from 'ora';
-import {generateTranslationFiles} from '../components/shared/generators';
+import {generateTranslationModule} from '../components/shared/generators';
 import {NodePackageInstallTask} from '@angular-devkit/schematics/tasks';
 
 /**
@@ -35,7 +35,7 @@ export default function (options: Schema): Rule {
     return chain([
         addPackageJsonDependencies(options.skipImport, spinner, dependencies),
         addPackageJsonScripts(scripts),
-        generateTranslationFiles(options),
+        generateTranslationModule(options),
         formatGeneratedFiles(
             {
                 getPath() {
