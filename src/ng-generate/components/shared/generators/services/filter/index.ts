@@ -169,14 +169,19 @@ function setDateFormGroups(values: PropValue[]) {
 
 function setDateQuickFilters(values: PropValue[]) {
     const template = (value: any) => {
-        const datePicker = sharedOptions.datePickers
-            .find((element: any) => element.propertyUrn === value.property.aspectModelUrn)?.datePicker.type;
-        const required = datePicker === 'startAndEndDatePicker' ? ', Validators.required' : '';
+        const datePicker = sharedOptions.datePickers?.find((element: any) =>
+            element.propertyUrn === value.property.aspectModelUrn)?.datePicker.type;
 
-        return `this.${value.propertyName}Group = this.fb.group({
-            ${value.propertyName}From: [null${required}],
-            ${value.propertyName}To: [null${required}]
-        });`
+        if (datePicker) {
+            const required = datePicker === 'startAndEndDatePicker' ? ', Validators.required' : '';
+
+            return `this.${value.propertyName}Group = this.fb.group({
+                ${value.propertyName}From: [null${required}],
+                ${value.propertyName}To: [null${required}]
+            });`
+        }
+
+        return '';
     }
 
     return values.map(template).join('');

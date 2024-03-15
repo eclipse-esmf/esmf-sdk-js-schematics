@@ -162,7 +162,9 @@ export class <%= classify(name) %>FilterService {
             private translateService: TranslocoService
         <% } %>
     ){
-        <%= setDateQuickFilters %>
+        <% if (options.isDateQuickFilter) { %>
+            <%= setDateQuickFilters %>
+        <% } %>
     }
 
     <% if (options.hasSearchBar) { %>
