@@ -39,10 +39,11 @@ import {
     generateFormValidators,
     generateGeneralStyle,
     generateSharedModule,
-    generateTranslationFiles
+    generateTranslationModule
 } from '../shared/generators';
 import {generateFormArrayReusable} from '../shared/generators/utils/form-array-reusable/index';
 import {wrapBuildComponentExecution} from '../../../utils/angular';
+import {generateTranslationFiles} from "../../../utils/aspect-model";
 
 export default function (formSchema: FormSchema): Rule {
     return (tree: Tree, context: SchematicContext) => {
@@ -65,7 +66,6 @@ export function generateForm(formSchema: Schema): Rule {
         ...formSpecificGeneration(),
         ...addAndUpdateConfigurationFilesRule(),
         ...utilsGeneration(),
-        addDateTimePickerDependenciesRule(),
         addFormValidatorsDependenciesRule(),
         formatAllFilesRule(),
     ]);
@@ -74,7 +74,7 @@ export function generateForm(formSchema: Schema): Rule {
 function genericGeneration(): Array<Rule> {
     return [
         generateSharedModule(options),
-        generateTranslationFiles(options),
+        generateTranslationModule(options),
         generateGeneralStyle(options),
         generateTranslationFiles(options),
         wrapBuildComponentExecution(options),
@@ -93,26 +93,6 @@ function utilsGeneration(): Array<Rule> {
         generateDestroyedSubject(options),
         generateFormValidators(options),
     ];
-}
-
-// TODO: Move to date-related controls generation?
-function addDateTimePickerDependenciesRule(): Rule {
-    const loadDependencies = [
-        {
-            type: NodeDependencyType.Default,
-            version: '^16.0.1',
-            name: '@angular-material-components/datetime-picker',
-            overwrite: false,
-        },
-        {
-            type: NodeDependencyType.Default,
-            version: '^16.0.1',
-            name: '@angular-material-components/moment-adapter',
-            overwrite: false,
-        },
-    ];
-
-    return addPackageJsonDependencies(options.skipImport, options.spinner, loadDependencies);
 }
 
 function addFormValidatorsDependenciesRule(): Rule {

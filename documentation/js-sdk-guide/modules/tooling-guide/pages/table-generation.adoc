@@ -17,7 +17,7 @@ NOTE: Before generating a table component refer to the xref:internationalization
 In the example, a brand-new application was generated using the command:
 
 [source]
-ng new app demo-schematics
+ng new app demo-schematics --no-standalone
 
 A schematics will be generated using the following command:
 
@@ -129,6 +129,44 @@ NOTE:  _The search input will filter the data `*ONLY*` by the existing `*STRING*
 Once the search functionality has been enabled, the next step is to choose the default language for remote access. This language selection determines the language used in the statement when accessing the system remotely.
 
 image::choose-language.png[width=100%]
+
+=== _Quick Filters for Properties of Type Date_
+
+When the option "Quick filters for properties of type date" is selected, an additional step appears that allows the selection of each property of type date. During this step, you can choose the specific type of filter to apply for these date properties.
+
+image::schema.choose-date-picker-type.png[width=100%]
+
+There are three options available for selection:
+
+*Single Date Picker:*
+
+image::single-date-picker.png[width=30%]
+
+This option allows the selection of a single date, acting as a "from" date. It's suitable for scenarios where a specific starting point needs to be defined.
+
+*Range Date Picker start or end date:*
+
+image::start-or-end-date-picker.png[width=30%]
+
+With this option, you can select either a single "from" or "to" date. It offers flexibility in filtering by enabling the specification of either the start or the end of a date range.
+
+For the Date Range Picker, where both the "from" and "to" dates are optional, users can directly select and delete these values within the input field. By either blurring the field or pressing "Enter," the specified dates are removed and thus selected for filtering. If only a "from" date is provided, it will be recognized and applied as a starting point for the filter. Conversely, if only a "to" date is entered, it will be treated and displayed as an "until" condition in the chip list.
+
+image::only-from-date.png[width=30%]
+image::only-to-date.png[width=30%]
+
+*Date Range Picker start and end date:*
+
+image::start-and-end-date-picker.png[width=30%]
+
+This option requires the selection of both "from" and "to" dates, defining a complete date range. It's ideal for situations where a precise period needs to be specified for filtering.
+
+In the Date Range Picker, where both "from" and "to" dates are required, users must enter both dates. If these dates are removed, an error message will appear below the input field, detailing what went wrong.
+
+image::from-date-required.png[width=30%]
+image::to-date-required.png[width=30%]
+
+Each of these options provides a different way to apply date-based filtering, enhancing the user's ability to narrow down the data according to specific time frames.
 
 === _Data handling_
 

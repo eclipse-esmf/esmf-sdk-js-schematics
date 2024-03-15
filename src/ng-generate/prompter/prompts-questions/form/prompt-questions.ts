@@ -16,7 +16,7 @@ import {TemplateHelper} from '../../../../utils/template-helper';
 import inquirer from 'inquirer';
 import {
     requestExcludedConstraints,
-    requestExcludedProperties,
+    excludedProperties,
     requestOptionalMaterialTheme,
     requestOverwriteFiles,
     requestSelectedModelElement,
@@ -63,7 +63,7 @@ async function getUserSpecificFormConfigs(templateHelper: TemplateHelper, option
     ]);
 
     const secondBatchAnswers = await inquirer.prompt([
-        requestExcludedProperties(ComponentType.FORM, allAnswers, templateHelper, firstBatchAnswers, aspect),
+        excludedProperties(ComponentType.FORM, allAnswers, templateHelper, firstBatchAnswers, aspect),
     ]);
 
     const thirdBatchAnswers = await inquirer.prompt([

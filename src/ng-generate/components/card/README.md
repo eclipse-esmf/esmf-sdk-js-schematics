@@ -329,12 +329,20 @@ Example of configuration file:
     "defaultSortingCol": "moving",
     "customRowActions": ["schedule"],
     "addCommandBar": true,
-    "enabledCommandBarFunctions": ["addCustomCommandBarActions", "addSearchBar", "addEnumQuickFilters"],
+    "enabledCommandBarFunctions": ["addCustomCommandBarActions", "addSearchBar", "addEnumQuickFilters", "addDateQuickFilters"],
     "customCommandBarActions": ["edit.svg"],
     "enableRemoteDataHandling": true,
     "enableVersionSupport": true,
     "overwrite": true,
-    "getOptionalMaterialTheme": false
+    "getOptionalMaterialTheme": false,
+    "datePickers": [
+      {
+        "propertyUrn": "urn:samm:org.eclipse.test:1.0.0#datePicker",
+        "datePicker": {
+          "type": "singleDatePicker"
+        }
+      }
+    ]
 }
 ```
 

@@ -35,7 +35,7 @@ import {
 import {ComponentType, Schema} from '../../../components/shared/schema';
 import {TemplateHelper} from '../../../../utils/template-helper';
 import * as locale from 'locale-codes';
-import {loader, handleComplexPropList} from '../../utils';
+import {handleComplexPropList, loader} from '../../utils';
 import inquirer from 'inquirer';
 
 export const requestOverwriteFiles = (options: Schema) => ({
@@ -46,7 +46,7 @@ export const requestOverwriteFiles = (options: Schema) => ({
     default: true,
 });
 
-export const requestDefaultSortingCol = (aspect: Aspect, allAnswers: any, templateHelper: TemplateHelper) => ({
+export const requestDefaultSorting = (aspect: Aspect, allAnswers: any, templateHelper: TemplateHelper) => ({
     type: 'list',
     name: 'defaultSortingCol',
     message: 'Choose the column on which default sorting is applied:',
@@ -85,7 +85,7 @@ export const requestDefaultSortingCol = (aspect: Aspect, allAnswers: any, templa
     default: false,
 });
 
-export const requestEnableCommandBarFunctions = (aspect: Aspect, allAnswers: any, templateHelper: TemplateHelper) => ({
+export const requestCommandBarFunctionality = (aspect: Aspect, allAnswers: any, templateHelper: TemplateHelper) => ({
     type: 'checkbox',
     name: 'enabledCommandBarFunctions',
     message: 'Select functionality of the command bar:',
@@ -131,6 +131,24 @@ export const requestEnableCommandBarFunctions = (aspect: Aspect, allAnswers: any
     default: [],
 });
 
+export const requestChooseDatePickerType = (property: Property) => ({
+    type: 'list',
+    name: 'type',
+    message: `Property ${property.name} is an date type. Choose which type of date picker you want to display:`,
+    choices: () => [{
+        name: 'Single Date Picker',
+        value: 'singleDatePicker'
+    }, {
+        name: 'Date Range Picker with single date option',
+        value: 'startOrEndDatePicker'
+    }, {
+        name: 'Date Range Picker without single date option',
+        value: 'startAndEndDatePicker'
+    }],
+    default: '',
+});
+
+
 export const requestOptionalMaterialTheme = (options: Schema) => ({
     type: 'confirm',
     name: 'getOptionalMaterialTheme',
@@ -139,7 +157,7 @@ export const requestOptionalMaterialTheme = (options: Schema) => ({
     default: false,
 });
 
-export const requestChooseLanguageForSearchAction = (aspect: Aspect, allAnswers: any, templateHelper: TemplateHelper) => ({
+export const chooseLanguageForSearch = (aspect: Aspect, allAnswers: any, templateHelper: TemplateHelper) => ({
     type: 'list',
     name: 'chooseLanguageForSearch',
     message: 'Which language should be used for the search functionality?',
@@ -165,7 +183,7 @@ export const requestChooseLanguageForSearchAction = (aspect: Aspect, allAnswers:
     default: 'en',
 });
 
-export const requestCustomCommandBarActions = (answers: any, templateHelper: TemplateHelper) => ({
+export const customCommandBarActions = (answers: any, templateHelper: TemplateHelper) => ({
     type: 'suggest',
     name: 'customCommandBarActions',
     message: `To add custom action buttons on the command bar, enter the names of SVG-files or style classes. SVG files will be looked for in ./assets/icons directory. Use ',' to enter multiple (e.g. edit.svg,fa fa-edit):`,
@@ -214,7 +232,7 @@ export const requestComplexPropertyElements = (type: string, property: Property)
     default: [],
 });
 
-export const requestExcludedProperties = (type: string, allAnswers: any, templateHelper: TemplateHelper, answers: any, aspect: Aspect) => ({
+export const excludedProperties = (type: string, allAnswers: any, templateHelper: TemplateHelper, answers: any, aspect: Aspect) => ({
     type: 'checkbox',
     name: 'excludedProperties',
     message: `Choose the properties to hide in the ${type}:`,
@@ -269,7 +287,7 @@ export const requestSelectedModelElement = (
     default: '',
 });
 
-export const requestJSONPathSelectedModelElement = (aspect: Aspect, answers: any, allAnswers: any) => ({
+export const selectedAspectModelJsonPath = (aspect: Aspect, answers: any, allAnswers: any) => ({
     type: 'list',
     name: 'jsonAccessPath',
     message: `Choose the access path in the JSON payload to show data for ${answers.selectedModelElementUrn}`,
@@ -291,7 +309,7 @@ export const requestJSONPathSelectedModelElement = (aspect: Aspect, answers: any
     },
 });
 
-export const requestGenerateLabelsForExcludedProps = (answers: any) => ({
+export const generateLabelsForExcludedProperties = (answers: any) => ({
     type: 'confirm',
     name: 'getExcludedPropLabels',
     message: 'Do you want to generate translation labels for excluded properties?',
@@ -345,19 +363,17 @@ function getAspectAndEntities(aspect: Aspect, type: string) {
 }
 
 /**
- * Generates a list of complex property elements.
+ * Extracts complex properties from a selected model element based on the provided aspect. It filters
+ * out properties that are complex and match certain criteria (e.g., being an instance of DefaultSingleEntity).
+ * This function is used to identify properties requiring further processing or customization.
  *
- * @param {TemplateHelper} templateHelper - The helper object to resolve types and get properties.
- *
- * @returns {Promise<Object>} - Returns a Promise that resolves to an object containing complex property elements.
+ * @param {TemplateHelper} templateHelper - Utilized for resolving the type based on aspect and fetching properties.
+ * @param {any} answers - Contains the current set of answers, including the selected model element URN.
+ * @param {any} allAnswers - Accumulates all answers, updated with the selected model element URN if not already specified.
+ * @param {Aspect} aspect - The aspect to consider when resolving the type and fetching properties.
+ * @returns {Array<Property>} - A filtered list of complex properties from the selected model element.
  */
-export async function getComplexPropertyElements(
-    templateHelper: TemplateHelper,
-    answers: any,
-    generationType: string,
-    allAnswers: any,
-    aspect: Aspect
-): Promise<any> {
+export function extractComplexPropertyDetails(templateHelper: TemplateHelper, answers: any, allAnswers: any, aspect: Aspect): Array<Property> {
     allAnswers.selectedModelElementUrn = answers.selectedModelElementUrn || templateHelper.resolveType(aspect).aspectModelUrn;
 
     const properties = templateHelper.getProperties({
@@ -365,19 +381,7 @@ export async function getComplexPropertyElements(
         excludedProperties: [],
     });
 
-    const complexPropertyList = await Promise.all(
-        properties
-            .filter(property => property.effectiveDataType?.isComplex && property.characteristic instanceof DefaultSingleEntity)
-            .map(async property => {
-                const {complexPropertyList: complexPropList} = await inquirer.prompt([
-                    requestComplexPropertyElements(generationType, property),
-                ]);
-
-                return handleComplexPropList(property, complexPropList);
-            })
-    );
-
-    return {complexProps: complexPropertyList};
+    return properties.filter(property => property.effectiveDataType?.isComplex && property.characteristic instanceof DefaultSingleEntity)
 }
 
 function getAllConstraints(allAnswers: any, templateHelper: TemplateHelper, answers: any, aspect: Aspect): Constraint[] {
@@ -438,4 +442,64 @@ function getConstraintsFromComplexElement(characteristic: Characteristic): Const
     }
 
     return [];
+}
+
+/**
+ * Processes complex properties of a given generation type, extracting and handling property elements
+ * through user prompts. It iterates over each property in the provided list, prompts for related complex
+ * property elements based on the generation type, and compiles the handled properties into a list.
+ *
+ * @param {string} generationType - The type of generation (e.g., "form", "table") that influences how properties are processed.
+ * @param {Array<Property>} complexProperties - A list of properties to be processed, typically requiring user input to determine specifics.
+ * @returns {Promise<object>} - Resolves to an object containing a list of processed complex properties.
+ */
+export async function extractPropertyElements(generationType: string, complexProperties: Array<Property>): Promise<object> {
+    const complexPropertyList = [];
+    for (const property of complexProperties) {
+        const {complexPropertyList: complexPropList} = await complexPropertyElementsPrompt(generationType, property);
+        const handledProp = handleComplexPropList(property, complexPropList);
+        complexPropertyList.push(handledProp);
+    }
+
+    return {complexProps: complexPropertyList};
+}
+
+async function complexPropertyElementsPrompt(generationType: string, property: Property): Promise<any> {
+    return inquirer.prompt([requestComplexPropertyElements(generationType, property)]);
+}
+
+
+/**
+ * Gathers date picker types for date-time properties of a selected model element. It determines the
+ * model element's properties, prompts for date picker types for each date-time property, and returns
+ * a configuration list of these selections.
+ *
+ * @param {TemplateHelper} templateHelper - Assists with resolving types and getting properties.
+ * @param {any} allAnswers - Contains all previous answers, including the selected model element URN.
+ * @param {any} answers - Current answers, expected to include the selected model element URN.
+ * @param {Aspect} aspect - Used to resolve the default model element type if not specified.
+ * @returns {Promise<object>} - Resolves to an object with configurations for each date-time property's date picker type.
+ */
+export async function getDatePickerType(templateHelper: TemplateHelper, allAnswers: any, answers: any, aspect: Aspect): Promise<object> {
+    allAnswers.selectedModelElementUrn = answers.selectedModelElementUrn || templateHelper.resolveType(aspect).aspectModelUrn;
+
+    const properties = templateHelper.getProperties({
+        selectedModelElement: loader.findByUrn(allAnswers.selectedModelElementUrn),
+        excludedProperties: [],
+    });
+
+    const datePickerTypeList = [];
+    for (const property of properties) {
+        if (templateHelper.isDateTimeProperty(property)) {
+            const type = await datePickerTypePrompt(property);
+            const p = property.aspectModelUrn;
+            datePickerTypeList.push({propertyUrn: property.aspectModelUrn, datePicker: type});
+        }
+    }
+
+    return {datePickers: datePickerTypeList};
+}
+
+async function datePickerTypePrompt(property: Property): Promise<any> {
+    return inquirer.prompt([requestChooseDatePickerType(property)]);
 }

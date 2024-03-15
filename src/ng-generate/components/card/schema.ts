@@ -14,3 +14,8 @@
 import {Values} from '../shared/schema';
 
 export interface CardSchema extends Values {}
+
+export interface ConfigurationDefaultsSchema {}
+// class to define default values that are not asked in the prompter
+//  defaultValue = data.properties.defaultValue.default;
+export class CardDefaultsSchema implements ConfigurationDefaultsSchema {}

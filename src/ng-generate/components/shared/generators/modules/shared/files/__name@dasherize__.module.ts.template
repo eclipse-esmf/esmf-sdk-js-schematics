@@ -23,7 +23,11 @@ import {<%= classify(name) %>Component} from './<%= dasherize(name) %>.component
     import {<%= classify(name) %>ColumnMenuComponent} from './<%= dasherize(name) %>-column-menu.component';
 <% } %>
 
-import {AppSharedModule} from 'src/app/shared/app-shared.module';
+<% if (options.versionedAccessPrefix) { %>
+    import {AppSharedModule} from '../../../app-shared.module';
+<% } else { %>
+    import {AppSharedModule} from '../../app-shared.module';
+<% } %>
 
 @NgModule({
     declarations: [

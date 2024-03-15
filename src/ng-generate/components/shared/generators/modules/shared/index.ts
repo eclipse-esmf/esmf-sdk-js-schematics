@@ -20,7 +20,8 @@ export function generateSharedModule(options: any): Rule {
     return (tree: Tree, _context: SchematicContext) => {
         options.module = `${dasherize(options.name)}.module.ts`;
 
-        const modulePath = `${options.path}/${dasherize(options.name)}.module.ts`;
+        const sourcePath = options.path.replace('src/app', '.');
+        const modulePath = `${sourcePath}/${dasherize(options.name)}.module.ts`;
         addModuleImportToModule(tree, '/src/app/app.module.ts', `${classify(options.name)}Module`, `${modulePath.replace('.ts', '')}`);
 
         return mergeWith(

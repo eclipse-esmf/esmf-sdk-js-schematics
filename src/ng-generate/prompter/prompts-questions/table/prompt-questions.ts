@@ -14,20 +14,22 @@
 import {TemplateHelper} from '../../../../utils/template-helper';
 import inquirer from 'inquirer';
 import {
-    getComplexPropertyElements,
-    requestChooseLanguageForSearchAction,
-    requestCustomCommandBarActions,
-    requestDefaultSortingCol,
-    requestEnableCommandBarFunctions,
-    requestExcludedProperties,
-    requestGenerateLabelsForExcludedProps,
-    requestJSONPathSelectedModelElement,
+    chooseLanguageForSearch,
+    customCommandBarActions,
+    excludedProperties,
+    extractComplexPropertyDetails,
+    extractPropertyElements,
+    generateLabelsForExcludedProperties,
+    getDatePickerType,
+    requestCommandBarFunctionality,
+    requestDefaultSorting,
     requestOptionalMaterialTheme,
     requestOverwriteFiles,
     requestSelectedModelElement,
+    selectedAspectModelJsonPath,
 } from '../shared/prompt-complex-questions';
 import {ComponentType, Schema} from '../../../components/shared/schema';
-import {Aspect, DefaultEntity} from '@esmf/aspect-model-loader';
+import {Aspect, BaseMetaModelElement, DefaultEntity} from '@esmf/aspect-model-loader';
 import {
     requestAddCommandBar,
     requestAspectModelVersionSupport,
@@ -37,7 +39,21 @@ import {
     requestSetViewEncapsulation,
 } from '../shared/prompt-simple-questions';
 import {ConfigurationDefaultsSchema, TableDefaultsSchema} from '../../../components/table/schema';
+import {BaseModelLoader} from "@esmf/aspect-model-loader/dist/base-model-loader";
 
+/**
+ * Asynchronously prompts the user with a series of questions related to table configurations,
+ * combines these answers with existing configurations, and updates the provided answers.
+ *
+ * @param {any} answerConfigurationFileConfig - The existing configuration from a configuration file.
+ * @param {any} answerAspectModel - The current aspect model's answers.
+ * @param {TemplateHelper} templateHelper - An instance of TemplateHelper for assisting in generating template-based configurations.
+ * @param {Schema} options - Schema options that might affect the generation of table prompts.
+ * @param {Aspect} aspect - The current aspect of the table for which the configurations are being generated.
+ * @param {Function} combineAnswers - A function to combine all answers into a single configuration object.
+ * @param {any} allAnswers - All previously gathered answers that may influence current prompts.
+ * @returns {Promise<void>} - A promise that resolves once all configurations are combined and processed.
+ */
 export async function tablePrompterQuestions(
     answerConfigurationFileConfig: any,
     answerAspectModel: any,
@@ -46,77 +62,75 @@ export async function tablePrompterQuestions(
     aspect: Aspect,
     combineAnswers: (...answers: any[]) => any,
     allAnswers: any
-) {
-    // check if TableDefaultsSchema interface has values
-    const defaults: ConfigurationDefaultsSchema = new TableDefaultsSchema();
+): Promise<void> {
+    const defaultConfiguration: ConfigurationDefaultsSchema = new TableDefaultsSchema();
 
-    if (Object.keys(defaults).length > 0) {
-        combineAnswers(
-            answerConfigurationFileConfig,
-            answerAspectModel,
-            await getUserSpecificTableConfigs(templateHelper, options, aspect, allAnswers, defaults)
-        );
-    } else {
-        combineAnswers(
-            answerConfigurationFileConfig,
-            answerAspectModel,
-            await getUserSpecificTableConfigs(templateHelper, options, aspect, allAnswers)
-        );
-    }
+    combineAnswers(
+        answerConfigurationFileConfig,
+        answerAspectModel,
+        await fetchUserSpecificTableConfigurations(templateHelper, options, aspect, allAnswers, Object.keys(defaultConfiguration).length > 0 ? defaultConfiguration : {})
+    );
 }
 
-/**
- * This function fetches user specific configurations by prompting a set of questions.
- * The answers are grouped into two batches based on their dependency.
- *
- * @param {Tree} tree - Represents the file tree.
- * @param {TemplateHelper} templateHelper - An instance of the TemplateHelper to aid in handling templates.
- * @param {Schema} options - User defined options provided when running the script.
- * @returns {Promise<Object>} An object containing the user responses.
- */
-async function getUserSpecificTableConfigs(
+async function fetchUserSpecificTableConfigurations(
     templateHelper: TemplateHelper,
     options: Schema,
     aspect: Aspect,
     allAnswers: any,
-    defaults?: any
-) {
-    const firstBatchAnswers = await inquirer.prompt([
-        requestSelectedModelElement(ComponentType.TABLE, aspect, requestSelectedModelCondition),
-    ]);
-
-    const secondBatchAnswers = await getComplexPropertyElements(templateHelper, firstBatchAnswers, ComponentType.TABLE, allAnswers, aspect);
-
-    const thirdBatchAnswers = await inquirer.prompt([
-        requestJSONPathSelectedModelElement(aspect, firstBatchAnswers, allAnswers),
-        requestExcludedProperties(ComponentType.TABLE, allAnswers, templateHelper, firstBatchAnswers, aspect),
-    ]);
-
-    const fourthBatchAnswers = await inquirer.prompt([
-        requestGenerateLabelsForExcludedProps(firstBatchAnswers),
-        requestDefaultSortingCol(aspect, allAnswers, templateHelper),
-        requestCustomColumnNames,
-        requestRowCheckboxes,
-        requestCustomRowActions,
+    defaultConfiguration?: ConfigurationDefaultsSchema
+): Promise<object> {
+    const gatherInitialModelElement = await inquirer.prompt([requestSelectedModelElement(ComponentType.TABLE, aspect, requestSelectedModelCondition)]);
+    const complexPropertiesAnswers = extractComplexPropertyDetails(templateHelper, gatherInitialModelElement, allAnswers, aspect);
+    const propertyElementAnswers = await extractPropertyElements(ComponentType.TABLE, complexPropertiesAnswers);
+    const selectedAspectModelJsonPathAnswers = await inquirer.prompt([selectedAspectModelJsonPath(aspect, gatherInitialModelElement, allAnswers)]);
+    const excludedPropertiesAnswers = await inquirer.prompt([excludedProperties(ComponentType.TABLE, allAnswers, templateHelper, gatherInitialModelElement, aspect)]);
+    const labelsForExcludedPropsAnswers = await inquirer.prompt([generateLabelsForExcludedProperties(gatherInitialModelElement)]);
+    const defaultSortingAnswers = await inquirer.prompt([requestDefaultSorting(aspect, allAnswers, templateHelper)]);
+    const customColumnNamesAnswers = await inquirer.prompt([requestCustomColumnNames]);
+    const rowCheckBoxesAnswers = await inquirer.prompt([requestRowCheckboxes]);
+    const customRowCheckBoxesAnswers = await inquirer.prompt([requestCustomRowActions]);
+    const commandbarFunctionalityAnswers = await inquirer.prompt([
         requestAddCommandBar,
-        requestEnableCommandBarFunctions(aspect, allAnswers, templateHelper),
-        requestChooseLanguageForSearchAction(aspect, allAnswers, templateHelper),
-        requestCustomCommandBarActions(allAnswers, templateHelper),
-        requestEnableRemoteDataHandling,
-        requestCustomService,
-        requestAspectModelVersionSupport,
-        requestOptionalMaterialTheme(options),
-        requestCustomStyleImports,
-        requestSetViewEncapsulation,
-        requestOverwriteFiles(options),
+        requestCommandBarFunctionality(aspect, allAnswers, templateHelper),
+        chooseLanguageForSearch(aspect, allAnswers, templateHelper)
     ]);
+    const datePickerTypeAnswers = commandbarFunctionalityAnswers.enabledCommandBarFunctions?.includes('addDateQuickFilters') ? await getDatePickerType(templateHelper, allAnswers, gatherInitialModelElement, aspect) : {};
+    const customBarActionsAnswers = await inquirer.prompt([customCommandBarActions(allAnswers, templateHelper)]);
+    const enableRemoteDataHandlingAnswers = await inquirer.prompt([requestEnableRemoteDataHandling, requestCustomService]);
+    const aspectModelVersionSupportAnswers = await inquirer.prompt([requestAspectModelVersionSupport]);
+    const optionalMaterialThemeAnswers = await inquirer.prompt([requestOptionalMaterialTheme(options)]);
+    const customStyleImportsAnswers = await inquirer.prompt([requestCustomStyleImports]);
+    const setViewEncapsulationAnswers = await inquirer.prompt([requestSetViewEncapsulation]);
+    const overwriteFilesAnswers = await inquirer.prompt([requestOverwriteFiles(options)]);
 
-    return defaults
-        ? {...firstBatchAnswers, ...secondBatchAnswers, ...thirdBatchAnswers, ...fourthBatchAnswers, ...defaults}
-        : {...firstBatchAnswers, ...secondBatchAnswers, ...thirdBatchAnswers, ...fourthBatchAnswers};
+    return {
+        ...gatherInitialModelElement,
+        ...propertyElementAnswers,
+        ...selectedAspectModelJsonPathAnswers,
+        ...excludedPropertiesAnswers,
+        ...labelsForExcludedPropsAnswers,
+        ...defaultSortingAnswers,
+        ...customColumnNamesAnswers,
+        ...rowCheckBoxesAnswers,
+        ...customRowCheckBoxesAnswers,
+        ...commandbarFunctionalityAnswers,
+        ...datePickerTypeAnswers,
+        ...customBarActionsAnswers,
+        ...enableRemoteDataHandlingAnswers,
+        ...aspectModelVersionSupportAnswers,
+        ...optionalMaterialThemeAnswers,
+        ...customStyleImportsAnswers,
+        ...setViewEncapsulationAnswers,
+        ...overwriteFilesAnswers,
+        ...defaultConfiguration,
+    };
 }
 
-export const requestCustomRowActions = {
+function requestSelectedModelCondition(aspect: Aspect, baseModelLoader: BaseModelLoader): boolean {
+    return !aspect.isCollectionAspect && baseModelLoader.filterElements((entry: BaseMetaModelElement) => entry instanceof DefaultEntity).length >= 1;
+}
+
+const requestCustomRowActions = {
     type: 'suggest',
     name: 'customRowActions',
     message: `To add custom action buttons for each table row, enter the names of SVG-files or style classes. SVG files will be looked for in ./assets/icons directory. Use ',' to enter multiple (e.g. edit.svg,fa fa-edit):`,
@@ -124,14 +138,14 @@ export const requestCustomRowActions = {
     filter: (input: string) => (input ? Array.from(new Set(input.split(','))) : []),
 };
 
-export const requestRowCheckboxes = {
+const requestRowCheckboxes = {
     type: 'confirm',
     name: 'addRowCheckboxes',
     message: 'Do you want to add multi-selection checkboxes for selecting table rows?',
     default: false,
 };
 
-export const requestCustomColumnNames = {
+const requestCustomColumnNames = {
     type: 'suggest',
     name: 'customColumns',
     message:
@@ -139,7 +153,3 @@ export const requestCustomColumnNames = {
     suggestions: ['chart', 'slider'],
     filter: (input: string) => (input ? Array.from(new Set(input.split(','))) : []),
 };
-
-function requestSelectedModelCondition(aspect: Aspect, loader: any): boolean {
-    return !aspect.isCollectionAspect && loader.filterElements((entry: any) => entry instanceof DefaultEntity).length >= 1;
-}
