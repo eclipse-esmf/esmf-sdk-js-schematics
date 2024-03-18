@@ -230,6 +230,8 @@ export interface SpatialPosition {
 The table schematics can be used for table generation. This is achieved by using the table provided in
 the [angular material package](https://v17.material.angular.io/components/table/overview).
 
+**_NOTE:_** Operations and Events are not included in the code generation by the JS SDK. Generating UI code that represents the Operations that can be performed by an aspect or the events that can be triggered on an aspect has to be manually created. Feel free to contribute / raise requests at https://github.com/eclipse-esmf/esmf-sdk-js-schematics/issues . See https://eclipse-esmf.github.io/ame-guide/modeling/operation.html and https://eclipse-esmf.github.io/ame-guide/modeling/event.html for more information.
+
 ### Features provided by the schematics table
 
 1. Types generation
