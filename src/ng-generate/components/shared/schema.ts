@@ -19,6 +19,7 @@ export enum ComponentType {
     TABLE = 'table',
     CARD = 'card',
     FORM = 'form',
+    TYPES = 'types',
 }
 export interface ExcludedProperty {
     /**

@@ -12,7 +12,7 @@
  */
 
 import {dasherize} from '@angular-devkit/core/src/utils/strings';
-import {chain, Rule} from '@angular-devkit/schematics';
+import {chain, Rule, SchematicContext} from '@angular-devkit/schematics';
 import ora from 'ora';
 import {loadAspectModel, loadRDF} from '../../utils/aspect-model';
 import {formatGeneratedFiles, loadAndApplyConfigFile} from '../../utils/file';
@@ -20,8 +20,13 @@ import {TemplateHelper} from '../../utils/template-helper';
 import {visitAspectModel} from './aspect-model-type-generator-visitor';
 import {WIZARD_CONFIG_FILE} from '../prompter/index';
 import {TypesSchema} from './schema';
+import { TableSchema } from '../components/table/schema';
+import { generateComponent, loadAspectModelRule, loadRdfRule, prepareOptions } from '../components/shared';
+import {Tree} from '@angular-devkit/schematics/src/tree/interface';
+import { ComponentType } from '../components/shared/schema';
 
 export default function (options: TypesSchema): Rule {
+    if(options && options.configFile !== undefined){
     options.spinner = ora().start();
     options.templateHelper = new TemplateHelper();
 
@@ -48,4 +53,9 @@ export default function (options: TypesSchema): Rule {
             options
         ),
     ]);
+}else{
+    return (tree: Tree, context: SchematicContext) => {
+        generateComponent(context, options, ComponentType.TYPES);
+    };
+}
 }
