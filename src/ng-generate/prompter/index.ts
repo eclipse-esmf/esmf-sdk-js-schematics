@@ -22,16 +22,12 @@ import {ComponentType, Schema} from '../components/shared/schema';
 
 import {loader, reorderAspectModelUrnToLoad, writeConfigAndExit} from './utils';
 import {virtualFs} from '@angular-devkit/core';
-import {
-    anotherFile,
-    configFileName,
-    createOrImport,
-    importConfigFile
-} from './prompts-questions/shared/prompt-simple-questions';
+import {anotherFile, configFileName, createOrImport, importConfigFile} from './prompts-questions/shared/prompt-simple-questions';
 import {tablePrompterQuestions} from './prompts-questions/table/prompt-questions';
 import {pathDecision, requestAspectModelWithAspect} from './prompts-questions/shared/prompt-complex-questions';
 import {formPrompterQuestions} from './prompts-questions/form/prompt-questions';
 import {cardPrompterQuestions} from './prompts-questions/card/prompt-questions';
+import {typesPrompterQuestions} from './prompts-questions/types/prompt-questions';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 inquirer.registerPrompt('fuzzypath', require('inquirer-fuzzy-path'));
@@ -143,6 +139,12 @@ async function runPrompts(subscriber: Subscriber<Tree>, tree: Tree, templateHelp
                         aspect,
                         combineAnswers,
                         allAnswers
+                    );
+                case ComponentType.TYPES:
+                    return typesPrompterQuestions(
+                        answerConfigurationFileConfig,
+                        answerAspectModelWithMainAspect,
+                        combineAnswers,
                     );
                 default:
                     throw new Error('Invalid component type');

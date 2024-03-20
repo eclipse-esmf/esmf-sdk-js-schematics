@@ -56,6 +56,10 @@
             "description": "Generate type definitions for an aspect model",
             "factory": "./ng-generate/types/index",
             "schema": "./ng-generate/types/schema.json"
+        },
+        "types-prompter": {
+            "description": "generate custom prompter",
+            "factory": "./ng-generate/prompter/types/index"
         }
     }
 }

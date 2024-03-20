@@ -226,9 +226,12 @@ export interface SpatialPosition {
 ---
 
 ## The _table_ schematics
-
+https://eclipse-esmf.github.io/ame-guide/modeling/operation.html
+Modeling Events
 The table schematics can be used for table generation. This is achieved by using the table provided in
 the [angular material package](https://v17.material.angular.io/components/table/overview).
+
+**_NOTE:_** The JavaScript SDK does not automatically generate code for Operations and Events. If you need UI code that represents the Operations available for an aspect, or the Events that an aspect can trigger, you'll need to implement this manually. We welcome contributions and requests for enhancements. Please submit them at our GitHub issues page: [GitHub issues](https://github.com/eclipse-esmf/esmf-sdk-js-schematics/issues). For additional guidance on modeling Operations and Events, visit our documentation pages on [Modeling Operations](https://eclipse-esmf.github.io/ame-guide/modeling/operation.html) and [Modeling Events](https://eclipse-esmf.github.io/ame-guide/modeling/event.html).
 
 ### Features provided by the schematics table
 

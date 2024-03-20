@@ -12,6 +12,10 @@
             "type": "boolean",
             "description": "Flag whether the generated files should be placed in distinct directories, based on the Aspect Model version.",
             "default": true
+        },
+        "configFile": {
+            "description": "Used for pre-loading the config file from the command line(when set, config wizard is disabled).",
+            "type": "string"
         }
     },
     "required": []

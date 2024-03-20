@@ -15,12 +15,7 @@ import {dasherize} from '@angular-devkit/core/src/utils/strings';
 import {chain, Rule, SchematicContext, Tree} from '@angular-devkit/schematics';
 import {NodePackageInstallTask, RunSchematicTask} from '@angular-devkit/schematics/tasks';
 import {JSONFile} from '@schematics/angular/utility/json-file';
-import {
-    addToAppModule,
-    addToAppSharedModule,
-    addToComponentModule,
-    wrapBuildComponentExecution
-} from '../../../utils/angular';
+import {addToAppModule, addToAppSharedModule, addToComponentModule, wrapBuildComponentExecution} from '../../../utils/angular';
 import {generateTranslationFiles, loadAspectModel, loadRDF, validateUrns} from '../../../utils/aspect-model';
 import {formatGeneratedFiles, loadAndApplyConfigFile} from '../../../utils/file';
 import {
@@ -69,14 +64,18 @@ export function generateComponent(context: SchematicContext, schema: Schema, com
     let prompterTaskId = null;
     if (options.configFile === undefined || options.configFile === '') {
         options.configFile = WIZARD_CONFIG_FILE;
+
         prompterTaskId = context.addTask(new RunSchematicTask(`${componentType}-prompter`, options));
     }
 
     const generateTypesTaskId = context.addTask(new RunSchematicTask('types', options), prompterTaskId ? [prompterTaskId] : []);
-    const componentGenId = context.addTask(new RunSchematicTask(`${componentType}-generation`, options), [generateTypesTaskId]);
 
-    if (!options.skipInstall) {
-        context.addTask(new NodePackageInstallTask(), [componentGenId]);
+    if (componentType !== ComponentType.TYPES) {
+        const componentGenId = context.addTask(new RunSchematicTask(`${componentType}-generation`, options), [generateTypesTaskId]);
+
+        if (!options.skipInstall) {
+            context.addTask(new NodePackageInstallTask(), [componentGenId]);
+        }
     }
 }
 
@@ -260,10 +259,10 @@ export function addAndUpdateConfigurationFilesRule(): Rule[] {
         options.componentType === ComponentType.TABLE
             ? addToComponentModule(options.skipImport, options, tableModules(options))
             : options.componentType === ComponentType.CARD
-                ? addToComponentModule(options.skipImport, options, cardModules(options))
-                : options.componentType === ComponentType.FORM
-                    ? addToComponentModule(options.skipImport, options, formModules(options))
-                    : ({} as Rule);
+            ? addToComponentModule(options.skipImport, options, cardModules(options))
+            : options.componentType === ComponentType.FORM
+            ? addToComponentModule(options.skipImport, options, formModules(options))
+            : ({} as Rule);
 
     return [
         addPackageJsonDependencies(options.skipImport, options.spinner, loadDependencies()),
