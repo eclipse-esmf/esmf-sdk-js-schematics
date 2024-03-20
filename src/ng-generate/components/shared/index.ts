@@ -64,12 +64,8 @@ export function generateComponent(context: SchematicContext, schema: Schema, com
     let prompterTaskId = null;
     if (options.configFile === undefined || options.configFile === '') {
         options.configFile = WIZARD_CONFIG_FILE;
-        // if type than table for now
-        if (componentType === ComponentType.TYPES) {
-            prompterTaskId = context.addTask(new RunSchematicTask('table-prompter', options));
-        } else {
-            prompterTaskId = context.addTask(new RunSchematicTask(`${componentType}-prompter`, options));
-        }
+
+        prompterTaskId = context.addTask(new RunSchematicTask(`${componentType}-prompter`, options));
     }
 
     const generateTypesTaskId = context.addTask(new RunSchematicTask('types', options), prompterTaskId ? [prompterTaskId] : []);
