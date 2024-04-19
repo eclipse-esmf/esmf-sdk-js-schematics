@@ -161,17 +161,20 @@
         <% } %>
     <% } %>
 
-    <button data-test="refresh-data-button-<%= options.componentType %>" mat-icon-button aria-label="Refresh table" (click)="triggerReloadFilter()">
-      <mat-icon data-test="refresh-data-icon" class="material-icons" [matTooltip]="'tableActions.refreshData' | transloco">autorenew</mat-icon>
+    <button data-test="refresh-data-button-<%= options.componentType %>" mat-icon-button aria-label="Refresh table" (click)="triggerReloadFilter()"
+        [matTooltip]="'tableActions.refreshData' | transloco">
+      <mat-icon data-test="refresh-data-icon" class="material-icons">autorenew</mat-icon>
     </button>
 
-    <button data-test="export-data-button-<%= options.componentType %>" mat-icon-button aria-label="Download data as CSV" (click)="triggerExportToCsv()">
-      <mat-icon data-test="export-data-icon" class="material-icons" [matTooltip]="'tableActions.exportData' | transloco">file_download</mat-icon>
+    <button data-test="export-data-button-<%= options.componentType %>" mat-icon-button aria-label="Download data as CSV" (click)="triggerExportToCsv()"
+        [matTooltip]="'tableActions.exportData' | transloco">
+      <mat-icon data-test="export-data-icon" class="material-icons">file_download</mat-icon>
     </button>
 
     <% if (options.componentType === 'table' && options.hasSearchBar) { %>
-        <button data-test="open-configuration" mat-icon-button aria-label="Open configuration" [matMenuTriggerFor]="configurationMenu" (menuOpened)="triggerInitOpenedConfigurationDialog()">
-            <mat-icon data-test="open-configuration-icon" class="material-icons"[matTooltip]="'tableActions.openConfig' | transloco">settings </mat-icon>
+        <button data-test="open-configuration" mat-icon-button aria-label="Open configuration" [matMenuTriggerFor]="configurationMenu" (menuOpened)="triggerInitOpenedConfigurationDialog()"
+            [matTooltip]="'tableActions.openConfig' | transloco">
+            <mat-icon data-test="open-configuration-icon" class="material-icons">settings </mat-icon>
         </button>
     <% } %>
 </mat-toolbar>
