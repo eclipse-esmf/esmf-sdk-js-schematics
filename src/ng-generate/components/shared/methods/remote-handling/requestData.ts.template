@@ -94,7 +94,6 @@ private requestData() {
                 <% } else { %>
                     const dataToShow = movementResponse.items;
                     this.dataSource.setData(dataToShow);
-                    this.paginator.length = dataToShow.length;
                 <% } %>
 
                 this.dataSource.paginator = this.paginator;
