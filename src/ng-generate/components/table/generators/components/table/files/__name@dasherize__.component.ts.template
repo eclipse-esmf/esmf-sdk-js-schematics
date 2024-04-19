@@ -451,7 +451,7 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
     <% } %>
 
     <% if (options.customCommandBarActions.length > 0) { %>
-        executeCustomCommandBarAction($event: MouseEvent, action: string) {
+        handleCustomCommandBarActionEvent($event: MouseEvent, action: string) {
             $event.stopPropagation()
             this.customCommandBarActionEvent.emit({action: action})
         }

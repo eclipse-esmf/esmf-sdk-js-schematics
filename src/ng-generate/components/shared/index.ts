@@ -160,6 +160,10 @@ export function setCustomActionsAndFiltersRule(): Rule {
         options.enabledCommandBarFunctions = options.enabledCommandBarFunctions.filter(func =>
             propertiesCheck.some(item => item.function === func && item.properties.length > 0)
         );
+
+        if (options.templateHelper.haveCustomCommandbarActions(options)) {
+            options.enabledCommandBarFunctions.push('addCustomCommandBarActions');
+        }
     };
 }
 

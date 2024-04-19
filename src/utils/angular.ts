@@ -18,7 +18,7 @@ import {
     addModuleImportToModule,
     buildComponent,
     findModuleFromOptions,
-    parseSourceFile
+    parseSourceFile,
 } from '@angular/cdk/schematics';
 import {MODULE_EXT} from '@schematics/angular/utility/find-module';
 import {Schema} from '../ng-generate/components/shared/schema';
@@ -64,7 +64,7 @@ export function addToAppSharedModule(skipImport: SkipHandler | boolean, modules:
         project: 'esmf',
         name: 'AppSharedModule',
         module: `app-shared${MODULE_EXT}`,
-        path: '/src/app/shared'
+        path: '/src/app/shared',
     };
     return addToModule(appModule, skipImport, modules);
 }
