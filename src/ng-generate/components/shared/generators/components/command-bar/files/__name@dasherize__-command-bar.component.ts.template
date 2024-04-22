@@ -103,8 +103,7 @@ export class <%= classify(name) %>CommandBarComponent {
     <% } %>
 
     <% if (options.customCommandBarActions.length > 0) { %>
-        executeCustomCommandBarAction($event: MouseEvent, action: string) {
-            $event.stopPropagation()
+        executeCustomCommandBarAction(action: string) {
             this.customCommandBarActionEvent.emit({action: action})
         }
     <% } %>

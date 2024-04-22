@@ -31,7 +31,7 @@
         (reloadFilter)="reloadFilter()"
         (exportToCsv)="exportToCsv()"
         <% if (options.customCommandBarActions.length > 0) { %>
-            (customCommandBarActionEvent)="handleCustomCommandBarActionEvent($event, $event.action)"
+            (customCommandBarActionEvent)="handleCustomCommandBarActionEvent($event.action)"
         <% } %>
     ></<%= dasherize(name) %>-command-bar>
   <% } %>

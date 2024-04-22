@@ -147,7 +147,7 @@
 
     <% if (options.customCommandBarActions.length > 0) { %>
         <% for(let action of options.customCommandBarActions) { %>
-            <button data-test="toolbar-custom-action-button" mat-icon-button (click)="executeCustomCommandBarAction($event, '<%= spinalCaseFunc(action) %>')" attr.aria-label="{{ '<%= options.versionedAccessPrefix %><%= spinalCaseFunc(action) %>.customCommandBarAction' | transloco }}">
+            <button data-test="toolbar-custom-action-button" mat-icon-button (click)="executeCustomCommandBarAction('<%= spinalCaseFunc(action) %>')" attr.aria-label="{{ '<%= options.versionedAccessPrefix %><%= spinalCaseFunc(action) %>.customCommandBarAction' | transloco }}">
                 <mat-icon data-test="toolbar-custom-action-icon" matTooltip="{{'<%= options.versionedAccessPrefix %><%= spinalCaseFunc(action) %>.customCommandBarAction' | transloco }}" aria-hidden="false"
                     <% if (action.lastIndexOf(".") > -1) { %>
                         svgIcon="<%= spinalCaseFunc(action) %>
