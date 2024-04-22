@@ -39,7 +39,7 @@ import {
     requestSetViewEncapsulation,
 } from '../shared/prompt-simple-questions';
 import {ConfigurationDefaultsSchema, TableDefaultsSchema} from '../../../components/table/schema';
-import {BaseModelLoader} from "@esmf/aspect-model-loader/dist/base-model-loader";
+import {BaseModelLoader} from '@esmf/aspect-model-loader/dist/base-model-loader';
 
 /**
  * Asynchronously prompts the user with a series of questions related to table configurations,
@@ -68,7 +68,13 @@ export async function tablePrompterQuestions(
     combineAnswers(
         answerConfigurationFileConfig,
         answerAspectModel,
-        await fetchUserSpecificTableConfigurations(templateHelper, options, aspect, allAnswers, Object.keys(defaultConfiguration).length > 0 ? defaultConfiguration : {})
+        await fetchUserSpecificTableConfigurations(
+            templateHelper,
+            options,
+            aspect,
+            allAnswers,
+            Object.keys(defaultConfiguration).length > 0 ? defaultConfiguration : {}
+        )
     );
 }
 
@@ -79,11 +85,17 @@ async function fetchUserSpecificTableConfigurations(
     allAnswers: any,
     defaultConfiguration?: ConfigurationDefaultsSchema
 ): Promise<object> {
-    const gatherInitialModelElement = await inquirer.prompt([requestSelectedModelElement(ComponentType.TABLE, aspect, requestSelectedModelCondition)]);
+    const gatherInitialModelElement = await inquirer.prompt([
+        requestSelectedModelElement(ComponentType.TABLE, aspect, requestSelectedModelCondition),
+    ]);
     const complexPropertiesAnswers = extractComplexPropertyDetails(templateHelper, gatherInitialModelElement, allAnswers, aspect);
     const propertyElementAnswers = await extractPropertyElements(ComponentType.TABLE, complexPropertiesAnswers);
-    const selectedAspectModelJsonPathAnswers = await inquirer.prompt([selectedAspectModelJsonPath(aspect, gatherInitialModelElement, allAnswers)]);
-    const excludedPropertiesAnswers = await inquirer.prompt([excludedProperties(ComponentType.TABLE, allAnswers, templateHelper, gatherInitialModelElement, aspect)]);
+    const selectedAspectModelJsonPathAnswers = await inquirer.prompt([
+        selectedAspectModelJsonPath(aspect, gatherInitialModelElement, allAnswers),
+    ]);
+    const excludedPropertiesAnswers = await inquirer.prompt([
+        excludedProperties(ComponentType.TABLE, allAnswers, templateHelper, gatherInitialModelElement, aspect),
+    ]);
     const labelsForExcludedPropsAnswers = await inquirer.prompt([generateLabelsForExcludedProperties(gatherInitialModelElement)]);
     const defaultSortingAnswers = await inquirer.prompt([requestDefaultSorting(aspect, allAnswers, templateHelper)]);
     const customColumnNamesAnswers = await inquirer.prompt([requestCustomColumnNames]);
@@ -92,9 +104,11 @@ async function fetchUserSpecificTableConfigurations(
     const commandbarFunctionalityAnswers = await inquirer.prompt([
         requestAddCommandBar,
         requestCommandBarFunctionality(aspect, allAnswers, templateHelper),
-        chooseLanguageForSearch(aspect, allAnswers, templateHelper)
+        chooseLanguageForSearch(aspect, allAnswers, templateHelper),
     ]);
-    const datePickerTypeAnswers = commandbarFunctionalityAnswers.enabledCommandBarFunctions?.includes('addDateQuickFilters') ? await getDatePickerType(templateHelper, allAnswers, gatherInitialModelElement, aspect) : {};
+    const datePickerTypeAnswers = commandbarFunctionalityAnswers.enabledCommandBarFunctions?.includes('addDateQuickFilters')
+        ? await getDatePickerType(templateHelper, allAnswers, gatherInitialModelElement, aspect)
+        : {};
     const customBarActionsAnswers = await inquirer.prompt([customCommandBarActions(allAnswers, templateHelper)]);
     const enableRemoteDataHandlingAnswers = await inquirer.prompt([requestEnableRemoteDataHandling, requestCustomService]);
     const aspectModelVersionSupportAnswers = await inquirer.prompt([requestAspectModelVersionSupport]);
@@ -127,7 +141,10 @@ async function fetchUserSpecificTableConfigurations(
 }
 
 function requestSelectedModelCondition(aspect: Aspect, baseModelLoader: BaseModelLoader): boolean {
-    return !aspect.isCollectionAspect && baseModelLoader.filterElements((entry: BaseMetaModelElement) => entry instanceof DefaultEntity).length >= 1;
+    return (
+        !aspect.isCollectionAspect &&
+        baseModelLoader.filterElements((entry: BaseMetaModelElement) => entry instanceof DefaultEntity).length >= 1
+    );
 }
 
 const requestCustomRowActions = {

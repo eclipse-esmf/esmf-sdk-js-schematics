@@ -39,11 +39,11 @@ import {
     generateFormValidators,
     generateGeneralStyle,
     generateSharedModule,
-    generateTranslationModule
+    generateTranslationModule,
 } from '../shared/generators';
 import {generateFormArrayReusable} from '../shared/generators/utils/form-array-reusable/index';
 import {wrapBuildComponentExecution} from '../../../utils/angular';
-import {generateTranslationFiles} from "../../../utils/aspect-model";
+import {generateTranslationFiles} from '../../../utils/aspect-model';
 
 export default function (formSchema: FormSchema): Rule {
     return (tree: Tree, context: SchematicContext) => {

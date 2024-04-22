@@ -24,7 +24,7 @@ import {ConfigurationDefaultsSchema, TableDefaultsSchema} from '../../../compone
 export async function typesPrompterQuestions(
     answerConfigurationFileConfig: any,
     answerAspectModel: any,
-    combineAnswers: (...answers: any[]) => any,
+    combineAnswers: (...answers: any[]) => any
 ): Promise<void> {
     const defaultConfiguration: ConfigurationDefaultsSchema = new TableDefaultsSchema();
     combineAnswers(
@@ -34,10 +34,7 @@ export async function typesPrompterQuestions(
     );
 }
 
-async function fetchTypesConfigurations(
-    defaultConfiguration?: ConfigurationDefaultsSchema
-): Promise<object> {
-
+async function fetchTypesConfigurations(defaultConfiguration?: ConfigurationDefaultsSchema): Promise<object> {
     return {
         ...defaultConfiguration,
     };

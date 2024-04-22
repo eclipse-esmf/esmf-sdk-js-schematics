@@ -15,7 +15,7 @@ import {Rule, SchematicContext} from '@angular-devkit/schematics';
 import {Tree} from '@angular-devkit/schematics/src/tree/interface';
 import {Observable, Subscriber} from 'rxjs';
 import {generate} from '../index';
-import { TypesSchema } from '../../types/schema';
+import {TypesSchema} from '../../types/schema';
 
 export default function (options: TypesSchema): Rule {
     return (tree: Tree, context: SchematicContext) => {

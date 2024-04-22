@@ -141,11 +141,7 @@ async function runPrompts(subscriber: Subscriber<Tree>, tree: Tree, templateHelp
                         allAnswers
                     );
                 case ComponentType.TYPES:
-                    return typesPrompterQuestions(
-                        answerConfigurationFileConfig,
-                        answerAspectModelWithMainAspect,
-                        combineAnswers,
-                    );
+                    return typesPrompterQuestions(answerConfigurationFileConfig, answerAspectModelWithMainAspect, combineAnswers);
                 default:
                     throw new Error('Invalid component type');
             }

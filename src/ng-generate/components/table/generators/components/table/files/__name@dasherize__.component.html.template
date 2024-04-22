@@ -30,8 +30,8 @@
         (applyFilters)="applyFilters()"
         (reloadFilter)="reloadFilter()"
         (exportToCsv)="exportToCsv()"
-        <% if (options.customRowActions.length > 0) { %>
-            (executeCustomCommandBarAction)="customCommandBarActionEvent()"
+        <% if (options.customCommandBarActions.length > 0) { %>
+            (customCommandBarActionEvent)="handleCustomCommandBarActionEvent($event, $event.action)"
         <% } %>
     ></command-bar>
   <% } %>
