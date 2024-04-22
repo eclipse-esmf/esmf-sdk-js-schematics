@@ -20,7 +20,7 @@ import {SelectionModel} from "@angular/cdk/collections";
 <% } %>
 
 @Component({
-    selector: 'command-bar',
+    selector: '<%= dasherize(name) %>-command-bar',
     templateUrl: './<%= dasherize(name) %>-command-bar.component.html',
     styleUrls: ['./<%= dasherize(name) %>-command-bar.component.scss']
 })
