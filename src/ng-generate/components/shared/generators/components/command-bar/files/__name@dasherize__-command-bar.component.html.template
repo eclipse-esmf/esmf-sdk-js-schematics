@@ -60,7 +60,7 @@
                                 (dateChange)="triggerReloadFilter()"
                             <% } %>
                         >
-                        <input data-test="end-date-input" matEndDate [placeholder]="'date.to' | transloco" formControlName="<%= property.propertyName %>To" (dateChange)="triggerReloadFilter()">
+                        <input data-test="end-date-input" matEndDate [placeholder]="'date.to' | transloco" formControlName="toControl" (dateChange)="triggerReloadFilter()">
                     </mat-date-range-input>
                     <mat-datepicker-toggle data-test="datepicker-toggle" matSuffix [for]="<%= property.propertyName %>Picker"></mat-datepicker-toggle>
                         <mat-date-range-picker data-test="date-range-picker" #<%= property.propertyName %>Picker>
@@ -69,17 +69,17 @@
                             <button data-test="date-picker-apply-button" mat-raised-button color="primary" matDateRangePickerApply>{{ 'apply' | transloco }}</button>
                         </mat-date-range-picker-actions>
                     </mat-date-range-picker>
-                    <mat-error *ngIf="filterService.<%= property.propertyName %>Group.get('<%= property.propertyName %>From')?.hasError('matStartDateInvalid')">{{ 'date.fromError' | transloco }}</mat-error>
-                    <mat-error *ngIf="filterService.<%= property.propertyName %>Group.get('<%= property.propertyName %>To')?.hasError('matEndDateInvalid')">{{ 'date.toError' | transloco }}</mat-error>
+                    <mat-error *ngIf="filterService.<%= property.propertyName %>Group.get('fromControl')?.hasError('matStartDateInvalid')">{{ 'date.fromError' | transloco }}</mat-error>
+                    <mat-error *ngIf="filterService.<%= property.propertyName %>Group.get('toControl')?.hasError('matEndDateInvalid')">{{ 'date.toError' | transloco }}</mat-error>
                     <% if (datePickerType(options.datePickers, property) === "startAndEndDatePicker") { %>
-                        <mat-error *ngIf="filterService.<%= property.propertyName %>Group.get('<%= property.propertyName %>From')?.hasError('required')">{{ 'date.fromRequired' | transloco }}</mat-error>
-                        <mat-error *ngIf="filterService.<%= property.propertyName %>Group.get('<%= property.propertyName %>To')?.hasError('required')">{{ 'date.toRequired' | transloco }}</mat-error>
+                        <mat-error *ngIf="filterService.<%= property.propertyName %>Group.get('fromControl')?.hasError('required')">{{ 'date.fromRequired' | transloco }}</mat-error>
+                        <mat-error *ngIf="filterService.<%= property.propertyName %>Group.get('toControl')?.hasError('required')">{{ 'date.toRequired' | transloco }}</mat-error>
                     <% } %>
                 </mat-form-field>
             <% } else if (datePickerType(options.datePickers, property) === "singleDatePicker") { %>
                 <mat-form-field data-test="form-field-date-time" appearance="fill" [formGroup]="filterService.<%= property.propertyName %>Group">
                     <mat-label data-test="date-time-label">{{ '<%= options.versionedAccessPrefix %><%= property.propertyValue %>.preferredName' | transloco }}</mat-label>
-                    <input matInput [matDatepicker]="<%= property.propertyName %>Picker" [placeholder]="'date.from' | transloco" formControlName="<%= property.propertyName %>From" (dateChange)="triggerReloadFilter()">
+                    <input matInput [matDatepicker]="<%= property.propertyName %>Picker" [placeholder]="'date.from' | transloco" formControlName="fromControl" (dateChange)="triggerReloadFilter()">
                     <mat-datepicker-toggle data-test="datepicker-toggle" matIconSuffix [for]="<%= property.propertyName %>Picker"></mat-datepicker-toggle>
                     <mat-datepicker data-test="date-range-picker" #<%= property.propertyName %>Picker>
                         <mat-datepicker-actions data-test="date-range-picker-actions">

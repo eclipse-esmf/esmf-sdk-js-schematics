@@ -165,7 +165,7 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
 
     @ViewChild(MatSort) private sort!: MatSort;
     @ViewChild(MatPaginator) private paginator!: MatPaginator
-    @ViewChild(MatTable) private table!: MatTable<<%= classify(aspectModelName) %>>;
+    @ViewChild(MatTable) private table!: MatTable<<%= classify(aspectModelTypeName) %>>;
     @ViewChild(<%= classify(name) %>ColumnMenuComponent) private columMenuComponent!: <%= classify(name) %>ColumnMenuComponent;
 
     <% if (options.hasSearchBar) { %>
@@ -201,7 +201,7 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
     <% } %>
 
     currentLanguage: string;
-    filteredData: Array<<%= classify(aspectModelName) %>> = [];
+    filteredData: Array<<%= classify(aspectModelTypeName) %>> = [];
     dragging: boolean = false;
     customRowActionsLength: number = <%= options.customRowActions.length %>;
     closeColumnMenu: boolean = false;
@@ -587,7 +587,7 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
                 .map(columnName => {
                     const translatedHeader = this.translateService.translate(`<%= columnTransKeyPrefix %>${columnName}.preferredName`);
                     return translatedHeader !== `<%= columnTransKeyPrefix %>${columnName}.preferredName` ? translatedHeader : columnName;
-                }),
+                }) as string[],
                 data: [],
             });
 
