@@ -325,17 +325,17 @@ function getDateRemote(values: PropValue[]): string {
             if (conditions.length > 0) {
               query.addNode(conditions.length > 1 ? new And(conditions) : conditions[0]);
             }
-    
-            let label = \`\${timeType}:\`;
-        
+
+            let label = this.translateService.translate(\`${sharedOptions.translationPath}\${timeType}.preferredName\`);
+
             if (startDateUTC && endDateUTC) {
-              label += \` \${this.getFormattedDate(startDateUTC)} - \${this.getFormattedDate(endDateUTC.toISOString())}\`;
+              label += \`: \${this.getFormattedDate(startDateUTC)} - \${this.getFormattedDate(endDateUTC.toISOString())}\`;
               this.updateActiveFilters(timeType, label);
             } else if (endDateUTC) {
-              label += \` to \${this.getFormattedDate(endDateUTC.toISOString())}\`;
+              label += \`: to \${this.getFormattedDate(endDateUTC.toISOString())}\`;
               this.updateActiveFilters(timeType, label);
             } else if (startDateUTC) {
-              label += \` from \${this.getFormattedDate(startDateUTC)}\`;
+              label += \`: from \${this.getFormattedDate(startDateUTC)}\`;
               this.updateActiveFilters(timeType, label);
             }
         }
