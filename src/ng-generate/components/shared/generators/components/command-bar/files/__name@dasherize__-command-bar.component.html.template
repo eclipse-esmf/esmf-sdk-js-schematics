@@ -55,7 +55,7 @@
                 <mat-form-field data-test="form-field-date-time" appearance="fill">
                     <mat-label data-test="date-time-label">{{ '<%= options.versionedAccessPrefix %><%= property.propertyValue %>.preferredName' | transloco }}</mat-label>
                     <mat-date-range-input data-test="date-range-input" [rangePicker]="<%= property.propertyName %>Picker" [formGroup]="filterService.<%= property.propertyName %>Group">
-                        <input data-test="start-date-input" matStartDate [placeholder]="'date.from' | transloco" formControlName="<%= property.propertyName %>From"
+                        <input data-test="start-date-input" matStartDate [placeholder]="'date.from' | transloco" formControlName="fromControl"
                             <% if (datePickerType(options.datePickers, property) === "startOrEndDatePicker") { %>
                                 (dateChange)="triggerReloadFilter()"
                             <% } %>

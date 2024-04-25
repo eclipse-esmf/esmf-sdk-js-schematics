@@ -299,50 +299,60 @@ function getDateRemote(values: PropValue[]): string {
             ${activeFilters}
         }
         
-    applyFilterForTime(query: AbstractLogicalNode, timeType: string): void {
-        const conditions = [];
-        const {fromControl, toControl} = (this as any)[\`\${timeType}Group\`].value;
+        applyFilterForTime(query: AbstractLogicalNode, timeType: string): void {
+            const conditions = [];
+            const group = (this as any)[\`\${timeType}Group\`];
+            
+            if (group.invalid) {
+                return;
+            }
+            
+            const {fromControl, toControl} = group.value;
+
+            const startDateUTC: string | null = fromControl ? this.createDateAsUTC(new Date(fromControl)).toISOString() : null;
+            let endDateUTC: Date | null = toControl ? this.createDateAsUTC(new Date(toControl)) : null;
+        
+            if (endDateUTC) {
+              endDateUTC = new Date(endDateUTC.setHours(23, 59, 59, 999));
+            }
+        
+            if (startDateUTC) {
+              conditions.push(new Ge(timeType, \`\${startDateUTC}\`));
+            }
+            if (endDateUTC) {
+              conditions.push(new Le(timeType, \`\${endDateUTC}\`));
+            }
+            if (conditions.length > 0) {
+              query.addNode(conditions.length > 1 ? new And(conditions) : conditions[0]);
+            }
     
-        const startDateUTC: string | null = fromControl ? this.createDateAsUTC(new Date(fromControl)).toISOString() : null;
-        let endDateUTC: Date | null = toControl ? this.createDateAsUTC(new Date(toControl)) : null;
-    
-        if (endDateUTC) {
-          endDateUTC = new Date(endDateUTC.setHours(23, 59, 59, 999));
+            let label = \`\${timeType}:\`;
+        
+            if (startDateUTC && endDateUTC) {
+              label += \` \${this.getFormattedDate(startDateUTC)} - \${this.getFormattedDate(endDateUTC.toISOString())}\`;
+              this.updateActiveFilters(timeType, label);
+            } else if (endDateUTC) {
+              label += \` to \${this.getFormattedDate(endDateUTC.toISOString())}\`;
+              this.updateActiveFilters(timeType, label);
+            } else if (startDateUTC) {
+              label += \` from \${this.getFormattedDate(startDateUTC)}\`;
+              this.updateActiveFilters(timeType, label);
+            }
         }
-    
-        if (startDateUTC) {
-          conditions.push(new Ge(timeType, \`\${startDateUTC}\`));
+        
+        updateActiveFilters(prop: string, label: string) {
+            const filter = this.activeFilters.find(af => af.prop === prop);
+            if (!filter) {
+              this.activeFilters.push(<FilterType>{
+                removable: true,
+                type: FilterEnums.Date,
+                label: label,
+                prop: prop
+              });
+            } else {
+              filter.label = label;
+            }
         }
-        if (endDateUTC) {
-          conditions.push(new Le(timeType, \`\${endDateUTC}\`));
-        }
-        if (conditions.length > 0) {
-          query.addNode(conditions.length > 1 ? new And(conditions) : conditions[0]);
-        }
-    
-        const filterIndex = this.activeFilters.findIndex(af => af.prop === timeType);
-    
-        let label = \`\${timeType}:\`;
-    
-        if (startDateUTC && endDateUTC) {
-          label += \` \${this.getFormattedDate(startDateUTC)} - \${this.getFormattedDate(endDateUTC.toISOString())}\`;
-        } else if (endDateUTC) {
-          label += \` to \${this.getFormattedDate(endDateUTC.toISOString())}\`;
-        } else if (startDateUTC) {
-          label += \` from \${this.getFormattedDate(startDateUTC)}\`;
-        }
-    
-        if (filterIndex === -1) {
-          this.activeFilters.push({
-            removable: true,
-            type: FilterEnums.Date,
-            label,
-            prop: timeType,
-          });
-        } else {
-          this.activeFilters[filterIndex].label = label;
-        }
-      }
     `;
 }
 
