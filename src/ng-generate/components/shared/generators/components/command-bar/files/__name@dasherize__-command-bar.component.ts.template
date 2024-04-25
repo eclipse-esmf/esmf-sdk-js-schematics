@@ -20,7 +20,7 @@ import {SelectionModel} from "@angular/cdk/collections";
 <% } %>
 
 @Component({
-    selector: 'command-bar',
+    selector: '<%= dasherize(name) %>-command-bar',
     templateUrl: './<%= dasherize(name) %>-command-bar.component.html',
     styleUrls: ['./<%= dasherize(name) %>-command-bar.component.scss']
 })
@@ -75,7 +75,7 @@ export class <%= classify(name) %>CommandBarComponent {
     }
 
     triggerReloadFilter(): void {
-        <%= checkAndEmitReload %>
+      this.reloadFilter.emit();
     }
 
     <% if (options.componentType === 'card') { %>
@@ -103,8 +103,7 @@ export class <%= classify(name) %>CommandBarComponent {
     <% } %>
 
     <% if (options.customCommandBarActions.length > 0) { %>
-        executeCustomCommandBarAction($event: MouseEvent, action: string) {
-            $event.stopPropagation()
+        executeCustomCommandBarAction(action: string) {
             this.customCommandBarActionEvent.emit({action: action})
         }
     <% } %>

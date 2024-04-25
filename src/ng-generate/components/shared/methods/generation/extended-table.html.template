@@ -121,8 +121,9 @@
                         [matMenuTriggerFor]="columnMenu"
                         (menuOpened)="initOpenedColumnMenuDialog()"
                         aria-label="Menu for the table"
-                        class="mat-table-menu-button">
-                            <mat-icon data-test="mat-table-menu-icon" [matTooltip]="'tableActions.openColumnsMenu' | transloco" class="material-icons">settings</mat-icon>
+                        class="mat-table-menu-button"
+                        [matTooltip]="'tableActions.openColumnsMenu' | transloco">
+                            <mat-icon data-test="mat-table-menu-icon" class="material-icons">settings</mat-icon>
                     </button>
                 </th>
 

@@ -3,7 +3,7 @@ import {Component, EventEmitter, Output} from '@angular/core';
 import {FilterEnums, FilterType, <%= classify(name) %>FilterService} from './<%= dasherize(name) %>-filter.service';
 
 @Component({
-    selector: 'chip-list',
+    selector: '<%= dasherize(name) %>-chip-list',
     templateUrl: './<%= dasherize(name) %>-chip-list.component.html',
     styleUrls: ['./<%= dasherize(name) %>-chip-list.component.scss']
 })

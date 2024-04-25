@@ -1,16 +1,16 @@
 <div class="js-sdk-component-container">
     <% if (options.addCommandBar) { %>
-      <command-bar
+      <<%= dasherize(name) %>-command-bar
         [totalItems]="totalItems"
         (applyFilters)="applyFilters()"
         (reloadFilter)="reloadFilter()"
         (exportToCsv)="openExportConfirmationDialog()"
         (sorting)="sorting()">
-      </command-bar>
+      </<%= dasherize(name) %>-command-bar>
     <% } %>
 
     <% if (options.hasFilters) { %>
-        <chip-list (removeFilter)="removeFilter($event)"></chip-list>
+        <<%= dasherize(name) %>-chip-list (removeFilter)="removeFilter($event)"></<%= dasherize(name) %>-chip-list>
     <% } %>
 
   <mat-card class="data-card"

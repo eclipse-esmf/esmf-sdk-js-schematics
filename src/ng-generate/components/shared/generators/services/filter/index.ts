@@ -138,8 +138,8 @@ function setEnumQuickFilter(values: PropValue[]) {
         ${value.propertyName}Options: Array<any> = ${
         value.enumWithEntities
             ? `${classify(value.characteristic)}.getValueDescriptionList('${
-                value.complexPropObj ? value.complexPropObj.complexProp + '.' : ''
-            }${value.property.name}')`
+                  value.complexPropObj ? value.complexPropObj.complexProp + '.' : ''
+              }${value.property.name}')`
             : `Object.values(${classify(value.characteristic)})`
     };`;
 
@@ -169,26 +169,26 @@ function setDateFormGroups(values: PropValue[]) {
 
 function setDateQuickFilters(values: PropValue[]) {
     const template = (value: any) => {
-        const datePicker = sharedOptions.datePickers?.find((element: any) =>
-            element.propertyUrn === value.property.aspectModelUrn)?.datePicker.type;
+        const datePicker = sharedOptions.datePickers?.find((element: any) => element.propertyUrn === value.property.aspectModelUrn)
+            ?.datePicker.type;
 
         if (sharedOptions.isDateQuickFilter && datePicker) {
             const required = datePicker === 'startAndEndDatePicker' ? ', Validators.required' : '';
 
             return `this.${value.propertyName}Group = this.fb.group({
-                ${value.propertyName}From: [null${required}],
-                ${value.propertyName}To: [null${required}]
-            });`
+                fromControl: [null${required}],
+                toControl: [null${required}]
+            });`;
         }
 
         return '';
-    }
+    };
 
     return values.map(template).join('');
 }
 
 function datePickerType(datePickers: Array<DatePicker>, property: Property): string | undefined {
-    return
+    return;
 }
 
 function setDataRemoveFilter(values: PropValue[]) {
@@ -288,66 +288,84 @@ const getChipLabelEnum = (filterProp: PropValue) => {
 };
 
 function getDateRemote(values: PropValue[]): string {
-    const template = (value: any) => `
-            const conditions = [];
-            const {${value.propertyName}To, ${value.propertyName}From} = this[\`${value.propertyName}Group\`].value;
+    const template = (value: any) => ` 
+        this.applyFilterForTime(query, '${value.propertyName}');
+    `;
 
-            const ${value.propertyName}StartDateUTC: Date | null = ${value.propertyName}From ? this.createDateAsUTC(new Date(${value.propertyName}From)).toISOString() : null;
-            let ${value.propertyName}EndDateUTC: Date | null = ${value.propertyName}To ? this.createDateAsUTC(new Date(${value.propertyName}To)) : null;
-
-            if (${value.propertyName}EndDateUTC) {
-                ${value.propertyName}EndDateUTC = new Date(endDate.setHours(23, 59, 59, 999));
-                ${value.propertyName}EndDateUTC = endDate.toISOString();
-            }
-
-            if (${value.propertyName}StartDateUTC) {
-                conditions.push(new Ge(\`${sharedOptions.jsonAccessPath}${value.propertyValue}\`, \`\${${value.propertyName}StartDateUTC}\`));
-            }
-            if (${value.propertyName}EndDateUTC) {
-                conditions.push(new Le(\`${sharedOptions.jsonAccessPath}${value.propertyValue}\`, \`\${${value.propertyName}EndDateUTC}\`));
-            }
-            if (conditions.length > 0) {
-                query.addNode(conditions.length > 1 ? new And(conditions) : conditions[0]);
-            }
-
-            const filterIndex = this.activeFilters.findIndex(af => af.prop === value.propertyValue);
-
-            let label = \`${value.propertyValue}:\`;
-
-            if (${value.propertyName}StartDateUTC && ${value.propertyName}EndDateUTC) {
-               label += \` \${this.getFormattedDate(${value.propertyName}StartDateUTC)} - \${this.getFormattedDate(${value.propertyName}EndDateUTC)}\`;
-            } else if (${value.propertyName}EndDateUTC) {
-               label += \` to \${this.getFormattedDate(${value.propertyName}EndDateUTC)}\`;
-            } else if (${value.propertyName}StartDateUTC) {
-                label += \` from \${this.getFormattedDate(${value.propertyName}StartDateUTC)}\`;
-            }
-        
-            if (filterIndex === -1) {
-                this.activeFilters.push({
-                    removable: true,
-                    type: FilterEnums.Date,
-                    label,
-                    prop: value.propertyValue
-                });
-            } else {
-               this.activeFilters[filterIndex].label = label;
-            }
-        }`;
-
-    const formattedValues = values.map(template).join('');
+    const activeFilters = values.map(template).join('');
 
     return `
         applyDateFilter(query: AbstractLogicalNode): void {
-            ${formattedValues}
-        }`;
+            ${activeFilters}
+        }
+        
+        applyFilterForTime(query: AbstractLogicalNode, timeType: string): void {
+            const conditions = [];
+            const group = (this as any)[\`\${timeType}Group\`];
+            
+            if (group.invalid) {
+                return;
+            }
+            
+            const {fromControl, toControl} = group.value;
+
+            const startDateUTC: string | null = fromControl ? this.createDateAsUTC(new Date(fromControl)).toISOString() : null;
+            let endDateUTC: Date | null = toControl ? this.createDateAsUTC(new Date(toControl)) : null;
+        
+            if (endDateUTC) {
+              endDateUTC = new Date(endDateUTC.setHours(23, 59, 59, 999));
+            }
+        
+            if (startDateUTC) {
+              conditions.push(new Ge(timeType, \`\${startDateUTC}\`));
+            }
+            if (endDateUTC) {
+              conditions.push(new Le(timeType, \`\${endDateUTC}\`));
+            }
+            if (conditions.length > 0) {
+              query.addNode(conditions.length > 1 ? new And(conditions) : conditions[0]);
+            }
+
+            let label = this.translateService.translate(\`${sharedOptions.translationPath}\${timeType}.preferredName\`);
+
+            if (startDateUTC && endDateUTC) {
+              label += \`: \${this.getFormattedDate(startDateUTC)} - \${this.getFormattedDate(endDateUTC.toISOString())}\`;
+              this.updateActiveFilters(timeType, label);
+            } else if (endDateUTC) {
+              label += \`: to \${this.getFormattedDate(endDateUTC.toISOString())}\`;
+              this.updateActiveFilters(timeType, label);
+            } else if (startDateUTC) {
+              label += \`: from \${this.getFormattedDate(startDateUTC)}\`;
+              this.updateActiveFilters(timeType, label);
+            }
+        }
+        
+        updateActiveFilters(prop: string, label: string) {
+            const filter = this.activeFilters.find(af => af.prop === prop);
+            if (!filter) {
+              this.activeFilters.push(<FilterType>{
+                removable: true,
+                type: FilterEnums.Date,
+                label: label,
+                prop: prop
+              });
+            } else {
+              filter.label = label;
+            }
+        }
+    `;
 }
 
 function getDateNotRemote(values: PropValue[]): string {
     const dateFilterLogic = (value: any, index: number) => `
     const {${value.propertyName}From, ${value.propertyName}To} = this.${value.propertyName}Group.value;
 
-    const ${value.propertyName}StartDate: Date | null = ${value.propertyName}From ? this.createDateAsUTC(new Date(${value.propertyName}From)) : null;
-    let ${value.propertyName}EndDate: Date | null = ${value.propertyName}To ? this.createDateAsUTC(new Date(${value.propertyName}To)) : null;
+    const ${value.propertyName}StartDate: Date | null = ${value.propertyName}From ? this.createDateAsUTC(new Date(${
+        value.propertyName
+    }From)) : null;
+    let ${value.propertyName}EndDate: Date | null = ${value.propertyName}To ? this.createDateAsUTC(new Date(${
+        value.propertyName
+    }To)) : null;
 
     if (${value.propertyName}EndDate) {
         ${value.propertyName}EndDate = new Date(${value.propertyName}EndDate.setHours(23, 59, 59, 999));
@@ -355,15 +373,23 @@ function getDateNotRemote(values: PropValue[]): string {
  
     ${filteredData(values, index)}.filter(item => {
         const itemDate = new Date(item.${value.propertyValue});
-        return (!${value.propertyName}StartDate || itemDate >= ${value.propertyName}StartDate) && (!${value.propertyName}EndDate || itemDate <= ${value.propertyName}EndDate);
+        return (!${value.propertyName}StartDate || itemDate >= ${value.propertyName}StartDate) && (!${
+        value.propertyName
+    }EndDate || itemDate <= ${value.propertyName}EndDate);
     });
 
     if (${value.propertyName}StartDate && ${value.propertyName}EndDate) {
-        this.updateActiveFilters('${value.propertyValue}', \`${value.propertyValue}: \${this.getFormattedDate(${value.propertyName}StartDate.toISOString())} - \${this.getFormattedDate(${value.propertyName}EndDate.toISOString())}\`);
+        this.updateActiveFilters('${value.propertyValue}', \`${value.propertyValue}: \${this.getFormattedDate(${
+        value.propertyName
+    }StartDate.toISOString())} - \${this.getFormattedDate(${value.propertyName}EndDate.toISOString())}\`);
     } else if (${value.propertyName}EndDate) {
-        this.updateActiveFilters('${value.propertyValue}', \`${value.propertyValue}: until \${this.getFormattedDate(${value.propertyName}EndDate.toISOString())}\`);
+        this.updateActiveFilters('${value.propertyValue}', \`${value.propertyValue}: until \${this.getFormattedDate(${
+        value.propertyName
+    }EndDate.toISOString())}\`);
     } else if (${value.propertyName}StartDate) {
-        this.updateActiveFilters('${value.propertyValue}', \`${value.propertyValue}: from \${this.getFormattedDate(${value.propertyName}StartDate.toISOString())}\`);
+        this.updateActiveFilters('${value.propertyValue}', \`${value.propertyValue}: from \${this.getFormattedDate(${
+        value.propertyName
+    }StartDate.toISOString())}\`);
     }`;
 
     return `
@@ -397,5 +423,5 @@ function filteredData(values: PropValue[], index: number): string {
         return 'let filteredData = data';
     }
 
-    return 'filteredData = filteredData'
+    return 'filteredData = filteredData';
 }

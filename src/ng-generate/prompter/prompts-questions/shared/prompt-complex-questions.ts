@@ -30,7 +30,7 @@ import {
     DefaultStructuredValue,
     DefaultTrait,
     Entity,
-    Property,
+    Property
 } from '@esmf/aspect-model-loader';
 import {ComponentType, Schema} from '../../../components/shared/schema';
 import {TemplateHelper} from '../../../../utils/template-helper';
@@ -135,19 +135,22 @@ export const requestChooseDatePickerType = (property: Property) => ({
     type: 'list',
     name: 'type',
     message: `Property ${property.name} is an date type. Choose which type of date picker you want to display:`,
-    choices: () => [{
-        name: 'Single Date Picker',
-        value: 'singleDatePicker'
-    }, {
-        name: 'Date Range Picker with single date option',
-        value: 'startOrEndDatePicker'
-    }, {
-        name: 'Date Range Picker without single date option',
-        value: 'startAndEndDatePicker'
-    }],
+    choices: () => [
+        {
+            name: 'Single Date Picker',
+            value: 'singleDatePicker',
+        },
+        {
+            name: 'Date Range Picker with single date option',
+            value: 'startOrEndDatePicker',
+        },
+        {
+            name: 'Date Range Picker without single date option',
+            value: 'startAndEndDatePicker',
+        },
+    ],
     default: '',
 });
-
 
 export const requestOptionalMaterialTheme = (options: Schema) => ({
     type: 'confirm',
@@ -194,7 +197,7 @@ export const customCommandBarActions = (answers: any, templateHelper: TemplateHe
 
 export const requestAspectModelWithAspect = (allAnswers: any) => ({
     type: 'list',
-    name: 'aspectModelUrnToLoad',
+    name: 'aspectModelUrnToLoad', // TODO change this to aspectModelFilePath or something similar ...
     message: 'Choose the .ttl file which includes the Aspect to load:',
     choices: allAnswers.aspectModelTFiles,
     when: () => allAnswers.aspectModelTFiles?.length > 1,
@@ -373,7 +376,12 @@ function getAspectAndEntities(aspect: Aspect, type: string) {
  * @param {Aspect} aspect - The aspect to consider when resolving the type and fetching properties.
  * @returns {Array<Property>} - A filtered list of complex properties from the selected model element.
  */
-export function extractComplexPropertyDetails(templateHelper: TemplateHelper, answers: any, allAnswers: any, aspect: Aspect): Array<Property> {
+export function extractComplexPropertyDetails(
+    templateHelper: TemplateHelper,
+    answers: any,
+    allAnswers: any,
+    aspect: Aspect
+): Array<Property> {
     allAnswers.selectedModelElementUrn = answers.selectedModelElementUrn || templateHelper.resolveType(aspect).aspectModelUrn;
 
     const properties = templateHelper.getProperties({
@@ -381,7 +389,7 @@ export function extractComplexPropertyDetails(templateHelper: TemplateHelper, an
         excludedProperties: [],
     });
 
-    return properties.filter(property => property.effectiveDataType?.isComplex && property.characteristic instanceof DefaultSingleEntity)
+    return properties.filter(property => property.effectiveDataType?.isComplex && property.characteristic instanceof DefaultSingleEntity);
 }
 
 function getAllConstraints(allAnswers: any, templateHelper: TemplateHelper, answers: any, aspect: Aspect): Constraint[] {
@@ -467,7 +475,6 @@ export async function extractPropertyElements(generationType: string, complexPro
 async function complexPropertyElementsPrompt(generationType: string, property: Property): Promise<any> {
     return inquirer.prompt([requestComplexPropertyElements(generationType, property)]);
 }
-
 
 /**
  * Gathers date picker types for date-time properties of a selected model element. It determines the

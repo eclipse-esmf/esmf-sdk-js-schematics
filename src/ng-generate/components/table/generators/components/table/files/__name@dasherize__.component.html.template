@@ -13,7 +13,7 @@
 
 <div class="js-sdk-component-container">
   <% if (options.addCommandBar) { %>
-    <command-bar
+    <<%= dasherize(name) %>-command-bar
         [isMultipleSelectionEnabled]="isMultipleSelectionEnabled"
         [selection]="selection"
         [totalItems]="totalItems"
@@ -30,16 +30,16 @@
         (applyFilters)="applyFilters()"
         (reloadFilter)="reloadFilter()"
         (exportToCsv)="exportToCsv()"
-        <% if (options.customRowActions.length > 0) { %>
-            (executeCustomCommandBarAction)="customCommandBarActionEvent()"
+        <% if (options.customCommandBarActions.length > 0) { %>
+            (customCommandBarActionEvent)="handleCustomCommandBarActionEvent($event.action)"
         <% } %>
-    ></command-bar>
+    ></<%= dasherize(name) %>-command-bar>
   <% } %>
   <ng-container *ngIf="!!customTemplate && !dataSource.data.length">
     <ng-container *ngTemplateOutlet="loadCustomTemplate()"></ng-container>
   </ng-container>
   <% if (options.hasFilters) { %>
-    <chip-list (removeFilter)="removeFilter($event)"></chip-list>
+    <<%= dasherize(name) %>-chip-list (removeFilter)="removeFilter($event)"></<%= dasherize(name) %>-chip-list>
   <% } %>
 
   <%= options.include('/generation/extended-table.html.template') %>
