@@ -105,77 +105,23 @@ function generateKey(name: string): string {
  * @param {Schema} options - Schema options object that contains additional information.
  * @returns {Array<{property: Property; index: number; complexPrefix: string}>} - Returns an array of objects containing property details, index, and complexPrefix.
  */
-// export function getTableColumValues(
-//     allProps: Array<Property>,
-//     options: Schema
-// ): Array<{
-//     property: Property;
-//     index: number;
-//     complexPrefix: string;
-// }> {
-//     return allProps.flatMap((property: Property, index: number) => {
-//         if (property.effectiveDataType?.isComplex && property.characteristic instanceof DefaultSingleEntity) {
-//             const complexPropObj = options.templateHelper.getComplexProperties(property, options);
-//             return complexPropObj.properties.map((complexProp: Property, index: number) => {
-//                 return {property: complexProp, index: index, complexPrefix: `${complexPropObj.complexProp}.`};
-//             });
-//         }
-
-//         return [{property: property, index: index, complexPrefix: ''}];
-//     });
-// }
-
-/**
- * Retrieves table column values based on the provided properties and schema options.
- *
- * @param {Array<Property>} allProps - Array of all properties for the table columns.
- * @param {Schema} options - Schema options object that contains additional information.
- * @returns {Array<{property: Property; index: number; complexPrefix: string; propertyHasEntityInstances: boolean | undefined}>} - Returns an array of objects containing property details, index, complexPrefix and isComplexType.
- */
 export function getTableColumValues(
     allProps: Array<Property>,
     options: Schema
-): (
-    | {property: Property; index: number; complexPrefix: string; propertyHasEntityInstances: boolean}
-    | {
-          property: Property;
-          index: number;
-          complexPrefix: string;
-          propertyHasEntityInstances: boolean;
-      }
-)[] {
+): Array<{
+    property: Property;
+    index: number;
+    complexPrefix: string;
+}> {
     return allProps.flatMap((property: Property, index: number) => {
-        if (
-            property.effectiveDataType?.isComplex &&
-            property.characteristic instanceof DefaultSingleEntity &&
-            !(property.characteristic instanceof DefaultEntityInstance)
-        ) {
+        if (property.effectiveDataType?.isComplex && property.characteristic instanceof DefaultSingleEntity) {
             const complexPropObj = options.templateHelper.getComplexProperties(property, options);
             return complexPropObj.properties.map((complexProp: Property, index: number) => {
-                return {
-                    property: complexProp,
-                    index: index,
-                    complexPrefix: `${complexPropObj.complexProp}`,
-                    propertyHasEntityInstances: false,
-                };
+                return {property: complexProp, index: index, complexPrefix: `${complexPropObj.complexProp}.`};
             });
         }
 
-        let hasEntityInstances: boolean = false;
-        if (property.characteristic instanceof DefaultEnumeration) {
-            if (property.characteristic.values[0] instanceof DefaultEntityInstance) {
-                hasEntityInstances = true;
-            }
-        }
-
-        return [
-            {
-                property: property,
-                index: index,
-                complexPrefix: '',
-                propertyHasEntityInstances: hasEntityInstances,
-            },
-        ];
+        return [{property: property, index: index, complexPrefix: ''}];
     });
 }
 

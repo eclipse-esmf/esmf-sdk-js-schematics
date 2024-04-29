@@ -281,19 +281,11 @@ export class TemplateHelper {
      * @returns {boolean} True if the property is an enumeration with entity values property.
      */
     isEnumPropertyWithEntityValues(property: Property) { 
+        if (property.characteristic instanceof DefaultEnumeration && property.characteristic.values[0] instanceof DefaultEntityInstance) {
+            return false;
+        }
        return this.isEnumProperty(property) && property.effectiveDataType instanceof DefaultEntity;
     }
-
-    /**
-     * Returns true if the given property is an enumeration property with entity values.
-     *
-     * @param {Property} property The property to check.
-     * @returns {boolean} True if the property is an enumeration with simple entity values property.
-     */
-    isEnumPropertyWithSimpleEntityValues(property: Property) { 
-        return false;
-    }
-    
 
     /**
      * Returns true if the given property is a string property.

@@ -46,7 +46,6 @@ export interface FolderPathProvider {
  * @param fileFilter name of files to format
  */
 export function formatGeneratedFiles(folderProvider: FolderPathProvider, options: DefaultSchema, fileFilter?: Array<string>): Rule {
-    options.spinner.succeed('formatGeneratedFiles larisaaaaaaaaaaaaaaa');
     return async (tree: Tree, context: SchematicContext) => {
         try {
             const folderPath = folderProvider.getPath(options);
@@ -60,7 +59,6 @@ export function formatGeneratedFiles(folderProvider: FolderPathProvider, options
                 }
             });
         } catch (err) {
-            options.spinner.succeed('formatGeneratedFiles larisaaaaaaaaaaaaaaa');
             options.spinner.fail(`Error error while trying to format the generated files (${err})`);
         }
     };
