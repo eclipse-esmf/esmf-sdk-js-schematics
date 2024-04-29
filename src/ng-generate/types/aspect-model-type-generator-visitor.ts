@@ -181,8 +181,6 @@ export class AspectModelTypeGeneratorVisitor extends DefaultAspectModelVisitor<B
     visitEntity(entity: DefaultEntity, context: any): BaseMetaModelElement {
         const lines = [];
 
-        this.options.spinner.succeed(`in visitEntity ++++++++++++++ ${entity.name}`);
-
         lines.push(this.getJavaDoc(entity));
         lines.push(`export interface ${entity.name} ${entity.extends ? `extends ${entity.extends?.name}` : ''} {\n`);
 
@@ -225,8 +223,6 @@ export class AspectModelTypeGeneratorVisitor extends DefaultAspectModelVisitor<B
         }
 
         if (dataTypeEntityProperty !== undefined && enumeration.dataType && enumeration.dataType.isComplex) {
-            this.options.spinner.succeed(`blaaaaaaaaaa ${dataTypeEntityProperty.name}`);
-            this.options.spinner.succeed(`enumeration.name ${enumeration.name} ${enumeration.getPreferredName}`);
             lines.push(`export class ${classify(enumeration.name)} {\n`);
 
             const versionedAccessPrefix = (this.options as any).templateHelper.getVersionedAccessPrefix(this.options as any)
