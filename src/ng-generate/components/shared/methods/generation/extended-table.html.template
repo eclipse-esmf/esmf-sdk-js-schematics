@@ -34,14 +34,14 @@
             <% for(let value of tableColumValuesFunc) { %>
                 <%
                     let language = options.templateHelper.isMultiStringProperty(value.property) ? '[currentLanguage]' : '';
-                    let propertyName = options.templateHelper.isEnumPropertyWithEntityValues(value.property)
+                    let propertyName = options.templateHelper.isEnumPropertyWithSimpleEntityValues(value.property)
                         ? value.property.name + '?.' + options.templateHelper.getEnumEntityInstancePayloadKey(value.property)
                         : value.property.name;
                     let cellPropertyPath = `${options.jsonAccessPath}${value.complexPrefix}${propertyName}`;
                     let isEmptyValue = `row.${cellPropertyPath} === null || row.${cellPropertyPath} === undefined`;
                     let propertyLocaleKeyPath = `${options.templateHelper.getVersionedAccessPrefix(options)}${options.isAspectSelected ? options.jsonAccessPath : ''}${value.complexPrefix}${value.property.name}`;
                     let datePipe = options.templateHelper.isDateTimeProperty(value.property) ? `| date: ${options.resolveDateTimeFormat(options, value.property)}` : '';
-                    let descriptionPipe = options.templateHelper.isEnumPropertyWithEntityValues(value.property) ? ` | showDescription:get${classify(value.property.name)}Value` : '';
+                    let descriptionPipe = options.templateHelper.isEnumPropertyWithSimpleEntityValues(value.property) ? ` | showDescription:get${classify(value.property.name)}Value` : '';
                     let cellContent = `!(${isEmptyValue}) ? (row.${cellPropertyPath}${descriptionPipe}${language}${datePipe})  : '-'`;
                 %>
 

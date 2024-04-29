@@ -1,0 +1,71 @@
+
+
+@prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.1.0#> .
+@prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.1.0#> .
+@prefix samm-e: <urn:samm:org.eclipse.esmf.samm:entity:2.1.0#> .
+@prefix unit: <urn:samm:org.eclipse.esmf.samm:unit:2.1.0#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix : <urn:samm:org.eclipse.examples:1.0.0#> .
+
+:ComplaintCodeTestAspect a samm:Aspect ;
+   samm:properties ( :complaintMode :aboutComplaintModeInfo ) ;
+   samm:operations ( ) ;
+   samm:events ( ) .
+
+:complaintMode a samm:Property ;
+   samm:preferredName "Complaint Mode"@en ;
+   samm:description "Mode of complaint"@en ;
+   samm:characteristic :ComplaintModes .
+
+:aboutComplaintModeInfo a samm:Property ;
+   samm:characteristic :Characteristic3 .
+
+:ComplaintModes a samm-c:Enumeration ;
+   samm:preferredName "Complaint Modes"@en ;
+   samm:description "The collection of known complaint modes"@en ;
+   samm:dataType :ComplaintMode ;
+   samm-c:values ( :Complaint10 :Complaint20 :someNewEntityInstance ) .
+
+:Characteristic3 a samm:Characteristic ;
+   samm:dataType xsd:string .
+
+:ComplaintMode a samm:Entity ;
+   samm:preferredName "Complaint Mode"@en ;
+   samm:description "Complaint mode with code and description"@en ;
+   samm:properties ( :complaintModeCode [ samm:property :complaintModeDescription; samm:notInPayload true ] ) .
+
+:Complaint10 a :ComplaintMode ;
+   :complaintModeCode "10"^^xsd:positiveInteger ;
+   :complaintModeDescription ( "0-km, vorsorgliche Nacharbeit/Rückname"@de "0-mlg, provisional rework/accept. back"@en ) .
+
+:Complaint20 a :ComplaintMode ;
+   :complaintModeCode "20"^^xsd:positiveInteger ;
+   :complaintModeDescription ( "0-km, unverbaut"@de "0-km, uninstalled"@en ) .
+
+:someNewEntityInstance a :ComplaintMode ;
+   :complaintModeCode "97"^^xsd:positiveInteger ;
+   :complaintModeDescription ( "romanian"@ro-ro ) .
+
+:complaintModeCode a samm:Property ;
+   samm:preferredName "Complaint Mode Code"@en ;
+   samm:description "Code for complaint mode"@en ;
+   samm:characteristic :ComplaintModeCode .
+
+:complaintModeDescription a samm:Property ;
+   samm:preferredName "Complaint Mode Description"@en ;
+   samm:description "Description of complaint mode"@en ;
+   samm:characteristic :ComplaintModeDescription .
+
+:ComplaintModeCode a samm-c:Enumeration ;
+   samm:preferredName "Complaint Mode Code"@en ;
+   samm:description "Code of complaint mode"@en ;
+   samm:dataType xsd:positiveInteger ;
+   samm-c:values ( "10"^^xsd:positiveInteger "20"^^xsd:positiveInteger "21"^^xsd:positiveInteger "30"^^xsd:positiveInteger "35"^^xsd:positiveInteger "40"^^xsd:positiveInteger "41"^^xsd:positiveInteger "42"^^xsd:positiveInteger "43"^^xsd:positiveInteger "50"^^xsd:positiveInteger "60"^^xsd:positiveInteger "61"^^xsd:positiveInteger "70"^^xsd:positiveInteger "75"^^xsd:positiveInteger ) .
+
+:ComplaintModeDescription a samm-c:Collection ;
+   samm:preferredName "Complaint Mode Description"@en ;
+   samm:description "Descriptions of complaint codes in English and German"@en ;
+   samm:dataType rdf:langString .
+

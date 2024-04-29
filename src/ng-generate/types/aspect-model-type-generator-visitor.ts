@@ -89,7 +89,9 @@ export class AspectModelTypeGeneratorVisitor extends DefaultAspectModelVisitor<B
         lines.push(this.getJavaDoc(aspect));
         lines.push(`export interface ${aspect.name} {\n`);
 
+        this.options.spinner.succeed(`aspect.properties.length ${aspect.properties.length}`);
         aspect.properties.forEach(property => {
+      
             // Visit the property to eventually generate a new data type and return
             // the appropriate data type name.
             const dataType =
@@ -120,9 +122,96 @@ export class AspectModelTypeGeneratorVisitor extends DefaultAspectModelVisitor<B
 
         lines.push(this.getJavaDoc(enumeration));
 
+        if (enumeration.values[0] instanceof DefaultEntityInstance) {
+            if (enumeration.dataType?.urn) {
+                const entityInstancesNamesWithValues:any[] = [];
+                if (enumeration.values.length > 0) {
+                    const entityInstances = enumeration.values as DefaultEntityInstance[];
+                    entityInstances.forEach((entityInstance: DefaultEntityInstance) => {                       
+                        entityInstancesNamesWithValues.push({name:entityInstance.name, value: this.getEntityInstanceValues(entityInstance)});
+                    });
+                }
+                lines.push(`export enum ${enumeration.name}  {\n`);
+                entityInstancesNamesWithValues.forEach(item => {
+                    lines.push(`${item.name} = '${item.value}' ,\n`);
+                })
+                lines.push(`}\n\n`);
+                this.typeDefinitions = this.typeDefinitions.set(enumeration.name, lines);
+            }
+        } else {
+            this.getValues(enumeration, lines);
+            this.typeDefinitions = this.typeDefinitions.set(enumeration.name, lines);
+        }
+
+        return enumeration;
+    }
+
+    getEntityInstanceValues(obj: any) {
+        const defaultEntityInheritedProps = ['_metaModelType', '_name', '_descriptions', 'type'];
+
+        const filteredProps = Object.getOwnPropertyNames(obj).filter(prop => !defaultEntityInheritedProps.includes(prop));
+        const stringWithValues:any = [];
+        filteredProps.forEach(prop => {
+            const propObject = obj[prop];
+            if(Array.isArray(propObject)) {
+                if(propObject.length === 1){
+                    stringWithValues.push(propObject[0].value);
+                }else{
+                    // we want only English: 'en' if English is not present we select another language 
+                    const filteredItem = propObject.filter(item => item.language === "en" || item.language.startsWith('en-'));
+                    if(filteredItem){
+                        stringWithValues.push(filteredItem[0].value);
+                    }else{
+                        stringWithValues.push(propObject[0].value);
+                    }                  
+                }             
+            } else {
+                stringWithValues.push(propObject);
+            }
+        });
+
+        return stringWithValues.join(' : ');
+    }
+
+    extractTextAfterChar(inputString: string, char: any) {
+        const parts = inputString.split(char);
+        return parts.length > 1 ? parts[1] : 'Character not found.';
+    }
+
+    visitEntity(entity: DefaultEntity, context: any): BaseMetaModelElement {
+        const lines = [];
+
+        this.options.spinner.succeed(`in visitEntity ++++++++++++++ ${entity.name}`);
+
+        lines.push(this.getJavaDoc(entity));
+        lines.push(`export interface ${entity.name} ${entity.extends ? `extends ${entity.extends?.name}` : ''} {\n`);
+
+        entity.getOwnProperties().forEach((property: Property): void => {
+            const dataTypeName = resolveJsPropertyType(property) || 'any';
+            let variableName = '';
+            if (property.name) {
+                variableName = camelize(property.name);
+            }
+
+            if (dataTypeName) {
+                lines.push(this.getJavaDoc(property));
+                lines.push(`${variableName}${property.isOptional ? '?' : ''}: ${dataTypeName}${dataTypeName.includes(';') ? '' : ';'}\n`);
+            }
+        });
+
+        lines.push(`}\n\n`);
+
+        this.typeDefinitions = this.typeDefinitions.set(entity.name, lines);
+
+        return entity;
+    }
+
+    private getValues(enumeration: Enumeration, lines: Array<any>) {
         let dataTypeEntityProperty: Property | undefined;
         if (enumeration.dataType) {
+            this.options.spinner.succeed(`enumeration.dataType.urn ${enumeration.dataType.urn}`);
             if (enumeration.dataType.isComplex) {
+                this.options.spinner.succeed(`enumeration.dataType.isComplex ${enumeration.dataType.isComplex}`);
                 const dataTypeEntity = enumeration.dataType as Entity;
                 // Find the property that actually specifies the property name to generate the enum values from
                 dataTypeEntityProperty = dataTypeEntity.properties.find(property => {
@@ -136,6 +225,8 @@ export class AspectModelTypeGeneratorVisitor extends DefaultAspectModelVisitor<B
         }
 
         if (dataTypeEntityProperty !== undefined && enumeration.dataType && enumeration.dataType.isComplex) {
+            this.options.spinner.succeed(`blaaaaaaaaaa ${dataTypeEntityProperty.name}`);
+            this.options.spinner.succeed(`enumeration.name ${enumeration.name} ${enumeration.getPreferredName}`);
             lines.push(`export class ${classify(enumeration.name)} {\n`);
 
             const versionedAccessPrefix = (this.options as any).templateHelper.getVersionedAccessPrefix(this.options as any)
@@ -216,36 +307,6 @@ export class AspectModelTypeGeneratorVisitor extends DefaultAspectModelVisitor<B
         }
 
         lines.push(`}\n\n`);
-
-        this.typeDefinitions = this.typeDefinitions.set(enumeration.name, lines);
-
-        return enumeration;
-    }
-
-    visitEntity(entity: DefaultEntity, context: any): BaseMetaModelElement {
-        const lines = [];
-
-        lines.push(this.getJavaDoc(entity));
-        lines.push(`export interface ${entity.name} ${entity.extends ? `extends ${entity.extends?.name}` : ''} {\n`);
-
-        entity.getOwnProperties().forEach((property: Property): void => {
-            const dataTypeName = resolveJsPropertyType(property) || 'any';
-            let variableName = '';
-            if (property.name) {
-                variableName = camelize(property.name);
-            }
-
-            if (dataTypeName) {
-                lines.push(this.getJavaDoc(property));
-                lines.push(`${variableName}${property.isOptional ? '?' : ''}: ${dataTypeName}${dataTypeName.includes(';') ? '' : ';'}\n`);
-            }
-        });
-
-        lines.push(`}\n\n`);
-
-        this.typeDefinitions = this.typeDefinitions.set(entity.name, lines);
-
-        return entity;
     }
 
     private getJavaDoc(element: Aspect | Property | Characteristic | Entity) {
