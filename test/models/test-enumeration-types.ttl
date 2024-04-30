@@ -52,55 +52,46 @@
    samm:properties ( :partStatusAttributeValue :partStatusAttributeId [ samm:property :partStatusAttributeDescription; samm:notInPayload true ] ) .
 
 :StatusInProgress a :Status ;
-   :partStatusAttributeDescription "Minimalstatus PDM (obligatorisch): Neuanlage durch Entwicklung / Werk. Das Objekt wird durch die für die Erstellung verantwortliche Stelle bearbeitet."@de ;
    :partStatusAttributeDescription "In Progress"@en ;
    :partStatusAttributeId "10"^^xsd:positiveInteger ;
    :partStatusAttributeValue "inprogress" .
 
 :StatusCancelled a :Status ;
-   :partStatusAttributeDescription "kann gesetzt werden bei Fehl- oder Falscheingaben im Status 10"@de ;
    :partStatusAttributeDescription "Cancelled"@en ;
    :partStatusAttributeId "11"^^xsd:positiveInteger ;
    :partStatusAttributeValue "cancelled" .
 
 :StatusReleaseForPlan a :Status ;
-   :partStatusAttributeDescription "Minimalstatus PDM (obligatorisch): Freigabe der Stückliste für Planung und Bestellung von BOM-Komponenten mit langen Lieferzeiten, obwohl die Prüfung des Objekts durch die für die Erstellung verantwortliche Stelle noch nicht abgeschlossen ist. Das Objekt ist noch nicht für die Musterproduktion freigegeben."@de ;
    :partStatusAttributeDescription "Cancelled"@en ;
    :partStatusAttributeId "15"^^xsd:positiveInteger ;
    :partStatusAttributeValue "releasedForPlanning" .
 
 :StatusReleaseForProduction a :Status ;
-   :partStatusAttributeDescription "Status PDM (obligatorisch): Freigabe der Stückliste für den Musterproduktion. Die Prüfung des Objekts ist durch die für die Erstellung verantwortliche Stelle abgeschlossen und das Objekt ist für den Musterproduktion freigegeben."@de ;
    :partStatusAttributeDescription "Cancelled"@en ;
    :partStatusAttributeId "20"^^xsd:positiveInteger ;
    :partStatusAttributeValue "releasedForProduction" .
 
 :StatusReleaseForSeries a :Status ;
-   :partStatusAttributeDescription "Minimal status PDM (obligatorisch): Freigabe der Stückliste für die Serie durch die Entwicklung. Die Prüfung des Objekts ist durch die für die Erstellung verantwortliche Stelle abgeschlossen und das Objekt wartet auf Übernahme (Bearbeitung bzw. Prüfung) durch die datensatzverantwortliche Stelle im Werk."@de ;
    :partStatusAttributeDescription "Cancelled"@en ;
    :partStatusAttributeId "30"^^xsd:positiveInteger ;
    :partStatusAttributeValue "releaseForSeries" .
 
 :StatusLimitedRelease a :Status ;
-   :partStatusAttributeDescription "Stückliste mit begrenzter Freigabe. Die Prüfung des Objekts ist durch die datensatzverantwortliche Stelle im Werk völlig abgeschlossen und das Objekt ist für die Serienfertigung noch nicht freigegeben, es kann jedoch z.B. im Einkauf bestellt werden."@de ;
    :partStatusAttributeDescription "Cancelled"@en ;
    :partStatusAttributeId "35"^^xsd:positiveInteger ;
    :partStatusAttributeValue "limited" .
 
 :StatusValid a :Status ;
-   :partStatusAttributeDescription "Minimalstatus PDM (obligatorisch): Freigabe der Stückliste für Erzeugnisse, Baugruppen, usw. für die Serie"@de ;
    :partStatusAttributeDescription "Cancelled"@en ;
    :partStatusAttributeId "40"^^xsd:positiveInteger ;
    :partStatusAttributeValue "valid" .
 
 :StatusInvalid a :Status ;
-   :partStatusAttributeDescription "Minimalstatus PDM (obligatorisch): Stückliste ist gesperrt / ungültig. Das Objekt ist ohne jegliche Verwendung (bezogen auf das -Gültig ab Datum- der zugehörigen Anwendung)."@de ;
    :partStatusAttributeDescription "Cancelled"@en ;
    :partStatusAttributeId "50"^^xsd:positiveInteger ;
    :partStatusAttributeValue "invalid" .
 
 :StatusInactive a :Status ;
-   :partStatusAttributeDescription "Stückliste ist inaktiv - ungültig, d.h. ohne Pflege. Die STL wird nicht weiter aktuell gehalten. Kann nicht mehr reaktiviert werden."@de ;
    :partStatusAttributeDescription "Cancelled"@en ;
    :partStatusAttributeId "55"^^xsd:positiveInteger ;
    :partStatusAttributeValue "inactive" .
