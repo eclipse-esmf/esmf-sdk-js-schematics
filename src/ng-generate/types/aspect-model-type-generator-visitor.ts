@@ -89,7 +89,6 @@ export class AspectModelTypeGeneratorVisitor extends DefaultAspectModelVisitor<B
         lines.push(this.getJavaDoc(aspect));
         lines.push(`export interface ${aspect.name} {\n`);
 
-        this.options.spinner.succeed(`aspect.properties.length ${aspect.properties.length}`);
         aspect.properties.forEach(property => {
       
             // Visit the property to eventually generate a new data type and return
@@ -207,9 +206,7 @@ export class AspectModelTypeGeneratorVisitor extends DefaultAspectModelVisitor<B
     private getValues(enumeration: Enumeration, lines: Array<any>) {
         let dataTypeEntityProperty: Property | undefined;
         if (enumeration.dataType) {
-            this.options.spinner.succeed(`enumeration.dataType.urn ${enumeration.dataType.urn}`);
             if (enumeration.dataType.isComplex) {
-                this.options.spinner.succeed(`enumeration.dataType.isComplex ${enumeration.dataType.isComplex}`);
                 const dataTypeEntity = enumeration.dataType as Entity;
                 // Find the property that actually specifies the property name to generate the enum values from
                 dataTypeEntityProperty = dataTypeEntity.properties.find(property => {
