@@ -11,11 +11,22 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-import {apply, applyTemplates, MergeStrategy, mergeWith, move, noop, Rule, SchematicContext, Tree, url} from '@angular-devkit/schematics';
+import {
+    apply,
+    applyTemplates,
+    MergeStrategy,
+    mergeWith,
+    move,
+    noop,
+    Rule,
+    SchematicContext,
+    Tree,
+    url
+} from '@angular-devkit/schematics';
 import {strings} from '@angular-devkit/core';
 import {DefaultSingleEntity, Property} from '@esmf/aspect-model-loader';
 import {classify} from '@angular-devkit/core/src/utils/strings';
-import {DatePicker, getAllEnumProps, PropValue} from '../../../../../../utils/aspect-model';
+import {getAllEnumProps, PropValue} from '../../../../../../utils/aspect-model';
 import {ComponentType} from '../../../schema';
 
 let sharedOptions: any = {};
@@ -174,10 +185,6 @@ function setDateQuickFilters(values: PropValue[]) {
     };
 
     return values.map(template).join('');
-}
-
-function datePickerType(datePickers: Array<DatePicker>, property: Property): string | undefined {
-    return;
 }
 
 function setDataRemoveFilter(values: PropValue[]) {
