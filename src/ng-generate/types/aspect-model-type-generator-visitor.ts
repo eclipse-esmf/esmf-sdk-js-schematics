@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH
+ * Copyright (c) 2024 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for
  * additional information regarding authorship.
@@ -25,7 +25,7 @@ import {
     DefaultProperty,
     Entity,
     Enumeration,
-    Property,
+    Property
 } from '@esmf/aspect-model-loader';
 import {TypesSchema} from './schema';
 import {resolveJsPropertyType} from '../components/shared/utils';
@@ -82,10 +82,6 @@ export class AspectModelTypeGeneratorVisitor extends DefaultAspectModelVisitor<B
         const lines = [];
 
         lines.push('/** Generated form ESMF JS SDK Angular Schematics - PLEASE DO NOT CHANGE IT **/\n\n');
-        lines.push(`export interface MultiLanguageText {
-                        /** key defines the locale. Value is the translated text for that locale. */
-                        [key: string]: string;
-                    }\n\n`);
         lines.push(this.getJavaDoc(aspect));
         lines.push(`export interface ${aspect.name} {\n`);
 
@@ -108,6 +104,21 @@ export class AspectModelTypeGeneratorVisitor extends DefaultAspectModelVisitor<B
     }
 
     visitCharacteristic(characteristic: Characteristic, context: void): BaseMetaModelElement {
+        if (characteristic.dataType?.urn === 'http://www.w3.org/2001/XMLSchema#langString') {
+            const lines = [];
+            lines.push(`
+            /**
+             * Represents a text with multiple language support.
+             */
+            export interface MultiLanguageText {
+                /** The actual text value. */
+                value: string;
+                /** The language code of the text. */
+                language: string;
+             }\n\n`);
+            this.typeDefinitions = this.typeDefinitions.set(characteristic.name, lines);
+        }
+
         if (characteristic instanceof DefaultEnumeration) {
             this.visitEnumeration(characteristic);
         }
@@ -117,97 +128,9 @@ export class AspectModelTypeGeneratorVisitor extends DefaultAspectModelVisitor<B
 
     visitEnumeration(enumeration: Enumeration): BaseMetaModelElement {
         const lines = [];
+
         lines.push(this.getJavaDoc(enumeration));
 
-        if (enumeration.values?.[0] instanceof DefaultEntityInstance && enumeration.dataType?.urn) {
-            this.processEntityInstanceEnumeration(enumeration, lines);
-        } else {
-            this.getValues(enumeration, lines);
-        }
-
-        this.typeDefinitions.set(enumeration.name, lines);
-        return enumeration;
-    }
-
-    processEntityInstanceEnumeration(enumeration: Enumeration, lines: string[]) {
-        const entityInstancesNamesWithValues = this.getEntityInstanceNamesWithValues(enumeration);
-        lines.push(`export enum ${enumeration.name}  {\n`);
-        entityInstancesNamesWithValues.forEach(item => {
-            lines.push(`${item.name} = '${item.value}' ,\n`);
-        });
-        lines.push(`}\n\n`);
-    }
-
-    getEntityInstanceNamesWithValues(enumeration: Enumeration): {name: string; value: string}[] {
-        const entityInstancesNamesWithValues: {name: string; value: string}[] = [];
-        if (enumeration.values?.length > 0) {
-            const entityInstances = enumeration.values as Array<DefaultEntityInstance>;
-            entityInstances.forEach((entityInstance: DefaultEntityInstance) => {
-                entityInstancesNamesWithValues.push({
-                    name: entityInstance.name,
-                    value: this.getEntityInstanceValues(entityInstance),
-                });
-            });
-        }
-        return entityInstancesNamesWithValues;
-    }
-
-    getEntityInstanceValues(obj: DefaultEntityInstance): string {
-        const defaultEntityInheritedProps = ['_metaModelType', '_name', '_descriptions', 'type'];
-
-        const filteredProps = Object.getOwnPropertyNames(obj).filter(prop => !defaultEntityInheritedProps.includes(prop));
-
-        const stringWithValues: any = filteredProps.map(prop => {
-            const propObject = (obj as any)[prop];
-
-            if (Array.isArray(propObject)) {
-                return this.getValueFromPropObjectArray(propObject);
-            }
-
-            return propObject;
-        });
-
-        return stringWithValues.join(' : ');
-    }
-
-    getValueFromPropObjectArray(propObject: any[]): any {
-        if (propObject.length === 1) {
-            return propObject[0].value;
-        }
-
-        // we want only English: 'en' if English is not present we select another language
-        const filteredItem = propObject.find(item => item.language === 'en' || item.language.startsWith('en-'));
-
-        return filteredItem ? filteredItem.value : propObject[0].value;
-    }
-
-    visitEntity(entity: DefaultEntity, context: any): BaseMetaModelElement {
-        const lines = [];
-
-        lines.push(this.getJavaDoc(entity));
-        lines.push(`export interface ${entity.name} ${entity.extends ? `extends ${entity.extends?.name}` : ''} {\n`);
-
-        entity.getOwnProperties().forEach((property: Property): void => {
-            const dataTypeName = resolveJsPropertyType(property) || 'any';
-            let variableName = '';
-            if (property.name) {
-                variableName = camelize(property.name);
-            }
-
-            if (dataTypeName) {
-                lines.push(this.getJavaDoc(property));
-                lines.push(`${variableName}${property.isOptional ? '?' : ''}: ${dataTypeName}${dataTypeName.includes(';') ? '' : ';'}\n`);
-            }
-        });
-
-        lines.push(`}\n\n`);
-
-        this.typeDefinitions = this.typeDefinitions.set(entity.name, lines);
-
-        return entity;
-    }
-
-    private getValues(enumeration: Enumeration, lines: Array<any>) {
         let dataTypeEntityProperty: Property | undefined;
         if (enumeration.dataType) {
             if (enumeration.dataType.isComplex) {
@@ -232,7 +155,11 @@ export class AspectModelTypeGeneratorVisitor extends DefaultAspectModelVisitor<B
             let valuePayloadKey = '';
             enumeration.values.forEach((instance: DefaultEntityInstance) => {
                 if (dataTypeEntityProperty) {
+                    // TODO loader is not doing the right on instances we need more infos ... Type of Characteristic und th values itself ...
                     valuePayloadKey = instance.valuePayloadKey;
+                    // TODO check this more in detail if this is right ...
+                    instance.getDescription();
+
                     lines.push(
                         `    static ${classify(instance.name)} = new ${classify(enumeration.name)}('${instance.value}', '${
                             instance.getDescription() || ''
@@ -304,6 +231,36 @@ export class AspectModelTypeGeneratorVisitor extends DefaultAspectModelVisitor<B
         }
 
         lines.push(`}\n\n`);
+
+        this.typeDefinitions = this.typeDefinitions.set(enumeration.name, lines);
+
+        return enumeration;
+    }
+
+    visitEntity(entity: DefaultEntity, context: any): BaseMetaModelElement {
+        const lines = [];
+
+        lines.push(this.getJavaDoc(entity));
+        lines.push(`export interface ${entity.name} ${entity.extends ? `extends ${entity.extends?.name}` : ''} {\n`);
+
+        entity.getOwnProperties().forEach((property: Property): void => {
+            const dataTypeName = resolveJsPropertyType(property) || 'any';
+            let variableName = '';
+            if (property.name) {
+                variableName = camelize(property.name);
+            }
+
+            if (dataTypeName) {
+                lines.push(this.getJavaDoc(property));
+                lines.push(`${variableName}${property.isOptional ? '?' : ''}: ${dataTypeName}${dataTypeName.includes(';') ? '' : ';'}\n`);
+            }
+        });
+
+        lines.push(`}\n\n`);
+
+        this.typeDefinitions = this.typeDefinitions.set(entity.name, lines);
+
+        return entity;
     }
 
     private getJavaDoc(element: Aspect | Property | Characteristic | Entity) {
