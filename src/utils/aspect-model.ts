@@ -21,7 +21,7 @@ import {
     DefaultEntity,
     DefaultSingleEntity,
     Entity,
-    Property,
+    Property
 } from '@esmf/aspect-model-loader';
 import {Observable, Subscriber} from 'rxjs';
 import {Schema} from '../ng-generate/components/shared/schema';
@@ -117,15 +117,8 @@ export function loadAspectModel(options: Schema): Rule {
 }
 
 export function validateUrns(options: Schema): void {
-    // if there is only one definition ('... a samm:Aspect') this one will be used
-    if (options.aspectModelUrnToLoad && options.aspectModelUrnToLoad !== '') {
-        if (!options.aspectModelUrnToLoad.includes('#')) {
-            options.spinner?.fail(`Aspect URN to be loaded ${options.aspectModelUrnToLoad} is not valid.`);
-        }
-    }
-
     // if defined, validate URN otherwise the default (all properties 'samm:properties ( ... ) '
-    // of the Aspect definition '... a samm:Aspect') is used
+    // of the Aspect definition '... a samm:Aspect' is used
     if (options.selectedModelElementUrn && options.selectedModelElementUrn !== '') {
         if (!options.selectedModelElementUrn.includes('#')) {
             options.spinner?.fail(`URN ${options.selectedModelElementUrn} is not valid.`);

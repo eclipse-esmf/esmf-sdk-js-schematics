@@ -30,7 +30,7 @@ import {
     DefaultStructuredValue,
     DefaultTrait,
     Entity,
-    Property,
+    Property
 } from '@esmf/aspect-model-loader';
 import {ComponentType, Schema} from '../../../components/shared/schema';
 import {TemplateHelper} from '../../../../utils/template-helper';
@@ -197,7 +197,7 @@ export const customCommandBarActions = (answers: any, templateHelper: TemplateHe
 
 export const requestAspectModelWithAspect = (allAnswers: any) => ({
     type: 'list',
-    name: 'aspectModelUrnToLoad',
+    name: 'aspectModelUrnToLoad', // TODO change this to aspectModelFilePath or something similar ...
     message: 'Choose the .ttl file which includes the Aspect to load:',
     choices: allAnswers.aspectModelTFiles,
     when: () => allAnswers.aspectModelTFiles?.length > 1,

@@ -350,10 +350,10 @@ Example of configuration file:
 
 ## Skip install
 
-If you want to skip installation of dependencies you may use the '--skipInstall' flag
+If you want to skip installation of dependencies you may use the '--skip-install' flag
 
 ```bash
-ng generate @esmf/semantic-ui-schematics:card --skipInstall
+ng generate @esmf/semantic-ui-schematics:card --skip-install
 ```
 
 ---

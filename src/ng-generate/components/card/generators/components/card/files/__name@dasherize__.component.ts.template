@@ -329,7 +329,7 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit<% i
                 fields: this.<%= camelize(name) %>CardValues.map(columnName => {
                     const translatedHeader = this.translateService.translate(`<%= options.aspectModelTypeName.toLowerCase() %>.${columnName}.preferredName`);
                     return translatedHeader !== `<%= options.aspectModelTypeName.toLowerCase() %>.${columnName}.preferredName` ? translatedHeader : columnName;
-                }),
+                }) as string[],
                 data: [],
             });
 

@@ -30,7 +30,6 @@ import {classify, dasherize, underscore} from '@angular-devkit/core/src/utils/st
 // TODO change this ...
 import {ExcludedProperty, Schema, Values} from '../ng-generate/components/shared/schema';
 import * as locale from 'locale-codes';
-import {TableSchema} from '../ng-generate/components/table/schema';
 
 export class TemplateHelper {
     /**
@@ -356,6 +355,16 @@ export class TemplateHelper {
                     (excludedProp: ExcludedProperty) => excludedProp.propToExcludeAspectModelUrn === property.aspectModelUrn
                 )
         );
+    }
+
+    /**
+     * Checks if there are any custom command bar actions defined in the provided schema options.
+     *
+     * @param {Schema} options - The schema options containing potential custom command bar actions.
+     * @returns {boolean} - Returns true if there are one or more custom command bar actions, otherwise false.
+     */
+    haveCustomCommandbarActions(options: Schema): boolean {
+        return options.customCommandBarActions.length > 0;
     }
 
     /**
