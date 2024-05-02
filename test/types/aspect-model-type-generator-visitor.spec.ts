@@ -17,7 +17,7 @@ import * as path from 'path';
 import {Aspect, AspectModelLoader} from '@esmf/aspect-model-loader';
 import {AspectModelTypeGeneratorVisitor} from '../../src/ng-generate/types/aspect-model-type-generator-visitor';
 import {TemplateHelper} from '../../src/utils/template-helper';
-import {lastValueFrom} from "rxjs";
+import {lastValueFrom} from 'rxjs';
 
 const loader = new AspectModelLoader();
 let visitor: AspectModelTypeGeneratorVisitor;
@@ -47,7 +47,7 @@ beforeEach(function () {
 
 describe('Generation of types from aspect model', (): void => {
     it('works for movement.ttl', async function (): Promise<void> {
-        const generatedTypeDefinitions = await readModelsFromFS('test/models/test-movement.ttl')
+        const generatedTypeDefinitions = await readModelsFromFS('test/models/movement.ttl')
             .then((models: string[]): Promise<Aspect> => {
                 return lastValueFrom(loader.load('', ...models));
             })
@@ -58,17 +58,21 @@ describe('Generation of types from aspect model', (): void => {
 
         // Check the interface definition for the aspect 'Movement'
         expect(generatedTypeDefinitions).toMatch(/export interface Movement/);
-        expect(generatedTypeDefinitions).toMatch(/moving\s*:\s*boolean\s*;/);
-        expect(generatedTypeDefinitions).toMatch(/speedLimitWarning\s*:\s*WarningLevel\s*;/);
+        expect(generatedTypeDefinitions).toMatch(/isMoving\s*:\s*boolean\s*;/);
+        expect(generatedTypeDefinitions).toMatch(/speedLimitWarning\s*:\s*TrafficLight\s*;/);
         expect(generatedTypeDefinitions).toMatch(/position\s*:\s*SpatialPosition\s*;/);
 
         // Check the definition for the enum 'WarningLevel'
-        expect(generatedTypeDefinitions).toMatch(/export enum WarningLevel/);
+        expect(generatedTypeDefinitions).toMatch(/export enum TrafficLight/);
         expect(generatedTypeDefinitions).toMatch(/Green\s*=\s*'green'\s*,/);
+        expect(generatedTypeDefinitions).toMatch(/Yellow\s*=\s*'yellow'\s*,/);
+        expect(generatedTypeDefinitions).toMatch(/Red\s*=\s*'red'\s*,/);
 
         // Check the type definition for entity 'SpatialPosition'
         expect(generatedTypeDefinitions).toMatch(/export interface SpatialPosition/);
-        expect(generatedTypeDefinitions).toMatch(/x\s*:\s*number\s*;/);
+        expect(generatedTypeDefinitions).toMatch(/latitude\s*:\s*number\s*;/);
+        expect(generatedTypeDefinitions).toMatch(/longitude\s*:\s*number\s*;/);
+        expect(generatedTypeDefinitions).toMatch(/altitude\s*\?:\s*number\s*;/);
     });
 
     it('works for built-in SAMM-C characteristics', async function (): Promise<void> {
@@ -211,6 +215,7 @@ describe('Generation of types from aspect model', (): void => {
             });
 
         // Check the interface definition for the aspect
+        // TODO should not have MultiLanguage inside because it not have langString ...
         expect(generatedTypeDefinitions).toMatch(/export interface TestEnumerationTypes/);
 
         expect(generatedTypeDefinitions).toMatch(/a\s*:\s*EnumerationOfStrings\s*;/);
@@ -225,9 +230,15 @@ describe('Generation of types from aspect model', (): void => {
         expect(generatedTypeDefinitions).toMatch(/NUMBER_13\s*=\s*13\s*,/);
         expect(generatedTypeDefinitions).toMatch(/NUMBER_19\s*=\s*19\s*,/);
 
-        expect(generatedTypeDefinitions).toContain('export enum PartStatus');
-        expect(generatedTypeDefinitions).toContain('StatusInProgress =');
-        expect(generatedTypeDefinitions).toContain('StatusCancelled =');
+        expect(generatedTypeDefinitions).toMatch(
+            /static StatusInProgress\s*=\s*new PartStatus\('inprogress', 'In Progress', 'StatusInProgress.partStatusAttributeDescription'\);/
+        );
+        expect(generatedTypeDefinitions).toMatch(
+            /static StatusCancelled\s*=\s*new PartStatus\('cancelled', 'Cancelled', 'StatusCancelled.partStatusAttributeDescription'\);/
+        );
+        expect(generatedTypeDefinitions).toMatch(
+            /static StatusInactive\s*=\s*new PartStatus\('inactive', 'Cancelled', 'StatusInactive.partStatusAttributeDescription'\);/
+        );
     });
 
     it('works for entity types', async function (): Promise<void> {
@@ -241,6 +252,7 @@ describe('Generation of types from aspect model', (): void => {
             });
 
         // Check the interface definition for the aspect
+        // TODO should not have MultiLanguage inside because it not have langString ...
         expect(generatedTypeDefinitions).toMatch(/export interface TestEntityTypes/);
         expect(generatedTypeDefinitions).toMatch(/a\s*:\s*EntityCharacteristic\s*;/);
 
@@ -248,6 +260,71 @@ describe('Generation of types from aspect model', (): void => {
         expect(generatedTypeDefinitions).toMatch(/x\s*:\s*string\s*;/);
         expect(generatedTypeDefinitions).toMatch(/y\s*:\s*boolean\s*;/);
         expect(generatedTypeDefinitions).toMatch(/z\s*:\s*number\s*;/);
+    });
+
+    it('works for entity instances', async function (): Promise<void> {
+        const generatedTypeDefinitions = await readModelsFromFS('test/models/test-entity-instances.ttl')
+            .then((models: string[]): Promise<Aspect> => {
+                return lastValueFrom(loader.load('', ...models));
+            })
+            .then((aspect: Aspect): string => {
+                visitor.visit(aspect);
+                return visitor.getGeneratedTypeDefinitions();
+            });
+
+        // Check the interface definition for the aspect
+        expect(generatedTypeDefinitions).toMatch(/export interface MultiLanguageText/);
+        expect(generatedTypeDefinitions).toMatch(/export interface TestEntityInstances/);
+        expect(generatedTypeDefinitions).toMatch(/export class Enumeration/);
+        // TODO should have the language inside but i dont know how for the moment ...
+        expect(generatedTypeDefinitions).toMatch(/static Code101\s*=\s*new Enumeration\('101', 'Starting', 'Code101.description'\);/);
+        expect(generatedTypeDefinitions).toMatch(/static Code102\s*=\s*new Enumeration\('102', 'Ready', 'Code102.description'\);/);
+        expect(generatedTypeDefinitions).toMatch(/step\s*:\s*number\s*;/);
+        expect(generatedTypeDefinitions).toMatch(/export interface Entity/);
+        expect(generatedTypeDefinitions).toMatch(/description\s*:\s*string\s*;/);
+    });
+
+    it('works for entity instances with langString', async function (): Promise<void> {
+        const generatedTypeDefinitions = await readModelsFromFS('test/models/test-entity-instances-with-langString.ttl')
+            .then((models: string[]): Promise<Aspect> => {
+                return lastValueFrom(loader.load('', ...models));
+            })
+            .then((aspect: Aspect): string => {
+                visitor.visit(aspect);
+                return visitor.getGeneratedTypeDefinitions();
+            });
+
+        // Check the interface definition for the aspect
+        expect(generatedTypeDefinitions).toMatch(/export interface MultiLanguageText/);
+        expect(generatedTypeDefinitions).toMatch(/export interface TestEntityInstancesWithLangString/);
+        expect(generatedTypeDefinitions).toMatch(/export class Enumeration/);
+        // TODO should have the language inside and in some case also the Array but i dont know how for the moment ...
+        // expect(generatedTypeDefinitions).toMatch(/static Code101\s*=\s*new Enumeration\('101', 'Starting', 'Code101.description'\);/);
+        // expect(generatedTypeDefinitions).toMatch(/static Code102\s*=\s*new Enumeration\('102', 'Ready', 'Code102.description'\);/);
+        expect(generatedTypeDefinitions).toMatch(/step\s*:\s*number\s*;/);
+        expect(generatedTypeDefinitions).toMatch(/export interface Entity/);
+        expect(generatedTypeDefinitions).toMatch(/description\s*:\s*string\s*;/);
+    });
+
+    it('works for entity instances with collection of langString', async function (): Promise<void> {
+        const generatedTypeDefinitions = await readModelsFromFS('test/models/test-entity-instances-with-collection-of-langString.ttl')
+            .then((models: string[]): Promise<Aspect> => {
+                return lastValueFrom(loader.load('', ...models));
+            })
+            .then((aspect: Aspect): string => {
+                visitor.visit(aspect);
+                return visitor.getGeneratedTypeDefinitions();
+            });
+
+        // Check the interface definition for the aspect
+        expect(generatedTypeDefinitions).toMatch(/export interface MultiLanguageText/);
+        expect(generatedTypeDefinitions).toMatch(/export interface TestEntityInstancesWithLangString/);
+        expect(generatedTypeDefinitions).toMatch(/export class Enumeration/);
+        expect(generatedTypeDefinitions).toMatch(/static Code101\s*=\s*new Enumeration\('101', 'Starting', 'Code101.description'\);/);
+        expect(generatedTypeDefinitions).toMatch(/static Code102\s*=\s*new Enumeration\('102', 'Ready', 'Code102.description'\);/);
+        expect(generatedTypeDefinitions).toMatch(/step\s*:\s*number\s*;/);
+        expect(generatedTypeDefinitions).toMatch(/export interface Entity/);
+        expect(generatedTypeDefinitions).toMatch(/description\s*:\s*string\s*;/);
     });
 
     it('works for collection types', async function (): Promise<void> {

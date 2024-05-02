@@ -11,6 +11,19 @@
 # SPDX-License-Identifier: MPL-2.0
 #
 
+#
+# Copyright (c) 2024 Robert Bosch Manufacturing Solutions GmbH
+#
+# See the AUTHORS file(s) distributed with this work for
+# additional information regarding authorship.
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at https://mozilla.org/MPL/2.0/.
+#
+# SPDX-License-Identifier: MPL-2.0
+#
+
 @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.1.0#> .
 @prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.1.0#> .
 @prefix samm-e: <urn:samm:org.eclipse.esmf.samm:entity:2.1.0#> .
@@ -20,19 +33,19 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix : <urn:samm:org.eclipse.esmf.test:1.0.0#> .
 
-:TestEntityInstances a samm:Aspect ;
+:TestEntityInstancesWithLangString a samm:Aspect ;
    samm:properties ( :property ) ;
    samm:operations ( ) ;
    samm:events ( ) .
 
 :property a samm:Property ;
-   samm:preferredName "GermanProperty"@de ;
    samm:preferredName "EnglishProperty"@en ;
+   samm:preferredName "GermanProperty"@de ;
    samm:characteristic :Enumeration .
 
 :Enumeration a samm-c:Enumeration ;
-   samm:preferredName "GermanEnum"@de ;
    samm:preferredName "EnglishEnum"@en ;
+   samm:preferredName "GermanEnum"@de ;
    samm:dataType :Entity ;
    samm-c:values ( :Code101 :Code102 ) .
 
@@ -40,11 +53,11 @@
    samm:properties ( :step [ samm:property :description; samm:notInPayload true ] ) .
 
 :Code101 a :Entity ;
-   :description "Starting" ;
+   :description "Starting"@en ;
    :step "101"^^xsd:short .
 
 :Code102 a :Entity ;
-   :description "Ready" ;
+   :description "Ready"@en ;
    :step "102"^^xsd:short .
 
 :step a samm:Property ;
@@ -65,4 +78,4 @@
 :Text a samm:Characteristic ;
    samm:preferredName "Text"@en ;
    samm:description "Describes a Property which contains plain text. This is intended exclusively for human readable strings, not for identifiers, measurement values, etc."@en ;
-   samm:dataType xsd:string .
+   samm:dataType rdf:langString .
