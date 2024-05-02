@@ -280,11 +280,11 @@ export class TemplateHelper {
      * @param {Property} property The property to check.
      * @returns {boolean} True if the property is an enumeration with entity values property.
      */
-    isEnumPropertyWithEntityValues(property: Property) { 
+    isEnumPropertyWithEntityValues(property: Property) {
         if (property.characteristic instanceof DefaultEnumeration && property.characteristic.values[0] instanceof DefaultEntityInstance) {
             return false;
         }
-       return this.isEnumProperty(property) && property.effectiveDataType instanceof DefaultEntity;
+        return this.isEnumProperty(property) && property.effectiveDataType instanceof DefaultEntity;
     }
 
     /**
