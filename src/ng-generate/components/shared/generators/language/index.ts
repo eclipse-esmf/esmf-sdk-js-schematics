@@ -80,7 +80,7 @@ function getBlockTransEntity(property: Property, lang: string): string {
 function getBlockEntityInstance(property: Property, lang: string, parentPropertyName = ''): string {
     const {characteristic} = property;
 
-    if (characteristic instanceof DefaultEnumeration && characteristic.values[0] instanceof DefaultEntityInstance) {
+    if (characteristic instanceof DefaultEnumeration && characteristic.values?.[0] instanceof DefaultEntityInstance) {
         return '';
     }
 

@@ -15,7 +15,7 @@ import {apply, applyTemplates, MergeStrategy, mergeWith, move, Rule, SchematicCo
 import {strings} from '@angular-devkit/core';
 import {DefaultSingleEntity, Property} from '@esmf/aspect-model-loader';
 import {classify} from '@angular-devkit/core/src/utils/strings';
-import {DatePicker} from "../../../../../../utils/aspect-model";
+import {DatePicker} from '../../../../../../utils/aspect-model';
 
 type PropValue = {
     propertyValue: string;
@@ -88,15 +88,18 @@ function getPropertiesToCreateFilters(options: any, allProps: Array<Property>): 
     return propertyValues;
 }
 
-function datePickerType(datePickers: Array<DatePicker>, propertyValue: PropValue ): string | undefined {
+function datePickerType(datePickers: Array<DatePicker>, propertyValue: PropValue): string | undefined {
     return datePickers.find((value: any) => value.propertyUrn === propertyValue.propertyUrn)?.datePicker.type;
 }
 
-function checkAndEmitReload(options: any, propValues: Array<PropValue> ): string {
-    const validDateFilters: string[] = propValues.filter(property => {
-        return options.isDateQuickFilter && property.isDate && datePickerType(options.datePickers, property) === "startAndEndDatePicker";
-    }).map(property => `this.filterService.${property.propertyName}Group.valid`);
-
+function checkAndEmitReload(options: any, propValues: Array<PropValue>): string {
+    const validDateFilters: string[] = propValues
+        .filter(property => {
+            return (
+                options.isDateQuickFilter && property.isDate && datePickerType(options.datePickers, property) === 'startAndEndDatePicker'
+            );
+        })
+        .map(property => `this.filterService.${property.propertyName}Group.valid`);
 
     return validDateFilters.length > 0 ? `if(${validDateFilters.join(' && ')}) { this.reloadFilter.emit(); }` : 'this.reloadFilter.emit();';
 }

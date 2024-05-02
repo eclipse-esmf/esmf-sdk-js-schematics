@@ -90,7 +90,6 @@ export class AspectModelTypeGeneratorVisitor extends DefaultAspectModelVisitor<B
         lines.push(`export interface ${aspect.name} {\n`);
 
         aspect.properties.forEach(property => {
-      
             // Visit the property to eventually generate a new data type and return
             // the appropriate data type name.
             const dataType =
@@ -118,63 +117,68 @@ export class AspectModelTypeGeneratorVisitor extends DefaultAspectModelVisitor<B
 
     visitEnumeration(enumeration: Enumeration): BaseMetaModelElement {
         const lines = [];
-
         lines.push(this.getJavaDoc(enumeration));
 
-        if (enumeration.values[0] instanceof DefaultEntityInstance) {
-            if (enumeration.dataType?.urn) {
-                const entityInstancesNamesWithValues:any[] = [];
-                if (enumeration.values.length > 0) {
-                    const entityInstances = enumeration.values as DefaultEntityInstance[];
-                    entityInstances.forEach((entityInstance: DefaultEntityInstance) => {                       
-                        entityInstancesNamesWithValues.push({name:entityInstance.name, value: this.getEntityInstanceValues(entityInstance)});
-                    });
-                }
-                lines.push(`export enum ${enumeration.name}  {\n`);
-                entityInstancesNamesWithValues.forEach(item => {
-                    lines.push(`${item.name} = '${item.value}' ,\n`);
-                })
-                lines.push(`}\n\n`);
-                this.typeDefinitions = this.typeDefinitions.set(enumeration.name, lines);
-            }
+        if (enumeration.values?.[0] instanceof DefaultEntityInstance && enumeration.dataType?.urn) {
+            this.processEntityInstanceEnumeration(enumeration, lines);
         } else {
             this.getValues(enumeration, lines);
-            this.typeDefinitions = this.typeDefinitions.set(enumeration.name, lines);
         }
 
+        this.typeDefinitions.set(enumeration.name, lines);
         return enumeration;
     }
 
-    getEntityInstanceValues(obj: any) {
+    processEntityInstanceEnumeration(enumeration: Enumeration, lines: string[]) {
+        const entityInstancesNamesWithValues = this.getEntityInstanceNamesWithValues(enumeration);
+        lines.push(`export enum ${enumeration.name}  {\n`);
+        entityInstancesNamesWithValues.forEach(item => {
+            lines.push(`${item.name} = '${item.value}' ,\n`);
+        });
+        lines.push(`}\n\n`);
+    }
+
+    getEntityInstanceNamesWithValues(enumeration: Enumeration): {name: string; value: string}[] {
+        const entityInstancesNamesWithValues: {name: string; value: string}[] = [];
+        if (enumeration.values?.length > 0) {
+            const entityInstances = enumeration.values as Array<DefaultEntityInstance>;
+            entityInstances.forEach((entityInstance: DefaultEntityInstance) => {
+                entityInstancesNamesWithValues.push({
+                    name: entityInstance.name,
+                    value: this.getEntityInstanceValues(entityInstance),
+                });
+            });
+        }
+        return entityInstancesNamesWithValues;
+    }
+
+    getEntityInstanceValues(obj: DefaultEntityInstance): string {
         const defaultEntityInheritedProps = ['_metaModelType', '_name', '_descriptions', 'type'];
 
         const filteredProps = Object.getOwnPropertyNames(obj).filter(prop => !defaultEntityInheritedProps.includes(prop));
-        const stringWithValues:any = [];
-        filteredProps.forEach(prop => {
-            const propObject = obj[prop];
-            if(Array.isArray(propObject)) {
-                if(propObject.length === 1){
-                    stringWithValues.push(propObject[0].value);
-                }else{
-                    // we want only English: 'en' if English is not present we select another language 
-                    const filteredItem = propObject.filter(item => item.language === "en" || item.language.startsWith('en-'));
-                    if(filteredItem){
-                        stringWithValues.push(filteredItem[0].value);
-                    }else{
-                        stringWithValues.push(propObject[0].value);
-                    }                  
-                }             
-            } else {
-                stringWithValues.push(propObject);
+
+        const stringWithValues: any = filteredProps.map(prop => {
+            const propObject = (obj as any)[prop];
+
+            if (Array.isArray(propObject)) {
+                return this.getValueFromPropObjectArray(propObject);
             }
+
+            return propObject;
         });
 
         return stringWithValues.join(' : ');
     }
 
-    extractTextAfterChar(inputString: string, char: any) {
-        const parts = inputString.split(char);
-        return parts.length > 1 ? parts[1] : 'Character not found.';
+    getValueFromPropObjectArray(propObject: any[]): any {
+        if (propObject.length === 1) {
+            return propObject[0].value;
+        }
+
+        // we want only English: 'en' if English is not present we select another language
+        const filteredItem = propObject.find(item => item.language === 'en' || item.language.startsWith('en-'));
+
+        return filteredItem ? filteredItem.value : propObject[0].value;
     }
 
     visitEntity(entity: DefaultEntity, context: any): BaseMetaModelElement {

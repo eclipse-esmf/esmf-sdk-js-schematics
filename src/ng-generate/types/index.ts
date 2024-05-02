@@ -20,42 +20,42 @@ import {TemplateHelper} from '../../utils/template-helper';
 import {visitAspectModel} from './aspect-model-type-generator-visitor';
 import {WIZARD_CONFIG_FILE} from '../prompter/index';
 import {TypesSchema} from './schema';
-import { TableSchema } from '../components/table/schema';
-import { generateComponent, loadAspectModelRule, loadRdfRule, prepareOptions } from '../components/shared';
+import {TableSchema} from '../components/table/schema';
+import {generateComponent, loadAspectModelRule, loadRdfRule, prepareOptions} from '../components/shared';
 import {Tree} from '@angular-devkit/schematics/src/tree/interface';
-import { ComponentType } from '../components/shared/schema';
+import {ComponentType} from '../components/shared/schema';
 
 export default function (options: TypesSchema): Rule {
-    if(options && options.configFile !== undefined){
-    options.spinner = ora().start();
-    options.templateHelper = new TemplateHelper();
+    if (options && options.configFile !== undefined) {
+        options.spinner = ora().start();
+        options.templateHelper = new TemplateHelper();
 
-    if (options.configFile !== WIZARD_CONFIG_FILE) {
-        options.configFile = WIZARD_CONFIG_FILE;
-    }
+        if (options.configFile !== WIZARD_CONFIG_FILE) {
+            options.configFile = WIZARD_CONFIG_FILE;
+        }
 
-    loadAndApplyConfigFile(options.configFile, options);
+        loadAndApplyConfigFile(options.configFile, options);
 
-    if (options.aspectModelTFilesString) {
-        options.aspectModelTFiles = options.aspectModelTFilesString.split(',');
-    }
+        if (options.aspectModelTFilesString) {
+            options.aspectModelTFiles = options.aspectModelTFilesString.split(',');
+        }
 
-    return chain([
-        loadRDF(options),
-        loadAspectModel(options),
-        visitAspectModel(options),
-        formatGeneratedFiles(
-            {
-                getPath(options: TypesSchema) {
-                    return `src/app/shared/types/${dasherize(options.aspectModel.name).toLowerCase()}`;
+        return chain([
+            loadRDF(options),
+            loadAspectModel(options),
+            visitAspectModel(options),
+            formatGeneratedFiles(
+                {
+                    getPath(options: TypesSchema) {
+                        return `src/app/shared/types/${dasherize(options.aspectModel.name).toLowerCase()}`;
+                    },
                 },
-            },
-            options
-        ),
-    ]);
-}else{
-    return (tree: Tree, context: SchematicContext) => {
-        generateComponent(context, options, ComponentType.TYPES);
-    };
-}
+                options
+            ),
+        ]);
+    } else {
+        return (tree: Tree, context: SchematicContext) => {
+            generateComponent(context, options, ComponentType.TYPES);
+        };
+    }
 }

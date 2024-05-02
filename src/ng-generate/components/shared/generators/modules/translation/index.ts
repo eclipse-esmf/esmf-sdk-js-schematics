@@ -22,11 +22,11 @@ import {
     Rule,
     SchematicContext,
     Tree,
-    url
+    url,
 } from '@angular-devkit/schematics';
 import {strings} from '@angular-devkit/core';
-import {Schema} from "../../../schema";
-import {parseSourceFile} from "@angular/cdk/schematics";
+import {Schema} from '../../../schema';
+import {parseSourceFile} from '@angular/cdk/schematics';
 
 export function generateTranslationModule(options: any): Rule {
     return (tree: Tree, _context: SchematicContext) => {
@@ -34,10 +34,7 @@ export function generateTranslationModule(options: any): Rule {
             return noop();
         }
 
-        return chain([
-            generateModuleDefinition(options, _context),
-            generateProviderDefinition(options, _context),
-        ])(tree, _context);
+        return chain([generateModuleDefinition(options, _context), generateProviderDefinition(options, _context)])(tree, _context);
     };
 }
 

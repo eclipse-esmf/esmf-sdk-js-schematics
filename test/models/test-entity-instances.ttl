@@ -19,25 +19,25 @@ export const testAspectModel = `
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 :TestAspect a samm:Aspect ;
-   samm:name "TestAspect" ;
    samm:properties ( :testProperty [ samm:property :testProperty ; samm:optional "true"^^xsd:boolean; samm:exampleValue "5"^^xsd:int ] :procedureAndStepIdentification ) ;
    samm:operations () .
 
 :testProperty a samm:Property ;
-  samm:name "testProperty" ;
   samm:preferredName "Test Property EN"@en ;
   samm:preferredName "Test Property DE"@de ;
   samm:description "This is a test property EN."@en ;
   samm:description "This is a test property DE."@de ;
-  samm:exampleValue "5.7"^^xsd:float.
-  
+  samm:exampleValue "5.7"^^xsd:float ;
+  samm:characteristic :Float .
+
+:Float a samm:Characteristic ;
+   samm:dataType xsd:float .
+
 :procedureAndStepIdentification a samm:Property ;
-   samm:name "procedureAndStepIdentification" ;
    samm:preferredName "Procedure And Step Identification"@en ;
    samm:description "The identification code for the procedure and execution step in which the system finds itself."@en ;
    samm:characteristic [
       a samm-c:Enumeration ;
-      samm:name "ProcedureAndStepNumbers" ;
       samm:preferredName "Procedure And Step Number"@en ;
       samm:description "Defines the codes which represent the state of the system."@en ;
       samm:dataType :ProcedureAndStepNumber ;
@@ -45,12 +45,11 @@ export const testAspectModel = `
    ] .
 
 :ProcedureAndStepNumber a samm:Entity ;
-   samm:name "ProcedureAndStepNumber" ;
    samm:preferredName "Procedure And Step Number"@en ;
    samm:description "Represents a code which represents a specific system state."@en ;
    samm:properties ( :iProcedureAndStepNo
                      [ samm:property :description ; samm:notInPayload "true"^^xsd:boolean ] ) .
-                     
+
 :Code101 a :ProcedureAndStepNumber ;
    :iProcedureAndStepNo "101"^^xsd:short ;
    :description "Starting" .
@@ -59,15 +58,18 @@ export const testAspectModel = `
    :iProcedureAndStepNo "102"^^xsd:short ;
    :description "Ready" .
 
+:description a samm:Property ;
+   samm:preferredName "Code"@en ;
+   samm:description "The code which represents a specific system state."@en ;
+   samm:characteristic samm-c:Text .
+
 :iProcedureAndStepNo a samm:Property ;
-   samm:name "iProcedureAndStepNo" ;
    samm:preferredName "Code"@en ;
    samm:description "The code which represents a specific system state."@en ;
    samm:characteristic :NumericCode .
 
 :NumericCode a samm-c:Code ;
-   samm:name "NumericCode" ;
    samm:preferredName "Numeric Code"@en ;
    samm:description "A numeric code"@en ;
-   samm:dataType xsd:short .       
+   samm:dataType xsd:short .
 `;
