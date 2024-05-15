@@ -25,7 +25,7 @@ import {
     DefaultProperty,
     Entity,
     Enumeration,
-    Property
+    Property,
 } from '@esmf/aspect-model-loader';
 import {TypesSchema} from './schema';
 import {resolveJsPropertyType} from '../components/shared/utils';
@@ -157,13 +157,37 @@ export class AspectModelTypeGeneratorVisitor extends DefaultAspectModelVisitor<B
                 if (dataTypeEntityProperty) {
                     // TODO loader is not doing the right on instances we need more infos ... Type of Characteristic und th values itself ...
                     valuePayloadKey = instance.valuePayloadKey;
+
+                    const props = instance.metaModelType.properties;
+                    const instanceProps: any = [];
+                    props.forEach(prop => {
+                        instanceProps.push({name: prop.name, type: prop.effectiveDataType?.shortUrn});
+                    });
+                    const entityInstancePropsWithValues = this.getEntityInstanceValues(instance, instanceProps);
                     // TODO check this more in detail if this is right ...
                     instance.getDescription();
 
+                    let values: string = '';
+                    entityInstancePropsWithValues.forEach((item: any) => {
+                        if (Array.isArray(item.value)) {
+                            if (item.type === 'langString') {
+                                let arr: string = '[';
+                                item.value.forEach((val: any) => {
+                                    arr += `{value: '${val.value}', language: '${val.language}'},`;
+                                });
+                                arr += '],';
+                                values += arr;
+                            }
+                        } else {
+                            values += `'${item.value}',`;
+                        }
+                    });
+                    values = values.replace(/,([^,]*)$/, '$1');
+
                     lines.push(
-                        `    static ${classify(instance.name)} = new ${classify(enumeration.name)}('${instance.value}', '${
-                            instance.getDescription() || ''
-                        }', '${instance.descriptionKey ? `${instance.name}.${instance.descriptionKey}` : ''}');\n`
+                        `    static ${classify(instance.name)} = new ${classify(enumeration.name)}(${values}, '${
+                            instance.descriptionKey ? `${instance.name}.${instance.descriptionKey}` : ''
+                        }');\n`
                     );
                 }
             });
@@ -295,5 +319,14 @@ export class AspectModelTypeGeneratorVisitor extends DefaultAspectModelVisitor<B
         name = name.replace(/^(\d+)/, '_$1');
 
         return name;
+    }
+
+    private getEntityInstanceValues(obj: DefaultEntityInstance, entityInstanceProps: any) {
+        const stringWithValues: any = entityInstanceProps.map((prop: any) => {
+            const propObject = (obj as any)[prop.name];
+            return {value: propObject, name: prop.name, type: prop.type};
+        });
+
+        return stringWithValues;
     }
 }
