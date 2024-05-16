@@ -30,7 +30,7 @@ import {
     DefaultStructuredValue,
     DefaultTrait,
     Entity,
-    Property
+    Property,
 } from '@esmf/aspect-model-loader';
 import {ComponentType, Schema} from '../../../components/shared/schema';
 import {TemplateHelper} from '../../../../utils/template-helper';

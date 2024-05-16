@@ -21,7 +21,7 @@ import {
     DefaultEntity,
     DefaultSingleEntity,
     Entity,
-    Property
+    Property,
 } from '@esmf/aspect-model-loader';
 import {Observable, Subscriber} from 'rxjs';
 import {Schema} from '../ng-generate/components/shared/schema';

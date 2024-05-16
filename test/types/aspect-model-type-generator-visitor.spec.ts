@@ -201,7 +201,7 @@ describe('Generation of types from aspect model', (): void => {
         // Miscellaneous Types
         expect(generatedTypeDefinitions).toMatch(/a\s*:\s*string\s*;/);
         expect(generatedTypeDefinitions).toMatch(/b\s*:\s*string\s*;/);
-        expect(generatedTypeDefinitions).toMatch(/c\s*:\s*string\s*;/);
+        expect(generatedTypeDefinitions).toMatch(/c\s*:\s*MultiLanguageText\s*;/);
     });
 
     it('works for enumeration types', async function () {
@@ -231,13 +231,13 @@ describe('Generation of types from aspect model', (): void => {
         expect(generatedTypeDefinitions).toMatch(/NUMBER_19\s*=\s*19\s*,/);
 
         expect(generatedTypeDefinitions).toMatch(
-            /static StatusInProgress\s*=\s*new PartStatus\('inprogress', \{value: 'In Progress', language: 'en'}, 'StatusInProgress.partStatusAttributeDescription'\);/
+            /static StatusInProgress\s*=\s*new PartStatus\(\s*'inprogress'\s*,\s*10\s*,\s*\{value:\s*'In Progress'\s*,\s*language:\s*'en'\s*\}\);/
         );
         expect(generatedTypeDefinitions).toMatch(
-            /static StatusCancelled\s*=\s*new PartStatus\('cancelled', \{value: 'Cancelled', language: 'en'}, 'StatusCancelled.partStatusAttributeDescription'\);/
+            /static StatusCancelled\s*=\s*new PartStatus\('cancelled'\s*,\s*11\s*,\s*\{value:\s*'Cancelled',\s*language:\s*'en'\s*\}\);/
         );
         expect(generatedTypeDefinitions).toMatch(
-            /static StatusInactive\s*=\s*new PartStatus\('inactive', \{value: 'Cancelled', language: 'en'}, 'StatusInactive.partStatusAttributeDescription'\);/
+            /static StatusInactive\s*=\s*new PartStatus\('inactive',\s*55\s*,\s*\{value:\s*'Cancelled'\s*,\s*language:\s*'en'\s*\}\);/
         );
     });
 
@@ -252,7 +252,6 @@ describe('Generation of types from aspect model', (): void => {
             });
 
         // Check the interface definition for the aspect
-        // TODO should not have MultiLanguage inside because it not have langString ...
         expect(generatedTypeDefinitions).toMatch(/export interface TestEntityTypes/);
         expect(generatedTypeDefinitions).toMatch(/a\s*:\s*EntityCharacteristic\s*;/);
 
@@ -273,12 +272,11 @@ describe('Generation of types from aspect model', (): void => {
             });
 
         // Check the interface definition for the aspect
-        expect(generatedTypeDefinitions).toMatch(/export interface MultiLanguageText/);
+        expect(generatedTypeDefinitions).not.toMatch(/export interface MultiLanguageText/);
         expect(generatedTypeDefinitions).toMatch(/export interface TestEntityInstances/);
         expect(generatedTypeDefinitions).toMatch(/export class Enumeration/);
-        // TODO should not have the language because not langString characteristic but i dont know how for the moment ...
-        expect(generatedTypeDefinitions).toMatch(/static Code101\s*=\s*new Enumeration\('101', 'Starting', 'Code101.description'\);/);
-        expect(generatedTypeDefinitions).toMatch(/static Code102\s*=\s*new Enumeration\('102', 'Ready', 'Code102.description'\);/);
+        expect(generatedTypeDefinitions).toMatch(/static Code101\s*=\s*new Enumeration\(\s*101\s*,\s*'Starting'\s*\);/);
+        expect(generatedTypeDefinitions).toMatch(/static Code102\s*=\s*new Enumeration\(\s*102\s*,\s*'Ready'\s*\);/);
         expect(generatedTypeDefinitions).toMatch(/step\s*:\s*number\s*;/);
         expect(generatedTypeDefinitions).toMatch(/export interface Entity/);
         expect(generatedTypeDefinitions).toMatch(/description\s*:\s*string\s*;/);
@@ -298,12 +296,15 @@ describe('Generation of types from aspect model', (): void => {
         expect(generatedTypeDefinitions).toMatch(/export interface MultiLanguageText/);
         expect(generatedTypeDefinitions).toMatch(/export interface TestEntityInstancesWithLangString/);
         expect(generatedTypeDefinitions).toMatch(/export class Enumeration/);
-        // TODO should have the language inside but i dont know how for the moment ...
-        // expect(generatedTypeDefinitions).toMatch(/static Code101\s*=\s*new Enumeration\('101', 'Starting', 'Code101.description'\);/);
-        // expect(generatedTypeDefinitions).toMatch(/static Code102\s*=\s*new Enumeration\('102', 'Ready', 'Code102.description'\);/);
+        expect(generatedTypeDefinitions).toMatch(
+            /static Code101\s*=\s*new Enumeration\(\s*101\s*,\s*\{value\s*:\s*'Starting'\s*,\s*language:\s*'en'\}\);/
+        );
+        expect(generatedTypeDefinitions).toMatch(
+            /static Code102\s*=\s*new Enumeration\(\s*102\s*\s*,\s*\{value\s*:\s*'Ready',\s*language:\s*'en'\}\);/
+        );
         expect(generatedTypeDefinitions).toMatch(/step\s*:\s*number\s*;/);
         expect(generatedTypeDefinitions).toMatch(/export interface Entity/);
-        expect(generatedTypeDefinitions).toMatch(/description\s*:\s*string\s*;/);
+        expect(generatedTypeDefinitions).toMatch(/description\s*:\s*MultiLanguageText\s*;/);
     });
 
     it('works for entity instances with collection of langString', async function (): Promise<void> {
@@ -318,14 +319,17 @@ describe('Generation of types from aspect model', (): void => {
 
         // Check the interface definition for the aspect
         expect(generatedTypeDefinitions).toMatch(/export interface MultiLanguageText/);
-        expect(generatedTypeDefinitions).toMatch(/export interface TestEntityInstancesWithLangString/);
+        expect(generatedTypeDefinitions).toMatch(/export interface TestEntityInstancesWithCollectionOfLangString/);
         expect(generatedTypeDefinitions).toMatch(/export class Enumeration/);
-        // TODO should have the language inside and in some case also the Array but i dont know how for the moment ...
-        // expect(generatedTypeDefinitions).toMatch(/static Code101\s*=\s*new Enumeration\('101', 'Starting', 'Code101.description'\);/);
-        // expect(generatedTypeDefinitions).toMatch(/static Code102\s*=\s*new Enumeration\('102', 'Ready', 'Code102.description'\);/);
+        expect(generatedTypeDefinitions).toMatch(
+            /static Code101\s*=\s*new Enumeration\s*\(\s*101\s*,\s*\(\s*\[\s*\{\s*value\s*:\s*'Starting'\s*,\s*language\s*:\s*'en'\s*\}\s*,\s*\{\s*value\s*:\s*'Start'\s*,\s*language\s*:\s*'de'\s*\}\s*\]\s*as\s+Array<MultiLanguageText>\s*\)\s*\)\s*;/
+        );
+        expect(generatedTypeDefinitions).toMatch(
+            /static Code102\s*=\s*new Enumeration\s*\(\s*102\s*,\s*\(\s*\[\s*\{\s*value\s*:\s*'Ready'\s*,\s*language\s*:\s*'en'\s*\}\s*,\s*\{\s*value\s*:\s*'Los'\s*,\s*language\s*:\s*'de'\s*\}\s*\]\s*as\s+Array<MultiLanguageText>\s*\)\s*\)\s*;/
+        );
         expect(generatedTypeDefinitions).toMatch(/step\s*:\s*number\s*;/);
+        expect(generatedTypeDefinitions).toMatch(/description\s*:\s*Array<MultiLanguageText>\s*;/);
         expect(generatedTypeDefinitions).toMatch(/export interface Entity/);
-        expect(generatedTypeDefinitions).toMatch(/description\s*:\s*string\s*;/);
     });
 
     it('works for collection types', async function (): Promise<void> {
