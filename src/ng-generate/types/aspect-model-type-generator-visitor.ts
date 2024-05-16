@@ -30,7 +30,7 @@ import {
 } from '@esmf/aspect-model-loader';
 import {TypesSchema} from './schema';
 import {isLangString, processType, resolveJsPropertyType} from '../components/shared/utils';
-import {MultiLanguageText} from '../../app/shared/types/batches/v010/batches.types';
+import {MultiLanguageText} from '@esmf/aspect-model-loader/dist/instantiator/characteristic/enumeration-characteristic-instantiator';
 
 export function visitAspectModel(options: TypesSchema): Rule {
     return async (tree: Tree) => {
