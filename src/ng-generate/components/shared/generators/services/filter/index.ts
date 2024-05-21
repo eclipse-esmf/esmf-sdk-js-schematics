@@ -358,7 +358,7 @@ function getDateRemote(values: PropValue[]): string {
 
 function getDateNotRemote(values: PropValue[]): string {
     const dateFilterLogic = (value: any, index: number) => `
-    const {${value.propertyName}From, ${value.propertyName}To} = this.${value.propertyName}Group.value;
+    const {${value.propertyName}From, ${value.propertyName}To} = this.${value.propertyName}Group.value as any;;
 
     const ${value.propertyName}StartDate: Date | null = ${value.propertyName}From ? this.createDateAsUTC(new Date(${
         value.propertyName
