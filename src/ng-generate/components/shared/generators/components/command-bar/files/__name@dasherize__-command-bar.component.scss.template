@@ -8,3 +8,7 @@
       padding-right: 20px;
     }
 <% } %>
+
+mat-toolbar{
+    overflow: hidden;
+}
