@@ -272,11 +272,11 @@
      <% for(let property of propValues) { %>
         <% if (options.isDateQuickFilter && property.isDate) { %>
             <% if ((datePickerType(options.datePickers, property) === "startAndEndDatePicker") || (datePickerType(options.datePickers, property) === "startOrEndDatePicker")) { %>
-             <div met-menu-item *ngIf="!isInCollapsedMenu('start-end-<%= property.propertyName %>')" >
+             <div met-menu-item *ngIf="isInCollapsedMenu('start-end-<%= property.propertyName %>')" >
                 <div (click)="openInDialog<%= property.propertyName %>()">Set <%= property.propertyName %></div> 
                 </div>
             <% } else if (datePickerType(options.datePickers, property) === "singleDatePicker") { %>
-             <div mat-menu-item *ngIf="!isInCollapsedMenu('single-date-<%= property.propertyName %>')" >
+             <div mat-menu-item *ngIf="isInCollapsedMenu('single-date-<%= property.propertyName %>')" >
                      <div (click)="openInDialog<%= property.propertyName %>()">Set <%= property.propertyName %></div> 
              </div>
             <% } %>
@@ -336,8 +336,8 @@
                         <mat-datepicker-toggle data-test="datepicker-toggle" matSuffix [for]="<%= property.propertyName %>Picker"></mat-datepicker-toggle>
                             <mat-date-range-picker data-test="date-range-picker" #<%= property.propertyName %>Picker>
                                 <mat-date-range-picker-actions data-test="date-range-picker-actions">
-                                <button data-test="date-picker-cancel-button" mat-button matDateRangePickerCancel>{{ 'cancel' | transloco }}</button>
-                                <button data-test="date-picker-apply-button" mat-raised-button color="primary" matDateRangePickerApply>{{ 'apply' | transloco }}</button>
+                                <button data-test="date-picker-cancel-button" mat-dialog-close mat-button matDateRangePickerCancel>{{ 'cancel' | transloco }}</button>
+                                <button data-test="date-picker-apply-button" mat-dialog-close mat-raised-button color="primary" matDateRangePickerApply>{{ 'apply' | transloco }}</button>
                             </mat-date-range-picker-actions>
                         </mat-date-range-picker>
                         <mat-error *ngIf="filterService.<%= property.propertyName %>Group.get('fromControl')?.hasError('matStartDateInvalid')">{{ 'date.fromError' | transloco }}</mat-error>
@@ -356,8 +356,8 @@
                 <mat-datepicker-toggle data-test="datepicker-toggle" matIconSuffix [for]="<%= property.propertyName %>Picker"></mat-datepicker-toggle>
                 <mat-datepicker data-test="date-range-picker" #<%= property.propertyName %>Picker>
                     <mat-datepicker-actions data-test="date-range-picker-actions">
-                        <button data-test="date-picker-cancel-button" mat-button matDatepickerCancel>{{ 'cancel' | transloco }}</button>
-                        <button data-test="date-picker-apply-button" mat-raised-button color="primary" matDatepickerApply>
+                        <button data-test="date-picker-cancel-button" mat-dialog-close mat-button matDatepickerCancel>{{ 'cancel' | transloco }}</button>
+                        <button data-test="date-picker-apply-button" mat-dialog-close mat-dialog-close mat-raised-button color="primary" matDatepickerApply>
                             {{ 'apply' | transloco }}
                         </button>
                     </mat-datepicker-actions>
