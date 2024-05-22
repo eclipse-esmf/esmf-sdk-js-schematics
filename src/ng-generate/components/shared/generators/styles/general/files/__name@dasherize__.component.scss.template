@@ -16,7 +16,7 @@ $gray-300: #e0e0e0;
     overflow-y: auto;
 
     .full-width-table {
-      width: 100%;
+      min-width: 100%;
 
       .mat-mdc-row:not([data-test='no-data-table-row']):not(.selected-row):hover {
         background: $gray-100;
@@ -135,6 +135,22 @@ $gray-300: #e0e0e0;
       display: flex;
       overflow: hidden;
       scroll-behavior: smooth;
+    }
+  }
+}
+
+.resizing {
+  .js-sdk-component-container {
+    // Ignore columns with active sorting
+    .mat-sort-header[aria-sort]:not([aria-sort='ascending']):not([aria-sort='descending']) {
+      .mat-sort-header-container::after {
+        // Compensate the empty space when sorting indicator is hidden for a resizable column
+        content: '';
+        display: block;
+        height: 100%;
+        min-width: 18px;
+        max-width: 18px;
+      }
     }
   }
 }
