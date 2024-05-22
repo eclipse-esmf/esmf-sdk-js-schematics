@@ -9,6 +9,8 @@
     }
 <% } %>
 
-mat-toolbar{
+mat-toolbar {
     overflow: hidden;
 }
+
+.padding-40 { padding:40px; }

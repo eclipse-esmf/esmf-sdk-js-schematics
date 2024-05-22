@@ -323,6 +323,7 @@
     <% if (options.isDateQuickFilter && property.isDate) { %>
         <% if ((datePickerType(options.datePickers, property) === "startAndEndDatePicker") || (datePickerType(options.datePickers, property) === "startOrEndDatePicker")) { %>
                   <ng-template #<%= property.propertyName %>>
+                  <div class="padding-40" >
                     <mat-form-field data-test="form-field-date-time" id="start-end-<%= property.propertyName %>"  appearance="fill" >
                         <mat-label data-test="date-time-label">{{ '<%= options.versionedAccessPrefix %><%= property.propertyValue %>.preferredName' | transloco }}</mat-label>
                         <mat-date-range-input data-test="date-range-input" [rangePicker]="<%= property.propertyName %>Picker" [formGroup]="filterService.<%= property.propertyName %>Group">
@@ -347,9 +348,11 @@
                             <mat-error *ngIf="filterService.<%= property.propertyName %>Group.get('toControl')?.hasError('required')">{{ 'date.toRequired' | transloco }}</mat-error>
                         <% } %>
                     </mat-form-field>
+                    </div>
                   </ng-template>
         <% } else if (datePickerType(options.datePickers, property) === "singleDatePicker") { %>
             <ng-template #<%= property.propertyName %>>
+            <div class="padding-40" >
             <mat-form-field data-test="form-field-date-time" id="single-date-<%= property.propertyName %>" appearance="fill"  [formGroup]="filterService.<%= property.propertyName %>Group">
                 <mat-label data-test="date-time-label">{{ '<%= options.versionedAccessPrefix %><%= property.propertyValue %>.preferredName' | transloco }}</mat-label>
                 <input matInput [matDatepicker]="<%= property.propertyName %>Picker" [placeholder]="'date.from' | transloco" formControlName="fromControl" (dateChange)="triggerReloadFilter()">
@@ -363,11 +366,13 @@
                     </mat-datepicker-actions>
                 </mat-datepicker>
             </mat-form-field>
+            </div>
             </ng-template>
         <% } %>
     <% } %>
     <% if (options.isEnumQuickFilter && property.isEnum) { %>
       <ng-template #<%= property.propertyName %>>
+      <div class="padding-40" >     
         <mat-form-field data-test="form-field-select" id="form-field-select-<%= property.propertyName %>"  appearance="fill">
             <mat-label data-test="select-label">{{ '<%= options.versionedAccessPrefix %><%= property.propertyValue %>.preferredName' | transloco }}</mat-label>
                 <mat-select data-test="select" [(value)]="filterService.<%= property.propertyName %>Selected" #<%= property.propertyName %>Select multiple>
@@ -400,6 +405,7 @@
             </div>
             </mat-select>
             </mat-form-field>
+           </div> 
           </ng-template>
     <% } %>
 <% } %>
