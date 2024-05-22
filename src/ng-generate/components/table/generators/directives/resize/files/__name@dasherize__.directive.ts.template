@@ -71,7 +71,7 @@ export class <%= classify(name) %>Directive implements OnInit {
         this.mouseLeaveListener();
         this.dragging.emit(true);
         this.startX = event.pageX;
-        this.startWidth = this.column.getBoundingClientRect().width;
+        this.startWidth = this.column.offsetWidth;
         this.renderer.addClass(this.document.body, 'resizing');
         this.mouseMoveListener = this.renderer.listen(this.table, 'mousemove', this.onMouseMove);
         this.mouseUpListener = this.renderer.listen('document', 'mouseup', this.onMouseUp);
