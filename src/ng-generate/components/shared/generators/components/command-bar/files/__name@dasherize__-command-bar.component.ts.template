@@ -150,7 +150,8 @@ export class <%= classify(name) %>CommandBarComponent implements AfterViewInit {
 
        for (let i = 0; i < this.initialCompWidths.length; i++) {
           const buttonWidth = this.initialCompWidths[i];
-          if (usedWidth + buttonWidth.width >= containerWidth) {
+          // 70 is for the width of the collapsed menu width
+          if (usedWidth + buttonWidth.width + 70 >= containerWidth) {
             this.hiddenComponents.push(buttonWidth.id);
           } else {
             usedWidth += buttonWidth.width;
@@ -161,4 +162,16 @@ export class <%= classify(name) %>CommandBarComponent implements AfterViewInit {
     isInCollapsedMenu(id: string) {
       return this.hiddenComponents.includes(id);
     }
+
+    <% if (options.componentType === 'table' && options.hasSearchBar) { %>
+      openSettingsFromCollapsed() {      
+        const configMenuDialogRef =  this.dialog.open(MovementTableConfigMenuComponent, {
+              data: { configs: this.configs, keyLocalStorage: this.KEY_LOCAL_STORAGE_MOVEMENT_TABLE_V100_CONFIG},
+            }
+        );
+        configMenuDialogRef.afterClosed().subscribe((result) =>{ if(result){
+          this.triggerSetConfiguration(result)}
+        });
+      }
+    <% } %>
 }

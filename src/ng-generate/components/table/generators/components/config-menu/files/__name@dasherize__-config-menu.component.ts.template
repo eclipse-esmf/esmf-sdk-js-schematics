@@ -1,7 +1,8 @@
 /** <%= options.generationDisclaimerText %> **/
-import {Component, EventEmitter, Output} from '@angular/core';
+import {Component, EventEmitter, Inject, Input, Optional, Output} from '@angular/core';
 import {JSSdkLocalStorageService} from "<% if (options.enableVersionSupport) { %>../<% } %>../../services/storage.service";
 import {Config} from './<%= dasherize(name) %>.component';
+import {MAT_DIALOG_DATA} from '@angular/material/dialog';
 
 @Component({
     selector: '<%= dasherize(name) %>-config-menu',
@@ -10,14 +11,22 @@ import {Config} from './<%= dasherize(name) %>.component';
 })
 export class <%= classify(name) %>ConfigMenuComponent {
     @Output() configChangedEvent = new EventEmitter<Array<Config>>();
+    @Input() isOpenedFromMatMenu = false;
 
     keyLocalStorage: string = '';
     closeConfigMenu: boolean = false;
     configs: Array<Config> = [];
     configsDefault: Array<Config> = [];
 
-    constructor(private storageService: JSSdkLocalStorageService) {
-        this.configsDefault = JSON.parse(JSON.stringify(this.configs));
+    constructor(private storageService: JSSdkLocalStorageService, @Optional() @Inject(MAT_DIALOG_DATA) public data: {configs: Array<Config>, keyLocalStorage:string}) {
+            if (!data) {
+                this.configsDefault = JSON.parse(JSON.stringify(this.configs));
+            }
+            else{
+                this.configs = data.configs;
+                this.configsDefault = JSON.parse(JSON.stringify(data.configs));
+                this.keyLocalStorage = data.keyLocalStorage;
+            }
     }
 
     closeMenu(): void {
@@ -26,11 +35,12 @@ export class <%= classify(name) %>ConfigMenuComponent {
     }
 
     stopMenuClosing(event: MouseEvent): void {
+      if(this.isOpenedFromMatMenu){
         if (this.closeConfigMenu) {
             return;
         }
         event.stopPropagation();
-    }
+    } }
 
     configClick(event: MouseEvent, config: Config): void {
         config.selected = !config.selected;

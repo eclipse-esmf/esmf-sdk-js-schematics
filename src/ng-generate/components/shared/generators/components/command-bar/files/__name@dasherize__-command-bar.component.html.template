@@ -179,13 +179,14 @@
     <% } %>
 
     <button  mat-icon-button [matMenuTriggerFor]="collapsedMenu" *ngIf="hiddenComponents.length>0">
-      <mat-icon>more_vert</mat-icon>
+      <mat-icon class="material-icons">more_vert</mat-icon>
     </button>
 </mat-toolbar>
 
 <% if (options.componentType === 'table' && options.hasSearchBar) { %>
     <mat-menu data-test="column-menu" #configurationMenu="matMenu" class="column-menu">
       <<%= dasherize(name) %>-config-menu
+        [isOpenedFromMatMenu]="true" 
         #configurationMenuComponent
         (configChangedEvent)="triggerSetConfiguration($event)"
       ></<%= dasherize(name) %>-config-menu>
@@ -202,7 +203,7 @@
 
 <mat-menu #collapsedMenu="matMenu">
     <% if (options.hasSearchBar) { %>
-      <div met-menu-item *ngIf="isInCollapsedMenu('search-form-field-<%= options.componentType %>')" >
+      <div mat-menu-item *ngIf="isInCollapsedMenu('search-form-field-<%= options.componentType %>')" >
         <mat-form-field data-test="search-form-field-<%= options.componentType %>" appearance="fill">
           <mat-label data-test="search-label">{{ 'search' | transloco }}</mat-label>
           <input
@@ -272,7 +273,7 @@
      <% for(let property of propValues) { %>
         <% if (options.isDateQuickFilter && property.isDate) { %>
             <% if ((datePickerType(options.datePickers, property) === "startAndEndDatePicker") || (datePickerType(options.datePickers, property) === "startOrEndDatePicker")) { %>
-             <div met-menu-item *ngIf="isInCollapsedMenu('start-end-<%= property.propertyName %>')" >
+             <div mat-menu-item *ngIf="isInCollapsedMenu('start-end-<%= property.propertyName %>')" >
                 <div (click)="openInDialog<%= property.propertyName %>()">Set <%= property.propertyName %></div> 
                 </div>
             <% } else if (datePickerType(options.datePickers, property) === "singleDatePicker") { %>
@@ -305,11 +306,10 @@
     </div>
 
     <% if (options.componentType === 'table' && options.hasSearchBar) { %>
-      <div
+       <div
         mat-menu-item
         *ngIf="isInCollapsedMenu('open-configuration-button')"
-            [matMenuTriggerFor]="configurationMenu"
-            (menuOpened)="triggerInitOpenedConfigurationDialog()"
+         (click)="openSettingsFromCollapsed()"
         >
         <mat-icon data-test="open-configuration-icon-collapsed" class="material-icons"
           >settings
