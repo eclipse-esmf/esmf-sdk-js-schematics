@@ -95,7 +95,7 @@ export abstract class FormFieldStrategy {
         const applicableConstraints: Constraint[] = this.constraints.filter(
             constraint =>
                 // Check that it's not excluded explicitly
-                !this.options.excludedConstraints.includes(constraint.aspectModelUrn) &&
+                (this.options.excludedConstraints ? !this.options.excludedConstraints.includes(constraint.aspectModelUrn) : true) &&
                 // It's not a direct instance of "DefaultConstraint" (it contains no validation rules)
                 constraint.constructor !== DefaultConstraint
         );
