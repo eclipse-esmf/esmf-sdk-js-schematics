@@ -66,8 +66,14 @@ function getPropertiesToCreateFilters(options: any, allProps: Array<Property>): 
         return [];
     }
 
+    let allPropsInOrder = allProps;;
+
+    // if(options.commandBarFilterOrder.length>0){
+    //    allPropsInOrder = allProps.reverse();
+    // }
+
     const propertyValues: PropValue[] = [];
-    allProps.forEach((property: Property) => {
+    allPropsInOrder.forEach((property: Property) => {
         if (property.effectiveDataType?.isComplex && property.characteristic instanceof DefaultSingleEntity) {
             const complexPropObj = options.templateHelper.getComplexProperties(property, options);
             complexPropObj.properties.forEach((complexProp: Property) => {

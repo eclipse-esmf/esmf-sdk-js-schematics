@@ -320,6 +320,14 @@ export const generateLabelsForExcludedProperties = (answers: any) => ({
     default: false,
 });
 
+export const requestSetCommandBarFilterOrder =  (allAnswers: any, templateHelper:any) =>({
+    type: 'list',
+    name: 'commandBarFilterOrder',
+    message: 'Do you want to set the filter order from command bar?',
+    choices: ['some'],
+    default: [],
+});
+
 function getAllPropertiesFromAspectOrEntity(templateHelper: any, selectedElement: any, allAnswers: any) {
     const allProperties: Array<any> = [];
     templateHelper
@@ -510,3 +518,15 @@ export async function getDatePickerType(templateHelper: TemplateHelper, allAnswe
 async function datePickerTypePrompt(property: Property): Promise<any> {
     return inquirer.prompt([requestChooseDatePickerType(property)]);
 }
+
+async function commandBarFilterOrderPrompt(templateHelper: TemplateHelper, allAnswers: any): Promise<any> {
+    return inquirer.prompt([requestSetCommandBarFilterOrder(allAnswers,templateHelper)]);
+}
+
+
+export async function getCommandBarFilterOrder(templateHelper: TemplateHelper, allAnswers: any): Promise<object> {
+   // allAnswers.selectedModelElementUrn = answers.selectedModelElementUrn || templateHelper.resolveType(aspect).aspectModelUrn;
+
+ return await commandBarFilterOrderPrompt(allAnswers,templateHelper);
+}
+

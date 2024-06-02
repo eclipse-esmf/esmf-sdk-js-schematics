@@ -28,6 +28,7 @@ import {
     requestOverwriteFiles,
     requestSelectedModelElement,
     selectedAspectModelJsonPath,
+    requestSetCommandBarFilterOrder
 } from '../shared/prompt-complex-questions';
 import {
     requestAddCommandBar,
@@ -103,11 +104,13 @@ async function fetchUserSpecificCardConfigurations(
         requestAddCommandBar,
         requestCommandBarFunctionality(aspect, allAnswers, templateHelper),
         chooseLanguageForSearch(aspect, allAnswers, templateHelper),
+        requestSetCommandBarFilterOrder(allAnswers, templateHelper),
     ]);
     const datePickerTypeAnswers = commandbarFunctionalityAnswers.enabledCommandBarFunctions.includes('addDateQuickFilters')
         ? await getDatePickerType(templateHelper, allAnswers, gatherInitialModelElement, aspect)
         : {};
     const customBarActionsAnswers = await inquirer.prompt([customCommandBarActions(allAnswers, templateHelper)]);
+    
     const enableRemoteDataHandlingAnswers = await inquirer.prompt([requestEnableRemoteDataHandling, requestCustomService]);
     const aspectModelVersionSupportAnswers = await inquirer.prompt([requestAspectModelVersionSupport]);
     const optionalMaterialThemeAnswers = await inquirer.prompt([requestOptionalMaterialTheme(options)]);

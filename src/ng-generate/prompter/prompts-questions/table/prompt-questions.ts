@@ -27,6 +27,7 @@ import {
     requestOverwriteFiles,
     requestSelectedModelElement,
     selectedAspectModelJsonPath,
+    getCommandBarFilterOrder
 } from '../shared/prompt-complex-questions';
 import {ComponentType, Schema} from '../../../components/shared/schema';
 import {Aspect, BaseMetaModelElement, DefaultEntity} from '@esmf/aspect-model-loader';
@@ -104,11 +105,15 @@ async function fetchUserSpecificTableConfigurations(
     const commandbarFunctionalityAnswers = await inquirer.prompt([
         requestAddCommandBar,
         requestCommandBarFunctionality(aspect, allAnswers, templateHelper),
-        chooseLanguageForSearch(aspect, allAnswers, templateHelper),
+        chooseLanguageForSearch(aspect, allAnswers, templateHelper)
     ]);
     const datePickerTypeAnswers = commandbarFunctionalityAnswers.enabledCommandBarFunctions?.includes('addDateQuickFilters')
         ? await getDatePickerType(templateHelper, allAnswers, gatherInitialModelElement, aspect)
         : {};
+
+    const setCommandBarFilterOrder =  ['addDateQuickFilters', 'addEnumQuickFilters'].some(item => commandbarFunctionalityAnswers.enabledCommandBarFunctions.includes(item))
+    ? await getCommandBarFilterOrder(templateHelper, allAnswers)
+    : {};
     const customBarActionsAnswers = await inquirer.prompt([customCommandBarActions(allAnswers, templateHelper)]);
     const enableRemoteDataHandlingAnswers = await inquirer.prompt([requestEnableRemoteDataHandling, requestCustomService]);
     const aspectModelVersionSupportAnswers = await inquirer.prompt([requestAspectModelVersionSupport]);
@@ -130,6 +135,7 @@ async function fetchUserSpecificTableConfigurations(
         ...commandbarFunctionalityAnswers,
         ...datePickerTypeAnswers,
         ...customBarActionsAnswers,
+        ...setCommandBarFilterOrder,
         ...enableRemoteDataHandlingAnswers,
         ...aspectModelVersionSupportAnswers,
         ...optionalMaterialThemeAnswers,
