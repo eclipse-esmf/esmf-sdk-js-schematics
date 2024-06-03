@@ -527,7 +527,7 @@ async function datePickerTypePrompt(property: Property): Promise<any> {
     return inquirer.prompt([requestChooseDatePickerType(property)]);
 }
 
-async function commandBarFilterOrderPrompt(templateHelper: TemplateHelper, allAnswers: any,answers: any, aspect: Aspect): Promise<any> {
+async function commandBarFilterOrderPrompt(templateHelper: TemplateHelper, allAnswers: any,answers: any, aspect: Aspect, options: Schema): Promise<any> {
     const choices = [
         'Banana',
         'Apple',
@@ -540,10 +540,13 @@ async function commandBarFilterOrderPrompt(templateHelper: TemplateHelper, allAn
     orderedChoices.forEach((item, index) => {
         console.log(`${index + 1}. ${item}`);
     });
+    console.log(`-------> ${allAnswers.addCommandBar}`);
+
+    options['commandBarFilterOrder'] = orderedChoices;
   }
 
-export async function getCommandBarFilterOrder(templateHelper: TemplateHelper, allAnswers: any, answers: any, aspect: Aspect): Promise<object> {
- return await commandBarFilterOrderPrompt(allAnswers,templateHelper,answers,aspect);
+export async function getCommandBarFilterOrder(templateHelper: TemplateHelper, allAnswers: any, answers: any, aspect: Aspect, options:Schema): Promise<object> {
+ return await commandBarFilterOrderPrompt(allAnswers,templateHelper,answers,aspect, options);
 }
 
 async function orderItems(items:any) {

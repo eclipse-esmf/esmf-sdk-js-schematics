@@ -112,7 +112,7 @@ async function fetchUserSpecificTableConfigurations(
         : {};
 
     const setCommandBarFilterOrder =  ['addDateQuickFilters', 'addEnumQuickFilters'].some(item => commandbarFunctionalityAnswers.enabledCommandBarFunctions.includes(item))
-    ? await getCommandBarFilterOrder(templateHelper, allAnswers,gatherInitialModelElement,aspect)
+    ? await getCommandBarFilterOrder(templateHelper, allAnswers,gatherInitialModelElement,aspect,options)
     : {};
     const customBarActionsAnswers = await inquirer.prompt([customCommandBarActions(allAnswers, templateHelper)]);
     const enableRemoteDataHandlingAnswers = await inquirer.prompt([requestEnableRemoteDataHandling, requestCustomService]);
