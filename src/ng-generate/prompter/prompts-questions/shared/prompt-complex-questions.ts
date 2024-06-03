@@ -10,7 +10,6 @@
  *
  * SPDX-License-Identifier: MPL-2.0
  */
-
 import {
     Aspect,
     AspectModelLoader,
@@ -32,6 +31,7 @@ import {
     Entity,
     Property
 } from '@esmf/aspect-model-loader';
+
 import {ComponentType, Schema} from '../../../components/shared/schema';
 import {TemplateHelper} from '../../../../utils/template-helper';
 import * as locale from 'locale-codes';
@@ -282,7 +282,7 @@ export const requestSelectedModelElement = (
     type: 'list',
     name: 'selectedModelElementUrn',
     message: `Choose a specific Entity or Aspect to show as ${type}:`,
-    choices: getAspectAndEntities(aspect, type),
+    choices: getAspectAndEntities(aspect),
     size: 5,
     when: () => {
         return conditionFunction(aspect, loader);
@@ -320,13 +320,21 @@ export const generateLabelsForExcludedProperties = (answers: any) => ({
     default: false,
 });
 
-export const requestSetCommandBarFilterOrder =  (allAnswers: any, templateHelper:any) =>({
-    type: 'list',
-    name: 'commandBarFilterOrder',
-    message: 'Do you want to set the filter order from command bar?',
-    choices: ['some'],
-    default: [],
-});
+// export const requestSetCommandBarFilterOrder =  (allAnswers: any, templateHelper:any,answers: any, aspect: Aspect) =>({
+//     type: 'list',
+//     name: 'commandBarFilterOrder',
+//     message: 'Do you want to set the filter order from command bar (please move arrows ... )?',
+//     choices: [{name:'vlad', value: 13}, {name: 'stefan', value:11},{name: 'matei', value:13},{name: 'filip', value:8}  ],
+//     default: [],
+// }).then(function(answers) {
+//     console.log('Chosen line: ' answers.line);
+//     /*
+//     OUTPUT :
+//     Chosen line: 2
+//     */
+// });
+
+
 
 function getAllPropertiesFromAspectOrEntity(templateHelper: any, selectedElement: any, allAnswers: any) {
     const allProperties: Array<any> = [];
@@ -362,7 +370,7 @@ function getAllPropertiesFromAspectOrEntity(templateHelper: any, selectedElement
     return allProperties;
 }
 
-function getAspectAndEntities(aspect: Aspect, type: string) {
+function getAspectAndEntities(aspect: Aspect) {
     return [
         {name: `${aspect.aspectModelUrn} (Aspect)`, value: `${aspect.aspectModelUrn}`},
         ...loader
@@ -519,14 +527,69 @@ async function datePickerTypePrompt(property: Property): Promise<any> {
     return inquirer.prompt([requestChooseDatePickerType(property)]);
 }
 
-async function commandBarFilterOrderPrompt(templateHelper: TemplateHelper, allAnswers: any): Promise<any> {
-    return inquirer.prompt([requestSetCommandBarFilterOrder(allAnswers,templateHelper)]);
+async function commandBarFilterOrderPrompt(templateHelper: TemplateHelper, allAnswers: any,answers: any, aspect: Aspect): Promise<any> {
+    const choices = [
+        'Banana',
+        'Apple',
+        'Orange',
+        'Mango'
+      ];
+
+    const orderedChoices = await orderItems(choices);
+    console.log('You have ordered the filters as follows:');
+    orderedChoices.forEach((item, index) => {
+        console.log(`${index + 1}. ${item}`);
+    });
+  }
+
+export async function getCommandBarFilterOrder(templateHelper: TemplateHelper, allAnswers: any, answers: any, aspect: Aspect): Promise<object> {
+ return await commandBarFilterOrderPrompt(allAnswers,templateHelper,answers,aspect);
 }
 
-
-export async function getCommandBarFilterOrder(templateHelper: TemplateHelper, allAnswers: any): Promise<object> {
-   // allAnswers.selectedModelElementUrn = answers.selectedModelElementUrn || templateHelper.resolveType(aspect).aspectModelUrn;
-
- return await commandBarFilterOrderPrompt(allAnswers,templateHelper);
-}
-
+async function orderItems(items:any) {
+    let orderedItems = [...items];
+    let exit = false;
+  
+    while (!exit) {
+      console.log('Order the command bar filters:');
+      orderedItems.forEach((item, index) => {
+        console.log(`${index + 1}. ${item}`);
+      });
+  
+      const answers = await inquirer.prompt([
+        {
+          type: 'input',
+          name: 'command',
+          message: 'Enter the number of the item to move, followed by "u" to move up or "d" to move down (e.g., "2u" or "3d"). Press "q" to finish:',
+          validate: (input) => {
+            if (input.toLowerCase() === 'q') return true;
+            const match = input.match(/^(\d+)([ud])$/);
+            if (!match) return 'Please enter a valid command or "q" to finish.';
+            const index = parseInt(match[1], 10) - 1;
+            const direction = match[2];
+            if (index < 0 || index >= orderedItems.length) return 'Invalid item number.';
+            if (direction === 'u' && index === 0) return 'Item is already at the top.';
+            if (direction === 'd' && index === orderedItems.length - 1) return 'Item is already at the bottom.';
+            return true;
+          }
+        }
+      ]);
+  
+      const command = answers.command.toLowerCase();
+      if (command === 'q') {
+        exit = true;
+      } else {
+        const match = command.match(/^(\d+)([ud])$/);
+        const index = parseInt(match[1], 10) - 1;
+        const direction = match[2];
+  
+        if (direction === 'u') {
+          [orderedItems[index], orderedItems[index - 1]] = [orderedItems[index - 1], orderedItems[index]];
+        } else if (direction === 'd') {
+          [orderedItems[index], orderedItems[index + 1]] = [orderedItems[index + 1], orderedItems[index]];
+        }
+      }
+    }
+  
+    return orderedItems;
+  }
