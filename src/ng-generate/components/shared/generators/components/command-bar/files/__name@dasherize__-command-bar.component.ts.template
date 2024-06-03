@@ -165,7 +165,7 @@ export class <%= classify(name) %>CommandBarComponent implements AfterViewInit {
 
     <% if (options.componentType === 'table' && options.hasSearchBar) { %>
       openSettingsFromCollapsed() {      
-        const configMenuDialogRef =  this.dialog.open(<%= classify(name) %>TableConfigMenuComponent,{
+        const configMenuDialogRef =  this.dialog.open(<%= classify(name) %>ConfigMenuComponent,{
               data: { configs: this.configs, keyLocalStorage: this.<%= options.localStorageKeyConfig %>},
             }
         );
