@@ -504,9 +504,9 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
           <% if (options.addRowCheckboxes) { %>
               this.trimSelectionToCurrentPage();
           <% } %>
-      <% } %>
 
-      this.tableUpdateFinishedEvent.emit();
+          this.tableUpdateFinishedEvent.emit();
+      <% } %>
     }
 
     <% if (!options.enableRemoteDataHandling) { %>
