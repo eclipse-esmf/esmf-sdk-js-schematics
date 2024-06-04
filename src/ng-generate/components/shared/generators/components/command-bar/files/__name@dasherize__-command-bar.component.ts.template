@@ -129,7 +129,7 @@ export class <%= classify(name) %>CommandBarComponent implements AfterViewInit {
       const compWidths: any[] = this.components
       .toArray()
       .map((comp) => 
-        ( {width: comp.nativeElement.clientWidth, id: comp.nativeElement.id }));
+        ( {width: comp.nativeElement.clientWidth, id: comp.nativeElement.getAttribute('data-resp') }));
 
       if(this.initialCompWidths.length === 0){
         this.initialCompWidths = compWidths;

@@ -52,7 +52,7 @@
     <% for(let property of propValues) { %>
         <% if (options.isDateQuickFilter && property.isDate) { %>
             <% if ((datePickerType(options.datePickers, property) === "startAndEndDatePicker") || (datePickerType(options.datePickers, property) === "startOrEndDatePicker")) { %>
-                <mat-form-field data-test="form-field-date-time" id="start-end-<%= property.propertyName %>" *ngIf="!isInCollapsedMenu('start-end-<%= property.propertyName %>')" appearance="fill" #toolbarComp>
+                <mat-form-field data-test="form-field-date-time" data-resp="start-end-<%= property.propertyName %>" *ngIf="!isInCollapsedMenu('start-end-<%= property.propertyName %>')" appearance="fill" #toolbarComp>
                     <mat-label data-test="date-time-label">{{ '<%= options.versionedAccessPrefix %><%= property.propertyValue %>.preferredName' | transloco }}</mat-label>
                     <mat-date-range-input data-test="date-range-input" [rangePicker]="<%= property.propertyName %>Picker" [formGroup]="filterService.<%= property.propertyName %>Group">
                         <input data-test="start-date-input" matStartDate [placeholder]="'date.from' | transloco" formControlName="fromControl"
@@ -77,7 +77,7 @@
                     <% } %>
                 </mat-form-field>
             <% } else if (datePickerType(options.datePickers, property) === "singleDatePicker") { %>
-                <mat-form-field data-test="form-field-date-time" id="single-date-<%= property.propertyName %>" appearance="fill" #toolbarComp *ngIf="!isInCollapsedMenu('single-date-<%= property.propertyName %>')" [formGroup]="filterService.<%= property.propertyName %>Group">
+                <mat-form-field data-test="form-field-date-time" data-resp="single-date-<%= property.propertyName %>" appearance="fill" #toolbarComp *ngIf="!isInCollapsedMenu('single-date-<%= property.propertyName %>')" [formGroup]="filterService.<%= property.propertyName %>Group">
                     <mat-label data-test="date-time-label">{{ '<%= options.versionedAccessPrefix %><%= property.propertyValue %>.preferredName' | transloco }}</mat-label>
                     <input matInput [matDatepicker]="<%= property.propertyName %>Picker" [placeholder]="'date.from' | transloco" formControlName="fromControl" (dateChange)="triggerReloadFilter()">
                     <mat-datepicker-toggle data-test="datepicker-toggle" matIconSuffix [for]="<%= property.propertyName %>Picker"></mat-datepicker-toggle>
@@ -93,7 +93,7 @@
             <% } %>
         <% } %>
         <% if (options.isEnumQuickFilter && property.isEnum) { %>
-            <mat-form-field data-test="form-field-select" id="form-field-select-<%= property.propertyName %>" *ngIf="!isInCollapsedMenu('form-field-select-<%= property.propertyName %>')" appearance="fill" #toolbarComp>
+            <mat-form-field data-test="form-field-select" data-resp="form-field-select-<%= property.propertyName %>" *ngIf="!isInCollapsedMenu('form-field-select-<%= property.propertyName %>')" appearance="fill" #toolbarComp>
                 <mat-label data-test="select-label">{{ '<%= options.versionedAccessPrefix %><%= property.propertyValue %>.preferredName' | transloco }}</mat-label>
                     <mat-select data-test="select" [(value)]="filterService.<%= property.propertyName %>Selected" #<%= property.propertyName %>Select multiple>
                         <div class="filter-options-container">
@@ -147,7 +147,7 @@
 
     <% if (options.customCommandBarActions.length > 0) { %>
         <% for(let action of options.customCommandBarActions) { %>
-            <button data-test="toolbar-custom-action-button" id="custom-action-<%= action %>" *ngIf="!isInCollapsedMenu('custom-action-<%= action %>')" mat-icon-button #toolbarComp (click)="executeCustomCommandBarAction('<%= spinalCaseFunc(action) %>')" attr.aria-label="{{ '<%= options.versionedAccessPrefix %><%= spinalCaseFunc(action) %>.customCommandBarAction' | transloco }}">
+            <button data-test="toolbar-custom-action-button" data-resp="custom-action-<%= action %>" *ngIf="!isInCollapsedMenu('custom-action-<%= action %>')" mat-icon-button #toolbarComp (click)="executeCustomCommandBarAction('<%= spinalCaseFunc(action) %>')" attr.aria-label="{{ '<%= options.versionedAccessPrefix %><%= spinalCaseFunc(action) %>.customCommandBarAction' | transloco }}">
                 <mat-icon data-test="toolbar-custom-action-icon" matTooltip="{{'<%= options.versionedAccessPrefix %><%= spinalCaseFunc(action) %>.customCommandBarAction' | transloco }}" aria-hidden="false"
                     <% if (action.lastIndexOf(".") > -1) { %>
                         svgIcon="<%= spinalCaseFunc(action) %>
@@ -161,18 +161,18 @@
         <% } %>
     <% } %>
 
-    <button data-test="refresh-data-button-<%= options.componentType %>" mat-icon-button id="refresh-data-button" *ngIf="!isInCollapsedMenu('refresh-data-button')" #toolbarComp aria-label="Refresh table" (click)="triggerReloadFilter()"
+    <button data-test="refresh-data-button-<%= options.componentType %>" mat-icon-button data-resp="refresh-data-button" *ngIf="!isInCollapsedMenu('refresh-data-button')" #toolbarComp aria-label="Refresh table" (click)="triggerReloadFilter()"
         [matTooltip]="'tableActions.refreshData' | transloco">
       <mat-icon data-test="refresh-data-icon" class="material-icons">autorenew</mat-icon>
     </button>
 
-    <button data-test="export-data-button-<%= options.componentType %>" mat-icon-button id="export-data-button" *ngIf="!isInCollapsedMenu('export-data-button')" #toolbarComp aria-label="Download data as CSV" (click)="triggerExportToCsv()"
+    <button data-test="export-data-button-<%= options.componentType %>" mat-icon-button data-resp="export-data-button" *ngIf="!isInCollapsedMenu('export-data-button')" #toolbarComp aria-label="Download data as CSV" (click)="triggerExportToCsv()"
         [matTooltip]="'tableActions.exportData' | transloco">
       <mat-icon data-test="export-data-icon" class="material-icons">file_download</mat-icon>
     </button>
 
     <% if (options.componentType === 'table' && options.hasSearchBar) { %>
-        <button data-test="open-configuration" id="open-configuration-button" *ngIf="!isInCollapsedMenu('open-configuration-button')" #toolbarComp mat-icon-button aria-label="Open configuration" [matMenuTriggerFor]="configurationMenu" (menuOpened)="triggerInitOpenedConfigurationDialog()"
+        <button data-test="open-configuration" data-resp="open-configuration-button" *ngIf="!isInCollapsedMenu('open-configuration-button')" #toolbarComp mat-icon-button aria-label="Open configuration" [matMenuTriggerFor]="configurationMenu" (menuOpened)="triggerInitOpenedConfigurationDialog()"
             [matTooltip]="'tableActions.openConfig' | transloco">
             <mat-icon data-test="open-configuration-icon" class="material-icons">settings </mat-icon>
         </button>
