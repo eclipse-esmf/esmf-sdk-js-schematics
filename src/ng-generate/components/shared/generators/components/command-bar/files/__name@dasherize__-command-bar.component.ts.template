@@ -1,6 +1,7 @@
 /** <%= options.generationDisclaimerText %> **/
-import {Component, EventEmitter, Input, Output, ViewChild} from '@angular/core';
+import {Component, EventEmitter, Input, Output, ViewChild, AfterViewInit, ElementRef, HostListener, QueryList, ViewChildren, TemplateRef} from '@angular/core';
 import {SelectionModel} from "@angular/cdk/collections";
+import { MatDialog } from '@angular/material/dialog';
 
 <% if (options.hasFilters || (options.componentType === 'card' && options.addCommandBar)) { %>
     import {<%= classify(name) %>FilterService
@@ -24,7 +25,7 @@ import {SelectionModel} from "@angular/cdk/collections";
     templateUrl: './<%= dasherize(name) %>-command-bar.component.html',
     styleUrls: ['./<%= dasherize(name) %>-command-bar.component.scss']
 })
-export class <%= classify(name) %>CommandBarComponent {
+export class <%= classify(name) %>CommandBarComponent implements AfterViewInit {
     @Input() isMultipleSelectionEnabled = true;
     @Input() selection = new SelectionModel<any>(this.isMultipleSelectionEnabled, []);
     @Input() totalItems = 0;
@@ -60,11 +61,27 @@ export class <%= classify(name) %>CommandBarComponent {
         protected readonly SortCard = SortCard;
     <% } %>
 
-    constructor(<% if (options.hasFilters || (options.componentType === 'card' && options.addCommandBar)) { %>public filterService: <%= classify(name) %>FilterService<% } %>) {
+    @ViewChild('componentsContainer', { read: ElementRef, static: false })
+    componentsContainer!: ElementRef;
+    @ViewChildren('toolbarComp', { read: ElementRef })
+    components!: QueryList<ElementRef>;
+    hiddenComponents: any[] = [];
+    initialCompWidths : any[]= [];
+
+    constructor(<% if (options.hasFilters || (options.componentType === 'card' && options.addCommandBar)) { %>public filterService: <%= classify(name) %>FilterService<% } %>, public dialog: MatDialog) {
         <% if (options.componentType === 'card') { %>
             this.filterService.sortedProperty = this.<%= camelize(name) %>CardValues[0];
         <% } %>
     }
+
+    <% for(let property of propValues) { %>
+      <% if ((options.isEnumQuickFilter && property.isEnum) || (options.isDateQuickFilter && property.isDate) ) { %>
+              @ViewChild('<%=property.propertyName %>', { static: true }) private <%=property.propertyName %>!: TemplateRef<any>;  
+              openInDialog<%=property.propertyName %>(){
+              this.dialog.open(this.<%=property.propertyName %>);
+        }
+      <% } %>
+     <% } %>
 
     triggerApplyFilters(): void {
       this.applyFilters.emit();
@@ -106,5 +123,55 @@ export class <%= classify(name) %>CommandBarComponent {
         executeCustomCommandBarAction(action: string) {
             this.customCommandBarActionEvent.emit({action: action})
         }
+    <% } %>
+
+    ngAfterViewInit(): void {
+      const compWidths: any[] = this.components
+      .toArray()
+      .map((comp) => 
+        ( {width: comp.nativeElement.clientWidth, id: comp.nativeElement.getAttribute('data-resp') }));
+
+      if(this.initialCompWidths.length === 0){
+        this.initialCompWidths = compWidths;
+      };
+
+      this.updateToolbarComponentsVisibility();
+    }
+
+    @HostListener('window:resize', ['$event'])
+    onResize() {
+       this.updateToolbarComponentsVisibility();
+    }
+
+  updateToolbarComponentsVisibility() {
+      this.hiddenComponents = [];
+      const containerWidth = this.componentsContainer.nativeElement.clientWidth;
+      let usedWidth = 0;
+
+       for (let i = 0; i < this.initialCompWidths.length; i++) {
+          const buttonWidth = this.initialCompWidths[i];
+          // 70 is for the width of the collapsed menu width
+          if (usedWidth + buttonWidth.width + 70 >= containerWidth) {
+            this.hiddenComponents.push(buttonWidth.id);
+          } else {
+            usedWidth += buttonWidth.width;
+          }
+        }
+    }
+
+    isInCollapsedMenu(id: string) {
+      return this.hiddenComponents.includes(id);
+    }
+
+    <% if (options.componentType === 'table' && options.hasSearchBar) { %>
+      openSettingsFromCollapsed() {      
+        const configMenuDialogRef =  this.dialog.open(<%= classify(name) %>ConfigMenuComponent,{
+              data: { configs: this.configs, keyLocalStorage: this.<%= options.localStorageKeyConfig %>},
+            }
+        );
+        configMenuDialogRef.afterClosed().subscribe((result) =>{ if(result){
+          this.triggerSetConfiguration(result)}
+        });
+      }
     <% } %>
 }
