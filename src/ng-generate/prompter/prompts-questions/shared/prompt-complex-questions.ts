@@ -529,59 +529,35 @@ async function datePickerTypePrompt(property: Property): Promise<any> {
     return inquirer.prompt([requestChooseDatePickerType(property)]);
 }
 
-async function commandBarFilterOrderPrompt(templateHelper: TemplateHelper, allAnswers: any,answers: any, aspect: Aspect, options: Schema,enabledCommandBarFunctions?:any[]): Promise<any> { 
+function getFilterProperties(templateHelper: TemplateHelper, allAnswers: any,answers: any, aspect: Aspect, enabledCommandBarFunctions?:any[]): string[]{
+    const hasEnumFilter =  enabledCommandBarFunctions ? enabledCommandBarFunctions.includes('addEnumQuickFilters') : false;
+    const hasDateFilter =  enabledCommandBarFunctions ? enabledCommandBarFunctions.includes('addDateQuickFilters') : false;
     allAnswers.selectedModelElementUrn = answers.selectedModelElementUrn || templateHelper.resolveType(aspect).aspectModelUrn;
-    const choices = [
-        'Banana',
-        'Apple',
-        'Orange',
-        'Mango'
-      ];
-
-const hasEnumFilter =  enabledCommandBarFunctions ? enabledCommandBarFunctions.includes('addEnumQuickFilters') : false;
-console.log(`hasEnumFilter ${hasEnumFilter}`);
-
-const hasDateFilter =  enabledCommandBarFunctions ? enabledCommandBarFunctions.includes('addDateQuickFilters') : false;
-console.log(`hasDateFilter ${hasDateFilter}`);
-
-     const testtt = templateHelper.getProperties(
+    const props = templateHelper.getProperties(
         {
             selectedModelElement: loader.findByUrn(allAnswers.selectedModelElementUrn),
             excludedProperties: [],
         }
       );
+     
+      const filterProps:string[] = [];
+      props.forEach((prop:Property)=>{
+         if(hasEnumFilter && templateHelper.isEnumProperty(prop)){
+            filterProps.push(prop.name);
+         } else if(hasDateFilter && (templateHelper.isDateProperty(prop) || templateHelper.isDateTimeProperty(prop) || templateHelper.isDateTimestampProperty(prop))){
+            filterProps.push(prop.name);
+         }
+      });
 
-    const testPropTTT = templateHelper.isEnumProperty(testtt[0]);
-    console.log(`testPropTTT ${testPropTTT}`);
+      return filterProps;
+}
 
-    const testPropTTT1 = templateHelper.isEnumProperty(testtt[1]);
-    console.log(`testPropTTT1 ${testPropTTT1}`);
-
-    const testPropTTT2 = templateHelper.isEnumProperty(testtt[2]);
-    console.log(`testPropTTT ${testPropTTT2}`);
-
-    const testPropTTT3 = templateHelper.isEnumProperty(testtt[3]);
-    console.log(`testPropTTT ${testPropTTT3}`);
-
-    const testPropTTT4 = templateHelper.isEnumProperty(testtt[4]);
-    console.log(`testPropTTT ${testPropTTT4}`);
-
-  const iii4 =  templateHelper.isDateProperty(testtt[4]) || templateHelper.isDateTimeProperty(testtt[4]) || templateHelper.isDateTimestampProperty(testtt[4]);
-  const iii3 =  templateHelper.isDateProperty(testtt[3]) || templateHelper.isDateTimeProperty(testtt[3]) || templateHelper.isDateTimestampProperty(testtt[3]);
-  const iii2 =  templateHelper.isDateProperty(testtt[2]) || templateHelper.isDateTimeProperty(testtt[2]) || templateHelper.isDateTimestampProperty(testtt[2]);
-  const iii1 =  templateHelper.isDateProperty(testtt[1]) || templateHelper.isDateTimeProperty(testtt[1]) || templateHelper.isDateTimestampProperty(testtt[1]);
-  const iii0 =  templateHelper.isDateProperty(testtt[0]) || templateHelper.isDateTimeProperty(testtt[0]) || templateHelper.isDateTimestampProperty(testtt[0]);
-  
-
-  console.log(`iii ${iii4} ${iii3} ${iii2} ${iii1} ${iii0}`);
+async function commandBarFilterOrderPrompt(templateHelper: TemplateHelper, allAnswers: any,answers: any, aspect: Aspect, options: Schema,enabledCommandBarFunctions?:any[]): Promise<any> { 
+    allAnswers.selectedModelElementUrn = answers.selectedModelElementUrn || templateHelper.resolveType(aspect).aspectModelUrn;
+    const choices = getFilterProperties(templateHelper,allAnswers, answers,aspect,enabledCommandBarFunctions);
 
     const orderedChoices = await orderItems(choices);
-    // console.log('You have ordered the filters as follows:');
-    // orderedChoices.forEach((item, index) => {
-    //     console.log(`${index + 1}. ${item}`);
-    // });
-
-    options['commandBarFilterOrder'] = orderedChoices;
+    options.commandBarFilterOrder = orderedChoices;
   }
 
 export async function getCommandBarFilterOrder(templateHelper: TemplateHelper, allAnswers: any, answers: any, aspect: Aspect, options:Schema,enabledCommandBarFunctions:any[]): Promise<object> {
