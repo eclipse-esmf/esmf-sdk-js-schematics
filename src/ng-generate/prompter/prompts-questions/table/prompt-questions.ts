@@ -111,8 +111,8 @@ async function fetchUserSpecificTableConfigurations(
         ? await getDatePickerType(templateHelper, allAnswers, gatherInitialModelElement, aspect)
         : {};
 
-    const setCommandBarFilterOrder =  ['addDateQuickFilters', 'addEnumQuickFilters'].some(item => commandbarFunctionalityAnswers.enabledCommandBarFunctions.includes(item))
-    ? await getCommandBarFilterOrder(templateHelper, allAnswers,gatherInitialModelElement,aspect,options)
+    const setCommandBarFilterOrder =  commandbarFunctionalityAnswers.enabledCommandBarFunctions?.includes('addDateQuickFilters') || commandbarFunctionalityAnswers.enabledCommandBarFunctions?.includes('addEnumQuickFilters')
+    ? await getCommandBarFilterOrder(templateHelper, allAnswers,gatherInitialModelElement,aspect,options,commandbarFunctionalityAnswers.enabledCommandBarFunctions)
     : {};
     const customBarActionsAnswers = await inquirer.prompt([customCommandBarActions(allAnswers, templateHelper)]);
     const enableRemoteDataHandlingAnswers = await inquirer.prompt([requestEnableRemoteDataHandling, requestCustomService]);
