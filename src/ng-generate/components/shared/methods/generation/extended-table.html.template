@@ -148,6 +148,7 @@
                    [pageIndex]="0"
                    [pageSize]="pageSize"
                    [pageSizeOptions]="pageSizeOptions"
+                   [selectConfig]="paginatorSelectConfig"
                    [showFirstLastButtons]="showFirstLastButtons"
                    (page)="pageChange()">
     </mat-paginator>
