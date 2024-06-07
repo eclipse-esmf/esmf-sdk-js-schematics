@@ -87,19 +87,21 @@
             <% } %>
 
             <% if(options.customColumns && options.customColumns.length > 0) { %>
-                <% for(let columnName of options.customColumns) { %>
+                <% for(let [index, columnName] of options.customColumns.entries()) { %>
+                    <% let customColumnIndex = tableColumValuesFunc.length + index + 1; %>
                     <!-- <%= columnName %> Column -->
                     <ng-container data-test="custom-column-container" matColumnDef="<%= columnName %>">
                         <% if(options.enableVersionSupport) { %>
-                            <th data-test="custom-column-header" mat-header-cell *matHeaderCellDef mat-sort-header>
-                                {{'<%= options.selectedModelTypeName.toLowerCase() %>.v<%= options.formatedAspectModelVersion %>.customColumn.<%= columnName %>' | transloco}}
+                            <th data-test="custom-column-header" mat-header-cell *matHeaderCellDef mat-sort-header
+                                [resizeColumn]="true" [index]="<%= customColumnIndex %>" (dragging)='dragging = $event'>
+                                {{'<%= options.selectedModelTypeName.toLowerCase() %>.v<%= options.formatedAspectModelVersion %>.customColumn.<%= columnName %>' | transloco }}
                             </th>
                         <% } else { %>
-                            <th data-test="custom-column-header" mat-header-cell *matHeaderCellDef mat-sort-header>
+                            <th data-test="custom-column-header" mat-header-cell *matHeaderCellDef mat-sort-header
+                                [resizeColumn]="true" [index]="<%= customColumnIndex %>" (dragging)='dragging = $event'>
                                 {{ '<%= options.selectedModelTypeName.toLowerCase() %>.customColumn.<%= columnName %>' | transloco }}
                             </th>
                         <% } %>
-
                         <td data-test="custom-column-cell" mat-cell *matCellDef="let row">
                             <ng-container data-test="custom-column-container" *ngTemplateOutlet="<%= camelize(columnName) %>Template; context:{aspect:row}"></ng-container>
                         </td>
