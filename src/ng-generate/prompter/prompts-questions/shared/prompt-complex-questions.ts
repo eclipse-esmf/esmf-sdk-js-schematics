@@ -403,7 +403,7 @@ function getAllConstraints(allAnswers: any, templateHelper: TemplateHelper, answ
         : [];
     const allProperties = getAllPropertiesFromAspectOrEntity(templateHelper, selectedElement, allAnswers);
     const allowedPropertiesObjects = allProperties.filter(property => !excludedPropertiesUrns.includes(property.name));
-    const allowedProperties = allowedPropertiesObjects.map(property => loader.findByUrn(property.name) as Property).filter(item => item !== undefined);
+    const allowedProperties = allowedPropertiesObjects.map(property => loader.findByUrn(property.name) as Property);
     const constraints = allowedProperties.reduce((acc, property) => [...acc, ...getConstraintsFromSubTree(property)], []);
     return constraints ? constraints : [];
 }
