@@ -32,7 +32,6 @@
     "inquirer": "8.2.5",
     "inquirer-fuzzy-path": "2.3.0",
     "inquirer-prompt-suggest": "0.1.0",
-    "inquirer-sortable-checkbox": "^1.0.1",
     "ora": "5.4.1",
     "path": "^0.12.7",
     "prettier": "2.8.8",

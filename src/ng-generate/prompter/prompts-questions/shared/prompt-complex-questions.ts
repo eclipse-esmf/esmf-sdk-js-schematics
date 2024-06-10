@@ -152,21 +152,6 @@ export const requestChooseDatePickerType = (property: Property) => ({
     default: '',
 });
 
-export const requestOrderedFilters = (choices: any[]) => ({
-    type: 'checkbox',
-    name: 'commandBarFilterOrder',
-    message: `Property 3 ...........................`,
-    choices: () => [
-        {
-            name: 'property5',
-            value: 'property5',
-        }
-    ],
-    default:['property5'],
-});
-
-
-
 export const requestOptionalMaterialTheme = (options: Schema) => ({
     type: 'confirm',
     name: 'getOptionalMaterialTheme',
@@ -524,10 +509,6 @@ export async function getDatePickerType(templateHelper: TemplateHelper, allAnswe
 
 async function datePickerTypePrompt(property: Property): Promise<any> {
     return inquirer.prompt([requestChooseDatePickerType(property)]);
-}
-
-async function orderedFilters(orderedChoices: any[]): Promise<any> {
-    return inquirer.prompt([requestOrderedFilters(orderedChoices)]);
 }
 
 function getFilterProperties(templateHelper: TemplateHelper, allAnswers: any,answers: any, aspect: Aspect, enabledCommandBarFunctions?:any[]): string[]{
