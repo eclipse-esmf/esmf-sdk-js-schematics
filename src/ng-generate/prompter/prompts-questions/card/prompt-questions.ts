@@ -21,6 +21,7 @@ import {
     extractComplexPropertyDetails,
     extractPropertyElements,
     generateLabelsForExcludedProperties,
+    getCommandBarFilterOrder,
     getDatePickerType,
     requestCommandBarFunctionality,
     requestDefaultSorting,
@@ -109,6 +110,10 @@ async function fetchUserSpecificCardConfigurations(
         : {};
     const customBarActionsAnswers = await inquirer.prompt([customCommandBarActions(allAnswers, templateHelper)]);
     
+    const setCommandBarFilterOrder =  commandbarFunctionalityAnswers.enabledCommandBarFunctions?.includes('addDateQuickFilters') || commandbarFunctionalityAnswers.enabledCommandBarFunctions?.includes('addEnumQuickFilters')
+    ? await getCommandBarFilterOrder(templateHelper, allAnswers,gatherInitialModelElement,aspect,options,commandbarFunctionalityAnswers.enabledCommandBarFunctions)
+    : {};
+
     const enableRemoteDataHandlingAnswers = await inquirer.prompt([requestEnableRemoteDataHandling, requestCustomService]);
     const aspectModelVersionSupportAnswers = await inquirer.prompt([requestAspectModelVersionSupport]);
     const optionalMaterialThemeAnswers = await inquirer.prompt([requestOptionalMaterialTheme(options)]);
@@ -126,6 +131,7 @@ async function fetchUserSpecificCardConfigurations(
         ...commandbarFunctionalityAnswers,
         ...datePickerTypeAnswers,
         ...customBarActionsAnswers,
+        ...setCommandBarFilterOrder,
         ...enableRemoteDataHandlingAnswers,
         ...aspectModelVersionSupportAnswers,
         ...optionalMaterialThemeAnswers,

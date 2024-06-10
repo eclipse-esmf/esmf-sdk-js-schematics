@@ -11,17 +11,7 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-import {
-    apply,
-    applyTemplates,
-    MergeStrategy,
-    mergeWith,
-    move,
-    Rule,
-    SchematicContext,
-    Tree,
-    url
-} from '@angular-devkit/schematics';
+import {apply, applyTemplates, MergeStrategy, mergeWith, move, Rule, SchematicContext, Tree, url} from '@angular-devkit/schematics';
 import {strings} from '@angular-devkit/core';
 import {DefaultSingleEntity, Property} from '@esmf/aspect-model-loader';
 import {classify} from '@angular-devkit/core/src/utils/strings';
@@ -66,11 +56,7 @@ function getPropertiesToCreateFilters(options: any, allProps: Array<Property>): 
         return [];
     }
 
-    let allPropsInOrder = allProps;;
-
-    // if(options.commandBarFilterOrder.length>0){
-    //    allPropsInOrder = allProps.reverse();
-    // }
+    let allPropsInOrder = sortItemsByArray(options.commandBarFilterOrder, allProps);
 
     const propertyValues: PropValue[] = [];
     allPropsInOrder.forEach((property: Property) => {
@@ -105,4 +91,17 @@ function getPropertiesToCreateFilters(options: any, allProps: Array<Property>): 
 
 function datePickerType(datePickers: Array<DatePicker>, propertyValue: PropValue): string | undefined {
     return datePickers.find((value: any) => value.propertyUrn === propertyValue.propertyUrn)?.datePicker.type;
+}
+
+function sortItemsByArray(orderArray: string[], itemsArray: Property[]): Property[]{
+    let orderMap: {[key: string]: number} = {};
+    orderArray.forEach((name, index) => {
+        orderMap[name] = index;
+    });
+
+    itemsArray.sort((a, b) => {
+        return orderMap[a.name] - orderMap[b.name];
+    });
+    
+    return itemsArray;
 }

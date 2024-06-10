@@ -152,6 +152,19 @@ export const requestChooseDatePickerType = (property: Property) => ({
     default: '',
 });
 
+export const requestOrderedFilters = (choices: any[]) => ({
+    type: 'checkbox',
+    name: 'commandBarFilterOrder',
+    message: `Property 3 ...........................`,
+    choices: () => [
+        {
+            name: 'property5',
+            value: 'property5',
+        }
+    ],
+    default:['property5'],
+});
+
 
 
 export const requestOptionalMaterialTheme = (options: Schema) => ({
@@ -321,22 +334,6 @@ export const generateLabelsForExcludedProperties = (answers: any) => ({
     when: () => answers.excludedProperties && answers.excludedProperties.length > 0,
     default: false,
 });
-
-// export const requestSetCommandBarFilterOrder =  (allAnswers: any, templateHelper:any,answers: any, aspect: Aspect) =>({
-//     type: 'list',
-//     name: 'commandBarFilterOrder',
-//     message: 'Do you want to set the filter order from command bar (please move arrows ... )?',
-//     choices: [{name:'vlad', value: 13}, {name: 'stefan', value:11},{name: 'matei', value:13},{name: 'filip', value:8}  ],
-//     default: [],
-// }).then(function(answers) {
-//     console.log('Chosen line: ' answers.line);
-//     /*
-//     OUTPUT :
-//     Chosen line: 2
-//     */
-// });
-
-
 
 function getAllPropertiesFromAspectOrEntity(templateHelper: any, selectedElement: any, allAnswers: any) {
     const allProperties: Array<any> = [];
@@ -529,6 +526,10 @@ async function datePickerTypePrompt(property: Property): Promise<any> {
     return inquirer.prompt([requestChooseDatePickerType(property)]);
 }
 
+async function orderedFilters(orderedChoices: any[]): Promise<any> {
+    return inquirer.prompt([requestOrderedFilters(orderedChoices)]);
+}
+
 function getFilterProperties(templateHelper: TemplateHelper, allAnswers: any,answers: any, aspect: Aspect, enabledCommandBarFunctions?:any[]): string[]{
     const hasEnumFilter =  enabledCommandBarFunctions ? enabledCommandBarFunctions.includes('addEnumQuickFilters') : false;
     const hasDateFilter =  enabledCommandBarFunctions ? enabledCommandBarFunctions.includes('addDateQuickFilters') : false;
@@ -553,11 +554,11 @@ function getFilterProperties(templateHelper: TemplateHelper, allAnswers: any,ans
 }
 
 async function commandBarFilterOrderPrompt(templateHelper: TemplateHelper, allAnswers: any,answers: any, aspect: Aspect, options: Schema,enabledCommandBarFunctions?:any[]): Promise<any> { 
-    allAnswers.selectedModelElementUrn = answers.selectedModelElementUrn || templateHelper.resolveType(aspect).aspectModelUrn;
-    const choices = getFilterProperties(templateHelper,allAnswers, answers,aspect,enabledCommandBarFunctions);
-
+    const choices = getFilterProperties(templateHelper, allAnswers, answers, aspect, enabledCommandBarFunctions);
     const orderedChoices = await orderItems(choices);
+    
     options.commandBarFilterOrder = orderedChoices;
+    allAnswers['commandBarFilterOrder'] = orderedChoices;
   }
 
 export async function getCommandBarFilterOrder(templateHelper: TemplateHelper, allAnswers: any, answers: any, aspect: Aspect, options:Schema,enabledCommandBarFunctions:any[]): Promise<object> {
