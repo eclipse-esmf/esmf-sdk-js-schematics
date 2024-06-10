@@ -56,7 +56,7 @@ function getPropertiesToCreateFilters(options: any, allProps: Array<Property>): 
         return [];
     }
 
-    let allPropsInOrder = sortItemsByArray(options.commandBarFilterOrder, allProps);
+    const allPropsInOrder = sortItemsByArray(options.commandBarFilterOrder, allProps);
 
     const propertyValues: PropValue[] = [];
     allPropsInOrder.forEach((property: Property) => {
@@ -94,7 +94,7 @@ function datePickerType(datePickers: Array<DatePicker>, propertyValue: PropValue
 }
 
 function sortItemsByArray(orderArray: string[], itemsArray: Property[]): Property[]{
-    let orderMap: {[key: string]: number} = {};
+    const orderMap: {[key: string]: number} = {};
     orderArray.forEach((name, index) => {
         orderMap[name] = index;
     });

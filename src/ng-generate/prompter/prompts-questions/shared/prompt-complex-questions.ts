@@ -566,7 +566,7 @@ export async function getCommandBarFilterOrder(templateHelper: TemplateHelper, a
 }
 
 async function orderItems(items:any) {
-    let orderedItems = [...items];
+    const orderedItems = [...items];
     let exit = false;
   
     while (!exit) {

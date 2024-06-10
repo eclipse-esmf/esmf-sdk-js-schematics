@@ -244,6 +244,7 @@ the [angular material package](https://v17.material.angular.io/components/table/
     4. Export functionality
     5. Refresh data functionality
     6. Custom actions
+    7. Order filters
 4. Single or multiple selection with checkboxes
 5. Event emitters exposed for click, double click, right click treated as context menu events
 6. Table generation for the entire aspect or just a property of user's choice
@@ -282,6 +283,7 @@ the [angular material package](https://v17.material.angular.io/components/card/o
     4. Export functionality
     5. Refresh data functionality
     6. Custom actions
+    7. Order filters
 4. Event emitters exposed for click, double click, right click treated as context menu events
 5. Card generation for the entire aspect or just a property of user's choice
 6. Multiple aspect models selection
