@@ -110,9 +110,7 @@ async function fetchUserSpecificCardConfigurations(
         : {};
     const customBarActionsAnswers = await inquirer.prompt([customCommandBarActions(allAnswers, templateHelper)]);
     
-    const setCommandBarFilterOrder =  commandbarFunctionalityAnswers.enabledCommandBarFunctions?.includes('addDateQuickFilters') || commandbarFunctionalityAnswers.enabledCommandBarFunctions?.includes('addEnumQuickFilters')
-    ? await getCommandBarFilterOrder(templateHelper, allAnswers,gatherInitialModelElement,aspect,options,commandbarFunctionalityAnswers.enabledCommandBarFunctions)
-    : {};
+    const setCommandBarFilterOrder = await getCommandBarFilterOrder(templateHelper, allAnswers,gatherInitialModelElement,aspect,options,commandbarFunctionalityAnswers.enabledCommandBarFunctions);
 
     const enableRemoteDataHandlingAnswers = await inquirer.prompt([requestEnableRemoteDataHandling, requestCustomService]);
     const aspectModelVersionSupportAnswers = await inquirer.prompt([requestAspectModelVersionSupport]);

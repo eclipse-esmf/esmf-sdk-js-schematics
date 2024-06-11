@@ -29,7 +29,7 @@ import {
     DefaultStructuredValue,
     DefaultTrait,
     Entity,
-    Property
+    Property,
 } from '@esmf/aspect-model-loader';
 
 import {ComponentType, Schema} from '../../../components/shared/schema';
@@ -511,85 +511,113 @@ async function datePickerTypePrompt(property: Property): Promise<any> {
     return inquirer.prompt([requestChooseDatePickerType(property)]);
 }
 
-function getFilterProperties(templateHelper: TemplateHelper, allAnswers: any,answers: any, aspect: Aspect, enabledCommandBarFunctions?:any[]): string[]{
-    const hasEnumFilter =  enabledCommandBarFunctions ? enabledCommandBarFunctions.includes('addEnumQuickFilters') : false;
-    const hasDateFilter =  enabledCommandBarFunctions ? enabledCommandBarFunctions.includes('addDateQuickFilters') : false;
+function getFilterProperties(
+    templateHelper: TemplateHelper,
+    allAnswers: any,
+    answers: any,
+    aspect: Aspect,
+    enabledCommandBarFunctions?: any[]
+): string[] {
+    const hasEnumFilter = enabledCommandBarFunctions ? enabledCommandBarFunctions.includes('addEnumQuickFilters') : false;
+    const hasDateFilter = enabledCommandBarFunctions ? enabledCommandBarFunctions.includes('addDateQuickFilters') : false;
     allAnswers.selectedModelElementUrn = answers.selectedModelElementUrn || templateHelper.resolveType(aspect).aspectModelUrn;
-    const props = templateHelper.getProperties(
-        {
-            selectedModelElement: loader.findByUrn(allAnswers.selectedModelElementUrn),
-            excludedProperties: [],
+    const props = templateHelper.getProperties({
+        selectedModelElement: loader.findByUrn(allAnswers.selectedModelElementUrn),
+        excludedProperties: [],
+    });
+
+    const filterProps: string[] = [];
+    props.forEach((prop: Property) => {
+        if (hasEnumFilter && templateHelper.isEnumProperty(prop)) {
+            filterProps.push(prop.name);
+        } else if (
+            hasDateFilter &&
+            (templateHelper.isDateProperty(prop) || templateHelper.isDateTimeProperty(prop) || templateHelper.isDateTimestampProperty(prop))
+        ) {
+            filterProps.push(prop.name);
         }
-      );
-     
-      const filterProps:string[] = [];
-      props.forEach((prop:Property)=>{
-         if(hasEnumFilter && templateHelper.isEnumProperty(prop)){
-            filterProps.push(prop.name);
-         } else if(hasDateFilter && (templateHelper.isDateProperty(prop) || templateHelper.isDateTimeProperty(prop) || templateHelper.isDateTimestampProperty(prop))){
-            filterProps.push(prop.name);
-         }
-      });
+    });
 
-      return filterProps;
+    return filterProps;
 }
 
-async function commandBarFilterOrderPrompt(templateHelper: TemplateHelper, allAnswers: any,answers: any, aspect: Aspect, options: Schema,enabledCommandBarFunctions?:any[]): Promise<any> { 
+async function commandBarFilterOrderPrompt(
+    templateHelper: TemplateHelper,
+    allAnswers: any,
+    answers: any,
+    aspect: Aspect,
+    options: Schema,
+    enabledCommandBarFunctions?: any[]
+): Promise<any | {}> {
     const choices = getFilterProperties(templateHelper, allAnswers, answers, aspect, enabledCommandBarFunctions);
-    const orderedChoices = await orderItems(choices);
-    
-    options.commandBarFilterOrder = orderedChoices;
-    allAnswers['commandBarFilterOrder'] = orderedChoices;
-  }
+    if (choices.length > 1) {
+        const orderedChoices = await orderItems(choices);
 
-export async function getCommandBarFilterOrder(templateHelper: TemplateHelper, allAnswers: any, answers: any, aspect: Aspect, options:Schema,enabledCommandBarFunctions:any[]): Promise<object> {
-    return await commandBarFilterOrderPrompt(templateHelper,allAnswers,answers,aspect, options,enabledCommandBarFunctions);
+        options.commandBarFilterOrder = orderedChoices;
+        allAnswers['commandBarFilterOrder'] = orderedChoices;
+    }
+    return {};
 }
 
-async function orderItems(items:any) {
+export async function getCommandBarFilterOrder(
+    templateHelper: TemplateHelper,
+    allAnswers: any,
+    answers: any,
+    aspect: Aspect,
+    options: Schema,
+    enabledCommandBarFunctions: any[]
+): Promise<object | {}> {
+    if (enabledCommandBarFunctions.includes('addEnumQuickFilters') || enabledCommandBarFunctions.includes('addDateQuickFilters')) {
+        return await commandBarFilterOrderPrompt(templateHelper, allAnswers, answers, aspect, options, enabledCommandBarFunctions);
+    }
+    return {};
+}
+
+async function orderItems(items: any) {
     const orderedItems = [...items];
     let exit = false;
-  
+
     while (!exit) {
-      console.log(`Please select the order of filters in the command bar:`);  
-      orderedItems.forEach((item, index) => {
-        console.log(`${index + 1}. ${item}`);
-      });
-  
-      const answers = await inquirer.prompt([
-        {
-          type: 'input',
-          name: 'command',
-          message: 'Enter the number of the item to move, followed by "u" to move up or "d" to move down (e.g., "2u" or "3d"). Press "q" to finish:',
-          validate: (input) => {
-            if (input.toLowerCase() === 'q') return true;
-            const match = input.match(/^(\d+)([ud])$/);
-            if (!match) return 'Please enter a valid command or "q" to finish.';
+        console.log('Please select the order of filters in the command bar:');
+        orderedItems.forEach((item, index) => {
+            console.log(`${index + 1}. ${item}`);
+        });
+
+        const answers = await inquirer.prompt([
+            {
+                type: 'input',
+                name: 'command',
+                message:
+                    'Enter the number of the item to move, followed by "u" to move up or "d" to move down (e.g., "2u" or "3d"). Press "q" to finish:',
+                validate: input => {
+                    if (input.toLowerCase() === 'q') return true;
+                    const match = input.match(/^(\d+)([ud])$/);
+                    if (!match) return 'Please enter a valid command or "q" to finish.';
+                    const index = parseInt(match[1], 10) - 1;
+                    const direction = match[2];
+                    if (index < 0 || index >= orderedItems.length) return 'Invalid item number.';
+                    if (direction === 'u' && index === 0) return 'Item is already at the top.';
+                    if (direction === 'd' && index === orderedItems.length - 1) return 'Item is already at the bottom.';
+                    return true;
+                },
+            },
+        ]);
+
+        const command = answers.command.toLowerCase();
+        if (command === 'q') {
+            exit = true;
+        } else {
+            const match = command.match(/^(\d+)([ud])$/);
             const index = parseInt(match[1], 10) - 1;
             const direction = match[2];
-            if (index < 0 || index >= orderedItems.length) return 'Invalid item number.';
-            if (direction === 'u' && index === 0) return 'Item is already at the top.';
-            if (direction === 'd' && index === orderedItems.length - 1) return 'Item is already at the bottom.';
-            return true;
-          }
+
+            if (direction === 'u') {
+                [orderedItems[index], orderedItems[index - 1]] = [orderedItems[index - 1], orderedItems[index]];
+            } else if (direction === 'd') {
+                [orderedItems[index], orderedItems[index + 1]] = [orderedItems[index + 1], orderedItems[index]];
+            }
         }
-      ]);
-  
-      const command = answers.command.toLowerCase();
-      if (command === 'q') {
-        exit = true;
-      } else {
-        const match = command.match(/^(\d+)([ud])$/);
-        const index = parseInt(match[1], 10) - 1;
-        const direction = match[2];
-  
-        if (direction === 'u') {
-          [orderedItems[index], orderedItems[index - 1]] = [orderedItems[index - 1], orderedItems[index]];
-        } else if (direction === 'd') {
-          [orderedItems[index], orderedItems[index + 1]] = [orderedItems[index + 1], orderedItems[index]];
-        }
-      }
     }
-  
+
     return orderedItems;
-  }
+}
