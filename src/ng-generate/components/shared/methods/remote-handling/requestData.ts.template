@@ -26,14 +26,21 @@ private requestData() {
     const queryOption = new Query();
 
     <% if (options.componentType === 'card') { %>
+      if (this.filterService.sortedProperty) {
         const sortProperty = this.filterService.sortedProperty;
         const sortDirection = this.filterService.sortCard === SortCard.ASCENDING ? 1 : -1;
+
+        queryOption.setSort(new Sort({[sortProperty]: sortDirection}));
+      }
     <% } else { %>
-        const sortProperty = this.sort.active;
-        const sortDirection = this.sort.direction === 'asc' ? 1 : -1;
+        if (this.sort.active) {
+          const sortProperty = this.sort.active;
+          const sortDirection = this.sort.direction === 'asc' ? 1 : -1;
+
+          queryOption.setSort(new Sort({[sortProperty]: sortDirection}));
+        }
     <% } %>
 
-    queryOption.setSort(new Sort(<SortOptions>{sortProperty: sortDirection}));
     queryOption.setLimit(new Limit(this.paginator.pageIndex * this.paginator.pageSize, this.paginator.pageSize));
 
     if (this.customOptionsExtension) this.customOptionsExtension.apply(queryOption);
