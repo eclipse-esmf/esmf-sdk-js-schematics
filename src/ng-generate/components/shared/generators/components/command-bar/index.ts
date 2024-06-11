@@ -93,15 +93,7 @@ function datePickerType(datePickers: Array<DatePicker>, propertyValue: PropValue
     return datePickers.find((value: any) => value.propertyUrn === propertyValue.propertyUrn)?.datePicker.type;
 }
 
-function sortItemsByArray(orderArray: string[], itemsArray: Property[]): Property[]{
-    const orderMap: {[key: string]: number} = {};
-    orderArray.forEach((name, index) => {
-        orderMap[name] = index;
-    });
-
-    itemsArray.sort((a, b) => {
-        return orderMap[a.name] - orderMap[b.name];
-    });
-    
-    return itemsArray;
+function sortItemsByArray(orderArray: string[], itemsArray: Property[]): Property[] {
+    const orderMap: {[key: string]: number} = orderArray.reduce((map, name, index) => ({...map, [name]: index}), {});
+    return itemsArray.sort((a, b) => orderMap[a.name] - orderMap[b.name]);
 }

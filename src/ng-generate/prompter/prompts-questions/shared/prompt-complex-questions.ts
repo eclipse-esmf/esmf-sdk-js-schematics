@@ -551,7 +551,7 @@ async function orderItems(items:any) {
     let exit = false;
   
     while (!exit) {
-      console.log('Order the command bar filters:');
+      console.log(`Please select the order of filters in the command bar:`);  
       orderedItems.forEach((item, index) => {
         console.log(`${index + 1}. ${item}`);
       });
