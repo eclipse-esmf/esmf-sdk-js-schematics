@@ -542,21 +542,13 @@ function getFilterProperties(
 }
 
 async function commandBarFilterOrderPrompt(
-    templateHelper: TemplateHelper,
     allAnswers: any,
-    answers: any,
-    aspect: Aspect,
     options: Schema,
-    enabledCommandBarFunctions?: any[]
-): Promise<any | {}> {
-    const choices = getFilterProperties(templateHelper, allAnswers, answers, aspect, enabledCommandBarFunctions);
-    if (choices.length > 1) {
+    choices:any
+):Promise<any>{
         const orderedChoices = await orderItems(choices);
-
         options.commandBarFilterOrder = orderedChoices;
         allAnswers['commandBarFilterOrder'] = orderedChoices;
-    }
-    return {};
 }
 
 export async function getCommandBarFilterOrder(
@@ -566,11 +558,11 @@ export async function getCommandBarFilterOrder(
     aspect: Aspect,
     options: Schema,
     enabledCommandBarFunctions: any[]
-): Promise<object | {}> {
-    if (enabledCommandBarFunctions.includes('addEnumQuickFilters') || enabledCommandBarFunctions.includes('addDateQuickFilters')) {
-        return await commandBarFilterOrderPrompt(templateHelper, allAnswers, answers, aspect, options, enabledCommandBarFunctions);
-    }
-    return {};
+):Promise<any>{
+        const choices = getFilterProperties(templateHelper, allAnswers, answers, aspect, enabledCommandBarFunctions);
+        if ((enabledCommandBarFunctions.includes('addEnumQuickFilters') || enabledCommandBarFunctions.includes('addDateQuickFilters')) && choices.length > 1 ){
+           return await commandBarFilterOrderPrompt(allAnswers,options, choices);
+        }
 }
 
 async function orderItems(items: any) {
