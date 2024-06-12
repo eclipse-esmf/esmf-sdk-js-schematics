@@ -1,4 +1,8 @@
 /** <%= options.generationDisclaimerText %> **/
+<%
+  var tableColumnsEnumName = classify(name) + 'Column';
+  var cmpFileName = dasherize(name);
+%>
 import {
     AfterViewInit,
     Component,
@@ -90,13 +94,21 @@ import {<% if (options.enableRemoteDataHandling) { %>catchError, finalize, tap, 
 /**
  * Enumeration of all available columns which can be shown/hide in the table.
  */
-export enum <%= classify(name) %>Column {
+export enum <%= tableColumnsEnumName %> {
     <% if (options.addRowCheckboxes) { %>CHECKBOX = 'checkboxes',<% } %>
     <%= enumPropertyDefinitions %>
     <%= enumCustomColumns %>
     <% if (options.customRowActions.length > 0) { %>CUSTOM_ROW_ACTIONS = 'customRowActions',<% } %>
     COLUMNS_MENU = 'columnsMenu'
 }
+
+export const NON_DATA_COLUMNS: <%= tableColumnsEnumName %>[] = [
+    <% if (options.customRowActions.length > 0) { %>
+    <%= tableColumnsEnumName %>.CUSTOM_ROW_ACTIONS,
+    <% } %>
+    <%= tableColumnsEnumName %>.COLUMNS_MENU
+];
+
 
 @Component({
     selector: '<%= options.selector %>',
