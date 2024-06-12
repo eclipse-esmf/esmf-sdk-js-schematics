@@ -149,6 +149,8 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
     @Input() allowedCharacters: string = '';
     @Input() regexValidator:string = '';
 
+    @Input() hideColumns: <%= tableColumnsEnumName %>[] = [];
+
     <% if (options.hasSearchBar) { %>@Input() hasAdvancedSearch: boolean = this.filterService.stringColumns.length > 1;<% } %>
     <% if (options.enableRemoteDataHandling) { %>
         @Input() maxExportRows: number = 5000;
@@ -206,7 +208,9 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
     dataSource: <%= classify(name) %>DataSource;
 
     columnToSort:{sortColumnName: string, sortDirection: SortDirection} = {sortColumnName:'<%= options.defaultSortingCol %>', sortDirection : 'asc'};
-    displayedColumns: Array<string> = Object.values(<%= classify(name) %>Column);
+    displayedColumns: <%= tableColumnsEnumName %>[] = Object.values(<%= tableColumnsEnumName %>).filter(
+      column => !this.hideColumns.includes(column)
+    );
     columns: Array<Column> = [];
 
     <% if (options.hasSearchBar) { %>
