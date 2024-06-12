@@ -588,9 +588,6 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
                 data.length = currentPageSize;
             }
 
-            // TODO: remove the following block when tested all the above
-            /*<%= blockHeaderToExport %>*/
-
             const headersToExport = exportAllColumns ? this.columns.map(c => c.name) : this.displayedColumns.filter(col => this.isAvailableDataColumn(col));
 
             const headersCSV = unparse({
