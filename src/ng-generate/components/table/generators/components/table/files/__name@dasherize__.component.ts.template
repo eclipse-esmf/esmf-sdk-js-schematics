@@ -339,20 +339,6 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
         this.setDisplayedColumns(this.columns);
     }
 
-    hideColumn(column: <%= classify(name) %>Column): void {
-        this.displayedColumns = this.displayedColumns.filter(columnName => columnName !== column);
-    }
-
-    showColumn(column: <%= classify(name) %>Column, index: number): void {
-        if (!this.displayedColumns.includes(column)) {
-            this.displayedColumns.splice(index, 0, column);
-        }
-    }
-
-    resetDisplayedColumns(): void {
-        this.displayedColumns = Object.values(<%= classify(name) %>Column);
-    }
-
     <% if (options.customColumns.length > 0) { %>
         isCustomColumn(columnName: string): boolean {
             const customColumns: any = [<%= customColumn %>];
