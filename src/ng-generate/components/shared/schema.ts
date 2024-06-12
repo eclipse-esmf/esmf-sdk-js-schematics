@@ -71,6 +71,7 @@ export interface Schema extends ComponentSchema, DefaultSchema {
     componentType: ComponentType;
     readOnlyForm: boolean;
     selectedEl: string;
+    commandBarFilterOrder: string[];
 }
 
 export interface Values extends Schema {
