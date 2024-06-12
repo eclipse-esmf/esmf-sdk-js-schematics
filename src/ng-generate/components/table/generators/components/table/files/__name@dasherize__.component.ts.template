@@ -271,6 +271,9 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
             })
         <% } %>
            this.initializeColumns();
+           <% if (options.hasSearchBar) { %>
+             this.initializeHighlightConfig();
+           <% } %>
         <% if (!options.enableRemoteDataHandling) { %>
             this.maxExportRows = this.data.length;
         <% } %>
@@ -317,18 +320,7 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
     }
 
     initializeColumns(): void {
-        <% if (options.hasSearchBar) { %>
-            const configStorage = this.storageService.getItem(this.<%= options.localStorageKeyConfig %>);
-        <% } %>
         const columnStorage = this.storageService.getItem(this.<%= options.localStorageKeyColumns %>);
-
-        <% if (options.hasSearchBar) { %>
-            if (configStorage?.length > 0) {
-                configStorage.forEach((config: Config) => this.configs.push(config));
-            } else {
-                this.configs.push({name: 'settings.highlight.name', desc: 'settings.highlight.desc', selected: false, color: '#FFFF00'});
-            }
-        <% } %>
 
         if (columnStorage?.length > 0) {
             columnStorage
@@ -667,4 +659,17 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
             }
         }
     <% } %>
+
+    <% if (options.hasSearchBar) { %>
+        private initializeHighlightConfig(): void {
+            const configStorage = this.storageService.getItem(this.<%= options.localStorageKeyConfig %>);
+
+            if (configStorage?.length > 0) {
+                configStorage.forEach((config: Config) => this.configs.push(config));
+            } else {
+                this.configs.push({name: 'settings.highlight.name', desc: 'settings.highlight.desc', selected: false, color: '#FFFF00'});
+            }
+        }
+    <% } %>
+
 }
