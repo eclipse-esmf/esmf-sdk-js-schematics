@@ -167,6 +167,7 @@ function commonImports(): string {
             public dialog: MatDialog,
             private clipboard: Clipboard,
             private storageService: JSSdkLocalStorageService,
+            @Inject(PaginatorSelectConfigInjector) public paginatorSelectConfig: MatPaginatorSelectConfig,
             ${sharedOptions.hasFilters ? `public filterService: ${sharedOptions.filterServiceName},` : ''}
             ${
                 sharedOptions.isDateQuickFilter

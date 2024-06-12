@@ -14,3 +14,4 @@
 export * from './custom/index';
 export * from './filter/index';
 export * from './general/index';
+export * from './paginator-select-config/index';
