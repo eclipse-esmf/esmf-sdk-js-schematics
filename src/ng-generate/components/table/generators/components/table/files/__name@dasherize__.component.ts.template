@@ -329,9 +329,9 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
         }
 
         this.displayedColumns.forEach((displayedColumn: string): void => {
-            if (<% if (options.addRowCheckboxes) { %>displayedColumn === <%= classify(name) %>Column['CHECKBOX'] ||<% } %>
-                <% if (options.customRowActions.length > 0) { %>displayedColumn === <%= classify(name) %>Column['CUSTOM_ROW_ACTIONS'] ||<% } %>
-                displayedColumn === <%= classify(name) %>Column['COLUMNS_MENU'] ||
+            if (<% if (options.addRowCheckboxes) { %>displayedColumn === <%= tableColumnsEnumName %>['CHECKBOX'] ||<% } %>
+                <% if (options.customRowActions.length > 0) { %>displayedColumn === <%= tableColumnsEnumName %>['CUSTOM_ROW_ACTIONS'] ||<% } %>
+                displayedColumn === <%= tableColumnsEnumName %>['COLUMNS_MENU'] ||
                 this.columns.find(column => column.name === displayedColumn)) {
                     return;
             }
@@ -607,10 +607,10 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
     initOpenedColumnMenuDialog(): void {
         this.columMenuComponent.keyLocalStorage = this.<%= options.localStorageKeyColumns %>;
         this.columMenuComponent.columnsDefault = [
-            ...Object.values(<%= classify(name) %>Column)
-            <% if (options.addRowCheckboxes) { %>.filter(columnName => columnName !== <%= classify(name) %>Column['CHECKBOX'])<% } %>
-            <% if (options.customRowActions.length > 0) { %>.filter(columnName => columnName !== <%= classify(name) %>Column['CUSTOM_ROW_ACTIONS'])<% } %>
-            .filter(columnName => columnName !== <%= classify(name) %>Column['COLUMNS_MENU'])
+            ...Object.values(<%= tableColumnsEnumName %>)
+            <% if (options.addRowCheckboxes) { %>.filter(columnName => columnName !== <%= tableColumnsEnumName %>['CHECKBOX'])<% } %>
+            <% if (options.customRowActions.length > 0) { %>.filter(columnName => columnName !== <%= tableColumnsEnumName %>['CUSTOM_ROW_ACTIONS'])<% } %>
+            .filter(columnName => columnName !== <%= tableColumnsEnumName %>['COLUMNS_MENU'])
             .map(columnName => ({name: columnName, selected: true})),
         ];
         this.columMenuComponent.columns.splice(0, this.columMenuComponent.columns.length);
@@ -627,21 +627,21 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
         let displayedColumnsTmp: Array<Column> = [];
 
         <% if (options.addRowCheckboxes) { %>
-            if (columns[0].name !== <%= classify(name) %>Column['CHECKBOX']) {
-                displayedColumnsTmp.push({name: <%= classify(name) %>Column['CHECKBOX'], selected: true});
+            if (columns[0].name !== <%= tableColumnsEnumName %>['CHECKBOX']) {
+                displayedColumnsTmp.push({name: <%= tableColumnsEnumName %>['CHECKBOX'], selected: true});
             }
         <% } %>
 
         displayedColumnsTmp.push(...columns);
 
         <% if (options.customRowActions.length > 0) { %>
-            if (<%= classify(name) %>Column['CUSTOM_ROW_ACTIONS'] && columns[columns.length - 1].name !== <%= classify(name) %>Column['CUSTOM_ROW_ACTIONS']) {
-                displayedColumnsTmp.push({name: <%= classify(name) %>Column['CUSTOM_ROW_ACTIONS'], selected: true});
+            if (<%= tableColumnsEnumName %>['CUSTOM_ROW_ACTIONS'] && columns[columns.length - 1].name !== <%= tableColumnsEnumName %>['CUSTOM_ROW_ACTIONS']) {
+                displayedColumnsTmp.push({name: <%= tableColumnsEnumName %>['CUSTOM_ROW_ACTIONS'], selected: true});
             }
         <% } %>
 
-        if (<%= classify(name) %>Column['COLUMNS_MENU'] && columns[columns.length - 1].name !== <%= classify(name) %>Column['COLUMNS_MENU']) {
-            displayedColumnsTmp.push({name: <%= classify(name) %>Column['COLUMNS_MENU'], selected: true});
+        if (<%= tableColumnsEnumName %>['COLUMNS_MENU'] && columns[columns.length - 1].name !== <%= tableColumnsEnumName %>['COLUMNS_MENU']) {
+            displayedColumnsTmp.push({name: <%= tableColumnsEnumName %>['COLUMNS_MENU'], selected: true});
         }
 
         this.columns = [...columns];
