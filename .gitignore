@@ -12,6 +12,7 @@ jsconfig.json
 jest-stare/
 .yalc/
 node_modules/
+.npm
 npm-debug.log*
 yarn-error.log*
 *wizard.config.json
