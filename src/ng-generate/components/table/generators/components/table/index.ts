@@ -86,8 +86,7 @@ function applyTemplate(): Rule {
         commonImports: commonImports(),
         sharedCustomRows: getSharedCustomRows(),
         customColumn: getCustomColumn(),
-        columnTransKeyPrefix: getColumnTransKeyPrefix(),
-        blockHeaderToExport: getBlockHeaderToExport(),
+        columnTransKeyPrefix: getColumnTransKeyPrefix()
     });
 }
 
@@ -182,24 +181,4 @@ function getColumnTransKeyPrefix(): string {
               sharedOptions.aspectModelVersion
           )}.`
         : ``;
-}
-
-function getBlockHeaderToExport(): string {
-    let defTemp = `const headersToExport = columns`;
-
-    defTemp = `${defTemp}.filter(columnName => columnName !== ${classify(sharedOptions.name)}Column.COLUMNS_MENU)`;
-
-    if (sharedOptions.addRowCheckboxes) {
-        defTemp = `${defTemp}.filter(columnName => columnName !== ${classify(sharedOptions.name)}Column.CHECKBOX)`;
-    }
-
-    if (sharedOptions.customRowActions.length > 0) {
-        defTemp = `${defTemp}.filter(columnName => columnName !== ${classify(sharedOptions.name)}Column.CUSTOM_ROW_ACTIONS)`;
-    }
-
-    if (sharedOptions.customColumns.length > 0) {
-        defTemp = `${defTemp}.filter((columnName: string): boolean => !this.isCustomColumn(columnName))`;
-    }
-
-    return `${defTemp};`;
 }

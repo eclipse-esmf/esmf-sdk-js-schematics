@@ -1,4 +1,8 @@
 /** <%= options.generationDisclaimerText %> **/
+<%
+  var tableColumnsEnumName = classify(name) + 'Column';
+  var cmpFileName = dasherize(name);
+%>
 import {
     AfterViewInit,
     Component,
@@ -23,7 +27,7 @@ import { MatSort, SortDirection } from '@angular/material/sort';
 import { MatTable } from '@angular/material/table';
 
 <% if (options.hasFilters || options.hasSearchBar) { %>
-    import { FilterEnums, <%= options.filterServiceName %>} from './<%= dasherize(name) %>-filter.service'
+    import { FilterEnums, <%= options.filterServiceName %>} from './<%= dasherize(name) %>-filter.service';
 <% } %>
 
 import {Clipboard} from '@angular/cdk/clipboard';
@@ -90,13 +94,21 @@ import {<% if (options.enableRemoteDataHandling) { %>catchError, finalize, tap, 
 /**
  * Enumeration of all available columns which can be shown/hide in the table.
  */
-export enum <%= classify(name) %>Column {
+export enum <%= tableColumnsEnumName %> {
     <% if (options.addRowCheckboxes) { %>CHECKBOX = 'checkboxes',<% } %>
     <%= enumPropertyDefinitions %>
     <%= enumCustomColumns %>
     <% if (options.customRowActions.length > 0) { %>CUSTOM_ROW_ACTIONS = 'customRowActions',<% } %>
     COLUMNS_MENU = 'columnsMenu'
 }
+
+export const NON_DATA_COLUMNS: <%= tableColumnsEnumName %>[] = [
+    <% if (options.customRowActions.length > 0) { %>
+    <%= tableColumnsEnumName %>.CUSTOM_ROW_ACTIONS,
+    <% } %>
+    <%= tableColumnsEnumName %>.COLUMNS_MENU
+];
+
 
 @Component({
     selector: '<%= options.selector %>',
@@ -136,6 +148,8 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
     @Input() maxNumberCharacters: number = 50;
     @Input() allowedCharacters: string = '';
     @Input() regexValidator:string = '';
+
+    @Input() hideColumns: <%= tableColumnsEnumName %>[] = [];
 
     <% if (options.hasSearchBar) { %>@Input() hasAdvancedSearch: boolean = this.filterService.stringColumns.length > 1;<% } %>
     <% if (options.enableRemoteDataHandling) { %>
@@ -194,7 +208,9 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
     dataSource: <%= classify(name) %>DataSource;
 
     columnToSort:{sortColumnName: string, sortDirection: SortDirection} = {sortColumnName:'<%= options.defaultSortingCol %>', sortDirection : 'asc'};
-    displayedColumns: Array<string> = Object.values(<%= classify(name) %>Column);
+    // The list of column names that are displayed in the table, including NON_DATA_COLUMNS
+    displayedColumns: <%= tableColumnsEnumName %>[] = [];
+    // The list of available columns to select
     columns: Array<Column> = [];
 
     <% if (options.hasSearchBar) { %>
@@ -254,13 +270,22 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
                 }
             })
         <% } %>
-           this.initializeColumns();
+
+        this.initializeColumns();
+
+           <% if (options.hasSearchBar) { %>
+             this.initializeHighlightConfig();
+           <% } %>
         <% if (!options.enableRemoteDataHandling) { %>
             this.maxExportRows = this.data.length;
         <% } %>
     }
 
     ngOnChanges(changes: SimpleChanges): void {
+        if (changes.hideColumns && !changes.hideColumns.isFirstChange()) {
+            this.initializeColumns();
+        }
+
         <% if (options.enableRemoteDataHandling) { %>
             if (
                 (changes?.remoteAPI?.currentValue && !changes.remoteAPI.isFirstChange()) ||
@@ -301,29 +326,26 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
     }
 
     initializeColumns(): void {
-        <% if (options.hasSearchBar) { %>
-            const configStorage = this.storageService.getItem(this.<%= options.localStorageKeyConfig %>);
-        <% } %>
-        const columnStorage = this.storageService.getItem(this.<%= options.localStorageKeyColumns %>);
+        this.columns = [];
+        this.displayedColumns = Object.values(<%= tableColumnsEnumName %>).filter(
+            column => !this.hideColumns.includes(column)
+        );
 
-        <% if (options.hasSearchBar) { %>
-            if (configStorage?.length > 0) {
-                configStorage.forEach((config: Config) => this.configs.push(config));
-            } else {
-                this.configs.push({name: 'settings.highlight.name', desc: 'settings.highlight.desc', selected: false, color: '#FFFF00'});
-            }
-        <% } %>
+        const columnStorage = this.storageService.getItem(this.<%= options.localStorageKeyColumns %>);
 
         if (columnStorage?.length > 0) {
             columnStorage
-                .filter((column: Column) => this.displayedColumns.find(columnName => columnName === column.name))
+                .filter(
+                (column: Column) =>
+                    !this.hideColumns.includes(column.name as <%= tableColumnsEnumName %>) &&
+                    this.displayedColumns.find(columnName => columnName === column.name)
+                )
                 .forEach((column: Column) => this.columns.push({name: column.name, selected: column.selected}));
         }
 
         this.displayedColumns.forEach((displayedColumn: string): void => {
-            if (<% if (options.addRowCheckboxes) { %>displayedColumn === <%= classify(name) %>Column['CHECKBOX'] ||<% } %>
-                <% if (options.customRowActions.length > 0) { %>displayedColumn === <%= classify(name) %>Column['CUSTOM_ROW_ACTIONS'] ||<% } %>
-                displayedColumn === <%= classify(name) %>Column['COLUMNS_MENU'] ||
+            if (<% if (options.addRowCheckboxes) { %>displayedColumn === <%= tableColumnsEnumName %>['CHECKBOX'] ||<% } %>
+                !this.isAvailableDataColumn(displayedColumn as <%= tableColumnsEnumName %>) ||
                 this.columns.find(column => column.name === displayedColumn)) {
                     return;
             }
@@ -337,20 +359,6 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
         }
 
         this.setDisplayedColumns(this.columns);
-    }
-
-    hideColumn(column: <%= classify(name) %>Column): void {
-        this.displayedColumns = this.displayedColumns.filter(columnName => columnName !== column);
-    }
-
-    showColumn(column: <%= classify(name) %>Column, index: number): void {
-        if (!this.displayedColumns.includes(column)) {
-            this.displayedColumns.splice(index, 0, column);
-        }
-    }
-
-    resetDisplayedColumns(): void {
-        this.displayedColumns = Object.values(<%= classify(name) %>Column);
     }
 
     <% if (options.customColumns.length > 0) { %>
@@ -539,13 +547,15 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
         }
 
         openExportConfirmationDialog() {
-            const reduce = this.displayedColumns.filter(col => col === 'checkboxes' || col === 'columnsMenu').length;
+            const dataColumns = this.displayedColumns.filter(col => this.isAvailableDataColumn(col));
 
             const dialogRef = this.dialog.open(ExportTableDialogComponent, {
                 data: {
-                    <% if (options.enableRemoteDataHandling) { %>extendedCsvExporter: this.extendedCsvExporter,<% } %>
+                    <% if (options.enableRemoteDataHandling) { %>
+                        extendedCsvExporter: this.extendedCsvExporter,
+                    <% } %>
                     allColumns: this.columns.length,
-                    displayedColumns: this.displayedColumns.length - reduce,
+                    displayedColumns: dataColumns.length,
                     maxExportRows: this.maxExportRows,
                 },
                 maxWidth: 478,
@@ -563,7 +573,7 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
                     }
 
                     <% if (options.enableRemoteDataHandling) { %>
-                        const columns = event.exportAllColumns ? this.columns.map(c => c.name) : this.displayedColumns;
+                        const columns = event.exportAllColumns ? this.columns.map(c => c.name) : dataColumns;
                         this.extendedCsvExporter?.export(columns, this.rqlString);
                     <% } else { %>
                         this.prepareCsv(this.<%= (camelize((options.enableRemoteDataHandling && options.customRemoteService ? 'custom' : '') + name)) %>Service.flatten(this.data), event.exportAllColumns, event.exportAllPages,this.paginator.pageSize);
@@ -572,15 +582,13 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
         }
     <% } %>
 
-    <% if (options.addCommandBar) { %>
+    <% if (options.addCommandBar && !options.enableRemoteDataHandling) { %>
         prepareCsv(data: any, exportAllColumns: boolean, exportAllPages: boolean, currentPageSize: number): void {
             if (!exportAllPages && data.length > currentPageSize) {
                 data.length = currentPageSize;
             }
 
-            const columns = exportAllColumns ? this.columns.map(c => c.name) : this.displayedColumns;
-
-            <%= blockHeaderToExport %>
+            const headersToExport = exportAllColumns ? this.columns.map(c => c.name) : this.displayedColumns.filter(col => this.isAvailableDataColumn(col));
 
             const headersCSV = unparse({
                 fields: headersToExport
@@ -613,10 +621,8 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
     initOpenedColumnMenuDialog(): void {
         this.columMenuComponent.keyLocalStorage = this.<%= options.localStorageKeyColumns %>;
         this.columMenuComponent.columnsDefault = [
-            ...Object.values(<%= classify(name) %>Column)
-            <% if (options.addRowCheckboxes) { %>.filter(columnName => columnName !== <%= classify(name) %>Column['CHECKBOX'])<% } %>
-            <% if (options.customRowActions.length > 0) { %>.filter(columnName => columnName !== <%= classify(name) %>Column['CUSTOM_ROW_ACTIONS'])<% } %>
-            .filter(columnName => columnName !== <%= classify(name) %>Column['COLUMNS_MENU'])
+            ...Object.values(<%= tableColumnsEnumName %>)
+            .filter(columnName => this.isAvailableDataColumn(columnName))
             .map(columnName => ({name: columnName, selected: true})),
         ];
         this.columMenuComponent.columns.splice(0, this.columMenuComponent.columns.length);
@@ -633,25 +639,21 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
         let displayedColumnsTmp: Array<Column> = [];
 
         <% if (options.addRowCheckboxes) { %>
-            if (columns[0].name !== <%= classify(name) %>Column['CHECKBOX']) {
-                displayedColumnsTmp.push({name: <%= classify(name) %>Column['CHECKBOX'], selected: true});
+            if (columns[0].name !== <%= tableColumnsEnumName %>['CHECKBOX']) {
+                displayedColumnsTmp.push({name: <%= tableColumnsEnumName %>['CHECKBOX'], selected: true});
             }
         <% } %>
 
         displayedColumnsTmp.push(...columns);
 
         <% if (options.customRowActions.length > 0) { %>
-            if (<%= classify(name) %>Column['CUSTOM_ROW_ACTIONS'] && columns[columns.length - 1].name !== <%= classify(name) %>Column['CUSTOM_ROW_ACTIONS']) {
-                displayedColumnsTmp.push({name: <%= classify(name) %>Column['CUSTOM_ROW_ACTIONS'], selected: true});
-            }
+            displayedColumnsTmp.push({name: <%= tableColumnsEnumName %>['CUSTOM_ROW_ACTIONS'], selected: true});
         <% } %>
 
-        if (<%= classify(name) %>Column['COLUMNS_MENU'] && columns[columns.length - 1].name !== <%= classify(name) %>Column['COLUMNS_MENU']) {
-            displayedColumnsTmp.push({name: <%= classify(name) %>Column['COLUMNS_MENU'], selected: true});
-        }
+        displayedColumnsTmp.push({name: <%= tableColumnsEnumName %>['COLUMNS_MENU'], selected: true});
 
         this.columns = [...columns];
-        this.displayedColumns = displayedColumnsTmp.filter(column => column.selected).map(column => column.name);
+        this.displayedColumns = displayedColumnsTmp.filter(column => column.selected).map(column => column.name as <%= tableColumnsEnumName %>);
     }
 
     loadCustomTemplate(): TemplateRef<any> | null {
@@ -665,4 +667,20 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
             }
         }
     <% } %>
+
+    <% if (options.hasSearchBar) { %>
+        private initializeHighlightConfig(): void {
+            const configStorage = this.storageService.getItem(this.<%= options.localStorageKeyConfig %>);
+
+            if (configStorage?.length > 0) {
+                configStorage.forEach((config: Config) => this.configs.push(config));
+            } else {
+                this.configs.push({name: 'settings.highlight.name', desc: 'settings.highlight.desc', selected: false, color: '#FFFF00'});
+            }
+        }
+    <% } %>
+
+    private isAvailableDataColumn(column: <%= tableColumnsEnumName %>): boolean {
+        return !(Array.isArray(this.hideColumns) && this.hideColumns.includes(column)) && !NON_DATA_COLUMNS.includes(column);
+    }
 }
