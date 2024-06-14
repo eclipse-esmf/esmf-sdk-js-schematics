@@ -14,3 +14,7 @@ mat-toolbar {
 }
 
 .padding-40 { padding:40px; }
+
+.mat-tooltip {
+  white-space: pre-line;
+}

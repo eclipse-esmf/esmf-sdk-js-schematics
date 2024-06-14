@@ -98,7 +98,7 @@
                     <mat-select data-test="select" [(value)]="filterService.<%= property.propertyName %>Selected" #<%= property.propertyName %>Select multiple>
                         <div class="filter-options-container">
                         <% if (property.enumWithEntities) { %>
-                            <mat-option data-test="select-option" *ngFor="let <%= property.propertyName %>Option of filterService.<%= property.propertyName %>Options" [value]="<%= property.propertyName %>Option.value">
+                            <mat-option data-test="select-option" *ngFor="let <%= property.propertyName %>Option of filterService.<%= property.propertyName %>Options" [matTooltip]=formatJsonTooltipContent('<%= property.propertyName %>Option.value') [value]="<%= property.propertyName %>Option.value">
                                 {{ <%= property.propertyName %>Option.value }} - {{ <%= property.propertyName %>Option.translationKey | transloco }}
                             </mat-option>
                         <% } else { %>

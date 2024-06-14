@@ -163,6 +163,10 @@ export class <%= classify(name) %>CommandBarComponent implements AfterViewInit {
       return this.hiddenComponents.includes(id);
     }
 
+    formatJsonTooltipContent(jsonData){
+      return JSON.stringify(data, null, 2);
+    }
+
     <% if (options.componentType === 'table' && options.hasSearchBar) { %>
       openSettingsFromCollapsed() {      
         const configMenuDialogRef =  this.dialog.open(<%= classify(name) %>ConfigMenuComponent,{
