@@ -62,10 +62,7 @@
                 <ng-container data-test="table-column" matColumnDef="<%= cellPropertyPath %>">
                     <th data-test="table-header" mat-header-cell *matHeaderCellDef
                         <%= options.templateHelper.isNumberProperty(value.property) ? `class="table-header-number"` : '' %>
-
-                        <% if (options.tableColumValues(options.listProps, options).length - 1 > value.index) { %>
-                            [resizeColumn]="true" [index]="<%= value.index %>" (dragging)='dragging = $event'
-                        <% } %>
+                        [resizeColumn]="true" [index]="<%= value.index %>" (dragging)='dragging = $event'
                     >
                         <span [matTooltip]=" '<%= propertyLocaleKeyPath %>.description' | transloco"
                               [matTooltipDisabled]="headerTooltipsOff"

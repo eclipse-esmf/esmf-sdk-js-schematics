@@ -145,6 +145,10 @@
         "getOptionalMaterialTheme": {
             "type": "boolean",
             "default": false
+        },
+        "commandBarFilterOrder": {
+            "type": "array",
+            "default": []
         }
     }
 }

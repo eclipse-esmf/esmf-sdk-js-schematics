@@ -47,14 +47,9 @@
 
                 <!-- <%= cellPropertyPath %> Column -->
                 <ng-container data-test="table-column" matColumnDef="<%= cellPropertyPath %>">
-                    <th data-test="table-header" mat-header-cell *matHeaderCellDef
-                        mat-sort-header="<%= cellPropertyPath %>"
-
+                    <th data-test="table-header" mat-header-cell *matHeaderCellDef mat-sort-header="<%= cellPropertyPath %>"
                         <%= options.templateHelper.isNumberProperty(value.property) ? `class="table-header-number"` : '' %>
-
-                        <% if (tableColumValuesFunc.length - 1 > value.index) { %>
-                            [resizeColumn]="true" [index]="<%= value.index %>" (dragging)='dragging = $event'
-                        <% } %>
+                        [resizeColumn]="true" [index]="<%= value.index %>" (dragging)='dragging = $event'
                     >
                         <span [matTooltip]=" '<%= propertyLocaleKeyPath %>.description' | transloco"
                               [matTooltipDisabled]="headerTooltipsOff"
@@ -92,19 +87,21 @@
             <% } %>
 
             <% if(options.customColumns && options.customColumns.length > 0) { %>
-                <% for(let columnName of options.customColumns) { %>
+                <% for(let [index, columnName] of options.customColumns.entries()) { %>
+                    <% let customColumnIndex = tableColumValuesFunc.length + index + 1; %>
                     <!-- <%= columnName %> Column -->
                     <ng-container data-test="custom-column-container" matColumnDef="<%= columnName %>">
                         <% if(options.enableVersionSupport) { %>
-                            <th data-test="custom-column-header" mat-header-cell *matHeaderCellDef mat-sort-header>
-                                {{'<%= options.selectedModelTypeName.toLowerCase() %>.v<%= options.formatedAspectModelVersion %>.customColumn.<%= columnName %>' | transloco}}
+                            <th data-test="custom-column-header" mat-header-cell *matHeaderCellDef mat-sort-header
+                                [resizeColumn]="true" [index]="<%= customColumnIndex %>" (dragging)='dragging = $event'>
+                                {{'<%= options.selectedModelTypeName.toLowerCase() %>.v<%= options.formatedAspectModelVersion %>.customColumn.<%= columnName %>' | transloco }}
                             </th>
                         <% } else { %>
-                            <th data-test="custom-column-header" mat-header-cell *matHeaderCellDef mat-sort-header>
+                            <th data-test="custom-column-header" mat-header-cell *matHeaderCellDef mat-sort-header
+                                [resizeColumn]="true" [index]="<%= customColumnIndex %>" (dragging)='dragging = $event'>
                                 {{ '<%= options.selectedModelTypeName.toLowerCase() %>.customColumn.<%= columnName %>' | transloco }}
                             </th>
                         <% } %>
-
                         <td data-test="custom-column-cell" mat-cell *matCellDef="let row">
                             <ng-container data-test="custom-column-container" *ngTemplateOutlet="<%= camelize(columnName) %>Template; context:{aspect:row}"></ng-container>
                         </td>
@@ -118,11 +115,11 @@
                 <th style="text-align: right;justify-content: flex-end;" data-test="columns-menu-button-header" mat-header-cell *matHeaderCellDef>
                     <button data-test="mat-table-menu-button"
                         mat-icon-button
-                        [matMenuTriggerFor]="columnMenu"
-                        (menuOpened)="initOpenedColumnMenuDialog()"
                         aria-label="Menu for the table"
                         class="mat-table-menu-button"
-                        [matTooltip]="'tableActions.openColumnsMenu' | transloco">
+                        [matMenuTriggerFor]="columnMenu"
+                        [matTooltip]="'tableActions.openColumnsMenu' | transloco"
+                        (menuOpened)="initOpenedColumnMenuDialog()">
                             <mat-icon data-test="mat-table-menu-icon" class="material-icons">settings</mat-icon>
                     </button>
                 </th>
@@ -153,6 +150,7 @@
                    [pageIndex]="0"
                    [pageSize]="pageSize"
                    [pageSizeOptions]="pageSizeOptions"
+                   [selectConfig]="paginatorSelectConfig"
                    [showFirstLastButtons]="showFirstLastButtons"
                    (page)="pageChange()">
     </mat-paginator>
