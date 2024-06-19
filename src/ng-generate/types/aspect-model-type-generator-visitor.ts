@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH
+ * Copyright (c) 2024 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for
  * additional information regarding authorship.
@@ -18,6 +18,7 @@ import {
     BaseMetaModelElement,
     Characteristic,
     DefaultAspectModelVisitor,
+    DefaultCharacteristic,
     DefaultCollection,
     DefaultEntity,
     DefaultEntityInstance,
@@ -28,7 +29,8 @@ import {
     Property,
 } from '@esmf/aspect-model-loader';
 import {TypesSchema} from './schema';
-import {resolveJsPropertyType} from '../components/shared/utils';
+import {isLangString, processType, resolveJsPropertyType} from '../components/shared/utils';
+import {MultiLanguageText} from '@esmf/aspect-model-loader/dist/instantiator/characteristic/characteristic-instantiator-util';
 
 export function visitAspectModel(options: TypesSchema): Rule {
     return async (tree: Tree) => {
@@ -82,10 +84,6 @@ export class AspectModelTypeGeneratorVisitor extends DefaultAspectModelVisitor<B
         const lines = [];
 
         lines.push('/** Generated form ESMF JS SDK Angular Schematics - PLEASE DO NOT CHANGE IT **/\n\n');
-        lines.push(`export interface MultiLanguageText {
-                        /** key defines the locale. Value is the translated text for that locale. */
-                        [key: string]: string;
-                    }\n\n`);
         lines.push(this.getJavaDoc(aspect));
         lines.push(`export interface ${aspect.name} {\n`);
 
@@ -108,6 +106,21 @@ export class AspectModelTypeGeneratorVisitor extends DefaultAspectModelVisitor<B
     }
 
     visitCharacteristic(characteristic: Characteristic, context: void): BaseMetaModelElement {
+        if (isLangString(characteristic.dataType?.urn)) {
+            const lines = [];
+            lines.push(`
+            /**
+             * Represents a text with multiple language support.
+             */
+            export interface MultiLanguageText {
+                /** The actual text value. */
+                value: string;
+                /** The language code of the text. */
+                language: string;
+             }\n\n`);
+            this.typeDefinitions = this.typeDefinitions.set(characteristic.name, lines);
+        }
+
         if (characteristic instanceof DefaultEnumeration) {
             this.visitEnumeration(characteristic);
         }
@@ -141,50 +154,96 @@ export class AspectModelTypeGeneratorVisitor extends DefaultAspectModelVisitor<B
             const versionedAccessPrefix = (this.options as any).templateHelper.getVersionedAccessPrefix(this.options as any)
                 ? `${(this.options as any).templateHelper.getVersionedAccessPrefix(this.options as any)}.`
                 : ``;
-            let valuePayloadKey = '';
+
+            let instanceProps: Array<any> = [];
+
             enumeration.values.forEach((instance: DefaultEntityInstance) => {
                 if (dataTypeEntityProperty) {
-                    valuePayloadKey = instance.valuePayloadKey;
-                    lines.push(
-                        `    static ${classify(instance.name)} = new ${classify(enumeration.name)}('${instance.value}', '${
-                            instance.getDescription() || ''
-                        }', '${instance.descriptionKey ? `${instance.name}.${instance.descriptionKey}` : ''}');\n`
+                    instanceProps = instance.metaModelType.properties.map(prop => ({
+                        name: prop.name,
+                        characteristic: prop.characteristic,
+                        dataType: prop.effectiveDataType?.urn,
+                    }));
+
+                    const entityInstancePropsWithValues = this.getEntityInstanceValues(instance, instanceProps);
+
+                    let values: string = '';
+                    entityInstancePropsWithValues.forEach(
+                        (item: {
+                            name: string;
+                            value: string | MultiLanguageText | Array<MultiLanguageText>;
+                            characteristic: Characteristic;
+                            dataType: string | undefined;
+                        }) => {
+                            if (item.characteristic instanceof DefaultCollection && isLangString(item.dataType)) {
+                                const arr: string = (item.value as Array<MultiLanguageText>)
+                                    .map(val => `{value: '${val.value}', language: '${val.language}'}`)
+                                    .join(',');
+                                values += `([${arr}] as Array<MultiLanguageText>),`;
+                            } else if (isLangString(item.dataType)) {
+                                const multiLanguageText = item.value as MultiLanguageText;
+                                values += `{value: '${multiLanguageText.value}', language: '${multiLanguageText.language}'},`;
+                            } else {
+                                const dataType = item.dataType?.split('#')[1];
+                                if (dataType && processType(dataType) === 'number') {
+                                    values += `${item.value}, `;
+                                } else {
+                                    values += `'${item.value}', `;
+                                }
+                            }
+                        }
                     );
+
+                    values = values.replace(/,([^,]*)$/, '$1');
+
+                    lines.push(`static ${classify(instance.name)} = new ${classify(enumeration.name)}(${values});\n`);
                 }
             });
 
+            const constructorValues = instanceProps
+                .map((prop: any) => {
+                    if (prop.characteristic instanceof DefaultCollection && isLangString(prop.dataType)) {
+                        return `public ${prop.name}: Array<MultiLanguageText>`;
+                    } else if (isLangString(prop.dataType)) {
+                        return `public ${prop.name}: MultiLanguageText`;
+                    }
+
+                    return `public ${prop.name}: ${processType(prop.dataType.split('#')[1])}`;
+                })
+                .join(', ');
+
+            const typeValues = instanceProps
+                .map((prop: any) => {
+                    if (prop.characteristic instanceof DefaultCollection && isLangString(prop.dataType)) {
+                        return `${prop.name}: Array<MultiLanguageText>`;
+                    } else if (isLangString(prop.dataType)) {
+                        return `${prop.name}: MultiLanguageText`;
+                    }
+
+                    return `${prop.name}: ${processType(prop.dataType.split('#')[1])}`;
+                })
+                .join(', ');
+
             lines.push(`
-                constructor(public ${valuePayloadKey}: string, public description: string, private translationKey: string){};\n
+                constructor(${constructorValues}){}\n
              
                 /** Gets all defined values from ${classify(enumeration.name)} */
-                public static values(): Array<{iProcedureAndStepNo: string; description: string | undefined}> {
+                public static values(): Array<{${typeValues}}> {
                     return [
                        ${enumeration.values
                            .map(
                                (instance: DefaultEntityInstance) =>
-                                   `{ ${valuePayloadKey}: ${classify(enumeration.name)}.${classify(instance.name)}.${valuePayloadKey}, 
-                                   description: ${classify(enumeration.name)}.${classify(instance.name)}.${instance.descriptionKey} }`
+                                   `{${instanceProps
+                                       .map(
+                                           (prop: any) =>
+                                               `${prop.name}: ${classify(enumeration.name)}.${classify(instance.name)}.${prop.name}`
+                                       )
+                                       .join(',')}}`
                            )
                            .join(',')}
                     ]
                 }
-                
-                /** Gets a list of value and related translations key */
-                public static getValueDescriptionList(propertyName: string): Array<{value:string, translationKey:string | undefined}> {
-                    return [
-                       ${enumeration.values
-                           .map(
-                               (instance: DefaultEntityInstance) =>
-                                   `{ value: '${
-                                       instance.value
-                                   }', translationKey: '${versionedAccessPrefix}' + propertyName + '.' + ${classify(
-                                       enumeration.name
-                                   )}.${classify(instance.name)}.translationKey }`
-                           )
-                           .join(',')}
-                    ]
-                }
-    
+
                 /** Gets get the instance according to the given value or undefined if no instance exists */
                 public static getByValue(value: string): ${classify(enumeration.name)} | undefined {
                     ${enumeration.values
@@ -280,5 +339,24 @@ export class AspectModelTypeGeneratorVisitor extends DefaultAspectModelVisitor<B
         name = name.replace(/^(\d+)/, '_$1');
 
         return name;
+    }
+
+    private getEntityInstanceValues(
+        entityInstance: DefaultEntityInstance,
+        entityInstanceProps: Array<{
+            name: string;
+            characteristic: Characteristic;
+            dataType: string | undefined;
+        }>
+    ): Array<{
+        value: string | MultiLanguageText | Array<MultiLanguageText>;
+        name: string;
+        characteristic: DefaultCharacteristic;
+        dataType: string;
+    }> {
+        return entityInstanceProps.map((prop: any) => {
+            const propObject = (entityInstance as any)[prop.name];
+            return {name: prop.name, value: propObject, characteristic: prop.characteristic, dataType: prop.dataType};
+        });
     }
 }

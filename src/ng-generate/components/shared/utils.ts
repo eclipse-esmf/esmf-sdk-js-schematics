@@ -21,6 +21,7 @@ import {
     DefaultTrait,
     Entity,
     Property,
+    Samm,
     Type,
 } from '@esmf/aspect-model-loader';
 import {classify, dasherize} from '@angular-devkit/core/src/utils/strings';
@@ -245,6 +246,10 @@ export function resolveJsPropertyType(property: Property): string {
                 property.characteristic.elementCharacteristic.dataType
             );
         }
+
+        if (isLangString(property.characteristic.dataType?.urn)) {
+            return `Array<${resolveJsCharacteristicType(property.characteristic, property.effectiveDataType)}>`;
+        }
     }
 
     return resolveJsCharacteristicType(property.characteristic, property.effectiveDataType);
@@ -276,7 +281,11 @@ function resolveJsCharacteristicType(characteristic: Characteristic, dataType: T
 }
 
 function processScalarType(defaultScalarType: DefaultScalar): string {
-    switch (defaultScalarType.shortUrn) {
+    return processType(defaultScalarType.shortUrn);
+}
+
+export function processType(shortUrn: string): string {
+    switch (shortUrn) {
         case 'decimal':
         case 'integer':
         case 'double':
@@ -294,7 +303,6 @@ function processScalarType(defaultScalarType: DefaultScalar): string {
         case 'negativeInteger':
         case 'nonPositiveInteger':
             return 'number';
-        case 'langString':
         case 'hexBinary':
         case 'base64Binary':
         case 'curie':
@@ -309,12 +317,18 @@ function processScalarType(defaultScalarType: DefaultScalar): string {
         case 'gYearMonth':
         case 'yearMonthDuration':
             return 'string';
+        case 'langString':
+            return 'MultiLanguageText';
         case 'date':
         case 'time':
         case 'dateTime':
         case 'dateTimeStamp':
             return 'Date';
         default:
-            return defaultScalarType.shortUrn;
+            return shortUrn;
     }
+}
+
+export function isLangString(urn: string | undefined): boolean {
+    return urn === Samm.RDF_LANG_STRING || urn === Samm.XML_LANG_STRING;
 }

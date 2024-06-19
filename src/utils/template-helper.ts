@@ -280,6 +280,9 @@ export class TemplateHelper {
      * @returns {boolean} True if the property is an enumeration with entity values property.
      */
     isEnumPropertyWithEntityValues(property: Property) {
+        if (property.characteristic instanceof DefaultEnumeration && property.characteristic.values?.[0] instanceof DefaultEntityInstance) {
+            return false;
+        }
         return this.isEnumProperty(property) && property.effectiveDataType instanceof DefaultEntity;
     }
 
@@ -407,7 +410,7 @@ export class TemplateHelper {
             return '';
         }
 
-        return ((property.characteristic as DefaultEnumeration).values[0] as DefaultEntityInstance).valuePayloadKey;
+        return ((property.characteristic as DefaultEnumeration).values?.[0] as DefaultEntityInstance).valuePayloadKey;
     }
 
     /**

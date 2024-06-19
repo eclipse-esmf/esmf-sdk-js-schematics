@@ -1,0 +1,68 @@
+#
+# Copyright (c) 2024 Robert Bosch Manufacturing Solutions GmbH
+#
+# See the AUTHORS file(s) distributed with this work for
+# additional information regarding authorship.
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at https://mozilla.org/MPL/2.0/.
+#
+# SPDX-License-Identifier: MPL-2.0
+#
+
+@prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.1.0#> .
+@prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.1.0#> .
+@prefix samm-e: <urn:samm:org.eclipse.esmf.samm:entity:2.1.0#> .
+@prefix unit: <urn:samm:org.eclipse.esmf.samm:unit:2.1.0#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix : <urn:samm:org.eclipse.esmf.test:1.0.0#> .
+
+:TestEntityInstances a samm:Aspect ;
+   samm:properties ( :property ) ;
+   samm:operations ( ) ;
+   samm:events ( ) .
+
+:property a samm:Property ;
+   samm:preferredName "GermanProperty"@de ;
+   samm:preferredName "EnglishProperty"@en ;
+   samm:characteristic :Enumeration .
+
+:Enumeration a samm-c:Enumeration ;
+   samm:preferredName "GermanEnum"@de ;
+   samm:preferredName "EnglishEnum"@en ;
+   samm:dataType :Entity ;
+   samm-c:values ( :Code101 :Code102 ) .
+
+:Entity a samm:Entity ;
+   samm:properties ( :step [ samm:property :description; samm:notInPayload true ] ) .
+
+:Code101 a :Entity ;
+   :description "Starting" ;
+   :step "101"^^xsd:short .
+
+:Code102 a :Entity ;
+   :description "Ready" ;
+   :step "102"^^xsd:short .
+
+:step a samm:Property ;
+   samm:preferredName "Code"@en ;
+   samm:description "This is a Code"@en ;
+   samm:characteristic :NumericCode .
+
+:description a samm:Property ;
+   samm:preferredName "Code"@en ;
+   samm:description "This is a Code description"@en ;
+   samm:characteristic :Text .
+
+:NumericCode a samm-c:Code ;
+   samm:preferredName "Numeric Code"@en ;
+   samm:description "A numeric code"@en ;
+   samm:dataType xsd:short .
+
+:Text a samm:Characteristic ;
+   samm:preferredName "Text"@en ;
+   samm:description "Describes a Property which contains plain text. This is intended exclusively for human readable strings, not for identifiers, measurement values, etc."@en ;
+   samm:dataType xsd:string .
