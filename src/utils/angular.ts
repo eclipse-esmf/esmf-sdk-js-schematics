@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH
+ * Copyright (c) 2024 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for
  * additional information regarding authorship.
@@ -18,7 +18,7 @@ import {
     addModuleImportToModule,
     buildComponent,
     findModuleFromOptions,
-    parseSourceFile,
+    parseSourceFile
 } from '@angular/cdk/schematics';
 import {MODULE_EXT} from '@schematics/angular/utility/find-module';
 import {Schema} from '../ng-generate/components/shared/schema';
@@ -141,4 +141,10 @@ export function wrapBuildComponentExecution(options: Schema): Rule {
         options.flat = true;
         return buildComponent(Object.assign({}, options));
     };
+}
+
+// Dynamic import for the inquirer
+export async function loadInquirer() {
+    const inquirer = await import('inquirer');
+    return inquirer.default;
 }

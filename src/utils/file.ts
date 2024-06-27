@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH
+ * Copyright (c) 2024 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for
  * additional information regarding authorship.
@@ -14,9 +14,7 @@
 import {Rule, SchematicContext, Tree} from '@angular-devkit/schematics';
 import * as fs from 'fs';
 import {DefaultSchema} from '../ng-generate/default-schema';
-
-/* eslint-disable @typescript-eslint/no-var-requires */
-const prettier = require('prettier');
+import {format, resolveConfig} from 'prettier';
 
 // this resolves the config provided by the schematics lib
 const defaultPrettierConfigPath = require.resolve('../../.prettierrc');
@@ -52,10 +50,10 @@ export function formatGeneratedFiles(folderProvider: FolderPathProvider, options
             const prettierConfigPath = resolvePrettierConfigPath(options);
             const prettierOptions = await resolvePrettierOptions(prettierConfigPath, options);
 
-            tree.getDir(folderPath).visit(visitor => {
+            tree.getDir(folderPath).visit(async visitor => {
                 const fileEntry = tree.get(visitor);
                 if (fileEntry && (fileFilter === undefined || fileFilter.find(fileName => fileEntry.path.includes(fileName)))) {
-                    formatFile(fileEntry, visitor, prettierOptions, options, tree);
+                    await formatFile(fileEntry, visitor, prettierOptions, options, tree);
                 }
             });
         } catch (err) {
@@ -75,7 +73,7 @@ function resolvePrettierConfigPath(options: DefaultSchema) {
 }
 
 async function resolvePrettierOptions(prettierConfigPath: string, options: DefaultSchema) {
-    let prettierOptions = await prettier.resolveConfig(prettierConfigPath);
+    let prettierOptions = await resolveConfig(prettierConfigPath);
 
     if (!prettierOptions) {
         prettierOptions = {};
@@ -85,10 +83,13 @@ async function resolvePrettierOptions(prettierConfigPath: string, options: Defau
     return prettierOptions;
 }
 
-function formatFile(fileEntry: any, visitor: any, prettierOptions: any, options: DefaultSchema, tree: Tree) {
-    prettierOptions.filepath = visitor; // Infer the parser from the file extension
-    const srcFile = fileEntry.content.toString();
-    const dstFile = prettier.format(srcFile, prettierOptions);
-    tree.overwrite(visitor, dstFile);
-    options.spinner.succeed(`Prettier ${visitor}`);
+async function formatFile(fileEntry: any, visitor: any, prettierOptions: any, options: DefaultSchema, tree: Tree) {
+    if (visitor.includes('.ts') || visitor.includes('.json')) {
+        prettierOptions.filepath = visitor; // Infer the parser from the file extension
+        const srcFile = fileEntry.content.toString();
+        await format(srcFile, prettierOptions).then((formattedCode: string) => {
+            tree.overwrite(visitor, formattedCode);
+        });
+        options.spinner.succeed(`Prettier ${visitor}`);
+    }
 }

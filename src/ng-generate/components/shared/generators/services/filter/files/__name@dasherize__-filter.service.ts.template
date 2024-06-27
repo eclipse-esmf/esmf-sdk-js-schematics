@@ -17,7 +17,7 @@
     } from 'rollun-ts-rql';
 <% } %>
 
-<% if (options.hasSearchBar || options.isDateQuickFilter) { %>import { TranslocoService } from '@ngneat/transloco';<% } %>
+<% if (options.hasSearchBar || options.isDateQuickFilter) { %>import { TranslocoService } from '@jsverse/transloco';<% } %>
 
 import {AbstractControl, FormControl, ValidationErrors, ValidatorFn} from '@angular/forms';
 import {Injectable<% if (options.isDateQuickFilter) { %>, Inject<% } %>} from '@angular/core';

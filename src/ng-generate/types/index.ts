@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH
+ * Copyright (c) 2024 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for
  * additional information regarding authorship.
@@ -20,8 +20,7 @@ import {TemplateHelper} from '../../utils/template-helper';
 import {visitAspectModel} from './aspect-model-type-generator-visitor';
 import {WIZARD_CONFIG_FILE} from '../prompter/index';
 import {TypesSchema} from './schema';
-import {TableSchema} from '../components/table/schema';
-import {generateComponent, loadAspectModelRule, loadRdfRule, prepareOptions} from '../components/shared';
+import {generateComponent} from '../components/shared';
 import {Tree} from '@angular-devkit/schematics/src/tree/interface';
 import {ComponentType} from '../components/shared/schema';
 

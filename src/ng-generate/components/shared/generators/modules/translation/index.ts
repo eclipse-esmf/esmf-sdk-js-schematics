@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH
+ * Copyright (c) 2024 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for
  * additional information regarding authorship.
@@ -22,7 +22,7 @@ import {
     Rule,
     SchematicContext,
     Tree,
-    url,
+    url
 } from '@angular-devkit/schematics';
 import {strings} from '@angular-devkit/core';
 import {Schema} from '../../../schema';

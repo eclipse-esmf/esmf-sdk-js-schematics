@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH
+ * Copyright (c) 2024 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for
  * additional information regarding authorship.
@@ -22,7 +22,7 @@ import {
     Entity,
     Property,
     Samm,
-    Type,
+    Type
 } from '@esmf/aspect-model-loader';
 import {classify, dasherize} from '@angular-devkit/core/src/utils/strings';
 import {Schema} from './schema';

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH
+ * Copyright (c) 2024 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for
  * additional information regarding authorship.
@@ -13,16 +13,16 @@
 
 import {ComponentType, Schema} from '../../../components/shared/schema';
 import {TemplateHelper} from '../../../../utils/template-helper';
-import inquirer from 'inquirer';
 import {
-    requestExcludedConstraints,
     excludedProperties,
+    requestExcludedConstraints,
     requestOptionalMaterialTheme,
     requestOverwriteFiles,
-    requestSelectedModelElement,
+    requestSelectedModelElement
 } from '../shared/prompt-complex-questions';
 import {requestAspectModelVersionSupport, requestSetViewEncapsulation} from '../shared/prompt-simple-questions';
 import {Aspect, DefaultCollection, DefaultEntity} from '@esmf/aspect-model-loader';
+import {loadInquirer} from '../../../../utils/angular';
 
 export const requestReadOnlyForm = (options: Schema) => ({
     type: 'confirm',
@@ -58,6 +58,7 @@ export async function formPrompterQuestions(
  * @returns {Promise<Object>} An object containing the user responses.
  */
 async function getUserSpecificFormConfigs(templateHelper: TemplateHelper, options: Schema, allAnswers: any, aspect: Aspect) {
+    const inquirer = await loadInquirer();
     const firstBatchAnswers = await inquirer.prompt([
         requestSelectedModelElement(ComponentType.FORM, aspect, requestSelectedModelCondition),
     ]);

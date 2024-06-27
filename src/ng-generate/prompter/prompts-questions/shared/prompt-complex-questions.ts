@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH
+ * Copyright (c) 2024 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for
  * additional information regarding authorship.
@@ -29,14 +29,14 @@ import {
     DefaultStructuredValue,
     DefaultTrait,
     Entity,
-    Property,
+    Property
 } from '@esmf/aspect-model-loader';
 
 import {ComponentType, Schema} from '../../../components/shared/schema';
 import {TemplateHelper} from '../../../../utils/template-helper';
 import * as locale from 'locale-codes';
 import {handleComplexPropList, loader} from '../../utils';
-import inquirer from 'inquirer';
+import {loadInquirer} from '../../../../utils/angular';
 
 export const requestOverwriteFiles = (options: Schema) => ({
     type: 'confirm',
@@ -473,6 +473,7 @@ export async function extractPropertyElements(generationType: string, complexPro
 }
 
 async function complexPropertyElementsPrompt(generationType: string, property: Property): Promise<any> {
+    const inquirer = await loadInquirer();
     return inquirer.prompt([requestComplexPropertyElements(generationType, property)]);
 }
 
@@ -508,6 +509,7 @@ export async function getDatePickerType(templateHelper: TemplateHelper, allAnswe
 }
 
 async function datePickerTypePrompt(property: Property): Promise<any> {
+    const inquirer = await loadInquirer();
     return inquirer.prompt([requestChooseDatePickerType(property)]);
 }
 
@@ -574,6 +576,7 @@ async function orderItems(items: any) {
             console.log(`${index + 1}. ${item}`);
         });
 
+        const inquirer = await loadInquirer();
         const answers = await inquirer.prompt([
             {
                 type: 'input',

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH
+ * Copyright (c) 2024 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for
  * additional information regarding authorship.
@@ -12,7 +12,17 @@
  */
 
 import {Characteristic, Constraint, DefaultConstraint, DefaultTrait, Property} from '@esmf/aspect-model-loader';
-import {apply, applyTemplates, chain, MergeStrategy, mergeWith, move, Rule, SchematicContext, url} from '@angular-devkit/schematics';
+import {
+    apply,
+    applyTemplates,
+    chain,
+    MergeStrategy,
+    mergeWith,
+    move,
+    Rule,
+    SchematicContext,
+    url
+} from '@angular-devkit/schematics';
 import {strings} from '@angular-devkit/core';
 import {templateInclude} from '../../../../shared/include';
 import {addToComponentModule} from '../../../../../../utils/angular';
@@ -46,14 +56,6 @@ export abstract class FormFieldStrategy {
     options: any;
     isList = false;
 
-    static isTargetStrategy(child: Characteristic): boolean {
-        throw new Error('An implementation of the method has to be provided by a derived class');
-    }
-
-    static getShortUrn(child: Characteristic): DataType {
-        return child.dataType?.shortUrn as DataType;
-    }
-
     constructor(
         options: any,
         public context: SchematicContext,
@@ -63,6 +65,14 @@ export abstract class FormFieldStrategy {
         public constraints: Constraint[],
     ) {
         this.options = {...options};
+    }
+
+    static isTargetStrategy(child: Characteristic): boolean {
+        throw new Error('An implementation of the method has to be provided by a derived class');
+    }
+
+    static getShortUrn(child: Characteristic): DataType {
+        return child.dataType?.shortUrn as DataType;
     }
 
     getValidatorsConfigs(ignoreConstraintValidatorStrategies: ConstraintValidatorStrategyClass = []): ValidatorConfig[] {
@@ -157,7 +167,15 @@ export abstract class FormFieldStrategy {
         const operations = [
             mergeWith(
                 apply(url(this.pathToFiles), [
-                    templateInclude(this.context, this.applyTemplate(), {...this.options, name: this.fieldName}, '../shared/methods'),
+                    templateInclude(
+                        this.context,
+                        this.applyTemplate(),
+                        {
+                            ...this.options,
+                            name: this.fieldName,
+                        },
+                        '../shared/methods',
+                    ),
                     move(this.options.path + `/${fieldConfig.nameDasherized}`),
                 ]),
                 this.options.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error,

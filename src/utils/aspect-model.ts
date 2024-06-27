@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH
+ * Copyright (c) 2024 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for
  * additional information regarding authorship.
@@ -21,7 +21,7 @@ import {
     DefaultEntity,
     DefaultSingleEntity,
     Entity,
-    Property,
+    Property
 } from '@esmf/aspect-model-loader';
 import {Observable, Subscriber} from 'rxjs';
 import {Schema} from '../ng-generate/components/shared/schema';

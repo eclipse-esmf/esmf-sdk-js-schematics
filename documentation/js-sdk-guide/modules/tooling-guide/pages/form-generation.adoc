@@ -1,5 +1,5 @@
 ////
-Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH
+Copyright (c) 2024 Robert Bosch Manufacturing Solutions GmbH
 
 See the AUTHORS file(s) distributed with this work for additional information regarding authorship.
 
@@ -24,7 +24,6 @@ A schematics will be generated using the following command:
 [source]
 ng generate [collection-name]:[schematics-name]
 
-
 For demonstration purposes, the https://github.com/eclipse-esmf/esmf-aspect-model-editor/blob/main/core/apps/ame/src/assets/aspect-models/org.eclipse.examples/1.0.0/Movement.ttl[Movement.ttl,window=_blank,opts=nofollow] Aspect Model will be used.
 Below is a detailed representation of the command-line interface steps which generates a form component using the Movement.ttl Aspect Model file by running the command.
 
@@ -41,14 +40,17 @@ ng g @esmf/semantic-ui-schematics:form
 NOTE: The Angular folder where the component generation takes place should contain another folder with the .ttl files.
 
 === _Load pre-existing configuration file_
-After going through the wizard at least once, a config file will be
-auto-generated. The first prompt allows you to load a config file or start from scratch by loading one or multiple Aspect Model files.
+
+After going through the wizard at least once, a config file will be auto-generated.
+The first prompt allows you to load a config file or start from scratch by loading one or multiple Aspect Model files.
 
 image::config-file-loading.png[width=100%]
 
-When you decide to create a new configuration file, you will be prompted to specify a name for your config file. This provided name will be integrated into the default naming structure for the config file.
+When you decide to create a new configuration file, you will be prompted to specify a name for your config file.
+This provided name will be integrated into the default naming structure for the config file.
 
-The naming structure is <config-file-name>-wizard.config.json. Here, <config-file-name> is the name that you provide when prompted.
+The naming structure is <config-file-name>-wizard.config.json.
+Here, <config-file-name> is the name that you provide when prompted.
 
 For example, if you enter myConfig when prompted for the config file name, your new config file will be named myConfig-wizard.config.json.
 
@@ -58,9 +60,11 @@ When you decide to load a pre-existing config file, the system will display the 
 
 image::schema.load-config-file.yes.png[width=100%]
 
-This will give access to the folder structure and by using a FUZZY search mechanism can provide the possibility to input the pre-existing config file. The config file will now be named based on your input _<config-file-name>_-wizard.config.json, and can be found in the root folder of the project.
+This will give access to the folder structure and by using a FUZZY search mechanism can provide the possibility to input the pre-existing config file.
+The config file will now be named based on your input _<config-file-name>_-wizard.config.json, and can be found in the root folder of the project.
 
 === _Aspect Model selection_
+
 If no pre-existing config file is loaded, then there is an option to choose for one or multiple Aspect Model files from the folder structure, using the same FUZZY search mechanism.
 
 image::schema.aspect-model-selection.png[width=100%]
@@ -69,19 +73,22 @@ image::schema.another-aspect-model-selection.png[width=100%]
 
 === _Entity or specific aspect selection_
 
-An Aspect or an Entity must be chosen in order for the form to be created. This can be done in this step by choosing from a list.
+An Aspect or an Entity must be chosen in order for the form to be created.
+This can be done in this step by choosing from a list.
 
 image::schema.aspect-or-entity-selection-form.png[width=100%]
 
 === _Property exclusion_
 
-Some properties may be omitted. This can be done in the following step.
+Some properties may be omitted.
+This can be done in the following step.
 
 image::schema.exclude-properties.png[width=100%]
 
 === _Component path_
 
-Once all the prompts are answered, a form will be generated based on the selected options. The default path of the newly generated component is `*_src/app/shared/components/<component-name>_*`.
+Once all the prompts are answered, a form will be generated based on the selected options.
+The default path of the newly generated component is `*_src/app/shared/components/<component-name>_*`.
 
 [source]
 ----
@@ -98,7 +105,8 @@ shared
 
 === _Multiple version support_
 
-An Aspect Model can have multiple versions. If this is the case, and you want to generate multiple components having different version, this can be done when this prompt question shows up:
+An Aspect Model can have multiple versions.
+If this is the case, and you want to generate multiple components having different version, this can be done when this prompt question shows up:
 
 image::multi-version-support.png[width=100%]
 
@@ -128,7 +136,9 @@ shared
 
 === _Material theme(Indigo pink)_
 
-User can add to angular.json Indigo pink material theme. These action will appear in the actions column of the form. In the following prompt you can choose to add the Indigo pink material theme.
+User can add to angular.json Indigo pink material theme.
+These action will appear in the actions column of the form.
+In the following prompt you can choose to add the Indigo pink material theme.
 
 image::material-theme-prompt.png[width=100%]
 
@@ -138,13 +148,15 @@ image::angular-json-example.png[width=100%]
 
 === _Set view encapsulation strategy for the generated form component_
 
-User can set the View Encapsulation strategy by default the ViewEncapsulation will be set to None on the generated form component. In the following prompt you can choose to add another View Encapsulation value.
+User can set the View Encapsulation strategy by default the ViewEncapsulation will be set to None on the generated form component.
+In the following prompt you can choose to add another View Encapsulation value.
 
 image::view-encapsulation-prompt.png[width=100%]
 
 === _Generate read only form components_
 
-Our tool allows users to effortlessly generate read-only forms. This feature is particularly useful for creating display components where data modification is not required.
+Our tool allows users to effortlessly generate read-only forms.
+This feature is particularly useful for creating display components where data modification is not required.
 
 image::schema.read-only-forms.png[width=100%]
 
@@ -160,7 +172,8 @@ or
 [source]
 ng g @esmf/semantic-ui-schematics:form --help
 
-you can get access to all the options encapsulated in the schema.json file. Each field has a description for a better understanding of it and how to use it.
+you can get access to all the options encapsulated in the schema.json file.
+Each field has a description for a better understanding of it and how to use it.
 
 |===
 |Flag |Description |Default |Type

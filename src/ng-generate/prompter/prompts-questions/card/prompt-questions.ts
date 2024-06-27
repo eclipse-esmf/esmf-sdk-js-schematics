@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH
+ * Copyright (c) 2024 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for
  * additional information regarding authorship.
@@ -13,7 +13,6 @@
 
 import {ComponentType, Schema} from '../../../components/shared/schema';
 import {TemplateHelper} from '../../../../utils/template-helper';
-import inquirer from 'inquirer';
 import {
     chooseLanguageForSearch,
     customCommandBarActions,
@@ -28,7 +27,7 @@ import {
     requestOptionalMaterialTheme,
     requestOverwriteFiles,
     requestSelectedModelElement,
-    selectedAspectModelJsonPath,
+    selectedAspectModelJsonPath
 } from '../shared/prompt-complex-questions';
 import {
     requestAddCommandBar,
@@ -36,12 +35,13 @@ import {
     requestCustomService,
     requestCustomStyleImports,
     requestEnableRemoteDataHandling,
-    requestSetViewEncapsulation,
+    requestSetViewEncapsulation
 } from '../shared/prompt-simple-questions';
 import {Aspect, BaseMetaModelElement, DefaultEntity} from '@esmf/aspect-model-loader';
 import {ConfigurationDefaultsSchema} from '../../../components/table/schema';
 import {CardDefaultsSchema} from '../../../components/card/schema';
 import {BaseModelLoader} from '@esmf/aspect-model-loader/dist/base-model-loader';
+import {loadInquirer} from '../../../../utils/angular';
 
 /**
  * Asynchronously prompts the user with a series of questions related to card configurations,
@@ -87,6 +87,7 @@ async function fetchUserSpecificCardConfigurations(
     allAnswers: any,
     defaultConfiguration?: ConfigurationDefaultsSchema,
 ): Promise<object> {
+    const inquirer = await loadInquirer();
     const gatherInitialModelElement = await inquirer.prompt([
         requestSelectedModelElement(ComponentType.CARD, aspect, requestSelectedModelCondition),
     ]);

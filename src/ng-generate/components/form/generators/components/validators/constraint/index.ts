@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH
+ * Copyright (c) 2024 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for
  * additional information regarding authorship.
@@ -13,7 +13,10 @@
 
 import {Characteristic, Constraint} from '@esmf/aspect-model-loader';
 import {ConstraintValidatorStrategy} from './ConstraintValidatorStrategy';
-import {CONSTRAINT_VALIDATOR_DEFAULT_STRATEGY, CONSTRAINT_VALIDATOR_STRATEGIES} from './constraint-validator-strategies';
+import {
+    CONSTRAINT_VALIDATOR_DEFAULT_STRATEGY,
+    CONSTRAINT_VALIDATOR_STRATEGIES
+} from './constraint-validator-strategies';
 
 export function getConstraintValidatorStrategy(constraint: Constraint, characteristic: Characteristic): ConstraintValidatorStrategy {
     const strategy =

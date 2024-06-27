@@ -1,5 +1,5 @@
 ////
-Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH
+Copyright (c) 2024 Robert Bosch Manufacturing Solutions GmbH
 
 See the AUTHORS file(s) distributed with this work for additional information regarding authorship.
 
@@ -24,8 +24,7 @@ A schematics will be generated using the following command:
 [source]
 ng generate [collection-name]:[schematics-name]
 
-
-For demonstration purposes, the https://github.com/eclipse-esmf/esmf-aspect-model-editor/blob/main/core/apps/ame/src/assets/aspect-models/org.eclipse.examples/1.0.0/Movement.ttl[Movement.ttl, window=_blank,opts=nofollow] Aspect Model will be used.
+For demonstration purposes, the https://github.com/eclipse-esmf/esmf-aspect-model-editor/blob/main/core/apps/ame/src/assets/aspect-models/org.eclipse.examples/1.0.0/Movement.ttl[Movement.ttl,window=_blank,opts=nofollow] Aspect Model will be used.
 Below is a detailed representation of the command-line interface steps which generates a table component using the Movement.ttl Aspect Model file by running the command.
 
 NOTE: Before running any schematics commands make sure you are in the Angular project folder where you want to generate the new component.
@@ -41,14 +40,17 @@ ng g @esmf/semantic-ui-schematics:table
 NOTE: The Angular folder where the component generation takes place should contain another folder with the .ttl files.
 
 === _Load pre-existing configuration file_
-After going through the wizard at least once, a config file will be
-auto-generated. The first prompt allows you to load a config file or start from scratch by loading one or multiple Aspect Model files.
+
+After going through the wizard at least once, a config file will be auto-generated.
+The first prompt allows you to load a config file or start from scratch by loading one or multiple Aspect Model files.
 
 image::config-file-loading.png[width=100%]
 
-When you decide to create a new configuration file, you will be prompted to specify a name for your config file. This provided name will be integrated into the default naming structure for the config file.
+When you decide to create a new configuration file, you will be prompted to specify a name for your config file.
+This provided name will be integrated into the default naming structure for the config file.
 
-The naming structure is <config-file-name>-wizard.config.json. Here, <config-file-name> is the name that you provide when prompted.
+The naming structure is <config-file-name>-wizard.config.json.
+Here, <config-file-name> is the name that you provide when prompted.
 
 For example, if you enter myConfig when prompted for the config file name, your new config file will be named myConfig-wizard.config.json.
 
@@ -58,11 +60,12 @@ When you decide to load a pre-existing config file, the system will display the 
 
 image::schema.load-config-file.yes.png[width=100%]
 
-This will give access to the folder structure and by using a FUZZY search mechanism can provide the possibility to input the pre-existing config file. The config file will now be named based on your input _<config-file-name>_-wizard.config.json, and can be found in the root folder of the project.
+This will give access to the folder structure and by using a FUZZY search mechanism can provide the possibility to input the pre-existing config file.
+The config file will now be named based on your input _<config-file-name>_-wizard.config.json, and can be found in the root folder of the project.
 
 === _Aspect Model selection_
-If no pre-existing config file is loaded, then there is an option to choose for one or multiple Aspect Model files from the folder structure, using the same FUZZY search mechanism.
 
+If no pre-existing config file is loaded, then there is an option to choose for one or multiple Aspect Model files from the folder structure, using the same FUZZY search mechanism.
 
 image::schema.another-aspect-model-selection.png[width=100%]
 
@@ -70,25 +73,30 @@ image::schema.aspect-model-selection.png[width=100%]
 
 === _Entity or specific aspect selection_
 
-An Aspect or an Entity must be chosen in order for the table to be created. This can be done in this step by choosing from a list.
+An Aspect or an Entity must be chosen in order for the table to be created.
+This can be done in this step by choosing from a list.
 
 image::schema.aspect-or-entity-selection-table.png[width=100%]
 
 === _Property exclusion_
 
-Some properties may be omitted. This can be done in the following step.
+Some properties may be omitted.
+This can be done in the following step.
 
 image::schema.exclude-properties.png[width=100%]
 
 === _Default property sorting_
 
-The table can sort the rows based on a property. In this step the default one can be chosen.
+The table can sort the rows based on a property.
+In this step the default one can be chosen.
 
 image::schema.default-sorting-property.png[width=100%]
 
 === _Custom actions_
 
-The table supports custom actions to be configured. These actions will appear in the actions column of the table. In the following prompt you can choose different files or class names to customize the icons.
+The table supports custom actions to be configured.
+These actions will appear in the actions column of the table.
+In the following prompt you can choose different files or class names to customize the icons.
 
 image::custom-actions-prompt.png[width=100%]
 
@@ -98,19 +106,22 @@ image::table-example.png[width=100%]
 
 === _Multiple selection_
 
-One other thing supported is multiple selection. There is an option to choose to have this feature or not in the following prompt.
+One other thing supported is multiple selection.
+There is an option to choose to have this feature or not in the following prompt.
 
 image::multiple-actions-prompt.png[width=100%]
 
 The generated table containing checkboxes will look like in the following example:
 
-NOTE: _The checkboxes are displayed in the first column of the table. One or multiple rows can be selected._
+NOTE: _The checkboxes are displayed in the first column of the table.
+One or multiple rows can be selected._
 
 image::table-with-checked-rows.png[width=100%]
 
 === _Command bar_
 
-The command bar is displayed above the table, and it holds the controls for searching and filtering the data inside the table. This is shown only if the 'yes' option is chosen in the provided input.
+The command bar is displayed above the table, and it holds the controls for searching and filtering the data inside the table.
+This is shown only if the 'yes' option is chosen in the provided input.
 
 image::command-bar-prompt.png[width=100%]
 
@@ -122,17 +133,21 @@ In the example provided, only the search functionality will be available.
 
 image::search-bar.png[width=100%]
 
-The search input is present allowing you to filter the existing data in the table if the data is handled on the client side or request new data. This can be decided in the next steps. The filtered data will be displayed after pressing the `search` button next to the search field.
+The search input is present allowing you to filter the existing data in the table if the data is handled on the client side or request new data.
+This can be decided in the next steps.
+The filtered data will be displayed after pressing the `search` button next to the search field.
 
 NOTE:  _The search input will filter the data `*ONLY*` by the existing `*STRING*` properties in the chosen Aspect Model._
 
-Once the search functionality has been enabled, the next step is to choose the default language for remote access. This language selection determines the language used in the statement when accessing the system remotely.
+Once the search functionality has been enabled, the next step is to choose the default language for remote access.
+This language selection determines the language used in the statement when accessing the system remotely.
 
 image::choose-language.png[width=100%]
 
 === _Quick Filters for Properties of Type Date_
 
-When the option "Quick filters for properties of type date" is selected, an additional step appears that allows the selection of each property of type date. During this step, you can choose the specific type of filter to apply for these date properties.
+When the option "Quick filters for properties of type date" is selected, an additional step appears that allows the selection of each property of type date.
+During this step, you can choose the specific type of filter to apply for these date properties.
 
 image::schema.choose-date-picker-type.png[width=100%]
 
@@ -142,15 +157,20 @@ There are three options available for selection:
 
 image::single-date-picker.png[width=30%]
 
-This option allows the selection of a single date, acting as a "from" date. It's suitable for scenarios where a specific starting point needs to be defined.
+This option allows the selection of a single date, acting as a "from" date.
+It's suitable for scenarios where a specific starting point needs to be defined.
 
 *Range Date Picker start or end date:*
 
 image::start-or-end-date-picker.png[width=30%]
 
-With this option, you can select either a single "from" or "to" date. It offers flexibility in filtering by enabling the specification of either the start or the end of a date range.
+With this option, you can select either a single "from" or "to" date.
+It offers flexibility in filtering by enabling the specification of either the start or the end of a date range.
 
-For the Date Range Picker, where both the "from" and "to" dates are optional, users can directly select and delete these values within the input field. By either blurring the field or pressing "Enter," the specified dates are removed and thus selected for filtering. If only a "from" date is provided, it will be recognized and applied as a starting point for the filter. Conversely, if only a "to" date is entered, it will be treated and displayed as an "until" condition in the chip list.
+For the Date Range Picker, where both the "from" and "to" dates are optional, users can directly select and delete these values within the input field.
+By either blurring the field or pressing "Enter," the specified dates are removed and thus selected for filtering.
+If only a "from" date is provided, it will be recognized and applied as a starting point for the filter.
+Conversely, if only a "to" date is entered, it will be treated and displayed as an "until" condition in the chip list.
 
 image::only-from-date.png[width=30%]
 image::only-to-date.png[width=30%]
@@ -159,9 +179,11 @@ image::only-to-date.png[width=30%]
 
 image::start-and-end-date-picker.png[width=30%]
 
-This option requires the selection of both "from" and "to" dates, defining a complete date range. It's ideal for situations where a precise period needs to be specified for filtering.
+This option requires the selection of both "from" and "to" dates, defining a complete date range.
+It's ideal for situations where a precise period needs to be specified for filtering.
 
-In the Date Range Picker, where both "from" and "to" dates are required, users must enter both dates. If these dates are removed, an error message will appear below the input field, detailing what went wrong.
+In the Date Range Picker, where both "from" and "to" dates are required, users must enter both dates.
+If these dates are removed, an error message will appear below the input field, detailing what went wrong.
 
 image::from-date-required.png[width=30%]
 image::to-date-required.png[width=30%]
@@ -170,7 +192,8 @@ Each of these options provides a different way to apply date-based filtering, en
 
 === _Data handling_
 
-After generating a component, you can pass the data from the parent to the child components and also the other way around. There is a prompt present which determines if the data should be handled on the client side or remote via an API call.
+After generating a component, you can pass the data from the parent to the child components and also the other way around.
+There is a prompt present which determines if the data should be handled on the client side or remote via an API call.
 
 image::remote-data-handling-prompt.png[width=100%]
 
@@ -178,7 +201,8 @@ This means that any time you request data, an API endpoint will be called and th
 
 === _Component path_
 
-Once all the prompts are answered, a table will be generated based on the selected options. The default path of the newly generated component is `*_src/app/shared/components/<component-name>_*`.
+Once all the prompts are answered, a table will be generated based on the selected options.
+The default path of the newly generated component is `*_src/app/shared/components/<component-name>_*`.
 
 [source]
 ----
@@ -201,7 +225,8 @@ shared
 
 === _Persistent custom service_
 
-By default, as seen above, a _<component-name>.service.ts_ file is auto-generated. This file is `*OVERRIDDEN*` each time a component is re-generated.
+By default, as seen above, a _<component-name>.service.ts_ file is auto-generated.
+This file is `*OVERRIDDEN*` each time a component is re-generated.
 
 Which is why we introduced another prompt question for a custom service generation which is `_persistent_` if the component is re-generated.
 
@@ -232,7 +257,8 @@ This file will be overridden `_ONLY_` if you choose to do so by providing the `-
 
 === _Multiple version support_
 
-An Aspect Model can have multiple versions. If this is the case, and you want to generate multiple components having different version, this can be done when this prompt question shows up:
+An Aspect Model can have multiple versions.
+If this is the case, and you want to generate multiple components having different version, this can be done when this prompt question shows up:
 
 image::multi-version-support.png[width=100%]
 
@@ -276,7 +302,9 @@ shared
 
 === _Material theme(Indigo pink)_
 
-User can add to angular.json Indigo pink material theme. These action will appear in the actions column of the table. In the following prompt you can choose to add the Indigo pink material theme.
+User can add to angular.json Indigo pink material theme.
+These action will appear in the actions column of the table.
+In the following prompt you can choose to add the Indigo pink material theme.
 
 image::material-theme-prompt.png[width=100%]
 
@@ -286,7 +314,8 @@ image::angular-json-example.png[width=100%]
 
 === _Set view encapsulation strategy for the generated table component_
 
-User can set the View Encapsulation strategy by default the ViewEncapsulation will be set to None on the generated table component. In the following prompt you can choose to add another View Encapsulation value.
+User can set the View Encapsulation strategy by default the ViewEncapsulation will be set to None on the generated table component.
+In the following prompt you can choose to add another View Encapsulation value.
 
 image::view-encapsulation-prompt.png[width=100%]
 
@@ -302,7 +331,8 @@ or
 [source]
 ng g @esmf/semantic-ui-schematics:table --help
 
-you can get access to all the options encapsulated in the schema.json file. Each field has a description for a better understanding of it and how to use it.
+you can get access to all the options encapsulated in the schema.json file.
+Each field has a description for a better understanding of it and how to use it.
 
 |===
 |Flag |Description |Default |Type

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH
+ * Copyright (c) 2024 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for
  * additional information regarding authorship.
@@ -15,26 +15,42 @@ import {Tree} from '@angular-devkit/schematics/src/tree/interface';
 import {Aspect} from '@esmf/aspect-model-loader';
 import * as fs from 'fs';
 import path from 'path';
-import inquirer from 'inquirer';
 import {lastValueFrom, Subscriber} from 'rxjs';
 import {TemplateHelper} from '../../utils/template-helper';
 import {ComponentType, Schema} from '../components/shared/schema';
 
 import {loader, reorderAspectModelUrnToLoad, writeConfigAndExit} from './utils';
 import {virtualFs} from '@angular-devkit/core';
-import {anotherFile, configFileName, createOrImport, importConfigFile} from './prompts-questions/shared/prompt-simple-questions';
+import {
+    anotherFile,
+    configFileName,
+    createOrImport,
+    importConfigFile
+} from './prompts-questions/shared/prompt-simple-questions';
 import {tablePrompterQuestions} from './prompts-questions/table/prompt-questions';
 import {pathDecision, requestAspectModelWithAspect} from './prompts-questions/shared/prompt-complex-questions';
 import {formPrompterQuestions} from './prompts-questions/form/prompt-questions';
 import {cardPrompterQuestions} from './prompts-questions/card/prompt-questions';
 import {typesPrompterQuestions} from './prompts-questions/types/prompt-questions';
+import {loadInquirer} from '../../utils/angular';
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-inquirer.registerPrompt('fuzzypath', require('inquirer-fuzzy-path'));
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-inquirer.registerPrompt('suggest', require('inquirer-prompt-suggest'));
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-inquirer.registerPrompt('search-list', require('inquirer-search-list'));
+// Function to dynamically load inquirer-fuzzy-path and register the prompt
+async function registerFuzzyPathPrompt(): Promise<any> {
+    try {
+        const inquirerFuzzyPath = await import('inquirer-fuzzy-path').then(mod => mod.default);
+        const inquirerPromptSuggest = await import('inquirer-prompt-suggest').then(mod => mod.default);
+        const inquirerSearchList = await import('inquirer-search-list').then(mod => mod.default);
+        const inquirer = await loadInquirer();
+
+        (inquirer as any).registerPrompt('fuzzypath', inquirerFuzzyPath);
+        (inquirer as any).registerPrompt('suggest', inquirerPromptSuggest);
+        (inquirer as any).registerPrompt('search-list', inquirerSearchList);
+
+        return inquirer;
+    } catch (err) {
+        console.error('Failed to register fuzzy path prompt:', err);
+    }
+}
 
 export let WIZARD_CONFIG_FILE = 'wizard.config.json';
 
@@ -43,6 +59,7 @@ let generationType: ComponentType;
 let fromImport = false;
 let index = 1;
 let allAnswers: any;
+let inquirer: any;
 export let aspect: Aspect;
 
 /**
@@ -56,9 +73,10 @@ export let aspect: Aspect;
  *
  * @throws {Error} - Will throw an error if an error occurs during execution.
  */
-export function generate(subscriber: Subscriber<Tree>, tree: Tree, options: Schema, type: string) {
+export async function generate(subscriber: Subscriber<Tree>, tree: Tree, options: Schema, type: string) {
     console.log('\x1b[33m%s\x1b[0m', 'Welcome to the TTL schematic UI generator, answer some questions to get you started:');
 
+    inquirer = await registerFuzzyPathPrompt();
     generationType = type as ComponentType;
     initAnswers();
 
@@ -240,7 +258,7 @@ async function askAnotherFile() {
     const anotherFileAnswer = await inquirer.prompt([anotherFile]);
 
     if (anotherFileAnswer[`anotherFile${index}`]) {
-        await inquirer.prompt([pathDecision(WIZARD_CONFIG_FILE, true)]).then(answer => {
+        await inquirer.prompt([pathDecision(WIZARD_CONFIG_FILE, true)]).then((answer: any) => {
             if (answer.paths) addFileToConfig(answer.paths, allAnswers);
         });
 

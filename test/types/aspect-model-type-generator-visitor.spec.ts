@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH
+ * Copyright (c) 2024 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for
  * additional information regarding authorship.
@@ -231,13 +231,13 @@ describe('Generation of types from aspect model', (): void => {
         expect(generatedTypeDefinitions).toMatch(/NUMBER_19\s*=\s*19\s*,/);
 
         expect(generatedTypeDefinitions).toMatch(
-            /static StatusInProgress\s*=\s*new PartStatus\(\s*'inprogress'\s*,\s*10\s*,\s*\{value:\s*'In Progress'\s*,\s*language:\s*'en'\s*\}\);/
+            /static StatusInProgress\s*=\s*new PartStatus\(\s*'inprogress'\s*,\s*10\s*,\s*\{value:\s*'In Progress'\s*,\s*language:\s*'en'\s*\}\);/,
         );
         expect(generatedTypeDefinitions).toMatch(
-            /static StatusCancelled\s*=\s*new PartStatus\('cancelled'\s*,\s*11\s*,\s*\{value:\s*'Cancelled',\s*language:\s*'en'\s*\}\);/
+            /static StatusCancelled\s*=\s*new PartStatus\('cancelled'\s*,\s*11\s*,\s*\{value:\s*'Cancelled',\s*language:\s*'en'\s*\}\);/,
         );
         expect(generatedTypeDefinitions).toMatch(
-            /static StatusInactive\s*=\s*new PartStatus\('inactive',\s*55\s*,\s*\{value:\s*'Cancelled'\s*,\s*language:\s*'en'\s*\}\);/
+            /static StatusInactive\s*=\s*new PartStatus\('inactive',\s*55\s*,\s*\{value:\s*'Cancelled'\s*,\s*language:\s*'en'\s*\}\);/,
         );
     });
 
@@ -297,10 +297,10 @@ describe('Generation of types from aspect model', (): void => {
         expect(generatedTypeDefinitions).toMatch(/export interface TestEntityInstancesWithLangString/);
         expect(generatedTypeDefinitions).toMatch(/export class Enumeration/);
         expect(generatedTypeDefinitions).toMatch(
-            /static Code101\s*=\s*new Enumeration\(\s*101\s*,\s*\{value\s*:\s*'Starting'\s*,\s*language:\s*'en'\}\);/
+            /static Code101\s*=\s*new Enumeration\(\s*101\s*,\s*\{value\s*:\s*'Starting'\s*,\s*language:\s*'en'\}\);/,
         );
         expect(generatedTypeDefinitions).toMatch(
-            /static Code102\s*=\s*new Enumeration\(\s*102\s*\s*,\s*\{value\s*:\s*'Ready',\s*language:\s*'en'\}\);/
+            /static Code102\s*=\s*new Enumeration\(\s*102\s*\s*,\s*\{value\s*:\s*'Ready',\s*language:\s*'en'\}\);/,
         );
         expect(generatedTypeDefinitions).toMatch(/step\s*:\s*number\s*;/);
         expect(generatedTypeDefinitions).toMatch(/export interface Entity/);
@@ -322,10 +322,10 @@ describe('Generation of types from aspect model', (): void => {
         expect(generatedTypeDefinitions).toMatch(/export interface TestEntityInstancesWithCollectionOfLangString/);
         expect(generatedTypeDefinitions).toMatch(/export class Enumeration/);
         expect(generatedTypeDefinitions).toMatch(
-            /static Code101\s*=\s*new Enumeration\s*\(\s*101\s*,\s*\(\s*\[\s*\{\s*value\s*:\s*'Starting'\s*,\s*language\s*:\s*'en'\s*\}\s*,\s*\{\s*value\s*:\s*'Start'\s*,\s*language\s*:\s*'de'\s*\}\s*\]\s*as\s+Array<MultiLanguageText>\s*\)\s*\)\s*;/
+            /static Code101\s*=\s*new Enumeration\s*\(\s*101\s*,\s*\(\s*\[\s*\{\s*value\s*:\s*'Starting'\s*,\s*language\s*:\s*'en'\s*\}\s*,\s*\{\s*value\s*:\s*'Start'\s*,\s*language\s*:\s*'de'\s*\}\s*\]\s*as\s+Array<MultiLanguageText>\s*\)\s*\)\s*;/,
         );
         expect(generatedTypeDefinitions).toMatch(
-            /static Code102\s*=\s*new Enumeration\s*\(\s*102\s*,\s*\(\s*\[\s*\{\s*value\s*:\s*'Ready'\s*,\s*language\s*:\s*'en'\s*\}\s*,\s*\{\s*value\s*:\s*'Los'\s*,\s*language\s*:\s*'de'\s*\}\s*\]\s*as\s+Array<MultiLanguageText>\s*\)\s*\)\s*;/
+            /static Code102\s*=\s*new Enumeration\s*\(\s*102\s*,\s*\(\s*\[\s*\{\s*value\s*:\s*'Ready'\s*,\s*language\s*:\s*'en'\s*\}\s*,\s*\{\s*value\s*:\s*'Los'\s*,\s*language\s*:\s*'de'\s*\}\s*\]\s*as\s+Array<MultiLanguageText>\s*\)\s*\)\s*;/,
         );
         expect(generatedTypeDefinitions).toMatch(/step\s*:\s*number\s*;/);
         expect(generatedTypeDefinitions).toMatch(/description\s*:\s*Array<MultiLanguageText>\s*;/);

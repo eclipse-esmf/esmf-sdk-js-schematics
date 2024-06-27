@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH
+ * Copyright (c) 2024 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for
  * additional information regarding authorship.
@@ -12,7 +12,6 @@
  */
 
 import {TemplateHelper} from '../../../../utils/template-helper';
-import inquirer from 'inquirer';
 import {
     chooseLanguageForSearch,
     customCommandBarActions,
@@ -20,14 +19,14 @@ import {
     extractComplexPropertyDetails,
     extractPropertyElements,
     generateLabelsForExcludedProperties,
+    getCommandBarFilterOrder,
     getDatePickerType,
     requestCommandBarFunctionality,
     requestDefaultSorting,
     requestOptionalMaterialTheme,
     requestOverwriteFiles,
     requestSelectedModelElement,
-    selectedAspectModelJsonPath,
-    getCommandBarFilterOrder,
+    selectedAspectModelJsonPath
 } from '../shared/prompt-complex-questions';
 import {ComponentType, Schema} from '../../../components/shared/schema';
 import {Aspect, BaseMetaModelElement, DefaultEntity} from '@esmf/aspect-model-loader';
@@ -37,10 +36,11 @@ import {
     requestCustomService,
     requestCustomStyleImports,
     requestEnableRemoteDataHandling,
-    requestSetViewEncapsulation,
+    requestSetViewEncapsulation
 } from '../shared/prompt-simple-questions';
 import {ConfigurationDefaultsSchema, TableDefaultsSchema} from '../../../components/table/schema';
 import {BaseModelLoader} from '@esmf/aspect-model-loader/dist/base-model-loader';
+import {loadInquirer} from '../../../../utils/angular';
 
 /**
  * Asynchronously prompts the user with a series of questions related to table configurations,
@@ -86,6 +86,7 @@ async function fetchUserSpecificTableConfigurations(
     allAnswers: any,
     defaultConfiguration?: ConfigurationDefaultsSchema,
 ): Promise<object> {
+    const inquirer = await loadInquirer();
     const gatherInitialModelElement = await inquirer.prompt([
         requestSelectedModelElement(ComponentType.TABLE, aspect, requestSelectedModelCondition),
     ]);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH
+ * Copyright (c) 2024 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for
  * additional information regarding authorship.
@@ -24,7 +24,7 @@ import {
     DefaultScalar,
     DefaultSingleEntity,
     Entity,
-    Property,
+    Property
 } from '@esmf/aspect-model-loader';
 import {classify, dasherize, underscore} from '@angular-devkit/core/src/utils/strings';
 // TODO change this ...
@@ -60,121 +60,6 @@ export class TemplateHelper {
         options.generationDisclaimerText = this.getGenerationDisclaimerText();
         options.localStoragePrefix = this.getLocalStoragePrefix();
         options.isAspectSelected = this.isAspectSelected(options);
-    }
-
-    private getGenerationDisclaimerText(): string {
-        return 'Generated from ESMF JS SDK Angular Schematics - PLEASE DO NOT CHANGE IT';
-    }
-
-    /**
-     * Returns the prefix for the local storage key.
-     *
-     * @returns {string} The prefix for the local storage key.
-     */
-    private getLocalStoragePrefix(): string {
-        return `KEY_LOCAL_STORAGE_`;
-    }
-
-    /**
-     * Checks if the given options indicate that the aspect is selected.
-     *
-     * @param {Schema} options The options object.
-     * @returns {boolean} Whether or not the aspect is selected.
-     */
-    private isAspectSelected(options: Schema) {
-        return options.selectedModelElementUrn === options.aspectModel.aspectModelUrn;
-    }
-
-    /**
-     * Gets the local storage key for the columns of the given schema.
-     *
-     * @param {Schema} options The schema.
-     * @returns {string} The local storage key.
-     */
-    private getLocalStorageKeyColumns(options: Schema): string {
-        return `${this.getLocalStoragePrefix()}${underscore(options.name)}${
-            options.enableVersionSupport ? `_${'v' + options.aspectModelVersion.replace(/\./g, '')}` : ''
-        }_columns`.toUpperCase();
-    }
-
-    /**
-     * Gets the local storage key for the config of the given schema.
-     *
-     * @param {Schema} options The schema.
-     * @returns {string} The local storage key.
-     */
-    private getLocalStorageKeyConfig(options: Schema): string {
-        return `${this.getLocalStoragePrefix()}${underscore(options.name)}${
-            options.enableVersionSupport ? `_${'v' + options.aspectModelVersion.replace(/\./g, '')}` : ''
-        }_config`.toUpperCase();
-    }
-
-    /**
-     * Gets the translation path for the given options.
-     *
-     * @param {Schema} options The options object.
-     * @returns {string} The translation path.
-     */
-    private getTranslationPath(options: Schema): string {
-        const translationPath = `${this.getVersionedAccessPrefix(options)}${this.isAspectSelected(options) ? options.jsonAccessPath : ''}`;
-        return `${translationPath.length ? translationPath : ''}`;
-    }
-
-    /**
-     * Checks if the given property is a default scalar property.
-     *
-     * @param {Property} property The property to check.
-     * @returns {boolean} Whether the property is a default scalar property.
-     */
-    private isDefaultScalarProperty(property: Property) {
-        return property.effectiveDataType && property.effectiveDataType?.isScalar && property.effectiveDataType instanceof DefaultScalar;
-    }
-
-    /**
-     * @function addLocalized
-     * @param {Set<string>} languages - The set of languages to add localized strings for.
-     * @returns {string[]} - An array of localized strings.
-     */
-    private addLocalized(languages: Set<string>): string[] {
-        return Array.from(languages)
-            .map(languageCode => locale.getByTag(languageCode).tag)
-            .filter(e => !!e);
-    }
-
-    /**
-     * Gets all the properties of the schema, including complex properties.
-     @private
-     @param {Schema} options The schema options.
-     @returns {Array<Property>} The array of all properties, including complex properties.
-     */
-    private getAllProperties(options: Schema) {
-        const properties = this.getProperties(options);
-        const resolvedProperties: Array<Property> = [];
-        properties
-            .filter(prop => prop.effectiveDataType?.isComplex && prop.characteristic instanceof DefaultSingleEntity)
-            .forEach(prop => {
-                resolvedProperties.push(...this.getComplexProperties(prop, options).properties);
-            });
-
-        return [
-            ...properties.filter(prop => !(prop.effectiveDataType?.isComplex && prop.characteristic instanceof DefaultSingleEntity)),
-            ...resolvedProperties,
-        ];
-    }
-
-    /**
-     * Gets the path to the types file for the specified aspect model.
-     *
-     * @param {boolean} aspectModelVersionSupport Whether or not the aspect model supports versioned types.
-     * @param {string} version The version of the aspect model.
-     * @param {Aspect} aspectModel The aspect model.
-     * @returns {string} The path to the types file.
-     */
-    private getTypesPath(aspectModelVersionSupport: boolean, version: string, aspectModel: Aspect): string {
-        if (aspectModelVersionSupport) {
-            return `../../../types/${dasherize(aspectModel.name)}/v${version.split('.').join('')}/${dasherize(aspectModel.name)}.types`;
-        }
-        return `../../types/${dasherize(aspectModel.name)}/${dasherize(aspectModel.name)}.types`;
     }
 
     /**
@@ -572,5 +457,120 @@ export class TemplateHelper {
             this.isAddDateQuickFilters(options.enabledCommandBarFunctions) ||
             this.isAddEnumQuickFilters(options.enabledCommandBarFunctions)
         );
+    }
+
+    private getGenerationDisclaimerText(): string {
+        return 'Generated from ESMF JS SDK Angular Schematics - PLEASE DO NOT CHANGE IT';
+    }
+
+    /**
+     * Returns the prefix for the local storage key.
+     *
+     * @returns {string} The prefix for the local storage key.
+     */
+    private getLocalStoragePrefix(): string {
+        return `KEY_LOCAL_STORAGE_`;
+    }
+
+    /**
+     * Checks if the given options indicate that the aspect is selected.
+     *
+     * @param {Schema} options The options object.
+     * @returns {boolean} Whether or not the aspect is selected.
+     */
+    private isAspectSelected(options: Schema) {
+        return options.selectedModelElementUrn === options.aspectModel.aspectModelUrn;
+    }
+
+    /**
+     * Gets the local storage key for the columns of the given schema.
+     *
+     * @param {Schema} options The schema.
+     * @returns {string} The local storage key.
+     */
+    private getLocalStorageKeyColumns(options: Schema): string {
+        return `${this.getLocalStoragePrefix()}${underscore(options.name)}${
+            options.enableVersionSupport ? `_${'v' + options.aspectModelVersion.replace(/\./g, '')}` : ''
+        }_columns`.toUpperCase();
+    }
+
+    /**
+     * Gets the local storage key for the config of the given schema.
+     *
+     * @param {Schema} options The schema.
+     * @returns {string} The local storage key.
+     */
+    private getLocalStorageKeyConfig(options: Schema): string {
+        return `${this.getLocalStoragePrefix()}${underscore(options.name)}${
+            options.enableVersionSupport ? `_${'v' + options.aspectModelVersion.replace(/\./g, '')}` : ''
+        }_config`.toUpperCase();
+    }
+
+    /**
+     * Gets the translation path for the given options.
+     *
+     * @param {Schema} options The options object.
+     * @returns {string} The translation path.
+     */
+    private getTranslationPath(options: Schema): string {
+        const translationPath = `${this.getVersionedAccessPrefix(options)}${this.isAspectSelected(options) ? options.jsonAccessPath : ''}`;
+        return `${translationPath.length ? translationPath : ''}`;
+    }
+
+    /**
+     * Checks if the given property is a default scalar property.
+     *
+     * @param {Property} property The property to check.
+     * @returns {boolean} Whether the property is a default scalar property.
+     */
+    private isDefaultScalarProperty(property: Property) {
+        return property.effectiveDataType && property.effectiveDataType?.isScalar && property.effectiveDataType instanceof DefaultScalar;
+    }
+
+    /**
+     * @function addLocalized
+     * @param {Set<string>} languages - The set of languages to add localized strings for.
+     * @returns {string[]} - An array of localized strings.
+     */
+    private addLocalized(languages: Set<string>): string[] {
+        return Array.from(languages)
+            .map(languageCode => locale.getByTag(languageCode).tag)
+            .filter(e => !!e);
+    }
+
+    /**
+     * Gets all the properties of the schema, including complex properties.
+     @private
+     @param {Schema} options The schema options.
+     @returns {Array<Property>} The array of all properties, including complex properties.
+     */
+    private getAllProperties(options: Schema) {
+        const properties = this.getProperties(options);
+        const resolvedProperties: Array<Property> = [];
+        properties
+            .filter(prop => prop.effectiveDataType?.isComplex && prop.characteristic instanceof DefaultSingleEntity)
+            .forEach(prop => {
+                resolvedProperties.push(...this.getComplexProperties(prop, options).properties);
+            });
+
+        return [
+            ...properties.filter(prop => !(prop.effectiveDataType?.isComplex && prop.characteristic instanceof DefaultSingleEntity)),
+            ...resolvedProperties,
+        ];
+    }
+
+    /**
+     * Gets the path to the types file for the specified aspect model.
+     *
+     * @param {boolean} aspectModelVersionSupport Whether or not the aspect model supports versioned types.
+     * @param {string} version The version of the aspect model.
+     * @param {Aspect} aspectModel The aspect model.
+     * @returns {string} The path to the types file.
+     */
+    private getTypesPath(aspectModelVersionSupport: boolean, version: string, aspectModel: Aspect): string {
+        if (aspectModelVersionSupport) {
+            return `../../../types/${dasherize(aspectModel.name)}/v${version.split('.').join('')}/${dasherize(aspectModel.name)}.types`;
+        }
+        return `../../types/${dasherize(aspectModel.name)}/${dasherize(aspectModel.name)}.types`;
     }
 }

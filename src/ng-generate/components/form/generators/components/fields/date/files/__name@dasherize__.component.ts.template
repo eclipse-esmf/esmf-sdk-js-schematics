@@ -6,7 +6,7 @@ import {FormControl, FormBuilder, FormsModule, NG_VALUE_ACCESSOR, ReactiveFormsM
 import {MatDatepickerModule} from '@angular/material/datepicker';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatInputModule} from '@angular/material/input';
-import {TranslocoModule} from '@ngneat/transloco';
+import {TranslocoModule} from '@jsverse/transloco';
 import {FormControlReusable} from "<% if (options.enableVersionSupport) { %>../<% } %>../../../utils/form-control-reusable";
 import {FormValidators} from "<% if (options.enableVersionSupport) { %>../<% } %>../../../utils/form-validators";
 import {ThemePalette, DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE} from '@angular/material/core';

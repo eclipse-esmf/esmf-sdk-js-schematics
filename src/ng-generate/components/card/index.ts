@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH
+ * Copyright (c) 2024 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for
  * additional information regarding authorship.
@@ -27,7 +27,7 @@ import {
     prepareOptions,
     setComponentNameRule,
     setCustomActionsAndFiltersRule,
-    setTemplateOptionValuesRule,
+    setTemplateOptionValuesRule
 } from '../shared/index';
 import {ComponentType, Schema} from '../shared/schema';
 import {generateCardComponent} from './generators/components/card';

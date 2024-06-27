@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH
+ * Copyright (c) 2024 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for
  * additional information regarding authorship.
@@ -11,7 +11,18 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-import {apply, applyTemplates, MergeStrategy, mergeWith, move, noop, Rule, SchematicContext, Tree, url} from '@angular-devkit/schematics';
+import {
+    apply,
+    applyTemplates,
+    MergeStrategy,
+    mergeWith,
+    move,
+    noop,
+    Rule,
+    SchematicContext,
+    Tree,
+    url
+} from '@angular-devkit/schematics';
 import {strings} from '@angular-devkit/core';
 
 export function generateFormControlReusable(options: any): Rule {

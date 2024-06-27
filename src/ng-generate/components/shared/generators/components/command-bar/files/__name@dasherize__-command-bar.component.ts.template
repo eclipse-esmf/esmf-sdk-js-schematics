@@ -68,7 +68,7 @@ export class <%= classify(name) %>CommandBarComponent implements AfterViewInit {
     hiddenComponents: any[] = [];
     initialCompWidths : any[]= [];
 
-    constructor(<% if (options.hasFilters || (options.componentType === 'card' && options.addCommandBar)) { %>public filterService: <%= classify(name) %>FilterService<% } %>, public dialog: MatDialog) {
+    constructor(<% if (options.hasFilters || (options.componentType === 'card' && options.addCommandBar)) { %>public filterService: <%= classify(name) %>FilterService,<% } %> public dialog: MatDialog) {
         <% if (options.componentType === 'card') { %>
             this.filterService.sortedProperty = this.<%= camelize(name) %>CardValues[0];
         <% } %>
@@ -76,7 +76,7 @@ export class <%= classify(name) %>CommandBarComponent implements AfterViewInit {
 
     <% for(let property of propValues) { %>
       <% if ((options.isEnumQuickFilter && property.isEnum) || (options.isDateQuickFilter && property.isDate) ) { %>
-              @ViewChild('<%=property.propertyName %>', { static: true }) private <%=property.propertyName %>!: TemplateRef<any>;  
+              @ViewChild('<%=property.propertyName %>', { static: true }) private <%=property.propertyName %>!: TemplateRef<any>;
               openInDialog<%=property.propertyName %>(){
               this.dialog.open(this.<%=property.propertyName %>);
         }
@@ -128,7 +128,7 @@ export class <%= classify(name) %>CommandBarComponent implements AfterViewInit {
     ngAfterViewInit(): void {
       const compWidths: any[] = this.components
       .toArray()
-      .map((comp) => 
+      .map((comp) =>
         ( {width: comp.nativeElement.clientWidth, id: comp.nativeElement.getAttribute('data-resp') }));
 
       if(this.initialCompWidths.length === 0){
@@ -164,7 +164,7 @@ export class <%= classify(name) %>CommandBarComponent implements AfterViewInit {
     }
 
     <% if (options.componentType === 'table' && options.hasSearchBar) { %>
-      openSettingsFromCollapsed() {      
+      openSettingsFromCollapsed() {
         const configMenuDialogRef =  this.dialog.open(<%= classify(name) %>ConfigMenuComponent,{
               data: { configs: this.configs, keyLocalStorage: this.<%= options.localStorageKeyConfig %>},
             }

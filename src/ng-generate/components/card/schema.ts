@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH
+ * Copyright (c) 2024 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for
  * additional information regarding authorship.
@@ -16,6 +16,7 @@ import {Values} from '../shared/schema';
 export interface CardSchema extends Values {}
 
 export interface ConfigurationDefaultsSchema {}
+
 // class to define default values that are not asked in the prompter
 //  defaultValue = data.properties.defaultValue.default;
 export class CardDefaultsSchema implements ConfigurationDefaultsSchema {}

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH
+ * Copyright (c) 2024 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for
  * additional information regarding authorship.
@@ -11,7 +11,18 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-import {apply, applyTemplates, chain, MergeStrategy, mergeWith, move, Rule, SchematicContext, Tree, url} from '@angular-devkit/schematics';
+import {
+    apply,
+    applyTemplates,
+    chain,
+    MergeStrategy,
+    mergeWith,
+    move,
+    Rule,
+    SchematicContext,
+    Tree,
+    url
+} from '@angular-devkit/schematics';
 import {strings} from '@angular-devkit/core';
 import {camelize, classify, dasherize} from '@angular-devkit/core/src/utils/strings';
 import {getAllEnumProps} from '../../../../../../utils/aspect-model';
@@ -21,7 +32,7 @@ import {
     getEnumProperties,
     getEnumPropertyDefinitions,
     getTableColumValues,
-    resolveDateTimeFormat,
+    resolveDateTimeFormat
 } from '../../../../shared/utils';
 import {templateInclude} from '../../../../shared/include';
 import {Schema} from '../../../../shared/schema';
