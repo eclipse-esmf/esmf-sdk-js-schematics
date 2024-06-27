@@ -26,7 +26,7 @@ import {
     prepareOptions,
     setComponentNameRule,
     setCustomActionsAndFiltersRule,
-    setTemplateOptionValuesRule
+    setTemplateOptionValuesRule,
 } from '../shared';
 import {ComponentType} from '../shared/schema';
 import {generateStorageService} from './generators/services/storage/index';

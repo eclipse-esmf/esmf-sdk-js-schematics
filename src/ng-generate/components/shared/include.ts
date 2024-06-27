@@ -11,15 +11,7 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-import {
-    applyContentTemplate,
-    FileEntry,
-    Rule,
-    SchematicContext,
-    SchematicsException,
-    Tree,
-    url
-} from '@angular-devkit/schematics';
+import {applyContentTemplate, FileEntry, Rule, SchematicContext, SchematicsException, Tree, url} from '@angular-devkit/schematics';
 import {basename, dirname} from 'path';
 import {strings} from '@angular-devkit/core';
 import {Schema} from './schema';

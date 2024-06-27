@@ -22,7 +22,7 @@ import {
     Entity,
     Property,
     Samm,
-    Type
+    Type,
 } from '@esmf/aspect-model-loader';
 import {classify, dasherize} from '@angular-devkit/core/src/utils/strings';
 import {Schema} from './schema';

@@ -22,7 +22,7 @@ import {
     Rule,
     SchematicContext,
     Tree,
-    url
+    url,
 } from '@angular-devkit/schematics';
 import {strings} from '@angular-devkit/core';
 import {Schema} from '../../../schema';

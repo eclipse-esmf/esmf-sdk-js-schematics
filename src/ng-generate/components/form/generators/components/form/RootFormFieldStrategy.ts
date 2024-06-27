@@ -13,16 +13,7 @@
 
 import {Characteristic, Property} from '@esmf/aspect-model-loader';
 import {FormFieldStrategy} from '../fields/FormFieldStrategy';
-import {
-    apply,
-    applyTemplates,
-    MergeStrategy,
-    mergeWith,
-    move,
-    Rule,
-    SchematicContext,
-    url
-} from '@angular-devkit/schematics';
+import {apply, applyTemplates, MergeStrategy, mergeWith, move, Rule, SchematicContext, url} from '@angular-devkit/schematics';
 import {templateInclude} from '../../../../shared/include';
 import {strings} from '@angular-devkit/core';
 import {getFormFieldStrategy} from '../fields/index';

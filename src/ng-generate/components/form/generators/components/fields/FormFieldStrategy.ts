@@ -12,17 +12,7 @@
  */
 
 import {Characteristic, Constraint, DefaultConstraint, DefaultTrait, Property} from '@esmf/aspect-model-loader';
-import {
-    apply,
-    applyTemplates,
-    chain,
-    MergeStrategy,
-    mergeWith,
-    move,
-    Rule,
-    SchematicContext,
-    url
-} from '@angular-devkit/schematics';
+import {apply, applyTemplates, chain, MergeStrategy, mergeWith, move, Rule, SchematicContext, url} from '@angular-devkit/schematics';
 import {strings} from '@angular-devkit/core';
 import {templateInclude} from '../../../../shared/include';
 import {addToComponentModule} from '../../../../../../utils/angular';

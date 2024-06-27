@@ -11,14 +11,7 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-import {
-    Characteristic,
-    DefaultCollection,
-    DefaultEntity,
-    DefaultList,
-    DefaultSet,
-    DefaultSortedSet
-} from '@esmf/aspect-model-loader';
+import {Characteristic, DefaultCollection, DefaultEntity, DefaultList, DefaultSet, DefaultSortedSet} from '@esmf/aspect-model-loader';
 import {FormFieldConfig, FormFieldStrategy} from '../FormFieldStrategy';
 
 export class ListFormFieldStrategy extends FormFieldStrategy {

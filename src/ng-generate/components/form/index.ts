@@ -26,7 +26,7 @@ import {
     prepareOptions,
     setComponentNameRule,
     setCustomActionsAndFiltersRule,
-    setTemplateOptionValuesRule
+    setTemplateOptionValuesRule,
 } from '../shared/index';
 import {ComponentType, Schema} from '../shared/schema';
 import {generateFormComponent} from './generators/components/form/index';
@@ -39,7 +39,7 @@ import {
     generateFormValidators,
     generateGeneralStyle,
     generateSharedModule,
-    generateTranslationModule
+    generateTranslationModule,
 } from '../shared/generators';
 import {generateFormArrayReusable} from '../shared/generators/utils/form-array-reusable/index';
 import {wrapBuildComponentExecution} from '../../../utils/angular';

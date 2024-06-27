@@ -13,10 +13,7 @@
 
 import {Characteristic, Constraint} from '@esmf/aspect-model-loader';
 import {ConstraintValidatorStrategy} from './ConstraintValidatorStrategy';
-import {
-    CONSTRAINT_VALIDATOR_DEFAULT_STRATEGY,
-    CONSTRAINT_VALIDATOR_STRATEGIES
-} from './constraint-validator-strategies';
+import {CONSTRAINT_VALIDATOR_DEFAULT_STRATEGY, CONSTRAINT_VALIDATOR_STRATEGIES} from './constraint-validator-strategies';
 
 export function getConstraintValidatorStrategy(constraint: Constraint, characteristic: Characteristic): ConstraintValidatorStrategy {
     const strategy =

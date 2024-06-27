@@ -19,7 +19,7 @@ import {
     DefaultList,
     DefaultSet,
     DefaultSortedSet,
-    DefaultStructuredValue
+    DefaultStructuredValue,
 } from '@esmf/aspect-model-loader';
 import {ValidatorConfig} from '../validatorsTypes';
 

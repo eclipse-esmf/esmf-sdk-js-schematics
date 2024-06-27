@@ -27,7 +27,7 @@ import {
     prepareOptions,
     setComponentNameRule,
     setCustomActionsAndFiltersRule,
-    setTemplateOptionValuesRule
+    setTemplateOptionValuesRule,
 } from '../shared/index';
 import {ComponentType, Schema} from '../shared/schema';
 import {generateCardComponent} from './generators/components/card';

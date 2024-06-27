@@ -15,19 +15,14 @@ import {dasherize} from '@angular-devkit/core/src/utils/strings';
 import {chain, Rule, SchematicContext, Tree} from '@angular-devkit/schematics';
 import {NodePackageInstallTask, RunSchematicTask} from '@angular-devkit/schematics/tasks';
 import {JSONFile} from '@schematics/angular/utility/json-file';
-import {
-    addToAppModule,
-    addToAppSharedModule,
-    addToComponentModule,
-    wrapBuildComponentExecution
-} from '../../../utils/angular';
+import {addToAppModule, addToAppSharedModule, addToComponentModule, wrapBuildComponentExecution} from '../../../utils/angular';
 import {generateTranslationFiles, loadAspectModel, loadRDF, validateUrns} from '../../../utils/aspect-model';
 import {formatGeneratedFiles, loadAndApplyConfigFile} from '../../../utils/file';
 import {
     addPackageJsonDependencies,
     DATE_QUICK_FILTER_DEPENDENCIES,
     DEFAULT_DEPENDENCIES,
-    REMOTE_HANDLING_DEPENDENCIES
+    REMOTE_HANDLING_DEPENDENCIES,
 } from '../../../utils/package-json';
 import {TemplateHelper} from '../../../utils/template-helper';
 import {ComponentType, Schema, Values} from './schema';
@@ -41,7 +36,7 @@ import {
     generateSharedModule,
     generateShowDescriptionPipe,
     generateTranslationModule,
-    generateValidateInputDirective
+    generateValidateInputDirective,
 } from './generators';
 import {APP_SHARED_MODULES, cardModules, formModules, tableModules, updateSharedModule} from '../../../utils/modules';
 import {WIZARD_CONFIG_FILE} from '../../prompter/index';

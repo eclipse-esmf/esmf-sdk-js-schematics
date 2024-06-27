@@ -27,7 +27,7 @@ import {
     requestOptionalMaterialTheme,
     requestOverwriteFiles,
     requestSelectedModelElement,
-    selectedAspectModelJsonPath
+    selectedAspectModelJsonPath,
 } from '../shared/prompt-complex-questions';
 import {
     requestAddCommandBar,
@@ -35,7 +35,7 @@ import {
     requestCustomService,
     requestCustomStyleImports,
     requestEnableRemoteDataHandling,
-    requestSetViewEncapsulation
+    requestSetViewEncapsulation,
 } from '../shared/prompt-simple-questions';
 import {Aspect, BaseMetaModelElement, DefaultEntity} from '@esmf/aspect-model-loader';
 import {ConfigurationDefaultsSchema} from '../../../components/table/schema';

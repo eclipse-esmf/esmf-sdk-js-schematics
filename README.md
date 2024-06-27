@@ -2,27 +2,27 @@
 
 ## Table of Contents
 
--   [Introduction](#introduction)
--   [Getting help](#getting-help)
--   [Features](#features)
--   [Getting started](#getting-started)
-    -   [Prerequisites](#prerequisites)
-    -   [Using the schematic commands in external projects for testing purpose](#using-the-schematic-commands-in-external-projects-for-testing-purpose)
--   [Overview of the schematics commands](#overview-of-the-schematics-commands)
-    -   [The _types_ schematics](#the-types-schematics)
-        -   [Usage](#usage)
-        -   [Example type definition file](#example-type-definition-file)
-    -   [The _table_ schematics](#the-table-schematics)
-        -   [Features provided by the schematics table](#features-provided-by-the-schematics-table)
-        -   [Howto generate a table component with the schematics command](#howto-generate-a-table-component-with-the-schematics-command)
-    -   [The _card_ schematics](#the-card-schematics)
-        -   [Features provided by the schematics card](#features-provided-by-the-schematics-card)
-        -   [Howto generate a card component with the schematics command](#howto-generate-a-card-component-with-the-schematics-command)
-    -   [The _form_ schematics](#the-form-schematics)
-        -   [Features provided by the schematics form](#features-provided-by-the-schematics-form)
-        -   [Howto generate a form component with the schematics command](#howto-generate-a-form-component-with-the-schematics-command)
--   [Documentation](#documentation)
--   [License](#license)
+- [Introduction](#introduction)
+- [Getting help](#getting-help)
+- [Features](#features)
+- [Getting started](#getting-started)
+    - [Prerequisites](#prerequisites)
+    - [Using the schematic commands in external projects for testing purpose](#using-the-schematic-commands-in-external-projects-for-testing-purpose)
+- [Overview of the schematics commands](#overview-of-the-schematics-commands)
+    - [The _types_ schematics](#the-types-schematics)
+        - [Usage](#usage)
+        - [Example type definition file](#example-type-definition-file)
+    - [The _table_ schematics](#the-table-schematics)
+        - [Features provided by the schematics table](#features-provided-by-the-schematics-table)
+        - [Howto generate a table component with the schematics command](#howto-generate-a-table-component-with-the-schematics-command)
+    - [The _card_ schematics](#the-card-schematics)
+        - [Features provided by the schematics card](#features-provided-by-the-schematics-card)
+        - [Howto generate a card component with the schematics command](#howto-generate-a-card-component-with-the-schematics-command)
+    - [The _form_ schematics](#the-form-schematics)
+        - [Features provided by the schematics form](#features-provided-by-the-schematics-form)
+        - [Howto generate a form component with the schematics command](#howto-generate-a-form-component-with-the-schematics-command)
+- [Documentation](#documentation)
+- [License](#license)
 
 ## Introduction
 
@@ -34,24 +34,24 @@ on [RDF aspect module object](https://www.w3.org/TR/turtle/).
 
 Are you having trouble with SDK JS? We want to help!
 
--   Check the [developer documentation](https://eclipse-esmf.github.io)
--   Having issues with the ESMF SDK JS schematics? Open
-    a [GitHub issue](https://github.com/eclipse-esmf/esmf-sdk-js-schematics/issues).
+- Check the [developer documentation](https://eclipse-esmf.github.io)
+- Having issues with the ESMF SDK JS schematics? Open
+  a [GitHub issue](https://github.com/eclipse-esmf/esmf-sdk-js-schematics/issues).
 
 ## Features
 
 The schematics' collection for this package includes dynamic generation of:
 
--   internationalization, using [i18n](https://angular.io/guide/i18n).
--   custom table components based on any aspect model loaded.
--   proper types of properties and entities used.
--   default configurations can be set in config file even if they are not asked in the prompter
+- internationalization, using [i18n](https://angular.io/guide/i18n).
+- custom table components based on any aspect model loaded.
+- proper types of properties and entities used.
+- default configurations can be set in config file even if they are not asked in the prompter
 
 ## SDK schematics uses ESMF Aspect Model Loader library
 
--   This library is also an open source project and can be found
-    at: https://github.com/eclipse-esmf/esmf-sdk-js-aspect-model-loader (no action required, this library is already
-    included in SDK schematics)
+- This library is also an open source project and can be found
+  at: https://github.com/eclipse-esmf/esmf-sdk-js-aspect-model-loader (no action required, this library is already
+  included in SDK schematics)
 
 ## SDK schematics generates components based on ttl files
 
@@ -68,11 +68,13 @@ In order to generate code based on the available schematics, the following steps
 1. Install [node](https://nodejs.org/en/) (LTS version).
 
 2. Schematics are part of the Angular ecosystem so angular-cli must be installed by running this command in a terminal:
-   Run `npm install -g @angular/cli@17`
+   Run `npm install -g @angular/cli@18`
 
-3. To create an Angular application without generating a new project structure that lacks app.module.ts and other essential files, use the --no-standalone flag. 
-   This approach ensures the creation of a fully structured Angular project. Execute the following command in your terminal:
-    Run `ng new <your-project-name> --no-standalone`
+3. To create an Angular application without generating a new project structure that lacks app.module.ts and other
+   essential files, use the --no-standalone flag.
+   This approach ensures the creation of a fully structured Angular project. Execute the following command in your
+   terminal:
+   Run `ng new <your-project-name> --no-standalone`
 
 ```bash
 
@@ -98,7 +100,7 @@ cd demo-schematic
 3. run (if not already installed):
 
 ```bash
-npm install -g @angular-devkit/schematics-cli@17
+npm install -g @angular-devkit/schematics-cli@18
 ```
 
 4. Optionally add some .ttl files in the same folder in order to use in the schema generation process. The schematic
@@ -133,11 +135,11 @@ schematics @esmf/semantic-ui-schematics:<schematics-name> --help
 
 where `<schematics-name>` can be replaced by:
 
--   table
--   card
--   form
--   i18n
--   types
+- table
+- card
+- form
+- i18n
+- types
 
 6. add translations
 
@@ -226,12 +228,19 @@ export interface SpatialPosition {
 ---
 
 ## The _table_ schematics
+
 https://eclipse-esmf.github.io/ame-guide/modeling/operation.html
 Modeling Events
 The table schematics can be used for table generation. This is achieved by using the table provided in
-the [angular material package](https://v17.material.angular.io/components/table/overview).
+the [angular material package](https://v18.material.angular.io/components/table/overview).
 
-**_NOTE:_** The JavaScript SDK does not automatically generate code for Operations and Events. If you need UI code that represents the Operations available for an aspect, or the Events that an aspect can trigger, you'll need to implement this manually. We welcome contributions and requests for enhancements. Please submit them at our GitHub issues page: [GitHub issues](https://github.com/eclipse-esmf/esmf-sdk-js-schematics/issues). For additional guidance on modeling Operations and Events, visit our documentation pages on [Modeling Operations](https://eclipse-esmf.github.io/ame-guide/modeling/operation.html) and [Modeling Events](https://eclipse-esmf.github.io/ame-guide/modeling/event.html).
+**_NOTE:_** The JavaScript SDK does not automatically generate code for Operations and Events. If you need UI code that
+represents the Operations available for an aspect, or the Events that an aspect can trigger, you'll need to implement
+this manually. We welcome contributions and requests for enhancements. Please submit them at our GitHub issues
+page: [GitHub issues](https://github.com/eclipse-esmf/esmf-sdk-js-schematics/issues). For additional guidance on
+modeling Operations and Events, visit our documentation pages
+on [Modeling Operations](https://eclipse-esmf.github.io/ame-guide/modeling/operation.html)
+and [Modeling Events](https://eclipse-esmf.github.io/ame-guide/modeling/event.html).
 
 ### Features provided by the schematics table
 
@@ -270,7 +279,7 @@ the [angular material package](https://v17.material.angular.io/components/table/
 ## The _card_ schematics
 
 The card schematics can be used for card generation. This is achieved by using the card provided in
-the [angular material package](https://v17.material.angular.io/components/card/overview).
+the [angular material package](https://v18.material.angular.io/components/card/overview).
 
 ### Features provided by the schematics card
 

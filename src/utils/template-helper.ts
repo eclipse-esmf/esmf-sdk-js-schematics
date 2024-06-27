@@ -24,7 +24,7 @@ import {
     DefaultScalar,
     DefaultSingleEntity,
     Entity,
-    Property
+    Property,
 } from '@esmf/aspect-model-loader';
 import {classify, dasherize, underscore} from '@angular-devkit/core/src/utils/strings';
 // TODO change this ...

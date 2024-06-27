@@ -26,7 +26,7 @@ import {
     requestOptionalMaterialTheme,
     requestOverwriteFiles,
     requestSelectedModelElement,
-    selectedAspectModelJsonPath
+    selectedAspectModelJsonPath,
 } from '../shared/prompt-complex-questions';
 import {ComponentType, Schema} from '../../../components/shared/schema';
 import {Aspect, BaseMetaModelElement, DefaultEntity} from '@esmf/aspect-model-loader';
@@ -36,7 +36,7 @@ import {
     requestCustomService,
     requestCustomStyleImports,
     requestEnableRemoteDataHandling,
-    requestSetViewEncapsulation
+    requestSetViewEncapsulation,
 } from '../shared/prompt-simple-questions';
 import {ConfigurationDefaultsSchema, TableDefaultsSchema} from '../../../components/table/schema';
 import {BaseModelLoader} from '@esmf/aspect-model-loader/dist/base-model-loader';

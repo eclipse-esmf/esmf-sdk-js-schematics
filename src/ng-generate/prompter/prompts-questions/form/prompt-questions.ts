@@ -18,7 +18,7 @@ import {
     requestExcludedConstraints,
     requestOptionalMaterialTheme,
     requestOverwriteFiles,
-    requestSelectedModelElement
+    requestSelectedModelElement,
 } from '../shared/prompt-complex-questions';
 import {requestAspectModelVersionSupport, requestSetViewEncapsulation} from '../shared/prompt-simple-questions';
 import {Aspect, DefaultCollection, DefaultEntity} from '@esmf/aspect-model-loader';
