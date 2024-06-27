@@ -14,7 +14,9 @@
 import {Rule, SchematicContext, Tree} from '@angular-devkit/schematics';
 import * as fs from 'fs';
 import {DefaultSchema} from '../ng-generate/default-schema';
-import {format, resolveConfig} from 'prettier';
+
+/* eslint-disable @typescript-eslint/no-var-requires */
+const prettier = require('prettier');
 
 // this resolves the config provided by the schematics lib
 const defaultPrettierConfigPath = require.resolve('../../.prettierrc');
@@ -73,7 +75,7 @@ function resolvePrettierConfigPath(options: DefaultSchema) {
 }
 
 async function resolvePrettierOptions(prettierConfigPath: string, options: DefaultSchema) {
-    let prettierOptions = await resolveConfig(prettierConfigPath);
+    let prettierOptions = await prettier.resolveConfig(prettierConfigPath);
 
     if (!prettierOptions) {
         prettierOptions = {};
@@ -84,12 +86,11 @@ async function resolvePrettierOptions(prettierConfigPath: string, options: Defau
 }
 
 async function formatFile(fileEntry: any, visitor: any, prettierOptions: any, options: DefaultSchema, tree: Tree) {
-    if (visitor.includes('.ts') || visitor.includes('.json')) {
+    if (!visitor.includes('DS_Store')) {
         prettierOptions.filepath = visitor; // Infer the parser from the file extension
         const srcFile = fileEntry.content.toString();
-        await format(srcFile, prettierOptions).then((formattedCode: string) => {
-            tree.overwrite(visitor, formattedCode);
-        });
+        const dstFile = await prettier.format(srcFile, prettierOptions);
+        tree.overwrite(visitor, dstFile);
         options.spinner.succeed(`Prettier ${visitor}`);
     }
 }

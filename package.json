@@ -36,7 +36,7 @@
     "inquirer-search-list": "^1.2.6",
     "ora": "^5.4.1",
     "path": "^0.12.7",
-    "prettier": "3.3.2",
+    "prettier": "2.8.8",
     "rxjs": "7.x",
     "typescript": "5.4.5"
   },
