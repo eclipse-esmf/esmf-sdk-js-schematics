@@ -54,7 +54,7 @@ function generateModuleDefinition(options: Schema, _context: SchematicContext): 
             }),
             move('src/app/shared'),
         ]),
-        options.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error
+        options.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error,
     );
 }
 
@@ -69,7 +69,7 @@ function generateProviderDefinition(options: Schema, _context: SchematicContext)
             }),
             move('src/app/shared'),
         ]),
-        options.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error
+        options.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error,
     );
 }
 

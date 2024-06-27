@@ -26,7 +26,7 @@ export function generateStorageService(options: any): Rule {
                 }),
                 move('src/app/shared/services'),
             ]),
-            options.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error
+            options.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error,
         );
     };
 }

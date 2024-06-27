@@ -63,7 +63,7 @@ export async function cardPrompterQuestions(
     options: Schema,
     aspect: Aspect,
     combineAnswers: (...answers: any[]) => any,
-    allAnswers: any
+    allAnswers: any,
 ): Promise<void> {
     const defaultConfiguration: ConfigurationDefaultsSchema = new CardDefaultsSchema();
 
@@ -75,8 +75,8 @@ export async function cardPrompterQuestions(
             options,
             aspect,
             allAnswers,
-            Object.keys(defaultConfiguration).length > 0 ? defaultConfiguration : {}
-        )
+            Object.keys(defaultConfiguration).length > 0 ? defaultConfiguration : {},
+        ),
     );
 }
 
@@ -85,7 +85,7 @@ async function fetchUserSpecificCardConfigurations(
     options: Schema,
     aspect: Aspect,
     allAnswers: any,
-    defaultConfiguration?: ConfigurationDefaultsSchema
+    defaultConfiguration?: ConfigurationDefaultsSchema,
 ): Promise<object> {
     const gatherInitialModelElement = await inquirer.prompt([
         requestSelectedModelElement(ComponentType.CARD, aspect, requestSelectedModelCondition),
@@ -109,8 +109,15 @@ async function fetchUserSpecificCardConfigurations(
         ? await getDatePickerType(templateHelper, allAnswers, gatherInitialModelElement, aspect)
         : {};
     const customBarActionsAnswers = await inquirer.prompt([customCommandBarActions(allAnswers, templateHelper)]);
-    
-    const setCommandBarFilterOrder = await getCommandBarFilterOrder(templateHelper, allAnswers,gatherInitialModelElement,aspect,options,commandbarFunctionalityAnswers.enabledCommandBarFunctions);
+
+    const setCommandBarFilterOrder = await getCommandBarFilterOrder(
+        templateHelper,
+        allAnswers,
+        gatherInitialModelElement,
+        aspect,
+        options,
+        commandbarFunctionalityAnswers.enabledCommandBarFunctions,
+    );
 
     const enableRemoteDataHandlingAnswers = await inquirer.prompt([requestEnableRemoteDataHandling, requestCustomService]);
     const aspectModelVersionSupportAnswers = await inquirer.prompt([requestAspectModelVersionSupport]);

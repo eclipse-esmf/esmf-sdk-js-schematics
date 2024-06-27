@@ -57,7 +57,7 @@ export function generateFilterService(options: any): Rule {
                 }),
                 move(sharedOptions.path),
             ]),
-            options.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error
+            options.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error,
         );
     };
 }
@@ -70,7 +70,7 @@ function getAllStringProps(allProps: Property[]): string[] {
                 .filter(
                     (complexProp: Property) =>
                         sharedOptions.templateHelper.isStringProperty(complexProp) ||
-                        sharedOptions.templateHelper.isMultiStringProperty(complexProp)
+                        sharedOptions.templateHelper.isMultiStringProperty(complexProp),
                 )
                 .map((complexProp: Property) => `'${complexProps.complexProp}.${complexProp.name}'`);
         }
@@ -105,8 +105,8 @@ function getAllDateProps(allProps: Property[]) {
                     (complexProp: any) =>
                         sharedOptions.templateHelper.isDateTimeProperty(complexProp) &&
                         !sharedOptions.excludedProperties.some(
-                            (excludedProperty: any) => excludedProperty.propToExcludeAspectModelUrn === complexProp.aspectModelUrn
-                        )
+                            (excludedProperty: any) => excludedProperty.propToExcludeAspectModelUrn === complexProp.aspectModelUrn,
+                        ),
                 )
                 .map((complexProp: any) => getPropValue(complexProp, complexPropObj));
         } else if (sharedOptions.templateHelper.isDateTimeProperty(property)) {
@@ -125,12 +125,12 @@ function setEnumQuickFilter(values: PropValue[]) {
     const template = (value: any) => `
         ${value.propertyName}Selected: Array<${value.enumWithEntities ? 'string' : classify(value.characteristic || 'any')}> = [];
         ${value.propertyName}Options: Array<any> = ${
-        value.enumWithEntities
-            ? `${classify(value.characteristic)}.getValueDescriptionList('${
-                  value.complexPropObj ? value.complexPropObj.complexProp + '.' : ''
-              }${value.property.name}')`
-            : `Object.values(${classify(value.characteristic)})`
-    };`;
+            value.enumWithEntities
+                ? `${classify(value.characteristic)}.getValueDescriptionList('${
+                      value.complexPropObj ? value.complexPropObj.complexProp + '.' : ''
+                  }${value.property.name}')`
+                : `Object.values(${classify(value.characteristic)})`
+        };`;
 
     return values.map(template).join('');
 }
@@ -359,22 +359,22 @@ function getDateNotRemote(values: PropValue[]): string {
     ${filteredData(values, index)}.filter(item => {
         const itemDate = new Date(item.${value.propertyValue});
         return (!${value.propertyName}StartDate || itemDate >= ${value.propertyName}StartDate) && (!${
-        value.propertyName
-    }EndDate || itemDate <= ${value.propertyName}EndDate);
+            value.propertyName
+        }EndDate || itemDate <= ${value.propertyName}EndDate);
     });
 
     if (${value.propertyName}StartDate && ${value.propertyName}EndDate) {
         this.updateActiveFilters('${value.propertyValue}', \`${value.propertyValue}: \${this.getFormattedDate(${
-        value.propertyName
-    }StartDate.toISOString())} - \${this.getFormattedDate(${value.propertyName}EndDate.toISOString())}\`);
+            value.propertyName
+        }StartDate.toISOString())} - \${this.getFormattedDate(${value.propertyName}EndDate.toISOString())}\`);
     } else if (${value.propertyName}EndDate) {
         this.updateActiveFilters('${value.propertyValue}', \`${value.propertyValue}: until \${this.getFormattedDate(${
-        value.propertyName
-    }EndDate.toISOString())}\`);
+            value.propertyName
+        }EndDate.toISOString())}\`);
     } else if (${value.propertyName}StartDate) {
         this.updateActiveFilters('${value.propertyValue}', \`${value.propertyValue}: from \${this.getFormattedDate(${
-        value.propertyName
-    }StartDate.toISOString())}\`);
+            value.propertyName
+        }StartDate.toISOString())}\`);
     }`;
 
     return `

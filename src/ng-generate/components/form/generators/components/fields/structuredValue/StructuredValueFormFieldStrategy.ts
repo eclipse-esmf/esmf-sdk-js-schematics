@@ -42,7 +42,7 @@ export class StructuredValueFormFieldStrategy extends FormFieldStrategy {
 
     getChildStrategies(): FormFieldStrategy[] {
         const instantiatedElements = this.child.elements.filter(
-            element => element instanceof DefaultPropertyInstanceDefinition
+            element => element instanceof DefaultPropertyInstanceDefinition,
         ) as DefaultPropertyInstanceDefinition[];
         return instantiatedElements.map(element => this.getChildStrategy(element, element.characteristic));
     }

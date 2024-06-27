@@ -38,7 +38,7 @@ export function generateGeneralStyle(options: any): Rule {
                 }),
                 move('src/assets/scss'),
             ]),
-            options.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error
+            options.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error,
         );
     };
 }

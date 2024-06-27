@@ -67,21 +67,21 @@ export class DurationFormFieldStrategy extends FormFieldStrategy {
                   },
               ]
             : type === DataType.DayTimeDuration
-            ? [
-                  {
-                      name: DataTypeValidator.DayTimeDuration,
-                      definition: 'FormValidators.dayTimeDurationValidator()',
-                      isDirectGroupValidator: false,
-                  },
-              ]
-            : type === DataType.YearMonthDuration
-            ? [
-                  {
-                      name: DataTypeValidator.YearMonthDuration,
-                      definition: 'FormValidators.yearMonthDurationValidator()',
-                      isDirectGroupValidator: false,
-                  },
-              ]
-            : [];
+              ? [
+                    {
+                        name: DataTypeValidator.DayTimeDuration,
+                        definition: 'FormValidators.dayTimeDurationValidator()',
+                        isDirectGroupValidator: false,
+                    },
+                ]
+              : type === DataType.YearMonthDuration
+                ? [
+                      {
+                          name: DataTypeValidator.YearMonthDuration,
+                          definition: 'FormValidators.yearMonthDurationValidator()',
+                          isDirectGroupValidator: false,
+                      },
+                  ]
+                : [];
     }
 }

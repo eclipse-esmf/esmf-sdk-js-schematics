@@ -24,13 +24,13 @@ import {ConfigurationDefaultsSchema, TableDefaultsSchema} from '../../../compone
 export async function typesPrompterQuestions(
     answerConfigurationFileConfig: any,
     answerAspectModel: any,
-    combineAnswers: (...answers: any[]) => any
+    combineAnswers: (...answers: any[]) => any,
 ): Promise<void> {
     const defaultConfiguration: ConfigurationDefaultsSchema = new TableDefaultsSchema();
     combineAnswers(
         answerConfigurationFileConfig,
         answerAspectModel,
-        await fetchTypesConfigurations(Object.keys(defaultConfiguration).length > 0 ? defaultConfiguration : {})
+        await fetchTypesConfigurations(Object.keys(defaultConfiguration).length > 0 ? defaultConfiguration : {}),
     );
 }
 

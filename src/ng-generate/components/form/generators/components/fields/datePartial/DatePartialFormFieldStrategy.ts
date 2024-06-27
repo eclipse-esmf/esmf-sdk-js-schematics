@@ -75,37 +75,37 @@ export class DatePartialFormFieldStrategy extends FormFieldStrategy {
                   },
               ]
             : type === DataType.GMonth
-            ? [
-                  {
-                      name: DataTypeValidator.GMonth,
-                      definition: 'FormValidators.gMonthValidator()',
-                      isDirectGroupValidator: false,
-                  },
-              ]
-            : type === DataType.GYear
-            ? [
-                  {
-                      name: DataTypeValidator.GYear,
-                      definition: 'FormValidators.gYearValidator()',
-                      isDirectGroupValidator: false,
-                  },
-              ]
-            : type === DataType.GMonthDay
-            ? [
-                  {
-                      name: DataTypeValidator.GMonthDay,
-                      definition: 'FormValidators.gMonthDayValidator()',
-                      isDirectGroupValidator: false,
-                  },
-              ]
-            : type === DataType.GYearMonth
-            ? [
-                  {
-                      name: DataTypeValidator.GYearMonth,
-                      definition: 'FormValidators.gYearMonthValidator()',
-                      isDirectGroupValidator: false,
-                  },
-              ]
-            : [];
+              ? [
+                    {
+                        name: DataTypeValidator.GMonth,
+                        definition: 'FormValidators.gMonthValidator()',
+                        isDirectGroupValidator: false,
+                    },
+                ]
+              : type === DataType.GYear
+                ? [
+                      {
+                          name: DataTypeValidator.GYear,
+                          definition: 'FormValidators.gYearValidator()',
+                          isDirectGroupValidator: false,
+                      },
+                  ]
+                : type === DataType.GMonthDay
+                  ? [
+                        {
+                            name: DataTypeValidator.GMonthDay,
+                            definition: 'FormValidators.gMonthDayValidator()',
+                            isDirectGroupValidator: false,
+                        },
+                    ]
+                  : type === DataType.GYearMonth
+                    ? [
+                          {
+                              name: DataTypeValidator.GYearMonth,
+                              definition: 'FormValidators.gYearMonthValidator()',
+                              isDirectGroupValidator: false,
+                          },
+                      ]
+                    : [];
     }
 }

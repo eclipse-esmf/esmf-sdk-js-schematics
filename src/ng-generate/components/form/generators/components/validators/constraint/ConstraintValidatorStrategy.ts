@@ -28,7 +28,10 @@ export abstract class ConstraintValidatorStrategy {
         throw new Error('An implementation of the method has to be provided by a derived class');
     }
 
-    constructor(public constraint: Constraint, public characteristic: Characteristic) {}
+    constructor(
+        public constraint: Constraint,
+        public characteristic: Characteristic,
+    ) {}
 
     getValidatorsConfigs(): ValidatorConfig[] {
         throw new Error('An implementation of the method has to be provided by a derived class');

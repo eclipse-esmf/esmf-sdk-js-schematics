@@ -23,31 +23,31 @@
   "license": "mpl-2.0",
   "schematics": "./src/collection.json",
   "dependencies": {
-    "@angular-devkit/core": "^17.3.5",
-    "@angular-devkit/schematics": "^17.3.5",
+    "@angular-devkit/core": "^18.0.6",
+    "@angular-devkit/schematics": "^18.0.6",
     "@esmf/aspect-model-loader": "https://github.com/eclipse-esmf/esmf-sdk-js-aspect-model-loader/releases/download/v2.3.3/esmf-aspect-model-loader-2.3.3.tgz",
-    "@schematics/angular": "17.3.5",
+    "@schematics/angular": "18.0.6",
     "fs": "0.0.1-security",
-    "inquirer": "8.2.5",
+    "inquirer": "9.3.0",
     "inquirer-fuzzy-path": "2.3.0",
     "inquirer-prompt-suggest": "0.1.0",
-    "ora": "5.4.1",
+    "ora": "8.0.1",
     "path": "^0.12.7",
-    "prettier": "2.8.8",
+    "prettier": "3.3.2",
     "rxjs": "7.x",
-    "typescript": "5.3.3"
+    "typescript": "5.4.5"
   },
   "devDependencies": {
-    "@angular/cdk": "^17.3.5",
-    "@babel/core": "7.22.9",
-    "@babel/preset-env": "7.22.9",
-    "@babel/preset-typescript": "7.22.5",
-    "@types/inquirer": "^9.0.3",
-    "@types/inquirer-fuzzy-path": "2.3.6",
+    "@angular/cdk": "^18.0.5",
+    "@babel/core": "7.24.7",
+    "@babel/preset-env": "7.24.7",
+    "@babel/preset-typescript": "7.24.7",
+    "@types/inquirer": "^9.0.7",
+    "@types/inquirer-fuzzy-path": "2.3.9",
     "@types/jest": "^29.5.12",
-    "@types/node": "^20.11.24",
-    "@typescript-eslint/eslint-plugin": "7.1.1",
-    "@typescript-eslint/parser": "7.1.1",
+    "@types/node": "^20.14.9",
+    "@typescript-eslint/eslint-plugin": "7.14.1",
+    "@typescript-eslint/parser": "7.14.1",
     "eslint": "8.57.0",
     "jest": "29.7.0",
     "jest-stare": "2.5.1",
@@ -55,18 +55,18 @@
     "ts-node": "10.9.2"
   },
   "peerDependencies": {
-    "@angular/animations": "17.3.x",
-    "@angular/common": "17.3.x",
-    "@angular/forms": "17.3.x",
-    "@angular/material": "17.3.x",
-    "@angular/platform-browser": "17.3.x",
-    "@angular/platform-browser-dynamic": "17.3.x",
+    "@angular/animations": "18.x",
+    "@angular/common": "18.x",
+    "@angular/forms": "18.x",
+    "@angular/material": "18.x",
+    "@angular/platform-browser": "18.x",
+    "@angular/platform-browser-dynamic": "18.x",
     "@ngneat/transloco": "6.x",
     "ngx-i18n-combine": "1.x",
     "rxjs": "7.x"
   },
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=18.13.0"
   },
   "ng-add": {
     "save": "devDependencies"

@@ -158,7 +158,7 @@ export function setCustomActionsAndFiltersRule(): Rule {
         ];
 
         options.enabledCommandBarFunctions = options.enabledCommandBarFunctions.filter(func =>
-            propertiesCheck.some(item => item.function === func && item.properties.length > 0)
+            propertiesCheck.some(item => item.function === func && item.properties.length > 0),
         );
 
         if (options.templateHelper.haveCustomCommandbarActions(options)) {
@@ -263,10 +263,10 @@ export function addAndUpdateConfigurationFilesRule(): Rule[] {
         options.componentType === ComponentType.TABLE
             ? addToComponentModule(options.skipImport, options, tableModules(options))
             : options.componentType === ComponentType.CARD
-            ? addToComponentModule(options.skipImport, options, cardModules(options))
-            : options.componentType === ComponentType.FORM
-            ? addToComponentModule(options.skipImport, options, formModules(options))
-            : ({} as Rule);
+              ? addToComponentModule(options.skipImport, options, cardModules(options))
+              : options.componentType === ComponentType.FORM
+                ? addToComponentModule(options.skipImport, options, formModules(options))
+                : ({} as Rule);
 
     return [
         addPackageJsonDependencies(options.skipImport, options.spinner, loadDependencies()),

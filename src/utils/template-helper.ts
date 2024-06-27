@@ -44,7 +44,7 @@ export class TemplateHelper {
         options.typePath = this.getTypesPath(options.enableVersionSupport, options.aspectModelVersion, options.aspectModel);
         options.dateProperties = this.getDateProperties(options).filter((property: Property) => this.isDateProperty(property));
         options.dateTimeStampProperties = this.getDateProperties(options).filter((property: Property) =>
-            this.isDateTimestampProperty(property)
+            this.isDateTimestampProperty(property),
         );
         options.timeProperties = this.getDateProperties(options).filter((property: Property) => this.isTimeProperty(property));
         options.isDateQuickFilter = this.isAddDateQuickFilters(options.enabledCommandBarFunctions);
@@ -352,8 +352,8 @@ export class TemplateHelper {
             property =>
                 this.isEnumProperty(property) &&
                 !options.excludedProperties.find(
-                    (excludedProp: ExcludedProperty) => excludedProp.propToExcludeAspectModelUrn === property.aspectModelUrn
-                )
+                    (excludedProp: ExcludedProperty) => excludedProp.propToExcludeAspectModelUrn === property.aspectModelUrn,
+                ),
         );
     }
 
@@ -378,8 +378,8 @@ export class TemplateHelper {
             property =>
                 this.isStringProperty(property) &&
                 !options.excludedProperties.find(
-                    (excludedProp: ExcludedProperty) => excludedProp.propToExcludeAspectModelUrn === property.aspectModelUrn
-                )
+                    (excludedProp: ExcludedProperty) => excludedProp.propToExcludeAspectModelUrn === property.aspectModelUrn,
+                ),
         );
     }
 
@@ -394,8 +394,8 @@ export class TemplateHelper {
             property =>
                 this.isDateTimeProperty(property) &&
                 !options.excludedProperties.find(
-                    (excludedProp: ExcludedProperty) => excludedProp.propToExcludeAspectModelUrn === property.aspectModelUrn
-                )
+                    (excludedProp: ExcludedProperty) => excludedProp.propToExcludeAspectModelUrn === property.aspectModelUrn,
+                ),
         );
     }
 
@@ -425,8 +425,8 @@ export class TemplateHelper {
             return this.resolveType(options.selectedModelElement).properties.filter(
                 (prop: Property) =>
                     !options.excludedProperties.find(
-                        (excludedProp: ExcludedProperty) => excludedProp.propToExcludeAspectModelUrn === prop.aspectModelUrn
-                    )
+                        (excludedProp: ExcludedProperty) => excludedProp.propToExcludeAspectModelUrn === prop.aspectModelUrn,
+                    ),
             );
         }
         return this.resolveType(options.selectedModelElement).properties;

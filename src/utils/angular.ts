@@ -92,7 +92,7 @@ export async function addToDeclarationsArray(
     tree: Tree,
     declarationName: string,
     declarationPath: string,
-    modulePath?: string
+    modulePath?: string,
 ): Promise<Tree> {
     modulePath = modulePath || (await findModuleFromOptions(tree, options)) || '';
     const sourceFile = parseSourceFile(tree, modulePath);
@@ -114,7 +114,7 @@ export async function addToExportsArray(
     tree: Tree,
     exportName: string,
     exportPath: string,
-    modulePath?: string
+    modulePath?: string,
 ): Promise<Tree> {
     modulePath = modulePath || (await findModuleFromOptions(tree, options)) || '';
     const sourceFile = parseSourceFile(tree, modulePath);

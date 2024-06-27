@@ -50,7 +50,7 @@ function generateHtml(options: Schema, _context: SchematicContext): Rule {
             templateInclude(_context, applyTemplate, sharedOptions, '../shared/methods'),
             move(sharedOptions.path),
         ]),
-        sharedOptions.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error
+        sharedOptions.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error,
     );
 }
 
@@ -75,7 +75,7 @@ function applyTemplate(): Rule {
         commonImports: commonImports(),
         sharedCustomRows: getSharedCustomRows(),
         customColumn: getCustomColumn(),
-        columnTransKeyPrefix: getColumnTransKeyPrefix()
+        columnTransKeyPrefix: getColumnTransKeyPrefix(),
     });
 }
 
@@ -101,7 +101,7 @@ function getCustomColumnsInput(): string {
             ? sharedOptions.customColumns
                   .map(
                       (customColumn: string) =>
-                          `@Input("${camelize(customColumn)}Column") ${camelize(customColumn)}Template!: TemplateRef<any>;`
+                          `@Input("${camelize(customColumn)}Column") ${camelize(customColumn)}Template!: TemplateRef<any>;`,
                   )
                   .join('')
             : ''
@@ -140,10 +140,10 @@ function getSharedCustomRows(): string {
                     customRowActions.lastIndexOf('.') > -1
                         ? `iconRegistry.addSvgIcon('${customRowActions.replace(
                               /\.[^/.]+$/,
-                              ''
+                              '',
                           )}', sanitizer.bypassSecurityTrustResourceUrl('./assets/icons/${customRowActions}'));`
                         : ``
-                }`
+                }`,
         )
         .join('')}`;
 }
@@ -167,7 +167,7 @@ function commonImports(): string {
 function getColumnTransKeyPrefix(): string {
     return sharedOptions.enableVersionSupport
         ? `${sharedOptions.selectedModelElement.name.toLowerCase()}.v${sharedOptions.templateHelper.formatAspectModelVersion(
-              sharedOptions.aspectModelVersion
+              sharedOptions.aspectModelVersion,
           )}.`
         : ``;
 }

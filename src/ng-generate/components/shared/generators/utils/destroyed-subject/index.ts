@@ -32,7 +32,7 @@ export function generateDestroyedSubject(options: any): Rule {
                 }),
                 move('src/app/shared/utils'),
             ]),
-            options.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error
+            options.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error,
         );
     };
 }

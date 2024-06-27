@@ -26,7 +26,7 @@ export function generateShowDescriptionPipe(options: any): Rule {
                 }),
                 move('src/app/shared/pipes'),
             ]),
-            options.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error
+            options.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error,
         );
     };
 }

@@ -107,7 +107,7 @@ function generateKey(name: string): string {
  */
 export function getTableColumValues(
     allProps: Array<Property>,
-    options: Schema
+    options: Schema,
 ): Array<{
     property: Property;
     index: number;
@@ -168,11 +168,11 @@ export function getCustomRowActions(options: any): string {
               const formattedAction = action.replace(/\.[^/.]+$/, '');
               const formattedActionKebab = formattedAction.replace(/\s+/g, '-').toLowerCase();
               const commonParts = `data-test="custom-action-icon" *ngIf="is${classify(
-                  formattedActionKebab
+                  formattedActionKebab,
               )}Visible" (click)="executeCustomAction($event, '${formattedActionKebab}', row)" style="cursor: pointer;" matTooltip="{{ '${options.templateHelper.getVersionedAccessPrefix(
-                  options
+                  options,
               )}${formattedActionKebab}.customRowAction' | transloco }}" aria-hidden="false" attr.aria-label="{{ '${options.templateHelper.getVersionedAccessPrefix(
-                  options
+                  options,
               )}${formattedActionKebab}.customRowAction' | transloco }}"`;
               return `${action.lastIndexOf('.') > -1 ? `<mat-icon svgIcon="${formattedAction}" ${commonParts}></mat-icon>` : ''}${
                   action.lastIndexOf('.') === -1 ? `<mat-icon ${commonParts} class="material-icons">${action}</mat-icon>` : ''
@@ -196,9 +196,9 @@ export function getCustomRowActions(options: any): string {
                       const formattedActionKebab = formattedAction.replace(/\s+/g, '-').toLowerCase();
                       const classifiedAction = classify(formattedActionKebab);
                       const commonParts = `style="cursor: pointer;" matTooltip="{{ '${options.templateHelper.getVersionedAccessPrefix(
-                          options
+                          options,
                       )}${formattedActionKebab}.customRowAction' | transloco }}" aria-hidden="false" attr.aria-label="{{ '${options.templateHelper.getVersionedAccessPrefix(
-                          options
+                          options,
                       )}${formattedActionKebab}.customRowAction' | transloco }}"`;
                       const iconTemplate =
                           action.lastIndexOf('.') === -1
@@ -208,7 +208,7 @@ export function getCustomRowActions(options: any): string {
                       <button mat-menu-item *ngIf="is${classifiedAction}Visible" data-test="custom-action-button" (click)="executeCustomAction($event, '${formattedActionKebab}', row)">
                           ${iconTemplate}
                           <span data-test="custom-action-text" style="vertical-align: middle">{{ '${options.templateHelper.getVersionedAccessPrefix(
-                              options
+                              options,
                           )}${formattedActionKebab}.customRowAction' | transloco}}</span>
                       </button>
                      `;
@@ -243,7 +243,7 @@ export function resolveJsPropertyType(property: Property): string {
         if (property.characteristic.elementCharacteristic) {
             return resolveJsCharacteristicType(
                 property.characteristic.elementCharacteristic,
-                property.characteristic.elementCharacteristic.dataType
+                property.characteristic.elementCharacteristic.dataType,
             );
         }
 

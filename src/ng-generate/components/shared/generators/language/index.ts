@@ -40,7 +40,7 @@ export function generateLanguageTranslationAsset(options: any, assetsPath: strin
                 }),
                 move(assetsPath),
             ]),
-            options.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error
+            options.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error,
         );
     };
 }

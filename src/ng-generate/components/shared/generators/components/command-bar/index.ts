@@ -43,7 +43,7 @@ export function generateCommandBar(options: any, allProps: Array<Property>): Rul
                 }),
                 move(options.path),
             ]),
-            options.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error
+            options.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error,
         );
     };
 }

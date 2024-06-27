@@ -39,12 +39,12 @@ export async function formPrompterQuestions(
     options: Schema,
     aspect: Aspect,
     combineAnswers: (...answers: any[]) => any,
-    allAnswers: any
+    allAnswers: any,
 ) {
     combineAnswers(
         answerConfigurationFileConfig,
         answerAspectModel,
-        await getUserSpecificFormConfigs(templateHelper, options, allAnswers, aspect)
+        await getUserSpecificFormConfigs(templateHelper, options, allAnswers, aspect),
     );
 }
 

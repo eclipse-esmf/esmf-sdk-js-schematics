@@ -42,7 +42,7 @@ function generateCard(options: Schema, _context: SchematicContext): Rule {
             templateInclude(_context, applyTemplate, options, '../shared/methods'),
             move(sharedOptions.path),
         ]),
-        sharedOptions.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error
+        sharedOptions.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error,
     );
 }
 

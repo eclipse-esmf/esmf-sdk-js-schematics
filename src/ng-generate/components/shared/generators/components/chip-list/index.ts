@@ -26,7 +26,7 @@ export function generateChipList(options: any): Rule {
                 }),
                 move(options.path),
             ]),
-            options.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error
+            options.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error,
         );
     };
 }

@@ -50,7 +50,7 @@ export default function (options: TypesSchema): Rule {
                         return `src/app/shared/types/${dasherize(options.aspectModel.name).toLowerCase()}`;
                     },
                 },
-                options
+                options,
             ),
         ]);
     } else {

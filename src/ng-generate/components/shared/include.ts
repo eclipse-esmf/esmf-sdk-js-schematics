@@ -92,7 +92,7 @@ export function include(this: IncludeContext, filepath: string, templateData: Sc
  */
 function getDirectoryAndFilename(
     filepath: string,
-    includeBaseDirectory?: string
+    includeBaseDirectory?: string,
 ): {
     directory: string;
     filename: string;

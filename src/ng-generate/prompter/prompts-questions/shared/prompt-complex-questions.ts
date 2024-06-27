@@ -277,7 +277,7 @@ export const requestExcludedConstraints = (type: string, allAnswers: any, templa
 export const requestSelectedModelElement = (
     type: ComponentType,
     aspect: Aspect,
-    conditionFunction: (aspect: Aspect, loader: AspectModelLoader) => any
+    conditionFunction: (aspect: Aspect, loader: AspectModelLoader) => any,
 ) => ({
     type: 'list',
     name: 'selectedModelElementUrn',
@@ -380,7 +380,7 @@ export function extractComplexPropertyDetails(
     templateHelper: TemplateHelper,
     answers: any,
     allAnswers: any,
-    aspect: Aspect
+    aspect: Aspect,
 ): Array<Property> {
     allAnswers.selectedModelElementUrn = answers.selectedModelElementUrn || templateHelper.resolveType(aspect).aspectModelUrn;
 
@@ -445,7 +445,7 @@ function getConstraintsFromComplexElement(characteristic: Characteristic): Const
                 element instanceof DefaultPropertyInstanceDefinition
                     ? [...acc, ...getConstraintsFromElement(element.wrappedProperty.characteristic)]
                     : acc,
-            []
+            [],
         );
     }
 
@@ -516,7 +516,7 @@ function getFilterProperties(
     allAnswers: any,
     answers: any,
     aspect: Aspect,
-    enabledCommandBarFunctions?: any[]
+    enabledCommandBarFunctions?: any[],
 ): string[] {
     const hasEnumFilter = enabledCommandBarFunctions ? enabledCommandBarFunctions.includes('addEnumQuickFilters') : false;
     const hasDateFilter = enabledCommandBarFunctions ? enabledCommandBarFunctions.includes('addDateQuickFilters') : false;
@@ -541,14 +541,10 @@ function getFilterProperties(
     return filterProps;
 }
 
-async function commandBarFilterOrderPrompt(
-    allAnswers: any,
-    options: Schema,
-    choices:any
-):Promise<any>{
-        const orderedChoices = await orderItems(choices);
-        options.commandBarFilterOrder = orderedChoices;
-        allAnswers['commandBarFilterOrder'] = orderedChoices;
+async function commandBarFilterOrderPrompt(allAnswers: any, options: Schema, choices: any): Promise<any> {
+    const orderedChoices = await orderItems(choices);
+    options.commandBarFilterOrder = orderedChoices;
+    allAnswers['commandBarFilterOrder'] = orderedChoices;
 }
 
 export async function getCommandBarFilterOrder(
@@ -557,12 +553,15 @@ export async function getCommandBarFilterOrder(
     answers: any,
     aspect: Aspect,
     options: Schema,
-    enabledCommandBarFunctions: any[]
-):Promise<any>{
-        const choices = getFilterProperties(templateHelper, allAnswers, answers, aspect, enabledCommandBarFunctions);
-        if ((enabledCommandBarFunctions.includes('addEnumQuickFilters') || enabledCommandBarFunctions.includes('addDateQuickFilters')) && choices.length > 1 ){
-           return await commandBarFilterOrderPrompt(allAnswers,options, choices);
-        }
+    enabledCommandBarFunctions: any[],
+): Promise<any> {
+    const choices = getFilterProperties(templateHelper, allAnswers, answers, aspect, enabledCommandBarFunctions);
+    if (
+        (enabledCommandBarFunctions.includes('addEnumQuickFilters') || enabledCommandBarFunctions.includes('addDateQuickFilters')) &&
+        choices.length > 1
+    ) {
+        return await commandBarFilterOrderPrompt(allAnswers, options, choices);
+    }
 }
 
 async function orderItems(items: any) {

@@ -26,7 +26,7 @@ export function generateExportCardDialog(options: any): Rule {
                 }),
                 move('src/app/shared/components/export-confirmation-dialog'),
             ]),
-            options.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error
+            options.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error,
         );
     };
 }

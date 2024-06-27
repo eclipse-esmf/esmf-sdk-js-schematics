@@ -60,7 +60,7 @@ export abstract class FormFieldStrategy {
         public parent: Property,
         public child: Characteristic,
         public fieldName: string,
-        public constraints: Constraint[]
+        public constraints: Constraint[],
     ) {
         this.options = {...options};
     }
@@ -97,7 +97,7 @@ export abstract class FormFieldStrategy {
                 // Check that it's not excluded explicitly
                 !this.options.excludedConstraints.includes(constraint.aspectModelUrn) &&
                 // It's not a direct instance of "DefaultConstraint" (it contains no validation rules)
-                constraint.constructor !== DefaultConstraint
+                constraint.constructor !== DefaultConstraint,
         );
 
         return applicableConstraints.reduce((acc, constraint) => {
@@ -160,7 +160,7 @@ export abstract class FormFieldStrategy {
                     templateInclude(this.context, this.applyTemplate(), {...this.options, name: this.fieldName}, '../shared/methods'),
                     move(this.options.path + `/${fieldConfig.nameDasherized}`),
                 ]),
-                this.options.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error
+                this.options.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error,
             ),
             addToComponentModule(this.options.skipImport, this.options, modules),
         ];
@@ -186,7 +186,7 @@ export abstract class FormFieldStrategy {
             this.context,
             this.parent,
             child,
-            child instanceof DefaultTrait ? child.baseCharacteristic.name : child.name
+            child instanceof DefaultTrait ? child.baseCharacteristic.name : child.name,
         );
     }
 }

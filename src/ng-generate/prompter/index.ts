@@ -118,7 +118,7 @@ async function runPrompts(subscriber: Subscriber<Tree>, tree: Tree, templateHelp
                         options,
                         aspect,
                         combineAnswers,
-                        allAnswers
+                        allAnswers,
                     );
                 case ComponentType.FORM:
                     return formPrompterQuestions(
@@ -128,7 +128,7 @@ async function runPrompts(subscriber: Subscriber<Tree>, tree: Tree, templateHelp
                         options,
                         aspect,
                         combineAnswers,
-                        allAnswers
+                        allAnswers,
                     );
                 case ComponentType.CARD:
                     return cardPrompterQuestions(
@@ -138,7 +138,7 @@ async function runPrompts(subscriber: Subscriber<Tree>, tree: Tree, templateHelp
                         options,
                         aspect,
                         combineAnswers,
-                        allAnswers
+                        allAnswers,
                     );
                 case ComponentType.TYPES:
                     return typesPrompterQuestions(answerConfigurationFileConfig, answerAspectModelWithMainAspect, combineAnswers);

@@ -30,7 +30,7 @@ export function generateHighlightDirective(options: any): Rule {
                 }),
                 move('src/app/shared/directives'),
             ]),
-            options.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error
+            options.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error,
         );
     };
 }

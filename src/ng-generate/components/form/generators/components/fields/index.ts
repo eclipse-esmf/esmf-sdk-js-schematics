@@ -21,7 +21,7 @@ export function getFormFieldStrategy(
     context: SchematicContext,
     parent: Property,
     child: Characteristic | Trait,
-    fieldName: string
+    fieldName: string,
 ): FormFieldStrategy {
     const {characteristic, constraints} = getChildData(child);
     const strategy = FORM_FIELD_STRATEGIES.find(strategy => strategy.isTargetStrategy(characteristic)) ?? FORM_FIELD_DEFAULT_STRATEGY;

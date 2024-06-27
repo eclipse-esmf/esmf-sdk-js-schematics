@@ -44,8 +44,8 @@ export class ListFormFieldStrategy extends FormFieldStrategy {
         return this.child.dataType instanceof DefaultEntity
             ? this.child.dataType.properties.map(property => this.getChildStrategy(property, property.characteristic))
             : this.isScalarChild()
-            ? [this.getChildStrategy(this.parent, this.child.elementCharacteristic!)]
-            : [];
+              ? [this.getChildStrategy(this.parent, this.child.elementCharacteristic!)]
+              : [];
     }
 
     private isScalarChild(): boolean {

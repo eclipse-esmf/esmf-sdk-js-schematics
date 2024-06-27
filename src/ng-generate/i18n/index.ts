@@ -43,7 +43,7 @@ export default function (options: Schema): Rule {
                 },
             },
             options,
-            ['app-shared.module.ts']
+            ['app-shared.module.ts'],
         ),
         installPackages(),
     ]);
