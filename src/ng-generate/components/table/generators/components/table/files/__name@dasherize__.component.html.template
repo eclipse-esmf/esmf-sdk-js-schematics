@@ -44,17 +44,3 @@
 
   <%= options.include('/generation/extended-table.html.template') %>
 </div>
-
-<% if (options.hasSearchBar) { %>
-    <!-- Highlighting search values -->
-    <ng-template #highlightCell let-value="value">
-      <span
-        [highlight]="highlightString"
-        [highlightSource]="value"
-        [highlightColor]="highlightConfigColor"
-        [selected]="highlightConfigSelector"
-      >
-        {{ value === null ? '-' : value }}
-      </span>
-    </ng-template>
-<% } %>
