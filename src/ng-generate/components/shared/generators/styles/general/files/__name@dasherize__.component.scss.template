@@ -1,7 +1,5 @@
 /** <%= options.generationDisclaimerText %> **/
 
-<%= customStyleImports %>
-
 $gray-100: #f5f5f5;
 $gray-300: #e0e0e0;
 
@@ -270,3 +268,5 @@ $gray-300: #e0e0e0;
 .mat-mdc-menu-panel {
   max-width: max-content !important;
 }
+
+<%= customStyleImports %>
