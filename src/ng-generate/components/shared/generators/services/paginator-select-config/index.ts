@@ -23,9 +23,9 @@ export function generatePaginatorSelectConfigProvider(options: any): Rule {
                     dasherize: strings.dasherize,
                     options: options,
                 }),
-                move('src/app/shared/services')
+                move('src/app/shared/services'),
             ]),
-            options.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error
+            options.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error,
         );
     };
 }

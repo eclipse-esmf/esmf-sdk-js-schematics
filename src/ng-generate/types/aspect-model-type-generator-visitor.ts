@@ -44,17 +44,17 @@ export function visitAspectModel(options: TypesSchema): Rule {
 
         if (
             tree.exists(
-                `src/app/shared/types/${aspectName}${options.enableVersionSupport ? '/' + aspectModelVersion : ''}/${aspectName}.types.ts`
+                `src/app/shared/types/${aspectName}${options.enableVersionSupport ? '/' + aspectModelVersion : ''}/${aspectName}.types.ts`,
             )
         ) {
             tree.overwrite(
                 `src/app/shared/types/${aspectName}${options.enableVersionSupport ? '/' + aspectModelVersion : ''}/${aspectName}.types.ts`,
-                generatedTypeDefinitions
+                generatedTypeDefinitions,
             );
         } else {
             tree.create(
                 `src/app/shared/types/${aspectName}${options.enableVersionSupport ? '/' + aspectModelVersion : ''}/${aspectName}.types.ts`,
-                generatedTypeDefinitions
+                generatedTypeDefinitions,
             );
         }
     };
@@ -191,7 +191,7 @@ export class AspectModelTypeGeneratorVisitor extends DefaultAspectModelVisitor<B
                                     values += `'${item.value}', `;
                                 }
                             }
-                        }
+                        },
                     );
 
                     values = values.replace(/,([^,]*)$/, '$1');
@@ -236,9 +236,9 @@ export class AspectModelTypeGeneratorVisitor extends DefaultAspectModelVisitor<B
                                    `{${instanceProps
                                        .map(
                                            (prop: any) =>
-                                               `${prop.name}: ${classify(enumeration.name)}.${classify(instance.name)}.${prop.name}`
+                                               `${prop.name}: ${classify(enumeration.name)}.${classify(instance.name)}.${prop.name}`,
                                        )
-                                       .join(',')}}`
+                                       .join(',')}}`,
                            )
                            .join(',')}
                     ]
@@ -249,7 +249,7 @@ export class AspectModelTypeGeneratorVisitor extends DefaultAspectModelVisitor<B
                     ${enumeration.values
                         .map(
                             (instance: DefaultEntityInstance) =>
-                                `if(value === '${instance.value}') return ${classify(enumeration.name)}.${classify(instance.name)}`
+                                `if(value === '${instance.value}') return ${classify(enumeration.name)}.${classify(instance.name)}`,
                         )
                         .join('; ')}
                     
@@ -347,7 +347,7 @@ export class AspectModelTypeGeneratorVisitor extends DefaultAspectModelVisitor<B
             name: string;
             characteristic: Characteristic;
             dataType: string | undefined;
-        }>
+        }>,
     ): Array<{
         value: string | MultiLanguageText | Array<MultiLanguageText>;
         name: string;

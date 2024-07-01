@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH
+ * Copyright (c) 2024 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for
  * additional information regarding authorship.
@@ -24,11 +24,14 @@ import {
 import {ValidatorConfig} from '../validatorsTypes';
 
 export abstract class ConstraintValidatorStrategy {
+    constructor(
+        public constraint: Constraint,
+        public characteristic: Characteristic,
+    ) {}
+
     static isTargetStrategy(constraint: Constraint): boolean {
         throw new Error('An implementation of the method has to be provided by a derived class');
     }
-
-    constructor(public constraint: Constraint, public characteristic: Characteristic) {}
 
     getValidatorsConfigs(): ValidatorConfig[] {
         throw new Error('An implementation of the method has to be provided by a derived class');

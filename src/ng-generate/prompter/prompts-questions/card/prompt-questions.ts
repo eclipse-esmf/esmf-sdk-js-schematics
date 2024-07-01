@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH
+ * Copyright (c) 2024 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for
  * additional information regarding authorship.
@@ -13,7 +13,6 @@
 
 import {ComponentType, Schema} from '../../../components/shared/schema';
 import {TemplateHelper} from '../../../../utils/template-helper';
-import inquirer from 'inquirer';
 import {
     chooseLanguageForSearch,
     customCommandBarActions,
@@ -42,6 +41,7 @@ import {Aspect, BaseMetaModelElement, DefaultEntity} from '@esmf/aspect-model-lo
 import {ConfigurationDefaultsSchema} from '../../../components/table/schema';
 import {CardDefaultsSchema} from '../../../components/card/schema';
 import {BaseModelLoader} from '@esmf/aspect-model-loader/dist/base-model-loader';
+import {loadInquirer} from '../../../../utils/angular';
 
 /**
  * Asynchronously prompts the user with a series of questions related to card configurations,
@@ -63,7 +63,7 @@ export async function cardPrompterQuestions(
     options: Schema,
     aspect: Aspect,
     combineAnswers: (...answers: any[]) => any,
-    allAnswers: any
+    allAnswers: any,
 ): Promise<void> {
     const defaultConfiguration: ConfigurationDefaultsSchema = new CardDefaultsSchema();
 
@@ -75,8 +75,8 @@ export async function cardPrompterQuestions(
             options,
             aspect,
             allAnswers,
-            Object.keys(defaultConfiguration).length > 0 ? defaultConfiguration : {}
-        )
+            Object.keys(defaultConfiguration).length > 0 ? defaultConfiguration : {},
+        ),
     );
 }
 
@@ -85,8 +85,9 @@ async function fetchUserSpecificCardConfigurations(
     options: Schema,
     aspect: Aspect,
     allAnswers: any,
-    defaultConfiguration?: ConfigurationDefaultsSchema
+    defaultConfiguration?: ConfigurationDefaultsSchema,
 ): Promise<object> {
+    const inquirer = await loadInquirer();
     const gatherInitialModelElement = await inquirer.prompt([
         requestSelectedModelElement(ComponentType.CARD, aspect, requestSelectedModelCondition),
     ]);
@@ -109,8 +110,15 @@ async function fetchUserSpecificCardConfigurations(
         ? await getDatePickerType(templateHelper, allAnswers, gatherInitialModelElement, aspect)
         : {};
     const customBarActionsAnswers = await inquirer.prompt([customCommandBarActions(allAnswers, templateHelper)]);
-    
-    const setCommandBarFilterOrder = await getCommandBarFilterOrder(templateHelper, allAnswers,gatherInitialModelElement,aspect,options,commandbarFunctionalityAnswers.enabledCommandBarFunctions);
+
+    const setCommandBarFilterOrder = await getCommandBarFilterOrder(
+        templateHelper,
+        allAnswers,
+        gatherInitialModelElement,
+        aspect,
+        options,
+        commandbarFunctionalityAnswers.enabledCommandBarFunctions,
+    );
 
     const enableRemoteDataHandlingAnswers = await inquirer.prompt([requestEnableRemoteDataHandling, requestCustomService]);
     const aspectModelVersionSupportAnswers = await inquirer.prompt([requestAspectModelVersionSupport]);

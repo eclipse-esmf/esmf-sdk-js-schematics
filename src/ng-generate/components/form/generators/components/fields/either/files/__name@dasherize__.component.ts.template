@@ -13,7 +13,7 @@ import {
     Validators,
 } from '@angular/forms';
 import {MatFormFieldModule} from "@angular/material/form-field";
-import {TranslocoModule} from '@ngneat/transloco';
+import {TranslocoModule} from '@jsverse/transloco';
 import {FormGroupReusable} from '<% if (options.enableVersionSupport) { %>../<% } %>../../../utils/form-group-reusable';
 import {FormValidators} from '<% if (options.enableVersionSupport) { %>../<% } %>../../../utils/form-validators';
 <% for (let childConfig of options.fieldConfig.children) {

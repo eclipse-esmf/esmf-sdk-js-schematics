@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH
+ * Copyright (c) 2024 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for
  * additional information regarding authorship.
@@ -21,7 +21,7 @@ export function getFormFieldStrategy(
     context: SchematicContext,
     parent: Property,
     child: Characteristic | Trait,
-    fieldName: string
+    fieldName: string,
 ): FormFieldStrategy {
     const {characteristic, constraints} = getChildData(child);
     const strategy = FORM_FIELD_STRATEGIES.find(strategy => strategy.isTargetStrategy(characteristic)) ?? FORM_FIELD_DEFAULT_STRATEGY;

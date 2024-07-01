@@ -1,35 +1,35 @@
 ## Table of Contents
 
--   [Generate a form component with the schematics command](#generate-a-form-component-with-the-schematics-command)
-    -   [Flags and options that can be used in the generation process](#flags-and-options-that-can-be-used-in-the-generation-process)
-        -   [Generate a component with a custom name](#generate-a-component-with-a-custom-name)
-        -   [Select the element for which the form will be generated](#select-the-element-for-which-the-form-will-be-generated)
-        -   [Exclude one or more properties from the generation](#exclude-one-or-more-properties-from-the-generation)
-        -   [Exclude one or more constraints from the generation](#exclude-one-or-more-constraints-from-the-generation)
-        -   [Multi-version support for Aspect Models](#multi-version-support-for-aspect-models)
-        -   [Manual adaptions in _app.module.ts_](#manual-adaptions-in-appmodulets)
-        -   [Show form as read only](#show-form-as-read-only)
-    -   [Add translations](#add-translations)
-    -   [Pre-load config file](#pre-load-config-file)
-    -   [Skip Installation](#skip-install)
-    -   [Overwrite](#overwrite)
-    -   [Add material css theme](#add-material-css-theme)
-    -   [Set View Encapsulation strategy](#set-View-Encapsulation-strategy)
-    -   [Generate the environments files](#generate-the-environments-files)
--   [Output](#output)
-    -   [Form structure](#form-structure)
-    -   [Validation](#validation)
-        -   [Base validators](#base-validators)
-        -   [Constraint validators](#constraint-validators)
-            -   [Supported Constraint types](#supported-constraint-types)
-            -   [Unsupported Constraint types](#unsupported-constraint-types)
-        -   [Type-specific validators](#type-specific-validators)
-            -   [Supported complex data types](#supported-complex-data-types)
-            -   [Unsupported complex data types](#unsupported-complex-data-types)
-            -   [Supported scalar data types](#supported-scalar-data-types)
-            -   [Unsupported scalar data types](#unsupported-scalar-data-types)
-    -   [Usage](#usage)
-    -   [Working with list-like controls](#working-with-list-like-controls)
+- [Generate a form component with the schematics command](#generate-a-form-component-with-the-schematics-command)
+    - [Flags and options that can be used in the generation process](#flags-and-options-that-can-be-used-in-the-generation-process)
+        - [Generate a component with a custom name](#generate-a-component-with-a-custom-name)
+        - [Select the element for which the form will be generated](#select-the-element-for-which-the-form-will-be-generated)
+        - [Exclude one or more properties from the generation](#exclude-one-or-more-properties-from-the-generation)
+        - [Exclude one or more constraints from the generation](#exclude-one-or-more-constraints-from-the-generation)
+        - [Multi-version support for Aspect Models](#multi-version-support-for-aspect-models)
+        - [Manual adaptions in _app.module.ts_](#manual-adaptions-in-appmodulets)
+        - [Show form as read only](#show-form-as-read-only)
+    - [Add translations](#add-translations)
+    - [Pre-load config file](#pre-load-config-file)
+    - [Skip Installation](#skip-install)
+    - [Overwrite](#overwrite)
+    - [Add material css theme](#add-material-css-theme)
+    - [Set View Encapsulation strategy](#set-View-Encapsulation-strategy)
+    - [Generate the environments files](#generate-the-environments-files)
+- [Output](#output)
+    - [Form structure](#form-structure)
+    - [Validation](#validation)
+        - [Base validators](#base-validators)
+        - [Constraint validators](#constraint-validators)
+            - [Supported Constraint types](#supported-constraint-types)
+            - [Unsupported Constraint types](#unsupported-constraint-types)
+        - [Type-specific validators](#type-specific-validators)
+            - [Supported complex data types](#supported-complex-data-types)
+            - [Unsupported complex data types](#unsupported-complex-data-types)
+            - [Supported scalar data types](#supported-scalar-data-types)
+            - [Unsupported scalar data types](#unsupported-scalar-data-types)
+    - [Usage](#usage)
+    - [Working with list-like controls](#working-with-list-like-controls)
 
 # Generate a form component with the schematics command
 
@@ -91,14 +91,16 @@ selector.
     templateUrl: './custom-form.component.html', // <- provided name reflected in the component path
     styleUrls: ['./custom-form.component.scss'], // <- provided name reflected in the component files
 })
-export class CustomFormComponent {} // <- provided name reflected in the component class name
+export class CustomFormComponent {
+} // <- provided name reflected in the component class name
 ```
 
 ---
 
 ## Select the element for which the form will be generated
 
-The form can be generated for the whole Aspect Model, and in this case the first level of properties and entities will be considered or the form can
+The form can be generated for the whole Aspect Model, and in this case the first level of properties and entities will
+be considered or the form can
 be generated for a specific entity.
 
 ```bash
@@ -107,7 +109,8 @@ Choose a specific Entity or Aspect to show as form: (Use arrow keys)
   urn:samm:org.eclipse.examples.movement:1.0.0#Entity (Entity)
 ```
 
-The properties will be automatically read from the provided aspect model or entity, and you can select/deselect which of them
+The properties will be automatically read from the provided aspect model or entity, and you can select/deselect which of
+them
 should be removed from the form.
 
 ---
@@ -139,7 +142,8 @@ Choose the constraints to ignore in the form: (Press <space> to select, <a> to t
  ( ) urn:samm:org.eclipse.digitaltwin:1.0.0#RangeConstraintCollection
 ```
 
-The constraints will be automatically read from the corresponding subtree of the selected element (Aspect Model Element or Entity),
+The constraints will be automatically read from the corresponding subtree of the selected element (Aspect Model Element
+or Entity),
 and can be select/deselect in order to ignore/keep them in the generated form.
 
 If a constraint relates to a subtree of previously excluded property, it will not be shown in the list during this step.
@@ -259,7 +263,8 @@ schematics ../<folder of the scheamtics project>/src/collection.json:i18n --dry-
 ng generate @esmf/semantic-ui-schematics:i18n --dry-run=false
 ```
 
-This command will install in demo project the following libraries: "@ngneat/transloco": "6.x", "ngx-i18n-combine": "^1.x"
+This command will install in demo project the following libraries: "@jsverse/transloco": "6.x", "ngx-i18n-combine": "
+^1.x"
 And the translation file will be generated: en.movement-form.translation.json
 
 ## Pre-load config file
@@ -360,41 +365,53 @@ User may choose one of the values: None, Emulated, ShadowDom.
 ng generate environments
 ```
 
-This command will generate the environments folder that will contain 2 files: environment.ts and environment.development.ts
+This command will generate the environments folder that will contain 2 files: environment.ts and
+environment.development.ts
 
 ---
 
 # Output
 
-As a result, a set of components with form fields and respective controls will be generated, as well as necessary utils and types.
+As a result, a set of components with form fields and respective controls will be generated, as well as necessary utils
+and types.
 
 ---
 
 ## Form structure
 
-Generated form structure may vary depending on the model: from a *Root Form Group* with a set of simple *Child Form Controls* to nested controls with `FormGroup`s and `FormArray`s.
-Despite the possible variations, each form consists of a *Root Form Group* and *Child Form Controls*, which are generated as separate components and can be accessed/reused directly if needed.
+Generated form structure may vary depending on the model: from a *Root Form Group* with a set of simple *Child Form
+Controls* to nested controls with `FormGroup`s and `FormArray`s.
+Despite the possible variations, each form consists of a *Root Form Group* and *Child Form Controls*, which are
+generated as separate components and can be accessed/reused directly if needed.
 
-Since the generated form is an Angular Reactive Form, all its methods are available for usage, according to the respective control type.
+Since the generated form is an Angular Reactive Form, all its methods are available for usage, according to the
+respective control type.
 
 ---
 
 ## Validation
 
-Each form field or form group can have multiple validators depending on the subtree structure, taking into consideration element's data type, associated constraints, etc.
+Each form field or form group can have multiple validators depending on the subtree structure, taking into consideration
+element's data type, associated constraints, etc.
 
 ### Base validators
 
-Each field/group can be marked as "required" depending on whether the corresponding element in the parsed model is considered as optional or not (has `"isOptional": true | false`).
+Each field/group can be marked as "required" depending on whether the corresponding element in the parsed model is
+considered as optional or not (has `"isOptional": true | false`).
 
 ### Constraint validators
 
-During the generation process, validation rules from constraints will be extracted and applied to the corresponding form elements (individual fields or groups) if they were not explicitly excluded in one of the prompter questions.
+During the generation process, validation rules from constraints will be extracted and applied to the corresponding form
+elements (individual fields or groups) if they were not explicitly excluded in one of the prompter questions.
 
-When dealing with complex data types, the validation rules from constraints are applied to its children in most cases, however, there are exceptions.
-For instance, [Length Constraint](https://eclipse-esmf.github.io/samm-specification/snapshot/characteristics.html#length-constraint) is applied directly to a group when working with Collection Characteristics (Collection, Set, Sorted Set, List).
+When dealing with complex data types, the validation rules from constraints are applied to its children in most cases,
+however, there are exceptions.
+For
+instance, [Length Constraint](https://eclipse-esmf.github.io/samm-specification/snapshot/characteristics.html#length-constraint)
+is applied directly to a group when working with Collection Characteristics (Collection, Set, Sorted Set, List).
 
-Consult [ESMF documentation](https://eclipse-esmf.github.io/samm-specification/snapshot/characteristics.html#constraints) for more details on how different types of constraints work with different element types.
+Consult [ESMF documentation](https://eclipse-esmf.github.io/samm-specification/snapshot/characteristics.html#constraints)
+for more details on how different types of constraints work with different element types.
 
 #### Supported Constraint types
 
@@ -412,8 +429,10 @@ Consult [ESMF documentation](https://eclipse-esmf.github.io/samm-specification/s
 
 ### Type-specific validators
 
-Since some fields can imply additional restrictions depending on the corresponding element type or its configuration, additional validators will be applied to the respective form control.
-A typical example of such case could be "Either" characteristic, which expects values of its child controls to be specified and unique.
+Since some fields can imply additional restrictions depending on the corresponding element type or its configuration,
+additional validators will be applied to the respective form control.
+A typical example of such case could be "Either" characteristic, which expects values of its child controls to be
+specified and unique.
 
 #### Supported complex data types
 
@@ -470,13 +489,18 @@ _None/Unknown_
 ## Usage
 
 For simple scenarios, the root component of the generated form provides the following outputs:
+
 ```typescript
 @Output() formSubmit: EventEmitter<Movement> = new EventEmitter();
 @Output() formCancel: EventEmitter<void> = new EventEmitter();
 ```
-However, more complex scenarios, like patching form value, manually updating its validity, manipulating child controls, etc., may require a direct access to the *Root Form Group* or its *Child Form Controls*, that is why each control has been made public and can be imported and used directly.
+
+However, more complex scenarios, like patching form value, manually updating its validity, manipulating child controls,
+etc., may require a direct access to the *Root Form Group* or its *Child Form Controls*, that is why each control has
+been made public and can be imported and used directly.
 
 An example with root "Movement" form:
+
 ```typescript
 import {MovementForm} from "./shared/components/movement-form/v100/movement-form.component";
 import {TrafficLight} from "./shared/types/movement/v100/movement.types";
@@ -506,16 +530,24 @@ export class AppComponent implements OnInit {
 ## Working with list-like controls
 
 For elements which are represented by a collection of elements, a table will be generated.
-It is represented by a `FormArray` with child `FormControl`s, which contains the factual model, and the table itself acts as a visual representation of the model, or a view.
+It is represented by a `FormArray` with child `FormControl`s, which contains the factual model, and the table itself
+acts as a visual representation of the model, or a view.
 
-Since it's not possible to predict a number of `FormControl`s in the `FormArray`, as well as all the potential use-cases, controls of this type should be handled explicitly.
-In order to provide a convenient way to communicate with the table and its respective form control, such components are accompanied by the following members:
+Since it's not possible to predict a number of `FormControl`s in the `FormArray`, as well as all the potential
+use-cases, controls of this type should be handled explicitly.
+In order to provide a convenient way to communicate with the table and its respective form control, such components are
+accompanied by the following members:
+
 - `[NAME]`FormControl - a form control of type `FormArray` (empty by default)
 - `[NAME]`Events - a list of `Observable`s for each supported event
 
 Usage example:
+
 ```typescript
-import {listPropertyEvents, listPropertyFormControl} from "./shared/components/complex-list-types-form/v100/list-property/list-property.component";
+import {
+    listPropertyEvents,
+    listPropertyFormControl
+} from "./shared/components/complex-list-types-form/v100/list-property/list-property.component";
 
 // ...
 

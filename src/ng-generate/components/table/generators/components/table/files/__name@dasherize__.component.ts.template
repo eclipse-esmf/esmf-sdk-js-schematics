@@ -59,7 +59,7 @@ import {<%= classify(name) %>DataSource} from './<%= dasherize(name) %>-datasour
 
 import {DomSanitizer} from '@angular/platform-browser';
 import {SelectionModel} from '@angular/cdk/collections';
-import { TranslocoService } from '@ngneat/transloco';
+import { TranslocoService } from '@jsverse/transloco';
 import {PaginatorSelectConfigInjector} from "<% if (options.enableVersionSupport) { %>../<% } %>../../services/paginator-select-config.provider";
 import {JSSdkLocalStorageService} from "<% if (options.enableVersionSupport) { %>../<% } %>../../services/storage.service";
 import {<%= classify(name) %>ColumnMenuComponent} from './<%= dasherize(name) %>-column-menu.component';

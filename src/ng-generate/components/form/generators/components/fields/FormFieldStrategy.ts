@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH
+ * Copyright (c) 2024 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for
  * additional information regarding authorship.
@@ -46,23 +46,23 @@ export abstract class FormFieldStrategy {
     options: any;
     isList = false;
 
-    static isTargetStrategy(child: Characteristic): boolean {
-        throw new Error('An implementation of the method has to be provided by a derived class');
-    }
-
-    static getShortUrn(child: Characteristic): DataType {
-        return child.dataType?.shortUrn as DataType;
-    }
-
     constructor(
         options: any,
         public context: SchematicContext,
         public parent: Property,
         public child: Characteristic,
         public fieldName: string,
-        public constraints: Constraint[]
+        public constraints: Constraint[],
     ) {
         this.options = {...options};
+    }
+
+    static isTargetStrategy(child: Characteristic): boolean {
+        throw new Error('An implementation of the method has to be provided by a derived class');
+    }
+
+    static getShortUrn(child: Characteristic): DataType {
+        return child.dataType?.shortUrn as DataType;
     }
 
     getValidatorsConfigs(ignoreConstraintValidatorStrategies: ConstraintValidatorStrategyClass = []): ValidatorConfig[] {
@@ -97,7 +97,7 @@ export abstract class FormFieldStrategy {
                 // Check that it's not excluded explicitly
                 !this.options.excludedConstraints.includes(constraint.aspectModelUrn) &&
                 // It's not a direct instance of "DefaultConstraint" (it contains no validation rules)
-                constraint.constructor !== DefaultConstraint
+                constraint.constructor !== DefaultConstraint,
         );
 
         return applicableConstraints.reduce((acc, constraint) => {
@@ -157,10 +157,18 @@ export abstract class FormFieldStrategy {
         const operations = [
             mergeWith(
                 apply(url(this.pathToFiles), [
-                    templateInclude(this.context, this.applyTemplate(), {...this.options, name: this.fieldName}, '../shared/methods'),
+                    templateInclude(
+                        this.context,
+                        this.applyTemplate(),
+                        {
+                            ...this.options,
+                            name: this.fieldName,
+                        },
+                        '../shared/methods',
+                    ),
                     move(this.options.path + `/${fieldConfig.nameDasherized}`),
                 ]),
-                this.options.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error
+                this.options.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error,
             ),
             addToComponentModule(this.options.skipImport, this.options, modules),
         ];
@@ -186,7 +194,7 @@ export abstract class FormFieldStrategy {
             this.context,
             this.parent,
             child,
-            child instanceof DefaultTrait ? child.baseCharacteristic.name : child.name
+            child instanceof DefaultTrait ? child.baseCharacteristic.name : child.name,
         );
     }
 }

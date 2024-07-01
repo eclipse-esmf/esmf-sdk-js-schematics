@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH
+ * Copyright (c) 2024 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for
  * additional information regarding authorship.
@@ -42,7 +42,7 @@ function generateCard(options: Schema, _context: SchematicContext): Rule {
             templateInclude(_context, applyTemplate, options, '../shared/methods'),
             move(sharedOptions.path),
         ]),
-        sharedOptions.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error
+        sharedOptions.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error,
     );
 }
 

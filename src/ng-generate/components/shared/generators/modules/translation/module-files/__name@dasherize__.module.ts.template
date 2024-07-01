@@ -2,7 +2,7 @@
 
 import {isDevMode, NgModule} from '@angular/core';
 import {environment} from "../../environments/environment";
-import {provideTransloco, TranslocoModule} from '@ngneat/transloco';
+import {provideTransloco, TranslocoModule} from '@jsverse/transloco';
 import {TransLocoHttpLoader} from './trans-loco-http-loader';
 import {PaginatorSelectConfigProvider} from './services/paginator-select-config.provider';
 
@@ -12,8 +12,10 @@ export const baseUrl = (environment as any).baseUrl || '';
     imports: [TranslocoModule],
     exports: [TranslocoModule],
     providers: [
-        <%= providerInfo %>,
-        PaginatorSelectConfigProvider
+        <%= providerInfo %>
+        <% if (options.componentType !== 'form') { %>
+            , PaginatorSelectConfigProvider
+        <% } %>
     ],
     })
 export class <%= classify(name) %>Module {}

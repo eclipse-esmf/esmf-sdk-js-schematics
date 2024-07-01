@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH
+ * Copyright (c) 2024 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for
  * additional information regarding authorship.
@@ -32,7 +32,7 @@ export function generateDataSource(options: any): Rule {
                 }),
                 move(sharedOptions.path),
             ]),
-            options.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error
+            options.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error,
         );
     };
 }
@@ -52,7 +52,7 @@ function getSortingProperties(prop: Property): string[] {
         properties.push(
             ...complexProps.properties
                 .filter(isNotExcludedAndScalarOrEnum)
-                .map((complexProp: Property) => getCompareLogicForProperty(complexProp, `${complexProps.complexProp}.${complexProp.name}`))
+                .map((complexProp: Property) => getCompareLogicForProperty(complexProp, `${complexProps.complexProp}.${complexProp.name}`)),
         );
     }
 
@@ -65,7 +65,7 @@ function getSortingProperties(prop: Property): string[] {
 
 function isNotExcludedAndScalarOrEnum(prop: Property): boolean {
     const isExcluded = sharedOptions.excludedProperties.some(
-        (excludedProp: any) => excludedProp.propToExcludeAspectModelUrn === prop.aspectModelUrn
+        (excludedProp: any) => excludedProp.propToExcludeAspectModelUrn === prop.aspectModelUrn,
     );
     const isScalarOrEnumWithEntityValues =
         (prop.effectiveDataType && prop.effectiveDataType.isScalar) || sharedOptions.templateHelper.isEnumPropertyWithEntityValues(prop);
@@ -77,7 +77,7 @@ function getCompareLogicForProperty(
     prop: Property,
     propName: string = !sharedOptions.templateHelper.isAspectSelected(sharedOptions)
         ? `${sharedOptions.jsonAccessPath}${prop.name}`
-        : prop.name
+        : prop.name,
 ) {
     const isEnumPropertyWithEntityValues = sharedOptions.templateHelper.isEnumPropertyWithEntityValues(prop);
     const isEnumProperty = sharedOptions.templateHelper.isEnumProperty(prop);

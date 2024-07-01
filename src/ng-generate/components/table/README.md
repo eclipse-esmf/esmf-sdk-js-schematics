@@ -1,20 +1,20 @@
 ## Table of Contents
 
--   [Generate a table component with the schematics command](#generate-a-table-component-with-the-schematics-command)
-    -   [Flags and options that can be used in the generation process](#flags-and-options-that-can-be-used-in-the-generation-process)
-        -   [Generate a component with a custom name](#generate-a-component-with-a-custom-name)
-        -   [Exclude one or more properties from the generation](#exclude-one-or-more-properties-from-the-generation)
-        -   [Multi-version support for Aspect Models](#multi-version-support-for-aspect-models)
-        -   [Manual adaptions in _app.module.ts_](#manual-adaptions-in-appmodulets)
-        -   [Show customized information in the table](#show-customized-information-in-the-table)
-        -   [Export functionality](#export-functionality)
-    -   [Custom icons for the command bar](#custom-icons-for-the-command-bar)
-    -   [Add translations](#add-translations)
-    -   [Pre-load config file](#pre-load-config-file)
-    -   [Skip Installation](#skip-install)
-    -   [Overwrite](#overwrite)
-    -   [Add material css theme](#Add-material-css-theme)
-    -   [Set View Encapsulation strategy](#Set-View-Encapsulation-strategy)
+- [Generate a table component with the schematics command](#generate-a-table-component-with-the-schematics-command)
+    - [Flags and options that can be used in the generation process](#flags-and-options-that-can-be-used-in-the-generation-process)
+        - [Generate a component with a custom name](#generate-a-component-with-a-custom-name)
+        - [Exclude one or more properties from the generation](#exclude-one-or-more-properties-from-the-generation)
+        - [Multi-version support for Aspect Models](#multi-version-support-for-aspect-models)
+        - [Manual adaptions in _app.module.ts_](#manual-adaptions-in-appmodulets)
+        - [Show customized information in the table](#show-customized-information-in-the-table)
+        - [Export functionality](#export-functionality)
+    - [Custom icons for the command bar](#custom-icons-for-the-command-bar)
+    - [Add translations](#add-translations)
+    - [Pre-load config file](#pre-load-config-file)
+    - [Skip Installation](#skip-install)
+    - [Overwrite](#overwrite)
+    - [Add material css theme](#Add-material-css-theme)
+    - [Set View Encapsulation strategy](#Set-View-Encapsulation-strategy)
 
 # Generate a table component with the schematics command
 
@@ -234,7 +234,8 @@ schematics ../<folder of the scheamtics project>/src/collection.json:i18n --dry-
 ng generate @esmf/semantic-ui-schematics:i18n --dry-run=false
 ```
 
-This command will install in demo project the following libraries: "@ngneat/transloco": "6.x", "ngx-i18n-combine": "^1.x"
+This command will install in demo project the following libraries: "@jsverse/transloco": "6.x", "ngx-i18n-combine": "
+^1.x"
 And the translation file will be generated: en.movement-form.translation.json
 
 ## Export functionality

@@ -4,7 +4,7 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { Observable, BehaviorSubject } from 'rxjs';
 import {<%= options.aspectModelTypeName %>} from '<%= options.typePath %>';
-<% if (!options.enableRemoteDataHandling) { %>import { TranslocoService } from '@ngneat/transloco';<% } %>
+<% if (!options.enableRemoteDataHandling) { %>import { TranslocoService } from '@jsverse/transloco';<% } %>
 
 /**
  * Data source for the <%= classify(name) %> view. This class should

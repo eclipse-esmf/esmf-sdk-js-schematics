@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH
+ * Copyright (c) 2024 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for
  * additional information regarding authorship.
@@ -21,7 +21,10 @@ import {getFormFieldStrategy} from '../fields/index';
 export class RootFormField {
     options: any;
 
-    constructor(options: any, public context: SchematicContext) {
+    constructor(
+        options: any,
+        public context: SchematicContext,
+    ) {
         this.options = {...options};
     }
 
@@ -34,7 +37,7 @@ export class RootFormField {
                     templateInclude(this.context, this.applyTemplate(), this.options, '../shared/methods'),
                     move(this.options.path),
                 ]),
-                this.options.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error
+                this.options.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error,
             ),
             ...this.getChildStrategies().map(strategy => strategy.generate()),
         ];

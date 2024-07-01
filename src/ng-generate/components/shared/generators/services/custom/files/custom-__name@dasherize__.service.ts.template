@@ -2,7 +2,7 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {<%= classify(options.name) %>Service} from './<%= dasherize(options.name) %>.service';
-import { TranslocoService } from '@ngneat/transloco';
+import { TranslocoService } from '@jsverse/transloco';
 
 /**
 * Custom service which extend the original API service for fetching

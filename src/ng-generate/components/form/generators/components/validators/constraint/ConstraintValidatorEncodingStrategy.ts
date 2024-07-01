@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH
+ * Copyright (c) 2024 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for
  * additional information regarding authorship.
@@ -45,55 +45,55 @@ export class ConstraintValidatorEncodingStrategy extends ConstraintValidatorStra
                   },
               ]
             : type === EncodingValidator.ISO_8859_1
-            ? [
-                  {
-                      name: this.constraint.name,
-                      definition: isApplyToChildren
-                          ? `FormValidators.applyToChildren(FormValidators.encodingValidator('ISO-8859-1'))`
-                          : `FormValidators.encodingValidator('ISO-8859-1')`,
-                      isDirectGroupValidator: !isApplyToChildren,
-                  },
-              ]
-            : type === EncodingValidator.UTF_8
-            ? [
-                  {
-                      name: this.constraint.name,
-                      definition: isApplyToChildren
-                          ? `FormValidators.applyToChildren(FormValidators.encodingValidator('UTF-8'))`
-                          : `FormValidators.encodingValidator('UTF-8')`,
-                      isDirectGroupValidator: !isApplyToChildren,
-                  },
-              ]
-            : type === EncodingValidator.UTF_16
-            ? [
-                  {
-                      name: this.constraint.name,
-                      definition: isApplyToChildren
-                          ? `FormValidators.applyToChildren(FormValidators.encodingValidator('UTF-16'))`
-                          : `FormValidators.encodingValidator('UTF-16')`,
-                      isDirectGroupValidator: !isApplyToChildren,
-                  },
-              ]
-            : type === EncodingValidator.UTF_16BE
-            ? [
-                  {
-                      name: this.constraint.name,
-                      definition: isApplyToChildren
-                          ? `FormValidators.applyToChildren(FormValidators.encodingValidator('UTF-16BE'))`
-                          : `FormValidators.encodingValidator('UTF-16BE')`,
-                      isDirectGroupValidator: !isApplyToChildren,
-                  },
-              ]
-            : type === EncodingValidator.UTF_16LE
-            ? [
-                  {
-                      name: this.constraint.name,
-                      definition: isApplyToChildren
-                          ? `FormValidators.applyToChildren(FormValidators.encodingValidator('UTF-16LE'))`
-                          : `FormValidators.encodingValidator('UTF-16LE')`,
-                      isDirectGroupValidator: !isApplyToChildren,
-                  },
-              ]
-            : [];
+              ? [
+                    {
+                        name: this.constraint.name,
+                        definition: isApplyToChildren
+                            ? `FormValidators.applyToChildren(FormValidators.encodingValidator('ISO-8859-1'))`
+                            : `FormValidators.encodingValidator('ISO-8859-1')`,
+                        isDirectGroupValidator: !isApplyToChildren,
+                    },
+                ]
+              : type === EncodingValidator.UTF_8
+                ? [
+                      {
+                          name: this.constraint.name,
+                          definition: isApplyToChildren
+                              ? `FormValidators.applyToChildren(FormValidators.encodingValidator('UTF-8'))`
+                              : `FormValidators.encodingValidator('UTF-8')`,
+                          isDirectGroupValidator: !isApplyToChildren,
+                      },
+                  ]
+                : type === EncodingValidator.UTF_16
+                  ? [
+                        {
+                            name: this.constraint.name,
+                            definition: isApplyToChildren
+                                ? `FormValidators.applyToChildren(FormValidators.encodingValidator('UTF-16'))`
+                                : `FormValidators.encodingValidator('UTF-16')`,
+                            isDirectGroupValidator: !isApplyToChildren,
+                        },
+                    ]
+                  : type === EncodingValidator.UTF_16BE
+                    ? [
+                          {
+                              name: this.constraint.name,
+                              definition: isApplyToChildren
+                                  ? `FormValidators.applyToChildren(FormValidators.encodingValidator('UTF-16BE'))`
+                                  : `FormValidators.encodingValidator('UTF-16BE')`,
+                              isDirectGroupValidator: !isApplyToChildren,
+                          },
+                      ]
+                    : type === EncodingValidator.UTF_16LE
+                      ? [
+                            {
+                                name: this.constraint.name,
+                                definition: isApplyToChildren
+                                    ? `FormValidators.applyToChildren(FormValidators.encodingValidator('UTF-16LE'))`
+                                    : `FormValidators.encodingValidator('UTF-16LE')`,
+                                isDirectGroupValidator: !isApplyToChildren,
+                            },
+                        ]
+                      : [];
     }
 }

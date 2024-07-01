@@ -1,20 +1,20 @@
 ## Table of Contents
 
--   [Generate a card component with the schematics command](#generate-a-card-component-with-the-schematics-command)
-    -   [Flags and options that can be used in the generation process](#flags-and-options-that-can-be-used-in-the-generation-process)
-        -   [Generate a component with a custom name](#generate-a-component-with-a-custom-name)
-        -   [Exclude one or more properties from the generation](#exclude-one-or-more-properties-from-the-generation)
-        -   [Multi-version support for Aspect Models](#multi-version-support-for-aspect-models)
-        -   [Manual adaptions in _app.module.ts_](#manual-adaptions-in-appmodulets)
-        -   [Show customized information in the card with ng-template](#show-customized-information-in-the-card-with-ng-template)
-        -   [Export functionality](#export-functionality)
-    -   [Custom icons for the command bar](#custom-icons-for-the-command-bar)
-    -   [Add translations](#add-translations)
-    -   [Pre-load config file](#pre-load-config-file)
-    -   [Skip Installation](#skip-install)
-    -   [Overwrite](#overwrite)
-    -   [Add material css theme](#Add-material-css-theme)
-    -   [Set View Encapsulation strategy](#Set-View-Encapsulation-strategy)
+- [Generate a card component with the schematics command](#generate-a-card-component-with-the-schematics-command)
+    - [Flags and options that can be used in the generation process](#flags-and-options-that-can-be-used-in-the-generation-process)
+        - [Generate a component with a custom name](#generate-a-component-with-a-custom-name)
+        - [Exclude one or more properties from the generation](#exclude-one-or-more-properties-from-the-generation)
+        - [Multi-version support for Aspect Models](#multi-version-support-for-aspect-models)
+        - [Manual adaptions in _app.module.ts_](#manual-adaptions-in-appmodulets)
+        - [Show customized information in the card with ng-template](#show-customized-information-in-the-card-with-ng-template)
+        - [Export functionality](#export-functionality)
+    - [Custom icons for the command bar](#custom-icons-for-the-command-bar)
+    - [Add translations](#add-translations)
+    - [Pre-load config file](#pre-load-config-file)
+    - [Skip Installation](#skip-install)
+    - [Overwrite](#overwrite)
+    - [Add material css theme](#Add-material-css-theme)
+    - [Set View Encapsulation strategy](#Set-View-Encapsulation-strategy)
 
 # Generate a card component with the schematics command
 
@@ -189,8 +189,8 @@ You then can use this specific version of the card UI component, e.g. in _src/ap
 
 ## Show customized information in the card with ng-template
 
-In your parent HTML file, you have the ability to define a custom ng-template. 
-This template will be integrated directly into the card's content. 
+In your parent HTML file, you have the ability to define a custom ng-template.
+This template will be integrated directly into the card's content.
 
 You can either:
 
@@ -199,10 +199,12 @@ You can either:
 
 This flexibility allows you to tailor the card's appearance and behavior to fit specific scenarios.
 
-**_NOTE:_** The "let-element" should be constructed from the component's name, following the pattern <componentName>CardValues. 
+**_NOTE:_** The "let-element" should be constructed from the component's name, following the pattern <componentName>
+CardValues.
 This naming convention can also be directly observed within the child component (refer to the Enum).
 
 Without versioning:
+
 ```html
 <esmf-sdk-ui-movement-card-v100>
     <ng-template #cardTemplate let-data let-element="<componentName>CardValues" let-getElementValue="getElementValue" let-translateService="translateService">
@@ -214,6 +216,7 @@ Without versioning:
 ```
 
 With versioning:
+
 ```html
 <esmf-sdk-ui-movement-card-v100>
     <ng-template #cardTemplate let-data let-element="<componentName>CardValues" let-getElementValue="getElementValue" let-translateService="translateService">
@@ -223,6 +226,7 @@ With versioning:
     </ng-template>
 </esmf-sdk-ui-movement-card-v100>
 ```
+
 ---
 
 ## Add translations
@@ -234,7 +238,8 @@ schematics ../<folder of the scheamtics project>/src/collection.json:i18n --dry-
 ng generate @esmf/semantic-ui-schematics:i18n --dry-run=false
 ```
 
-This command will install in demo project the following libraries: "@ngneat/transloco": "^6.x", "ngx-i18n-combine": "^1.x"
+This command will install in demo project the following libraries: "@jsverse/transloco": "^6.x", "ngx-i18n-combine": "
+^1.x"
 And the translation file will be generated: en.movement-form.translation.json
 
 ## Export functionality
@@ -253,7 +258,8 @@ By pressing it, a modal dialog window will appear with multiple options.
 
 2. If the data is handled remotely, the following options will be visible:
 
-    1. Export all pages (by default) - option which exports a csv containing the set of data which can be visible on that
+    1. Export all pages (by default) - option which exports a csv containing the set of data which can be visible on
+       that
        page.
     2. Export only first page
        If this option appears, this will lead to a csv file being exported including only the first page from the view.

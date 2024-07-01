@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH
+ * Copyright (c) 2024 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for
  * additional information regarding authorship.
@@ -89,7 +89,7 @@ export async function writeConfigAndExit(subscriber: Subscriber<Tree>, tree: Tre
         '\x1b[33m%s\x1b[0m',
         fromImport
             ? `The import was successful, the config used for your generation can be found here: ${WIZARD_CONFIG_FILE}`
-            : `New config file was generated based on your choices, it can be found here: ${WIZARD_CONFIG_FILE}`
+            : `New config file was generated based on your choices, it can be found here: ${WIZARD_CONFIG_FILE}`,
     );
 
     subscriber.next(tree);

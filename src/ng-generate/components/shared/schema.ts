@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH
+ * Copyright (c) 2024 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for
  * additional information regarding authorship.
@@ -21,6 +21,7 @@ export enum ComponentType {
     FORM = 'form',
     TYPES = 'types',
 }
+
 export interface ExcludedProperty {
     /**
      * Name of the parent property which include the child property. Empty if the property

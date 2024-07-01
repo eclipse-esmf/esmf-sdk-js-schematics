@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH
+ * Copyright (c) 2024 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for
  * additional information regarding authorship.
@@ -67,21 +67,21 @@ export class DurationFormFieldStrategy extends FormFieldStrategy {
                   },
               ]
             : type === DataType.DayTimeDuration
-            ? [
-                  {
-                      name: DataTypeValidator.DayTimeDuration,
-                      definition: 'FormValidators.dayTimeDurationValidator()',
-                      isDirectGroupValidator: false,
-                  },
-              ]
-            : type === DataType.YearMonthDuration
-            ? [
-                  {
-                      name: DataTypeValidator.YearMonthDuration,
-                      definition: 'FormValidators.yearMonthDurationValidator()',
-                      isDirectGroupValidator: false,
-                  },
-              ]
-            : [];
+              ? [
+                    {
+                        name: DataTypeValidator.DayTimeDuration,
+                        definition: 'FormValidators.dayTimeDurationValidator()',
+                        isDirectGroupValidator: false,
+                    },
+                ]
+              : type === DataType.YearMonthDuration
+                ? [
+                      {
+                          name: DataTypeValidator.YearMonthDuration,
+                          definition: 'FormValidators.yearMonthDurationValidator()',
+                          isDirectGroupValidator: false,
+                      },
+                  ]
+                : [];
     }
 }
