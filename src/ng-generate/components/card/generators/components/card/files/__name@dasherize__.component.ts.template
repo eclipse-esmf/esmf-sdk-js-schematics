@@ -219,9 +219,9 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit<% i
           this.dataToShow = this.applyAllFilters(this.data);
           this.totalItems = this.dataToShow.length;
           this.maxExportRows = this.totalItems;
-      <% } %>
 
-      this.cardUpdateFinishedEvent.emit();
+          this.cardUpdateFinishedEvent.emit();
+      <% } %>
     }
 
     <% if (options.enableRemoteDataHandling) { %>
