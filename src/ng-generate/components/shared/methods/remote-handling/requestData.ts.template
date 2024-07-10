@@ -104,6 +104,7 @@ private requestData() {
                 <% } %>
 
                 this.dataSource.paginator = this.paginator;
+                this.<% if (options.componentType === 'card') { %>card<% } else { %>table<% } %>UpdateFinishedEvent.emit();
             }),
             catchError((error: any) => {
                 this.dataLoadError = false;
@@ -114,9 +115,10 @@ private requestData() {
                     const dataToShow = [];
                     this.dataSource.setData([]);
                 <% } %>
+
+                this.<% if (options.componentType === 'card') { %>card<% } else { %>table<% } %>UpdateFinishedEvent.emit(error);
                 throw new Error(error.message);
             }),
-            finalize(() => this.<% if (options.componentType === 'card') { %>card<% } else { %>table<% } %>UpdateFinishedEvent.emit()),
             takeUntil(this.ngUnsubscribe)
        )
     .subscribe();
