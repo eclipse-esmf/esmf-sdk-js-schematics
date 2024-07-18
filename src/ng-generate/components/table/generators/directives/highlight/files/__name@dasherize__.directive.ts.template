@@ -44,15 +44,19 @@ export class <%= classify(name) %>Directive implements OnChanges, OnInit {
 
     ngOnChanges(changes: HighlightSimpleChanges) {
         if ((changes.highlight && !changes.highlight.firstChange) || (changes.caseSensitive && !changes.caseSensitive.firstChange)) {
-            if (this._selected) {
-                this.transformText();
-            }
+            this.handleHighlightText();
         }
     }
 
     ngOnInit(): void {
+        this.handleHighlightText();
+    }
+
+    private handleHighlightText(): void {
         if (this._selected) {
-            this.transformText();
+          this.transformText();
+        } else if (this.isStringHighlighted) {
+          this.clearHighlights();
         }
     }
 
@@ -148,5 +152,14 @@ export class <%= classify(name) %>Directive implements OnChanges, OnInit {
 
       result += this.highlightSource?.substring(lastIndex);
       return result;
+    }
+
+    private get isStringHighlighted(): boolean {
+      return !!this.el.nativeElement.querySelector('mark');
+    }
+
+    private clearHighlights(): void {
+      const content = this.sanitizer.sanitize(SecurityContext.STYLE, this.el.nativeElement.innerText);
+      (this.el.nativeElement as HTMLElement).innerHTML = content;
     }
 }
