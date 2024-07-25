@@ -307,7 +307,9 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
 
     <% if (options.hasSearchBar || options.enableRemoteDataHandling) { %>
         ngOnDestroy(): void {
-            <% if (options.hasSearchBar) { %>this.filterService.searchString.setValue('');<% } %>
+            <% if (options.hasSearchBar || options.isEnumQuickFilter || options.isDateQuickFilter) { %>
+                this.filterService.reset();
+            <% } %>
             this.ngUnsubscribe.next();
             this.ngUnsubscribe.complete();
         }
