@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH
+ * Copyright (c) 2024 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for
  * additional information regarding authorship.
@@ -92,7 +92,7 @@ export function include(this: IncludeContext, filepath: string, templateData: Sc
  */
 function getDirectoryAndFilename(
     filepath: string,
-    includeBaseDirectory?: string
+    includeBaseDirectory?: string,
 ): {
     directory: string;
     filename: string;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH
+ * Copyright (c) 2024 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for
  * additional information regarding authorship.
@@ -26,7 +26,7 @@ export function generateFormFieldsModule(options: any): Rule {
             tree,
             '/src/app/shared/app-shared.module.ts',
             `${classify(name)}Module`,
-            `${modulePath.replace('.ts', '')}`
+            `${modulePath.replace('.ts', '')}`,
         );
 
         return mergeWith(
@@ -39,7 +39,7 @@ export function generateFormFieldsModule(options: any): Rule {
                 }),
                 move(`src/app/shared/components/${name}`),
             ]),
-            options.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error
+            options.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error,
         );
     };
 }

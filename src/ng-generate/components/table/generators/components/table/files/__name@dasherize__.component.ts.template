@@ -57,7 +57,7 @@ import {<%= classify(name) %>DataSource} from './<%= dasherize(name) %>-datasour
 
 import {DomSanitizer} from '@angular/platform-browser';
 import {SelectionModel} from '@angular/cdk/collections';
-import { TranslocoService } from '@ngneat/transloco';
+import { TranslocoService } from '@jsverse/transloco';
 import {PaginatorSelectConfigInjector} from "<% if (options.enableVersionSupport) { %>../<% } %>../../services/paginator-select-config.provider";
 import {JSSdkLocalStorageService} from "<% if (options.enableVersionSupport) { %>../<% } %>../../services/storage.service";
 import {<%= classify(name) %>ColumnMenuComponent} from './<%= dasherize(name) %>-column-menu.component';
@@ -297,7 +297,9 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
 
     <% if (options.hasSearchBar || options.enableRemoteDataHandling) { %>
         ngOnDestroy(): void {
-            <% if (options.hasSearchBar) { %>this.filterService.searchString.setValue('');<% } %>
+            <% if (options.hasSearchBar || options.isEnumQuickFilter || options.isDateQuickFilter) { %>
+                this.filterService.reset();
+            <% } %>
             this.ngUnsubscribe.next();
             this.ngUnsubscribe.complete();
         }

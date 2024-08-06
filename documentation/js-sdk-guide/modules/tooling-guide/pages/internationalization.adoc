@@ -1,5 +1,5 @@
 ////
-Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH
+Copyright (c) 2024 Robert Bosch Manufacturing Solutions GmbH
 
 See the AUTHORS file(s) distributed with this work for additional information regarding authorship.
 
@@ -11,12 +11,11 @@ SPDX-License-Identifier: MPL-2.0
 = Adding internationalization to the project
 
 == What does internationalization mean?
-Internationalization is the process of supporting multiple languages in your applications.
-This can be accomplished in an Angular application through third-party libraries, such as _@ngneat/transloco_, or you
-can use the built-in i18n functionality.
 
-The command explained below does all the necessary work to prepare the Angular application to support this feature
-without any other requirements.
+Internationalization is the process of supporting multiple languages in your applications.
+This can be accomplished in an Angular application through third-party libraries, such as _@jsverse/transloco_, or you can use the built-in i18n functionality.
+
+The command explained below does all the necessary work to prepare the Angular application to support this feature without any other requirements.
 
 == Adding internationalization to an Angular app using schematics
 
@@ -28,7 +27,8 @@ ng new app demo-schematics --no-standalone
 NOTE: Before running any schematics command make sure you are in the Angular project folder with an `angular.json` configuration file.
 
 In the `demo-schematics` project folder run:
+
 [source]
 ng generate @esmf/semantic-ui-schematics:i18n
 
-Afterwards the project can translate a UI using https://github.com/jsverse/transloco[@ngneat/transloco,window=_blank,opts=nofollow].
+Afterwards the project can translate a UI using https://github.com/jsverse/transloco[@jsverse/transloco,window=_blank,opts=nofollow].

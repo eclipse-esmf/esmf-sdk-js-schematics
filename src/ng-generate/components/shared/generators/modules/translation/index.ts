@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH
+ * Copyright (c) 2024 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for
  * additional information regarding authorship.
@@ -54,7 +54,7 @@ function generateModuleDefinition(options: Schema, _context: SchematicContext): 
             }),
             move('src/app/shared'),
         ]),
-        options.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error
+        options.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error,
     );
 }
 
@@ -69,7 +69,7 @@ function generateProviderDefinition(options: Schema, _context: SchematicContext)
             }),
             move('src/app/shared'),
         ]),
-        options.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error
+        options.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error,
     );
 }
 

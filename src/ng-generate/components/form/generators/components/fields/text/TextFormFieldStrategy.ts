@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH
+ * Copyright (c) 2024 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for
  * additional information regarding authorship.
@@ -53,29 +53,29 @@ export class TextFormFieldStrategy extends FormFieldStrategy {
                   },
               ]
             : type === DataType.Base64Binary
-            ? [
-                  {
-                      name: DataTypeValidator.Base64Binary,
-                      definition: 'FormValidators.base64BinaryValidator()',
-                      isDirectGroupValidator: false,
-                  },
-              ]
-            : type === DataType.AnyURI
-            ? [
-                  {
-                      name: DataTypeValidator.AnyURI,
-                      definition: 'FormValidators.anyUriValidator()',
-                      isDirectGroupValidator: false,
-                  },
-              ]
-            : type === DataType.Curie
-            ? [
-                  {
-                      name: DataTypeValidator.Curie,
-                      definition: 'FormValidators.curieValidator()',
-                      isDirectGroupValidator: false,
-                  },
-              ]
-            : [];
+              ? [
+                    {
+                        name: DataTypeValidator.Base64Binary,
+                        definition: 'FormValidators.base64BinaryValidator()',
+                        isDirectGroupValidator: false,
+                    },
+                ]
+              : type === DataType.AnyURI
+                ? [
+                      {
+                          name: DataTypeValidator.AnyURI,
+                          definition: 'FormValidators.anyUriValidator()',
+                          isDirectGroupValidator: false,
+                      },
+                  ]
+                : type === DataType.Curie
+                  ? [
+                        {
+                            name: DataTypeValidator.Curie,
+                            definition: 'FormValidators.curieValidator()',
+                            isDirectGroupValidator: false,
+                        },
+                    ]
+                  : [];
     }
 }

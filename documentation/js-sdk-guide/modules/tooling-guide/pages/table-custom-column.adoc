@@ -1,5 +1,5 @@
 ////
-Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH
+Copyright (c) 2024 Robert Bosch Manufacturing Solutions GmbH
 
 See the AUTHORS file(s) distributed with this work for additional information regarding authorship.
 
@@ -10,30 +10,28 @@ SPDX-License-Identifier: MPL-2.0
 
 = Custom Column Renderer
 
-The table UI representation for an Aspect Model per default renders the values
-as text. However, when creating the table using schematics, you can let
-schematics create additional, customizable columns.
+The table UI representation for an Aspect Model per default renders the values as text.
+However, when creating the table using schematics, you can let schematics create additional, customizable columns.
 
 One way to render the content of the column is to use the Angular https://blog.angular-university.io/angular-ng-template-ng-container-ngtemplateoutlet/[ng-template
-directive, window=_blank,opts=nofollow], another
-way is to create a custom component to individually render the content of a column. The latter choice is
-recommended especially if business logic is involved for rendering the content.
+directive, window=_blank,opts=nofollow], another way is to create a custom component to individually render the content of a column.
+The latter choice is recommended especially if business logic is involved for rendering the content.
 
 == Example showing a traffic light in a column
-The following example show how to implement and offer a column with graphical content
-using https://www.w3.org/Graphics/SVG/[Scalable Vector Graphics (SVG), window=_blank,opts=nofollow].
+
+The following example show how to implement and offer a column with graphical content using https://www.w3.org/Graphics/SVG/[Scalable Vector Graphics (SVG),window=_blank,opts=nofollow].
 
 === Alternative A: Render column content using ng-template
+
 This is the recommended approach if no business logic is involved.
 
 ====  Step A1: Create graphical representation
-Let's say that the table row includes an attribute *speedLimitWarning* that
-can be one of *red*, *yellow* or *green*.
+
+Let's say that the table row includes an attribute *speedLimitWarning* that can be one of *red*, *yellow* or *green*.
 
 image::svg-traffic-light.png[SVG Traffic Light]
 
-Drawing a circle and filling it with one of these colors can be done in the
-following way inside a *ng-template*:
+Drawing a circle and filling it with one of these colors can be done in the following way inside a *ng-template*:
 
 [source,html]
 ----
@@ -46,13 +44,12 @@ following way inside a *ng-template*:
 </ng-template>
 ----
 
-There is a ng-template variable *speedLimitWarningColor* that is defined
-using in combination with the prefix *let-*, and its value is set by the
-variable *speedLimitWarning* within the context of the calling parent component (the table column).
+There is a ng-template variable *speedLimitWarningColor* that is defined using in combination with the prefix *let-*, and its value is set by the variable *speedLimitWarning* within the context of the calling parent component (the table column).
 
 ==== Step A2: Connect the parent component with this child component
 
 At the table column, add a *ng-container* statement as follows:
+
 [source,html]
 ----
 <!-- speedLimitWarning Column -->
@@ -66,14 +63,12 @@ At the table column, add a *ng-container* statement as follows:
 </ng-container>
 ----
 
-This embeds the *ng-template* with the id *speedLimitWarningTemplate* inside the column
-and uses the current row as the context for the child component.
+This embeds the *ng-template* with the id *speedLimitWarningTemplate* inside the column and uses the current row as the context for the child component.
 
 === Alternative B: Render column content using a component
-This is the recommended approach if business logic is involved
-for rendering the component. In this example, depending on a
-percentage between 0% and 100% of remaining battery power, the
-color of the bar is changed.
+
+This is the recommended approach if business logic is involved for rendering the component.
+In this example, depending on a percentage between 0% and 100% of remaining battery power, the color of the bar is changed.
 
 image::svg-bar-indicator.png[SVG Bar Indicator]
 
@@ -91,11 +86,13 @@ By default, the new component got the selector *app-svg-bar-indicator*, so it ca
 <app-svg-bar-indicator></app-svg-bar-indicator>
 ----
 
-By default, only the text *svg-bar-indicator works!* is printed out. Let's replace that by a SVG image.
+By default, only the text *svg-bar-indicator works!* is printed out.
+Let's replace that by a SVG image.
 
 ==== Step B2: Create a static SVG image
 
 Change file *svg-bar-indicator.component.html* as follows:
+
 [source,html]
 ----
 <svg width="100" height="20">
@@ -157,11 +154,9 @@ export class SvgBarIndicatorComponent implements OnInit, OnChanges {
 }
 ----
 
-The *@Input()* decorator allows that this property can receive its value
-from the parent component.
+The *@Input()* decorator allows that this property can receive its value from the parent component.
 
-On changes of the property *indicatorValue*, there is a small section of business
-logic that defines the fill color of the bar, depending on the value of
+On changes of the property *indicatorValue*, there is a small section of business logic that defines the fill color of the bar, depending on the value of
 *indicatorValue*.
 
 ==== Step B4: Connect the parent component with this child component

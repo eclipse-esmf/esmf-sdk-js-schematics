@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH
+ * Copyright (c) 2024 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for
  * additional information regarding authorship.
@@ -92,7 +92,7 @@ export async function addToDeclarationsArray(
     tree: Tree,
     declarationName: string,
     declarationPath: string,
-    modulePath?: string
+    modulePath?: string,
 ): Promise<Tree> {
     modulePath = modulePath || (await findModuleFromOptions(tree, options)) || '';
     const sourceFile = parseSourceFile(tree, modulePath);
@@ -114,7 +114,7 @@ export async function addToExportsArray(
     tree: Tree,
     exportName: string,
     exportPath: string,
-    modulePath?: string
+    modulePath?: string,
 ): Promise<Tree> {
     modulePath = modulePath || (await findModuleFromOptions(tree, options)) || '';
     const sourceFile = parseSourceFile(tree, modulePath);
@@ -141,4 +141,10 @@ export function wrapBuildComponentExecution(options: Schema): Rule {
         options.flat = true;
         return buildComponent(Object.assign({}, options));
     };
+}
+
+// Dynamic import for the inquirer
+export async function loadInquirer() {
+    const inquirer = await import('inquirer');
+    return inquirer.default;
 }

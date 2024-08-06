@@ -15,7 +15,7 @@ import {
   ContentChild,
   TemplateRef
 } from '@angular/core';
-import {TranslocoService} from '@ngneat/transloco';
+import {TranslocoService} from '@jsverse/transloco';
 
 import {
     <%= classify(options.selectedModelTypeName) %>
@@ -219,9 +219,9 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit<% i
           this.dataToShow = this.applyAllFilters(this.data);
           this.totalItems = this.dataToShow.length;
           this.maxExportRows = this.totalItems;
-      <% } %>
 
-      this.cardUpdateFinishedEvent.emit();
+          this.cardUpdateFinishedEvent.emit();
+      <% } %>
     }
 
     <% if (options.enableRemoteDataHandling) { %>
@@ -369,8 +369,8 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit<% i
 
     <% if (options.enableRemoteDataHandling || options.hasSearchBar ) { %>
         ngOnDestroy() {
-            <% if (options.hasSearchBar) { %>
-                this.filterService.searchString.setValue('');
+            <% if (options.hasSearchBar || options.isEnumQuickFilter || options.isDateQuickFilter) { %>
+                this.filterService.reset();
             <% } %>
 
             this.destroy$.next();

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH
+ * Copyright (c) 2024 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for
  * additional information regarding authorship.
@@ -12,7 +12,6 @@
  */
 
 import {TemplateHelper} from '../../../../utils/template-helper';
-import inquirer from 'inquirer';
 import {
     chooseLanguageForSearch,
     customCommandBarActions,
@@ -20,6 +19,7 @@ import {
     extractComplexPropertyDetails,
     extractPropertyElements,
     generateLabelsForExcludedProperties,
+    getCommandBarFilterOrder,
     getDatePickerType,
     requestCommandBarFunctionality,
     requestDefaultSorting,
@@ -27,7 +27,6 @@ import {
     requestOverwriteFiles,
     requestSelectedModelElement,
     selectedAspectModelJsonPath,
-    getCommandBarFilterOrder
 } from '../shared/prompt-complex-questions';
 import {ComponentType, Schema} from '../../../components/shared/schema';
 import {Aspect, BaseMetaModelElement, DefaultEntity} from '@esmf/aspect-model-loader';
@@ -41,6 +40,7 @@ import {
 } from '../shared/prompt-simple-questions';
 import {ConfigurationDefaultsSchema, TableDefaultsSchema} from '../../../components/table/schema';
 import {BaseModelLoader} from '@esmf/aspect-model-loader/dist/base-model-loader';
+import {loadInquirer} from '../../../../utils/angular';
 
 /**
  * Asynchronously prompts the user with a series of questions related to table configurations,
@@ -62,7 +62,7 @@ export async function tablePrompterQuestions(
     options: Schema,
     aspect: Aspect,
     combineAnswers: (...answers: any[]) => any,
-    allAnswers: any
+    allAnswers: any,
 ): Promise<void> {
     const defaultConfiguration: ConfigurationDefaultsSchema = new TableDefaultsSchema();
 
@@ -74,8 +74,8 @@ export async function tablePrompterQuestions(
             options,
             aspect,
             allAnswers,
-            Object.keys(defaultConfiguration).length > 0 ? defaultConfiguration : {}
-        )
+            Object.keys(defaultConfiguration).length > 0 ? defaultConfiguration : {},
+        ),
     );
 }
 
@@ -84,8 +84,9 @@ async function fetchUserSpecificTableConfigurations(
     options: Schema,
     aspect: Aspect,
     allAnswers: any,
-    defaultConfiguration?: ConfigurationDefaultsSchema
+    defaultConfiguration?: ConfigurationDefaultsSchema,
 ): Promise<object> {
+    const inquirer = await loadInquirer();
     const gatherInitialModelElement = await inquirer.prompt([
         requestSelectedModelElement(ComponentType.TABLE, aspect, requestSelectedModelCondition),
     ]);
@@ -105,13 +106,21 @@ async function fetchUserSpecificTableConfigurations(
     const commandbarFunctionalityAnswers = await inquirer.prompt([
         requestAddCommandBar,
         requestCommandBarFunctionality(aspect, allAnswers, templateHelper),
-        chooseLanguageForSearch(aspect, allAnswers, templateHelper)
+        chooseLanguageForSearch(aspect, allAnswers, templateHelper),
     ]);
     const datePickerTypeAnswers = commandbarFunctionalityAnswers.enabledCommandBarFunctions?.includes('addDateQuickFilters')
         ? await getDatePickerType(templateHelper, allAnswers, gatherInitialModelElement, aspect)
         : {};
 
-    const setCommandBarFilterOrder = await getCommandBarFilterOrder(templateHelper, allAnswers,gatherInitialModelElement,aspect,options,commandbarFunctionalityAnswers.enabledCommandBarFunctions) || {};
+    const setCommandBarFilterOrder =
+        (await getCommandBarFilterOrder(
+            templateHelper,
+            allAnswers,
+            gatherInitialModelElement,
+            aspect,
+            options,
+            commandbarFunctionalityAnswers.enabledCommandBarFunctions,
+        )) || {};
 
     const customBarActionsAnswers = await inquirer.prompt([customCommandBarActions(allAnswers, templateHelper)]);
     const enableRemoteDataHandlingAnswers = await inquirer.prompt([requestEnableRemoteDataHandling, requestCustomService]);

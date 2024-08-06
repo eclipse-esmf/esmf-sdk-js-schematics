@@ -142,7 +142,7 @@ export class FormValidators {
             const encoder = new TextEncoder();
             const uint8Array = encoder.encode(value);
 
-            const charsetMatch = charsetDetector(uint8Array);
+            const charsetMatch = charsetDetector.default(uint8Array);
             const utf16BeCharsetMatch = charsetMatch.find(charset => charset.charsetName === 'UTF-16BE');
             const utf16LeCharsetMatch = charsetMatch.find(charset => charset.charsetName === 'UTF-16LE');
             const isMatch = utf16BeCharsetMatch && utf16LeCharsetMatch;
@@ -186,7 +186,7 @@ export class FormValidators {
             const encoder = new TextEncoder();
             const uint8Array = encoder.encode(value);
 
-            const charsetMatch = charsetDetector(uint8Array);
+            const charsetMatch = charsetDetector.default(uint8Array);
             const isMatch = !!charsetMatch.find(charset => charset.charsetName === encoding);
 
             return isMatch ? null : error;

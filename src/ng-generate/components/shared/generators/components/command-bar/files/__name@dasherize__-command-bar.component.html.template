@@ -186,7 +186,7 @@
 <% if (options.componentType === 'table' && options.hasSearchBar) { %>
     <mat-menu data-test="column-menu" #configurationMenu="matMenu" class="column-menu">
       <<%= dasherize(name) %>-config-menu
-        [isOpenedFromMatMenu]="true" 
+        [isOpenedFromMatMenu]="true"
         #configurationMenuComponent
         (configChangedEvent)="triggerSetConfiguration($event)"
       ></<%= dasherize(name) %>-config-menu>
@@ -250,7 +250,7 @@
               </mat-form-field>
             </ng-container>
         <% } %>
-          </div>  
+          </div>
     <% } %>
 
   <% if (options.componentType === 'table' && options.hasSearchBar) { %>
@@ -274,32 +274,32 @@
         <% if (options.isDateQuickFilter && property.isDate) { %>
             <% if ((datePickerType(options.datePickers, property) === "startAndEndDatePicker") || (datePickerType(options.datePickers, property) === "startOrEndDatePicker")) { %>
              <div mat-menu-item *ngIf="isInCollapsedMenu('start-end-<%= property.propertyName %>')" >
-                <div (click)="openInDialog<%= property.propertyName %>()">Set <%= property.propertyName %></div> 
+                <div (click)="openInDialog<%= property.propertyName %>()">Set <%= property.propertyName %></div>
                 </div>
             <% } else if (datePickerType(options.datePickers, property) === "singleDatePicker") { %>
              <div mat-menu-item *ngIf="isInCollapsedMenu('single-date-<%= property.propertyName %>')" >
-                     <div (click)="openInDialog<%= property.propertyName %>()">Set <%= property.propertyName %></div> 
+                     <div (click)="openInDialog<%= property.propertyName %>()">Set <%= property.propertyName %></div>
              </div>
             <% } %>
         <% } %>
         <% if (options.isEnumQuickFilter && property.isEnum) { %>
          <div mat-menu-item *ngIf="isInCollapsedMenu('form-field-select-<%= property.propertyName %>')">
-            <div (click)="openInDialog<%= property.propertyName %>()">Set <%= property.propertyName %></div> 
+            <div (click)="openInDialog<%= property.propertyName %>()">Set <%= property.propertyName %></div>
             </div>
         <% } %>
     <% } %>
-   
+
     <div mat-menu-item *ngIf="isInCollapsedMenu('refresh-data-button')" (click)="triggerReloadFilter()">
         <mat-icon data-test="refresh-data-icon-collapsed" class="material-icons"
           >autorenew</mat-icon>
           <span>Refresh</span>
-    </div> 
+    </div>
 
     <div
       mat-menu-item
       *ngIf="isInCollapsedMenu('export-data-button')"
       (click)="triggerExportToCsv()"
-      data-test="export-data-button-table-collapsed">
+      data-test="export-data-button-<% if (options.componentType === 'table') { %>table<% } else { %>card<% } %>-collapsed">
       <mat-icon data-test="export-data-icon-collapsed" class="material-icons"
         >file_download</mat-icon>
       <span>Download</span>
@@ -318,7 +318,7 @@
       </div>
     <% } %>
 </mat-menu>
-  
+
 <% for(let property of propValues) { %>
     <% if (options.isDateQuickFilter && property.isDate) { %>
         <% if ((datePickerType(options.datePickers, property) === "startAndEndDatePicker") || (datePickerType(options.datePickers, property) === "startOrEndDatePicker")) { %>
@@ -372,7 +372,7 @@
     <% } %>
     <% if (options.isEnumQuickFilter && property.isEnum) { %>
       <ng-template #<%= property.propertyName %>>
-      <div class="padding-40" >     
+      <div class="padding-40" >
         <mat-form-field data-test="form-field-select" id="form-field-select-<%= property.propertyName %>"  appearance="fill">
             <mat-label data-test="select-label">{{ '<%= options.versionedAccessPrefix %><%= property.propertyValue %>.preferredName' | transloco }}</mat-label>
                 <mat-select data-test="select" [(value)]="filterService.<%= property.propertyName %>Selected" #<%= property.propertyName %>Select multiple>
@@ -405,7 +405,7 @@
             </div>
             </mat-select>
             </mat-form-field>
-           </div> 
+           </div>
           </ng-template>
     <% } %>
 <% } %>

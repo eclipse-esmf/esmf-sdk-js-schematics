@@ -60,6 +60,12 @@
         "types-prompter": {
             "description": "generate custom prompter",
             "factory": "./ng-generate/prompter/types/index"
+        },
+        "tasks": {
+            "description": "generate custom prompter",
+            "run-prettier": {
+                "implementation": "./prettier-task"
+            }
         }
     }
 }

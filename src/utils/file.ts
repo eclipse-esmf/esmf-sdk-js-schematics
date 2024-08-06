@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH
+ * Copyright (c) 2024 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for
  * additional information regarding authorship.
@@ -52,10 +52,10 @@ export function formatGeneratedFiles(folderProvider: FolderPathProvider, options
             const prettierConfigPath = resolvePrettierConfigPath(options);
             const prettierOptions = await resolvePrettierOptions(prettierConfigPath, options);
 
-            tree.getDir(folderPath).visit(visitor => {
+            tree.getDir(folderPath).visit(async visitor => {
                 const fileEntry = tree.get(visitor);
                 if (fileEntry && (fileFilter === undefined || fileFilter.find(fileName => fileEntry.path.includes(fileName)))) {
-                    formatFile(fileEntry, visitor, prettierOptions, options, tree);
+                    await formatFile(fileEntry, visitor, prettierOptions, options, tree);
                 }
             });
         } catch (err) {
@@ -85,10 +85,12 @@ async function resolvePrettierOptions(prettierConfigPath: string, options: Defau
     return prettierOptions;
 }
 
-function formatFile(fileEntry: any, visitor: any, prettierOptions: any, options: DefaultSchema, tree: Tree) {
-    prettierOptions.filepath = visitor; // Infer the parser from the file extension
-    const srcFile = fileEntry.content.toString();
-    const dstFile = prettier.format(srcFile, prettierOptions);
-    tree.overwrite(visitor, dstFile);
-    options.spinner.succeed(`Prettier ${visitor}`);
+async function formatFile(fileEntry: any, visitor: any, prettierOptions: any, options: DefaultSchema, tree: Tree) {
+    if (!visitor.includes('DS_Store')) {
+        prettierOptions.filepath = visitor; // Infer the parser from the file extension
+        const srcFile = fileEntry.content.toString();
+        const dstFile = await prettier.format(srcFile, prettierOptions);
+        tree.overwrite(visitor, dstFile);
+        options.spinner.succeed(`Prettier ${visitor}`);
+    }
 }

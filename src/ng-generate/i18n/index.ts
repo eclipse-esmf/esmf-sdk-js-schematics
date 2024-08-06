@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH
+ * Copyright (c) 2024 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for
  * additional information regarding authorship.
@@ -43,15 +43,15 @@ export default function (options: Schema): Rule {
                 },
             },
             options,
-            ['app-shared.module.ts']
+            ['app-shared.module.ts'],
         ),
         installPackages(),
     ]);
 }
 
 const dependencies = [
-    {type: NodeDependencyType.Default, version: '^6.0.4', name: '@ngneat/transloco', overwrite: false},
-    {type: NodeDependencyType.Default, version: '~1.1.0', name: 'ngx-i18n-combine', overwrite: false},
+    {type: NodeDependencyType.Default, version: '^7.4.2', name: '@jsverse/transloco-locale', overwrite: false},
+    {type: NodeDependencyType.Default, version: '~1.2.0', name: 'ngx-i18n-combine', overwrite: false},
 ];
 
 const scripts = [

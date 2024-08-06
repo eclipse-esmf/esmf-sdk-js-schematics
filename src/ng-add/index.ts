@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH
+ * Copyright (c) 2024 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for
  * additional information regarding authorship.
@@ -14,14 +14,10 @@
 import {chain, Rule, SchematicContext, Tree} from '@angular-devkit/schematics';
 import {addPackageJsonDependencies, DEFAULT_DEPENDENCIES} from '../utils/package-json';
 import {NodePackageInstallTask} from '@angular-devkit/schematics/tasks';
-import ora from 'ora';
 
 export function add(options: any): Rule {
-    const spinner = ora().start();
-    options.spinner = spinner;
-
     return (tree: Tree, context: SchematicContext) => {
         context.addTask(new NodePackageInstallTask());
-        return chain([addPackageJsonDependencies(options.skipImport, spinner, DEFAULT_DEPENDENCIES)])(tree, context);
+        return chain([addPackageJsonDependencies(options.skipImport, options, DEFAULT_DEPENDENCIES)])(tree, context);
     };
 }
