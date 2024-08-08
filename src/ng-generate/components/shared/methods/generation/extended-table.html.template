@@ -60,11 +60,6 @@
                     </th>
 
                     <td data-test="table-cell"
-
-                        <% if(options.templateHelper.isEnumPropertyWithEntityValues(value.property)) { %>
-                            [matTooltip]="!('<%= isEmptyValue %>') ? (row.<%= cellPropertyPath %><%= descriptionPipe %>:true<%= language %>) :''" [matTooltipDisabled]="'<%= isEmptyValue %>'"
-                        <% } %>
-
                         mat-cell *matCellDef="let row"
 
                         <% if(options.templateHelper.isNumberProperty(value.property)) { %>
@@ -72,16 +67,14 @@
                         <% } %>
                     >
 
-                        <% if(options.hasSearchBar) { %>
-                            <ng-container [ngTemplateOutlet]="highlightCell" [ngTemplateOutletContext]="{ value: <%= cellContent %> }"></ng-container>
-                        <% } else { %>
-                            {{<%= cellContent %>}}
-                        <% } %>
-
-                        <mat-icon data-test="copy-to-clipboard-icon" *ngIf="!(<%= isEmptyValue %>)" class="material-icons copy-to-clipboard"
-                                  (click)="copyToClipboard(row.<%= cellPropertyPath %><%= language %>, $event)">
-                                      content_copy
-                        </mat-icon>
+                        <esmf-table-cell
+                            [value]="<%= cellContent %>"
+                            <% if(options.hasSearchBar) { %>
+                                [configs]="configs"
+                                [highlightString]="highlightString"
+                            <% } %>
+                            (copyToClipboardEvent)="copyToClipboard($event)"
+                        ></esmf-table-cell>
                     </td>
                 </ng-container>
             <% } %>
