@@ -87,6 +87,8 @@ export class AspectModelTypeGeneratorVisitor extends DefaultAspectModelVisitor<B
         lines.push(this.getJavaDoc(aspect));
         lines.push(`export interface ${aspect.name} {\n`);
 
+        this.options.spinner.info(`|-> Resolve Aspect: ${aspect.name}`);
+
         aspect.properties.forEach(property => {
             // Visit the property to eventually generate a new data type and return
             // the appropriate data type name.
@@ -287,7 +289,13 @@ export class AspectModelTypeGeneratorVisitor extends DefaultAspectModelVisitor<B
         lines.push(this.getJavaDoc(entity));
         lines.push(`export interface ${entity.name} ${entity.extends ? `extends ${entity.extends?.name}` : ''} {\n`);
 
+        this.options.spinner.info(`|--> Resolve Entity: ${entity.name}; Urn: ${entity.urn}`);
+
         entity.getOwnProperties().forEach((property: Property): void => {
+            if(property.characteristic === null) {
+                this.options.spinner.fail(`|---> Property ${property.name} has no characteristic defined.`);
+            }
+
             const dataTypeName = resolveJsPropertyType(property) || 'any';
             let variableName = '';
             if (property.name) {
