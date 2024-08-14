@@ -394,7 +394,7 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
         this.rowDblClickEvent.emit({data: row});
     }
 
-    copyToClipboard(value: any, event: MouseEvent): void {
+    copyToClipboard(value: any): void {
         this.copyToClipboardEvent.emit(value);
     }
 

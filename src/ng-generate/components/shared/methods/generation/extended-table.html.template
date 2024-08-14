@@ -1,4 +1,4 @@
-<div [hidden]="!!customTemplate && !dataSource.data.length">
+<div class="js-sdk-component-container--inner" [hidden]="!!customTemplate && !dataSource.data.length">
 
     <div data-test="table-container" class="mat-table-container">
         <table data-test="table" mat-table class="full-width-table"

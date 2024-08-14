@@ -23,10 +23,9 @@ export function generateTableCellTooltipDirective(options: any): Rule {
         return mergeWith(
             apply(url('./generators/directives/table-cell-tooltip/files'), [
                 applyTemplates({
-                    /* TODO think to remove the useless options
                     classify: strings.classify,
                     dasherize: strings.dasherize,
-                    options: options,*/
+                    options: options,
                     name: 'table-cell-tooltip',
                 }),
                 move('src/app/shared/directives'),
