@@ -43,7 +43,10 @@ export class <%= classify(name) %>Directive implements OnChanges, OnInit {
     constructor(private el: ElementRef, private sanitizer: DomSanitizer) {}
 
     ngOnChanges(changes: HighlightSimpleChanges) {
-        if ((changes.highlight && !changes.highlight.firstChange) || (changes.caseSensitive && !changes.caseSensitive.firstChange)) {
+        if ((changes.highlight && !changes.highlight.firstChange) ||
+        (changes.caseSensitive && !changes.caseSensitive.firstChange) ||
+        (changes.selected && !changes.selected.firstChange)
+        ) {
             this.handleHighlightText();
         }
     }
@@ -159,7 +162,6 @@ export class <%= classify(name) %>Directive implements OnChanges, OnInit {
     }
 
     private clearHighlights(): void {
-      const content = this.sanitizer.sanitize(SecurityContext.STYLE, this.el.nativeElement.innerText);
-      (this.el.nativeElement as HTMLElement).innerHTML = content;
+       (this.el.nativeElement as HTMLElement).innerHTML = this.highlightSource;
     }
 }

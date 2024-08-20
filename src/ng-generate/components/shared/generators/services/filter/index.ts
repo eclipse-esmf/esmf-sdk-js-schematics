@@ -305,7 +305,7 @@ function getDateRemote(values: PropValue[]): string {
               conditions.push(new Ge(timeType, \`\${startDateUTC}\`));
             }
             if (endDateUTC) {
-              conditions.push(new Le(timeType, \`\${endDateUTC}\`));
+              conditions.push(new Le(timeType, \`\${endDateUTC.toISOString()}\`));
             }
             if (conditions.length > 0) {
               query.addNode(conditions.length > 1 ? new And(conditions) : conditions[0]);
