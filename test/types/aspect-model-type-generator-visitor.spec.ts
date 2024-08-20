@@ -24,7 +24,7 @@ let visitor: AspectModelTypeGeneratorVisitor;
 
 const readFile = util.promisify(fs.readFile);
 
-beforeEach(function () {
+beforeEach(function() {
     visitor = new AspectModelTypeGeneratorVisitor({
         excludedProperties: [],
         complexProps: [],
@@ -34,7 +34,7 @@ beforeEach(function () {
         customRowActions: [],
         addCommandBar: true,
         selectedModelElement: {
-            name: 'Movement',
+            name: 'Movement'
         },
         selectedModelElementUrn: 'urn:samm:org.esmf.digitaltwin:2.1.0#Movement',
         enabledCommandBarFunctions: [],
@@ -42,11 +42,15 @@ beforeEach(function () {
         enableVersionSupport: false,
         overwrite: true,
         templateHelper: new TemplateHelper(),
+        spinner: {
+            info: jest.fn(),
+            warn: jest.fn()
+        }
     } as any);
 });
 
 describe('Generation of types from aspect model', (): void => {
-    it('works for movement.ttl', async function (): Promise<void> {
+    it('works for movement.ttl', async function(): Promise<void> {
         const generatedTypeDefinitions = await readModelsFromFS('test/models/movement.ttl')
             .then((models: string[]): Promise<Aspect> => {
                 return lastValueFrom(loader.load('', ...models));
@@ -75,7 +79,7 @@ describe('Generation of types from aspect model', (): void => {
         expect(generatedTypeDefinitions).toMatch(/altitude\s*\?:\s*number\s*;/);
     });
 
-    it('works for built-in SAMM-C characteristics', async function (): Promise<void> {
+    it('works for built-in SAMM-C characteristics', async function(): Promise<void> {
         const generatedTypeDefinitions = await readModelsFromFS('test/models/test-sammc-characteristics.ttl')
             .then((models: string[]): Promise<Aspect> => {
                 return lastValueFrom(loader.load('', ...models));
@@ -92,7 +96,7 @@ describe('Generation of types from aspect model', (): void => {
         expect(generatedTypeDefinitions).toMatch(/c\s*:\s*Date\s*;/);
     });
 
-    it('works for XSD Core types', async function (): Promise<void> {
+    it('works for XSD Core types', async function(): Promise<void> {
         const generatedTypeDefinitions = await readModelsFromFS('test/models/test-xsd-core-types.ttl')
             .then((models: string[]): Promise<Aspect> => {
                 return lastValueFrom(loader.load('', ...models));
@@ -113,7 +117,7 @@ describe('Generation of types from aspect model', (): void => {
         expect(generatedTypeDefinitions).toMatch(/d\s*:\s*number\s*;/);
     });
 
-    it('works for XSD Floating-Point Number types', async function (): Promise<void> {
+    it('works for XSD Floating-Point Number types', async function(): Promise<void> {
         const generatedTypeDefinitions = await readModelsFromFS('test/models/test-xsd-floating-point-number-types.ttl')
             .then((models: string[]): Promise<Aspect> => {
                 return lastValueFrom(loader.load('', ...models));
@@ -132,7 +136,7 @@ describe('Generation of types from aspect model', (): void => {
         expect(generatedTypeDefinitions).toMatch(/b\s*:\s*number\s*;/);
     });
 
-    it('works for XSD Time and Date types', async function (): Promise<void> {
+    it('works for XSD Time and Date types', async function(): Promise<void> {
         const generatedTypeDefinitions = await readModelsFromFS('test/models/test-xsd-time-and-date-types.ttl')
             .then((models: string[]): Promise<Aspect> => {
                 return lastValueFrom(loader.load('', ...models));
@@ -153,7 +157,7 @@ describe('Generation of types from aspect model', (): void => {
         expect(generatedTypeDefinitions).toMatch(/d\s*:\s*Date\s*;/);
     });
 
-    it('works for XSD Limited-range Integer Number types', async function (): Promise<void> {
+    it('works for XSD Limited-range Integer Number types', async function(): Promise<void> {
         const generatedTypeDefinitions = await readModelsFromFS('test/models/test-xsd-limited-range-integer-number-types.ttl')
             .then(models => {
                 return loader.load('', ...models).toPromise();
@@ -184,7 +188,7 @@ describe('Generation of types from aspect model', (): void => {
         expect(generatedTypeDefinitions).toMatch(/npi\s*:\s*number\s*;/);
     });
 
-    it('works for XSD Miscellaneous types', async function (): Promise<void> {
+    it('works for XSD Miscellaneous types', async function(): Promise<void> {
         const generatedTypeDefinitions = await readModelsFromFS('test/models/test-xsd-miscellaneous-types.ttl')
             .then((models: string[]): Promise<Aspect> => {
                 return lastValueFrom(loader.load('', ...models));
@@ -204,7 +208,7 @@ describe('Generation of types from aspect model', (): void => {
         expect(generatedTypeDefinitions).toMatch(/c\s*:\s*MultiLanguageText\s*;/);
     });
 
-    it('works for enumeration types', async function () {
+    it('works for enumeration types', async function() {
         const generatedTypeDefinitions = await readModelsFromFS('test/models/test-enumeration-types.ttl')
             .then(models => {
                 return loader.load('', ...models).toPromise();
@@ -231,17 +235,17 @@ describe('Generation of types from aspect model', (): void => {
         expect(generatedTypeDefinitions).toMatch(/NUMBER_19\s*=\s*19\s*,/);
 
         expect(generatedTypeDefinitions).toMatch(
-            /static StatusInProgress\s*=\s*new PartStatus\(\s*'inprogress'\s*,\s*10\s*,\s*\{value:\s*'In Progress'\s*,\s*language:\s*'en'\s*\}\);/,
+            /static StatusInProgress\s*=\s*new PartStatus\(\s*'inprogress'\s*,\s*10\s*,\s*\{value:\s*'In Progress'\s*,\s*language:\s*'en'\s*\}\);/
         );
         expect(generatedTypeDefinitions).toMatch(
-            /static StatusCancelled\s*=\s*new PartStatus\('cancelled'\s*,\s*11\s*,\s*\{value:\s*'Cancelled',\s*language:\s*'en'\s*\}\);/,
+            /static StatusCancelled\s*=\s*new PartStatus\('cancelled'\s*,\s*11\s*,\s*\{value:\s*'Cancelled',\s*language:\s*'en'\s*\}\);/
         );
         expect(generatedTypeDefinitions).toMatch(
-            /static StatusInactive\s*=\s*new PartStatus\('inactive',\s*55\s*,\s*\{value:\s*'Cancelled'\s*,\s*language:\s*'en'\s*\}\);/,
+            /static StatusInactive\s*=\s*new PartStatus\('inactive',\s*55\s*,\s*\{value:\s*'Cancelled'\s*,\s*language:\s*'en'\s*\}\);/
         );
     });
 
-    it('works for entity types', async function (): Promise<void> {
+    it('works for entity types', async function(): Promise<void> {
         const generatedTypeDefinitions = await readModelsFromFS('test/models/test-entity-types.ttl')
             .then((models: string[]): Promise<Aspect> => {
                 return lastValueFrom(loader.load('', ...models));
@@ -261,7 +265,7 @@ describe('Generation of types from aspect model', (): void => {
         expect(generatedTypeDefinitions).toMatch(/z\s*:\s*number\s*;/);
     });
 
-    it('works for entity instances', async function (): Promise<void> {
+    it('works for entity instances', async function(): Promise<void> {
         const generatedTypeDefinitions = await readModelsFromFS('test/models/test-entity-instances.ttl')
             .then((models: string[]): Promise<Aspect> => {
                 return lastValueFrom(loader.load('', ...models));
@@ -282,7 +286,7 @@ describe('Generation of types from aspect model', (): void => {
         expect(generatedTypeDefinitions).toMatch(/description\s*:\s*string\s*;/);
     });
 
-    it('works for entity instances with langString', async function (): Promise<void> {
+    it('works for entity instances with langString', async function(): Promise<void> {
         const generatedTypeDefinitions = await readModelsFromFS('test/models/test-entity-instances-with-langString.ttl')
             .then((models: string[]): Promise<Aspect> => {
                 return lastValueFrom(loader.load('', ...models));
@@ -297,17 +301,17 @@ describe('Generation of types from aspect model', (): void => {
         expect(generatedTypeDefinitions).toMatch(/export interface TestEntityInstancesWithLangString/);
         expect(generatedTypeDefinitions).toMatch(/export class Enumeration/);
         expect(generatedTypeDefinitions).toMatch(
-            /static Code101\s*=\s*new Enumeration\(\s*101\s*,\s*\{value\s*:\s*'Starting'\s*,\s*language:\s*'en'\}\);/,
+            /static Code101\s*=\s*new Enumeration\(\s*101\s*,\s*\{value\s*:\s*'Starting'\s*,\s*language:\s*'en'\}\);/
         );
         expect(generatedTypeDefinitions).toMatch(
-            /static Code102\s*=\s*new Enumeration\(\s*102\s*\s*,\s*\{value\s*:\s*'Ready',\s*language:\s*'en'\}\);/,
+            /static Code102\s*=\s*new Enumeration\(\s*102\s*\s*,\s*\{value\s*:\s*'Ready',\s*language:\s*'en'\}\);/
         );
         expect(generatedTypeDefinitions).toMatch(/step\s*:\s*number\s*;/);
         expect(generatedTypeDefinitions).toMatch(/export interface Entity/);
         expect(generatedTypeDefinitions).toMatch(/description\s*:\s*MultiLanguageText\s*;/);
     });
 
-    it('works for entity instances with collection of langString', async function (): Promise<void> {
+    it('works for entity instances with collection of langString', async function(): Promise<void> {
         const generatedTypeDefinitions = await readModelsFromFS('test/models/test-entity-instances-with-collection-of-langString.ttl')
             .then((models: string[]): Promise<Aspect> => {
                 return lastValueFrom(loader.load('', ...models));
@@ -322,17 +326,17 @@ describe('Generation of types from aspect model', (): void => {
         expect(generatedTypeDefinitions).toMatch(/export interface TestEntityInstancesWithCollectionOfLangString/);
         expect(generatedTypeDefinitions).toMatch(/export class Enumeration/);
         expect(generatedTypeDefinitions).toMatch(
-            /static Code101\s*=\s*new Enumeration\s*\(\s*101\s*,\s*\(\s*\[\s*\{\s*value\s*:\s*'Starting'\s*,\s*language\s*:\s*'en'\s*\}\s*,\s*\{\s*value\s*:\s*'Start'\s*,\s*language\s*:\s*'de'\s*\}\s*\]\s*as\s+Array<MultiLanguageText>\s*\)\s*\)\s*;/,
+            /static Code101\s*=\s*new Enumeration\s*\(\s*101\s*,\s*\(\s*\[\s*\{\s*value\s*:\s*'Starting'\s*,\s*language\s*:\s*'en'\s*\}\s*,\s*\{\s*value\s*:\s*'Start'\s*,\s*language\s*:\s*'de'\s*\}\s*\]\s*as\s+Array<MultiLanguageText>\s*\)\s*\)\s*;/
         );
         expect(generatedTypeDefinitions).toMatch(
-            /static Code102\s*=\s*new Enumeration\s*\(\s*102\s*,\s*\(\s*\[\s*\{\s*value\s*:\s*'Ready'\s*,\s*language\s*:\s*'en'\s*\}\s*,\s*\{\s*value\s*:\s*'Los'\s*,\s*language\s*:\s*'de'\s*\}\s*\]\s*as\s+Array<MultiLanguageText>\s*\)\s*\)\s*;/,
+            /static Code102\s*=\s*new Enumeration\s*\(\s*102\s*,\s*\(\s*\[\s*\{\s*value\s*:\s*'Ready'\s*,\s*language\s*:\s*'en'\s*\}\s*,\s*\{\s*value\s*:\s*'Los'\s*,\s*language\s*:\s*'de'\s*\}\s*\]\s*as\s+Array<MultiLanguageText>\s*\)\s*\)\s*;/
         );
         expect(generatedTypeDefinitions).toMatch(/step\s*:\s*number\s*;/);
         expect(generatedTypeDefinitions).toMatch(/description\s*:\s*Array<MultiLanguageText>\s*;/);
         expect(generatedTypeDefinitions).toMatch(/export interface Entity/);
     });
 
-    it('works for collection types', async function (): Promise<void> {
+    it('works for collection types', async function(): Promise<void> {
         const generatedTypeDefinitions = await readModelsFromFS('test/models/test-collection-types.ttl')
             .then((models: string[]): Promise<Aspect> => {
                 return lastValueFrom(loader.load('', ...models));
@@ -353,7 +357,7 @@ describe('Generation of types from aspect model', (): void => {
         expect(generatedTypeDefinitions).toMatch(/productClass\s*:\s*string\s*;/);
     });
 
-    it('works for either types', async function (): Promise<void> {
+    it('works for either types', async function(): Promise<void> {
         const generatedTypeDefinitions = await readModelsFromFS('test/models/test-sammc-characteristics.ttl')
             .then((models: string[]): Promise<Aspect> => {
                 return lastValueFrom(loader.load('', ...models));
