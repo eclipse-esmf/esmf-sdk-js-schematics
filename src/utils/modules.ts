@@ -131,7 +131,7 @@ export function updateSharedModule(options: Schema) {
                 case 'component':
                     if (name.includes('card')) {
                         pathName = name.replace('card', 'confirmation');
-                    } else if (name.includes('table')) {
+                    } else if (name.includes('table') && name !== 'esmf-table-cell') {
                         pathName = name.replace('table', 'confirmation');
                     }
 
@@ -158,6 +158,8 @@ export function updateSharedModule(options: Schema) {
 
         if (options.componentType === ComponentType.TABLE) {
             processItem('component', 'export-table-dialog');
+            processItem('component', 'esmf-table-cell', 'table-cell');
+            processItem('directive', 'table-cell-tooltip');
         }
 
         if (options.componentType === ComponentType.CARD) {

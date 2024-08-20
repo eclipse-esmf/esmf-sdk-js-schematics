@@ -153,7 +153,6 @@ function commonImports(): string {
             private sanitizer: DomSanitizer,
             private translateService: TranslocoService,
             public dialog: MatDialog,
-            private clipboard: Clipboard,
             private storageService: JSSdkLocalStorageService,
             @Inject(PaginatorSelectConfigInjector) public paginatorSelectConfig: MatPaginatorSelectConfig,
             ${sharedOptions.hasFilters ? `public filterService: ${sharedOptions.filterServiceName},` : ''}

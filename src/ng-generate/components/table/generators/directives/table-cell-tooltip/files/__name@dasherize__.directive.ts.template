@@ -1,0 +1,33 @@
+/** <%= options.generationDisclaimerText %> **/
+
+import {Directive, ElementRef, HostListener, Input} from '@angular/core';
+import {MatTooltip} from '@angular/material/tooltip';
+
+@Directive({
+  selector: '[tableCellTooltip]',
+  hostDirectives: [MatTooltip]
+})
+export class TableCellTooltipDirective {
+  @Input()
+  get tableCellTooltip() {
+    return this.matTooltip.message;
+  }
+  set tableCellTooltip(txt: string) {
+    this.matTooltip.message = txt;
+  }
+
+  // average space taken by the 3 dots that trim the text
+  private readonly ellipsisSpace = 56;
+
+  constructor(
+    private el: ElementRef,
+    private matTooltip: MatTooltip
+  ) {}
+
+  @HostListener('mouseenter')
+  check(): void {
+    // offsetParent.offsetWidth is the width of the table cell (td element)
+    // offsetWidth width of the span that contains the text inside the table cell
+    this.matTooltip.disabled = this.el.nativeElement.offsetParent.offsetWidth - this.ellipsisSpace >= this.el.nativeElement.offsetWidth;
+  }
+}

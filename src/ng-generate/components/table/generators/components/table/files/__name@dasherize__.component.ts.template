@@ -30,8 +30,6 @@ import { MatTable } from '@angular/material/table';
     import { FilterEnums, <%= options.filterServiceName %>} from './<%= dasherize(name) %>-filter.service';
 <% } %>
 
-import {Clipboard} from '@angular/cdk/clipboard';
-
 <% if (options.addCommandBar) { %>
     import {unparse} from 'papaparse';
     import {Action, ExportTableDialogComponent} from '<% if (options.enableVersionSupport) { %>../<% } %>../export-confirmation-dialog/export-table-dialog.component';
@@ -228,14 +226,6 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
 
     <% if (options.hasSearchBar) { %>
         highlightString: string[] = [];
-
-        get highlightConfigColor(): string | undefined {
-            return this.configs.find((config: Config) => config.name.includes('highlight'))?.color;
-        }
-
-        get highlightConfigSelector(): boolean | undefined {
-           return this.configs.find((config: Config) => config.name.includes('highlight'))?.selected;
-        }
     <% } %>
 
     <%= byValueFunction %>
@@ -404,10 +394,7 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
         this.rowDblClickEvent.emit({data: row});
     }
 
-    copyToClipboard(value: any, event: MouseEvent): void {
-        event.stopPropagation();
-        event.preventDefault();
-        this.clipboard.copy(value);
+    copyToClipboard(value: any): void {
         this.copyToClipboardEvent.emit(value);
     }
 
