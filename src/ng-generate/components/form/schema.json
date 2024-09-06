@@ -149,6 +149,10 @@
         "readOnlyForm": {
             "type": "boolean",
             "default": false
+        },
+        "excludedConstraints": {
+            "type": "array",
+            "default": []
         }
     }
 }
