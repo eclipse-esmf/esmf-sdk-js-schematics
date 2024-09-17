@@ -195,21 +195,24 @@ export function getCustomRowActions(options: any): string {
                       const formattedAction = action.replace(/\.[^/.]+$/, '');
                       const formattedActionKebab = formattedAction.replace(/\s+/g, '-').toLowerCase();
                       const classifiedAction = classify(formattedActionKebab);
-                      const commonParts = `style="cursor: pointer;" matTooltip="{{ '${options.templateHelper.getVersionedAccessPrefix(
-                          options,
-                      )}${formattedActionKebab}.customRowAction' | transloco }}" aria-hidden="false" attr.aria-label="{{ '${options.templateHelper.getVersionedAccessPrefix(
-                          options,
-                      )}${formattedActionKebab}.customRowAction' | transloco }}"`;
+                      const versionPrefix = options.templateHelper.getVersionedAccessPrefix(options);
+                      const rowActionTextKey = `${versionPrefix}${formattedActionKebab}.customRowAction`;
+                      const commonParts = `style="cursor: pointer;" matTooltip="{{ '${rowActionTextKey}' | transloco }}" aria-hidden="false" attr.aria-label="{{ '${rowActionTextKey}' | transloco }}"`;
                       const iconTemplate =
                           action.lastIndexOf('.') === -1
                               ? `<mat-icon data-test="custom-action-icon" ${commonParts} class="material-icons">${formattedAction}</mat-icon>`
                               : `<mat-icon data-test="custom-action-icon" svgIcon="${formattedAction}" ${commonParts}></mat-icon>`;
                       return `
-                      <button mat-menu-item *ngIf="is${classifiedAction}Visible" data-test="custom-action-button" (click)="executeCustomAction($event, '${formattedActionKebab}', row)">
+                      <button 
+                          *ngIf="is${classifiedAction}Visible"
+                          [disabled]="!isAvailableRowAction('${formattedActionKebab}', row)"
+                          [matTooltipDisabled]="isAvailableRowAction('${formattedActionKebab}', row)"
+                          [matTooltip]="'${versionPrefix}customRowAction.${formattedActionKebab}.notAvailable' | transloco"
+                          (click)="executeCustomAction($event, '${formattedActionKebab}', row)"
+                          mat-menu-item 
+                          data-test="custom-action-button">
                           ${iconTemplate}
-                          <span data-test="custom-action-text" style="vertical-align: middle">{{ '${options.templateHelper.getVersionedAccessPrefix(
-                              options,
-                          )}${formattedActionKebab}.customRowAction' | transloco}}</span>
+                          <span data-test="custom-action-text" style="vertical-align: middle">{{ '${rowActionTextKey}' | transloco}}</span>
                       </button>
                      `;
                   })
