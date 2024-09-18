@@ -2,6 +2,8 @@
 <%
   var tableColumnsEnumName = classify(name) + 'Column';
   var cmpFileName = dasherize(name);
+  var hasCustomRowActions = options.customRowActions.length > 0;
+  var customRowActionNames = options.customRowActions.map(action => `'${action.replace(/\.[^/.]+$/, '')}'`);
 %>
 import {
     AfterViewInit,
@@ -96,16 +98,22 @@ export enum <%= tableColumnsEnumName %> {
     <% if (options.addRowCheckboxes) { %>CHECKBOX = 'checkboxes',<% } %>
     <%= enumPropertyDefinitions %>
     <%= enumCustomColumns %>
-    <% if (options.customRowActions.length > 0) { %>CUSTOM_ROW_ACTIONS = 'customRowActions',<% } %>
+    <% if (hasCustomRowActions) { %>CUSTOM_ROW_ACTIONS = 'customRowActions',<% } %>
     COLUMNS_MENU = 'columnsMenu'
 }
 
 export const NON_DATA_COLUMNS: <%= tableColumnsEnumName %>[] = [
-    <% if (options.customRowActions.length > 0) { %>
+    <% if (hasCustomRowActions) { %>
     <%= tableColumnsEnumName %>.CUSTOM_ROW_ACTIONS,
     <% } %>
     <%= tableColumnsEnumName %>.COLUMNS_MENU
 ];
+
+<% if (hasCustomRowActions) { %>
+    type RowAction = <%= customRowActionNames.join(' | ') %>;
+    export type <%= options.aspectModelTypeName %>ActionsResolvers = Partial<Record<RowAction, (rowData: <%= options.aspectModelTypeName %>) => boolean>> | undefined;
+<% } %>
+
 
 
 @Component({
@@ -160,6 +168,10 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
         @Input() maxExportRows: number = 0;
     <% } %>
 
+    <% if (hasCustomRowActions) { %>
+        @Input() actionResolvers: <%= options.aspectModelTypeName %>ActionsResolvers = {};
+    <% } %>
+
     @Output() rowClickEvent = new EventEmitter<any>();
     @Output() rowDblClickEvent = new EventEmitter<any>();
     @Output() rowRightClickEvent = new EventEmitter<any>();
@@ -169,7 +181,7 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
     @Output() downloadEvent = new EventEmitter<{error: boolean, success: boolean, inProgress: boolean}>();
     @Output() rowSelectionEvent = new EventEmitter<any>();
 
-    <% if (options.customRowActions.length > 0) { %>
+    <% if (hasCustomRowActions) { %>
         @Output() customActionEvent = new EventEmitter<any>();
     <% } %>
     <% if (options.customCommandBarActions.length > 0) { %>
@@ -383,9 +395,15 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
             this.rowRightClickEvent.emit({ data: row, mousePosition: mousePositionOnClick });
         }
 
-        if ($event.type === 'click') {
-            this.rowClickEvent.emit({ data: row })
-        }
+        <% if (hasCustomRowActions) { %>
+            if ($event.type === 'click' && this.isAvailableRowAction('forward-right', row)) {
+                this.rowClickEvent.emit({ data: row })
+            }
+        <% } else {%>
+            if ($event.type === 'click') {
+                this.rowClickEvent.emit({ data: row })
+            }
+        <% }%>
 
         return false;
     }
@@ -438,7 +456,7 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
         <% } %>
     <% } %>
 
-    <% if (options.customRowActions.length > 0) { %>
+    <% if (hasCustomRowActions) { %>
         executeCustomAction($event: MouseEvent, action: string, row:any): void{
             if(this.customRowActionsLength <= this.visibleRowActionsIcons) {
                    $event.stopPropagation();
@@ -635,7 +653,7 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
 
         displayedColumnsTmp.push(...columns);
 
-        <% if (options.customRowActions.length > 0) { %>
+        <% if (hasCustomRowActions) { %>
             displayedColumnsTmp.push({name: <%= tableColumnsEnumName %>['CUSTOM_ROW_ACTIONS'], selected: true});
         <% } %>
 
@@ -656,6 +674,14 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
             }
         }
     <% } %>
+
+    protected isAvailableRowAction(action: RowAction, rowData: <%= options.aspectModelTypeName %>): boolean {
+        if (!this.actionResolvers || !this.actionResolvers[action]) {
+            return true;
+        }
+
+        return this.actionResolvers[action](rowData) ?? true;
+    }
 
     <% if (options.hasSearchBar) { %>
         private initializeHighlightConfig(): void {

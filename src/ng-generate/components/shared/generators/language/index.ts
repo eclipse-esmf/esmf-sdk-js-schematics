@@ -103,7 +103,25 @@ function getBlockTransCustomColumns(): string {
 }
 
 function getBlockTransRowActions(): string {
-    const customRowActions = sharedOptions.customRowActions
+    if (!sharedOptions.customRowActions  || sharedOptions.customRowActions.length === 0) {
+        return '';
+    }
+
+    const actions: string[] = sharedOptions.customRowActions
+        .map((action: string) => action.replace(/\.[^/.]+$/, '').replace(/\s+/g, '-').toLowerCase());
+
+    const actionTitles = actions.map(action => `"${action}.customRowAction": "${action}"`).join(', ');
+    const actionNotAvailableTitles = actions.map(action => `"${action}.notAvailable": ""`).join(', ');
+
+    return `
+        ${actionTitles},
+        "customRowAction": {
+            ${actionNotAvailableTitles}
+        },
+    `;
+
+
+    /*const customRowActions = sharedOptions.customRowActions
         ?.map((cr: string, i: number, arr: string[]) => {
             const crReplaced = cr
                 .replace(/\.[^/.]+$/, '')
@@ -113,7 +131,7 @@ function getBlockTransRowActions(): string {
         })
         .join(', ');
 
-    return customRowActions?.length > 0 ? `${customRowActions},` : '';
+    return customRowActions?.length > 0 ? `${customRowActions},` : '';*/
 }
 
 function getBlockCustomCommandBarActions(): string {
@@ -126,7 +144,7 @@ function getBlockCustomCommandBarActions(): string {
 
     const actions = sharedOptions.customCommandBarActions.map(transformActionName);
 
-    const actionStrings = actions.map((action: string, index: number) => `"${action}.customCommandBarAction": "${action}"`);
+    const actionStrings = actions.map((action: string) => `"${action}.customCommandBarAction": "${action}"`);
 
     return actionStrings.length > 0 ? `${actionStrings},` : '';
 }
