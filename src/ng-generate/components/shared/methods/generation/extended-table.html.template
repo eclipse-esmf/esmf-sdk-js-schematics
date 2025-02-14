@@ -43,6 +43,7 @@
                     let datePipe = options.templateHelper.isDateTimeProperty(value.property) ? `| date: ${options.resolveDateTimeFormat(options, value.property)}` : '';
                     let descriptionPipe = options.templateHelper.isEnumPropertyWithEntityValues(value.property) ? ` | showDescription:get${classify(value.property.name)}Value` : '';
                     let cellContent = `!(${isEmptyValue}) ? (row.${cellPropertyPath}${descriptionPipe}${language}${datePipe})  : '-'`;
+                    let isLink = options.templateHelper.isLinkProperty(value.property)
                 %>
 
                 <!-- <%= cellPropertyPath %> Column -->
@@ -67,14 +68,21 @@
                         <% } %>
                     >
 
-                        <esmf-table-cell
-                            [value]="<%= cellContent %>"
-                            <% if(options.hasSearchBar) { %>
-                                [configs]="configs"
-                                [highlightString]="highlightString"
-                            <% } %>
-                            (copyToClipboardEvent)="copyToClipboard($event)"
-                        ></esmf-table-cell>
+                        <% if (isLink) { %>
+                            <esmf-table-cell-link
+                                [value]="<%= cellContent %>"
+                                [tooltipMessage]="'noLink' | transloco "
+                            ></esmf-table-cell-link>
+                        <% } else { %>
+                            <esmf-table-cell
+                                [value]="<%= cellContent %>"
+                                <% if(options.hasSearchBar) { %>
+                                    [configs]="configs"
+                                    [highlightString]="highlightString"
+                                <% } %>
+                                (copyToClipboardEvent)="copyToClipboard($event)"
+                            ></esmf-table-cell>
+                        <% } %>
                     </td>
                 </ng-container>
             <% } %>

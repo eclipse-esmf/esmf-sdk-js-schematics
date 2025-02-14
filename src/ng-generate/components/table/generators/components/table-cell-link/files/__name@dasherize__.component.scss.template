@@ -1,0 +1,11 @@
+/** <%= options.generationDisclaimerText %> **/
+
+.button-disabled {
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
+.button-disabled {
+  cursor: not-allowed;
+  opacity: 0.4;
+}

@@ -1,0 +1,20 @@
+/** <%= options.generationDisclaimerText %> **/
+
+import {Component, EventEmitter, Input} from '@angular/core';
+
+@Component({
+  selector: '<%= dasherize(name) %>',
+  templateUrl: './<%= dasherize(name) %>.component.html',
+  styleUrls: ['./<%= dasherize(name) %>.component.<%= options.style %>']
+})
+export class EsmfTableCellLinkComponent {
+  @Input() value: any;
+  @Input() tooltipMessage: string;
+
+    openExternalLink() {
+    if (!this.value) {
+      return;
+    }
+    window.open(this.value, '_blank');
+  }
+}
