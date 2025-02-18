@@ -29,9 +29,7 @@
                 </ng-container>
             <% } %>
 
-            <% let tableColumValuesFunc = options.tableColumValues(options.allProps, options); %>
-
-            <% for(let value of tableColumValuesFunc) { %>
+            <% for(let value of options.tableColumns) { %>
                 <%
                     let language = options.templateHelper.isMultiStringProperty(value.property) ? '[currentLanguage]' : '';
                     let propertyName = options.templateHelper.isEnumPropertyWithEntityValues(value.property)
@@ -81,7 +79,7 @@
 
             <% if(options.customColumns && options.customColumns.length > 0) { %>
                 <% for(let [index, columnName] of options.customColumns.entries()) { %>
-                    <% let customColumnIndex = tableColumValuesFunc.length + index + 1; %>
+                    <% let customColumnIndex = options.tableColumns.length + index + 1; %>
                     <!-- <%= columnName %> Column -->
                     <ng-container data-test="custom-column-container" matColumnDef="<%= columnName %>">
                         <% if(options.enableVersionSupport) { %>

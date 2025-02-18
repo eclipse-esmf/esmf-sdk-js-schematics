@@ -18,7 +18,6 @@ import {loadAspectModel, loadRDF} from '../../utils/aspect-model';
 import {formatGeneratedFiles, loadAndApplyConfigFile} from '../../utils/file';
 import {TemplateHelper} from '../../utils/template-helper';
 import {visitAspectModel} from './aspect-model-type-generator-visitor';
-import {WIZARD_CONFIG_FILE} from '../prompter/index';
 import {TypesSchema} from './schema';
 import {generateComponent} from '../components/shared';
 import {Tree} from '@angular-devkit/schematics/src/tree/interface';
@@ -28,10 +27,6 @@ export default function (options: TypesSchema): Rule {
     if (options && options.configFile !== undefined) {
         options.spinner = ora().start();
         options.templateHelper = new TemplateHelper();
-
-        if (options.configFile !== WIZARD_CONFIG_FILE) {
-            options.configFile = WIZARD_CONFIG_FILE;
-        }
 
         loadAndApplyConfigFile(options.configFile, options);
 
