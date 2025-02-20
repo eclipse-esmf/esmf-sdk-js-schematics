@@ -3,18 +3,17 @@
 import {Component, EventEmitter, Input} from '@angular/core';
 
 @Component({
+  standalone: true,
   selector: '<%= dasherize(name) %>',
   templateUrl: './<%= dasherize(name) %>.component.html',
-  styleUrls: ['./<%= dasherize(name) %>.component.<%= options.style %>']
+  styleUrls: ['./<%= dasherize(name) %>.component.<%= options.style %>'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class EsmfTableCellLinkComponent {
-  @Input() value: any;
-  @Input() tooltipMessage: string;
+  value = input.required<string | null>();
+  tooltipMessage = input.required<string>();
 
     openExternalLink() {
-    if (!this.value) {
-      return;
+        window.open(this.value, '_blank');
     }
-    window.open(this.value, '_blank');
-  }
 }

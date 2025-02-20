@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Robert Bosch Manufacturing Solutions GmbH
+ * Copyright Robert Bosch Manufacturing Solutions GmbH, Germany. All rights reserved.
  *
  * See the AUTHORS file(s) distributed with this work for
  * additional information regarding authorship.
