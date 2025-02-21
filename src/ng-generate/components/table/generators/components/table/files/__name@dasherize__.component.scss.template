@@ -1,2 +1,20 @@
 /** <%= options.generationDisclaimerText %> **/
 @import 'general.component';
+
+::ng-deep .table-column-tooltip {
+  max-height: none;
+
+  .mdc-tooltip__surface {
+    display: block;
+  }
+}
+
+.table-header-icon {
+  margin-left: 0.5rem;
+  cursor: default;
+  font-size: 20px;
+  min-width: 20px;
+  width: 20px;
+  height: 20px;
+  color: gray;
+}

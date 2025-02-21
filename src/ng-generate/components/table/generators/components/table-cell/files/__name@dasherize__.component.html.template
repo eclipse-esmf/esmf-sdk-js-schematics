@@ -13,11 +13,13 @@
  <!-- <%= options.generationDisclaimerText %> -->
 
 <div class="cell-content"
-  [tableCellTooltip]="value"
-  [highlight]="highlightString"
-  [highlightSource]="value"
-  [highlightColor]="highlightConfigColor"
-  [selected]="highlightConfigSelector"
+   [highlight]="highlightString"
+   [highlightSource]="value"
+   [highlightColor]="highlightConfigColor"
+   [selected]="highlightConfigSelector"
+   [value]="value"
+   [description]="description"
+   tableCellTooltip
 >
   {{ value === null ? '-' : value }}
 </div>

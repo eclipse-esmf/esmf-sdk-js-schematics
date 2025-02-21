@@ -16,3 +16,11 @@ mat-icon {
   line-height: 1rem;
   height: 1rem;
 }
+
+::ng-deep .table-cell-tooltip {
+  max-height: none;
+
+  .mdc-tooltip__surface {
+    display: block;
+  }
+}
