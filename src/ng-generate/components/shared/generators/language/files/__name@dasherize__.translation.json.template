@@ -162,6 +162,7 @@
     "restoreDefaults": "Restore Defaults",
     "columns": "Columns",
     "export": "Export",
+    "noLink": "No link",
     "toolbar": {
         "sorted_tooltip": "Sort data by property",
         "sort_dir_tooltip": "Sort data direction",

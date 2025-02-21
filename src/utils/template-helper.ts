@@ -227,6 +227,16 @@ export class TemplateHelper {
     }
 
     /**
+     * Returns true if the given property is a link property.
+     *
+     * @param {Property} property The property to check.
+     * @returns {boolean} True if the property is a link property.
+     */
+    isLinkProperty(property: Property): boolean{
+        return property.characteristic.name === 'ResourcePath'
+    }
+
+    /**
      * Gets all enum properties.
      *
      * @param {Schema} options The schema options.
