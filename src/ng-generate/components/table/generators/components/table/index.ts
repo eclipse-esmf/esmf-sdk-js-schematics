@@ -33,6 +33,7 @@ export function generateTableComponent(options: any): Rule {
         sharedOptions = options;
         sharedOptions['allProps'] = options.listAllProperties;
         sharedOptions['tableColumValues'] = getTableColumValues;
+        sharedOptions['tableColumns'] = getTableColumValues(options.listAllProperties, options);
         sharedOptions['resolveDateTimeFormat'] = resolveDateTimeFormat;
         sharedOptions['getCustomRowActions'] = getCustomRowActions;
 

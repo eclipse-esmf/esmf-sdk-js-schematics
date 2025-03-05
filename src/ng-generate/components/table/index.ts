@@ -41,6 +41,7 @@ import {generateExportTableDialog} from './generators/components/export-dialog/i
 import {generatePaginatorSelectConfigProvider} from '../shared/generators';
 import {generateTableCellTooltipDirective} from './generators/directives/table-cell-tooltip';
 import {generateTableCellComponent} from './generators/components/table-cell';
+import {generateTableCellLinkComponent} from './generators/components/table-cell-link/index';
 
 export default function (tableSchema: TableSchema): Rule {
     return (tree: Tree, context: SchematicContext) => {
@@ -70,6 +71,7 @@ function tableSpecificGeneration(): Array<Rule> {
     return [
         generateTableComponent(options),
         generateTableCellComponent(options),
+        generateTableCellLinkComponent(options),
         generateDataSource(options),
         generateStorageService(options),
         generateColumnMenu(options),

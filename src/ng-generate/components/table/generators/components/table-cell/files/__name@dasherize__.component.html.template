@@ -10,22 +10,26 @@
  *
  * SPDX-License-Identifier: MPL-2.0
  -->
+ <!-- <%= options.generationDisclaimerText %> -->
 
-<span
-  [tableCellTooltip]="value"
-  [highlight]="highlightString"
-  [highlightSource]="value"
-  [highlightColor]="highlightConfigColor"
-  [selected]="highlightConfigSelector"
+<div class="cell-content"
+   [highlight]="highlightString"
+   [highlightSource]="value"
+   [highlightColor]="highlightConfigColor"
+   [selected]="highlightConfigSelector"
+   [value]="value"
+   [description]="description"
+   tableCellTooltip
 >
   {{ value === null ? '-' : value }}
-</span>
-
-<mat-icon
-  class="material-icons copy-to-clipboard"
-  *ngIf="!(value === null || value === undefined)"
-  (click)="copyToClipboard(value, $event)"
-  data-test="copy-to-clipboard-icon"
->
-  content_copy
-</mat-icon>
+</div>
+<div>
+  <mat-icon
+    (click)="copyToClipboard(value, $event)"
+    *ngIf="!(value === null || value === undefined)"
+    class="material-icons copy-to-clipboard"
+    data-test="copy-to-clipboard-icon"
+  >
+    content_copy
+  </mat-icon>
+</div>
