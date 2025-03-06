@@ -115,11 +115,9 @@ export class AspectModelTypeGeneratorVisitor extends DefaultAspectModelVisitor<B
              * Represents a text with multiple language support.
              */
             export interface MultiLanguageText {
-                /** The actual text value. */
-                value: string;
-                /** The language code of the text. */
-                language: string;
-             }\n\n`);
+              /** key defines the locale. Value is the translated text for that locale. */
+              [key: string]: string;
+            }\n\n`);
             this.typeDefinitions = this.typeDefinitions.set(characteristic.name, lines);
         }
 

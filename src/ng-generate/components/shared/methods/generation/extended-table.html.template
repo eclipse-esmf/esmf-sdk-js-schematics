@@ -29,9 +29,7 @@
                 </ng-container>
             <% } %>
 
-            <% let tableColumValuesFunc = options.tableColumValues(options.allProps, options); %>
-
-            <% for(let value of tableColumValuesFunc) { %>
+            <% for(let value of options.tableColumns) { %>
                 <%
                     let language = options.templateHelper.isMultiStringProperty(value.property) ? '[currentLanguage]' : '';
                     let propertyName = options.templateHelper.isEnumPropertyWithEntityValues(value.property)
@@ -52,12 +50,18 @@
                         <%= options.templateHelper.isNumberProperty(value.property) ? `class="table-header-number"` : '' %>
                         [resizeColumn]="true" [index]="<%= value.index %>" (dragging)='dragging = $event'
                     >
-                        <span [matTooltip]=" '<%= propertyLocaleKeyPath %>.description' | transloco"
-                              [matTooltipDisabled]="headerTooltipsOff"
-                              matTooltipPosition="above"
-                              data-test="table-header-text">
-                                {{ '<%= propertyLocaleKeyPath %>.preferredName' | transloco }}
+                        <span data-test="table-header-text">
+                            {{ '<%= propertyLocaleKeyPath %>.preferredName' | transloco }}
                         </span>
+                        <mat-icon
+                             class="table-header-icon material-icons"
+                             *ngIf="!headerTooltipsOff"
+                             [matTooltip]="'<%= propertyLocaleKeyPath %>.description' | transloco"
+                             (click)="$event.stopPropagation()"
+                             matTooltipClass="table-column-tooltip"
+                             matTooltipPosition="above"
+                             data-test="column-info-icon"
+                        >info_outlined</mat-icon>
                     </th>
 
                     <td data-test="table-cell"
@@ -76,6 +80,7 @@
                         <% } else { %>
                             <esmf-table-cell
                                 [value]="<%= cellContent %>"
+                                [description]="'<%= propertyLocaleKeyPath %>.description' | transloco"
                                 <% if(options.hasSearchBar) { %>
                                     [configs]="configs"
                                     [highlightString]="highlightString"
@@ -89,7 +94,7 @@
 
             <% if(options.customColumns && options.customColumns.length > 0) { %>
                 <% for(let [index, columnName] of options.customColumns.entries()) { %>
-                    <% let customColumnIndex = tableColumValuesFunc.length + index + 1; %>
+                    <% let customColumnIndex = options.tableColumns.length + index + 1; %>
                     <!-- <%= columnName %> Column -->
                     <ng-container data-test="custom-column-container" matColumnDef="<%= columnName %>">
                         <% if(options.enableVersionSupport) { %>

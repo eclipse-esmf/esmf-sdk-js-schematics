@@ -7,9 +7,11 @@ import {Config} from '../product-instance-table/v020/product-instance-table.comp
 @Component({
   selector: '<%= dasherize(name) %>',
   templateUrl: './<%= dasherize(name) %>.component.html',
+  styleUrls: ['./<%= dasherize(name) %>.component.scss']
 })
 export class EsmfTableCellComponent {
   @Input() value: any;
+  @Input() description: string;
   @Input() highlightString: string[];
   @Input() configs: Array<Config> = [];
   @Output() copyToClipboardEvent = new EventEmitter<any>();
@@ -22,7 +24,7 @@ export class EsmfTableCellComponent {
     return this.configs.find((config: Config) => config.name.includes('highlight'))?.selected;
   }
 
-  constructor(private clipboard: Clipboard) {}
+  constructor(private readonly clipboard: Clipboard) {}
 
   copyToClipboard(value: any, event: MouseEvent): void {
     event.stopPropagation();

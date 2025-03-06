@@ -8,26 +8,29 @@ import {MatTooltip} from '@angular/material/tooltip';
   hostDirectives: [MatTooltip]
 })
 export class TableCellTooltipDirective {
-  @Input()
-  get tableCellTooltip() {
-    return this.matTooltip.message;
-  }
-  set tableCellTooltip(txt: string) {
-    this.matTooltip.message = txt;
-  }
+  @Input() value = '';
+  @Input() description = '';
 
   // average space taken by the 3 dots that trim the text
   private readonly ellipsisSpace = 56;
 
   constructor(
-    private el: ElementRef,
-    private matTooltip: MatTooltip
-  ) {}
+    private readonly el: ElementRef,
+    private readonly matTooltip: MatTooltip
+  ) {
+    this.matTooltip.tooltipClass = 'table-cell-tooltip';
+  }
 
   @HostListener('mouseenter')
   check(): void {
     // offsetParent.offsetWidth is the width of the table cell (td element)
     // offsetWidth width of the span that contains the text inside the table cell
-    this.matTooltip.disabled = this.el.nativeElement.offsetParent.offsetWidth - this.ellipsisSpace >= this.el.nativeElement.offsetWidth;
+    const isCellContentVisible = this.el.nativeElement.offsetParent.offsetWidth - this.ellipsisSpace >= this.el.nativeElement.offsetWidth;
+
+    if (isCellContentVisible) {
+      this.matTooltip.message = this.description;
+    } else {
+      this.matTooltip.message = this.description ? `${this.value} - ${this.description}` : this.value;
+    }
   }
 }

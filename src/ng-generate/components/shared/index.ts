@@ -40,6 +40,7 @@ import {
 } from './generators';
 import {APP_SHARED_MODULES, cardModules, formModules, tableModules, updateSharedModule} from '../../../utils/modules';
 import {WIZARD_CONFIG_FILE} from '../../prompter/index';
+import {generateSemanticExplanation} from './generators/constants';
 
 export let options: Schema;
 
@@ -97,6 +98,9 @@ export function prepareOptions(schema: Schema, componentType: ComponentType): Sc
     const defaultOptions = {
         skipImport: false,
     };
+
+    console.log('---> options.configFile');
+    console.log(options.configFile);
 
     if (options.configFile === 'wizard.config.json') {
         options.configFile = WIZARD_CONFIG_FILE;
@@ -250,6 +254,7 @@ export function generateGeneralFilesRules(): Array<Rule> {
         generateValidateInputDirective(options),
         generateHorizontalOverflowDirective(options),
         generateShowDescriptionPipe(options),
+        generateSemanticExplanation(options as Values)
     ];
 }
 
@@ -427,6 +432,7 @@ export function formatAllFilesRule(): Rule {
         optionsPath.replace('app', 'assets/i18n'),
         'src/app/shared/directives',
         'src/app/shared/pipes',
+        'src/app/shared/constants',
         'src/app/shared/services',
         `src/app/shared/components/${options.name}`,
         'src/assets/scss',
