@@ -22,7 +22,14 @@
         <% if (options.customCommandBarActions.length > 0) { %>
             (customCommandBarActionEvent)="handleCustomCommandBarActionEvent($event.action)"
         <% } %>
-    ></<%= dasherize(name) %>-command-bar>
+    >
+      <ng-container toolbarActions>
+        <ng-content select="[customToolbarActions]"></ng-content>
+      </ng-container>
+      <ng-container toolbarCollapsedActions>
+        <ng-content select="[customToolbarCollapsedActions]"></ng-content>
+      </ng-container>
+    </<%= dasherize(name) %>-command-bar>
   <% } %>
   <ng-container *ngIf="!!customTemplate && !dataSource.data.length">
     <ng-container *ngTemplateOutlet="loadCustomTemplate()"></ng-container>
