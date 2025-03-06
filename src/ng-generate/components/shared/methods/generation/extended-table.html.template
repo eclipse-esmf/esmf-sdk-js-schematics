@@ -80,7 +80,7 @@
                         <% } else { %>
                             <esmf-table-cell
                                 [value]="<%= cellContent %>"
-                            [description]="'<%= propertyLocaleKeyPath %>.description' | transloco"
+                                [description]="'<%= propertyLocaleKeyPath %>.description' | transloco"
                                 <% if(options.hasSearchBar) { %>
                                     [configs]="configs"
                                     [highlightString]="highlightString"

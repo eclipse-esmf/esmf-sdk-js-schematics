@@ -62,6 +62,7 @@ import {SelectionModel} from '@angular/cdk/collections';
 import { TranslocoService } from '@jsverse/transloco';
 import {PaginatorSelectConfigInjector} from "<% if (options.enableVersionSupport) { %>../<% } %>../../services/paginator-select-config.provider";
 import {JSSdkLocalStorageService} from "<% if (options.enableVersionSupport) { %>../<% } %>../../services/storage.service";
+import {<%= classify(name) %>CommandBarComponent} from "./<%= dasherize(name) %>-command-bar.component";
 import {<%= classify(name) %>ColumnMenuComponent} from './<%= dasherize(name) %>-column-menu.component';
 
 <% if (options.hasSearchBar) { %>
@@ -198,6 +199,7 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
     <% } %>
 
     @ViewChild('searchInput') searchInput!: ElementRef;
+    @ViewChild(<%= classify(name) %>CommandBarComponent) commandBar: <%= classify(name) %>CommandBarComponent;
 
     @HostBinding("attr.style")
     public get valueAsStyle(): any {

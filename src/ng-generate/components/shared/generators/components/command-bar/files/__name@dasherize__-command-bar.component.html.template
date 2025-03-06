@@ -145,6 +145,10 @@
 
     <span data-test="spacer" class="spacer"></span>
 
+    <span #projectedToolbarActions>
+        <ng-content select="[toolbarActions]"></ng-content>
+    </span>
+
     <% if (options.customCommandBarActions.length > 0) { %>
         <% for(let action of options.customCommandBarActions) { %>
             <button data-test="toolbar-custom-action-button" data-resp="custom-action-<%= action %>" *ngIf="!isInCollapsedMenu('custom-action-<%= action %>')" mat-icon-button #toolbarComp (click)="executeCustomCommandBarAction('<%= spinalCaseFunc(action) %>')" attr.aria-label="{{ '<%= options.versionedAccessPrefix %><%= spinalCaseFunc(action) %>.customCommandBarAction' | transloco }}">
@@ -161,18 +165,18 @@
         <% } %>
     <% } %>
 
-    <button data-test="refresh-data-button-<%= options.componentType %>" mat-icon-button data-resp="refresh-data-button" *ngIf="!isInCollapsedMenu('refresh-data-button')" #toolbarComp aria-label="Refresh table" (click)="triggerReloadFilter()"
+    <button data-test="refresh-data-button-<%= options.componentType %>" mat-icon-button data-resp="refresh-data-button" *ngIf="!isInCollapsedMenu('refresh-data-button')" #toolbarComp aria-label="Refresh table" [disabled]="!isToolbarActionsEnabled" (click)="triggerReloadFilter()"
         [matTooltip]="'tableActions.refreshData' | transloco">
       <mat-icon data-test="refresh-data-icon" class="material-icons">autorenew</mat-icon>
     </button>
 
-    <button data-test="export-data-button-<%= options.componentType %>" mat-icon-button data-resp="export-data-button" *ngIf="!isInCollapsedMenu('export-data-button')" #toolbarComp aria-label="Download data as CSV" (click)="triggerExportToCsv()"
+    <button data-test="export-data-button-<%= options.componentType %>" mat-icon-button data-resp="export-data-button" *ngIf="!isInCollapsedMenu('export-data-button')" #toolbarComp aria-label="Download data as CSV" [disabled]="!isToolbarActionsEnabled" (click)="triggerExportToCsv()"
         [matTooltip]="'tableActions.exportData' | transloco">
       <mat-icon data-test="export-data-icon" class="material-icons">file_download</mat-icon>
     </button>
 
     <% if (options.componentType === 'table' && options.hasSearchBar) { %>
-        <button data-test="open-configuration" data-resp="open-configuration-button" *ngIf="!isInCollapsedMenu('open-configuration-button')" #toolbarComp mat-icon-button aria-label="Open configuration" [matMenuTriggerFor]="configurationMenu" (menuOpened)="triggerInitOpenedConfigurationDialog()"
+        <button data-test="open-configuration" data-resp="open-configuration-button" *ngIf="!isInCollapsedMenu('open-configuration-button')" #toolbarComp mat-icon-button aria-label="Open configuration" [matMenuTriggerFor]="configurationMenu" [disabled]="!isToolbarActionsEnabled" (menuOpened)="triggerInitOpenedConfigurationDialog()"
             [matTooltip]="'tableActions.openConfig' | transloco">
             <mat-icon data-test="open-configuration-icon" class="material-icons">settings </mat-icon>
         </button>
@@ -289,7 +293,9 @@
         <% } %>
     <% } %>
 
-    <div mat-menu-item *ngIf="isInCollapsedMenu('refresh-data-button')" (click)="triggerReloadFilter()">
+    <ng-content select="[toolbarCollapsedActions]"></ng-content>
+
+    <div mat-menu-item *ngIf="isInCollapsedMenu('refresh-data-button')" [disabled]="!isToolbarActionsEnabled" (click)="triggerReloadFilter()">
         <mat-icon data-test="refresh-data-icon-collapsed" class="material-icons"
           >autorenew</mat-icon>
           <span>Refresh</span>
@@ -298,6 +304,7 @@
     <div
       mat-menu-item
       *ngIf="isInCollapsedMenu('export-data-button')"
+      [disabled]="!isToolbarActionsEnabled"
       (click)="triggerExportToCsv()"
       data-test="export-data-button-<% if (options.componentType === 'table') { %>table<% } else { %>card<% } %>-collapsed">
       <mat-icon data-test="export-data-icon-collapsed" class="material-icons"
@@ -309,6 +316,7 @@
        <div
         mat-menu-item
         *ngIf="isInCollapsedMenu('open-configuration-button')"
+        [disabled]="!isToolbarActionsEnabled"
          (click)="openSettingsFromCollapsed()"
         >
         <mat-icon data-test="open-configuration-icon-collapsed" class="material-icons"

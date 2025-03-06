@@ -27,6 +27,7 @@ import { MatDialog } from '@angular/material/dialog';
 })
 export class <%= classify(name) %>CommandBarComponent implements AfterViewInit {
     @Input() isMultipleSelectionEnabled = true;
+    @Input() isToolbarActionsEnabled = true;
     @Input() selection = new SelectionModel<any>(this.isMultipleSelectionEnabled, []);
     @Input() totalItems = 0;
     @Input() searchFocused = false;
@@ -65,6 +66,8 @@ export class <%= classify(name) %>CommandBarComponent implements AfterViewInit {
     componentsContainer!: ElementRef;
     @ViewChildren('toolbarComp', { read: ElementRef })
     components!: QueryList<ElementRef>;
+    @ViewChild('projectedToolbarActions', {read: ElementRef, static: false})
+    projectedToolbarActions!: ElementRef;
     hiddenComponents: any[] = [];
     initialCompWidths : any[]= [];
 
@@ -126,13 +129,21 @@ export class <%= classify(name) %>CommandBarComponent implements AfterViewInit {
     <% } %>
 
     ngAfterViewInit(): void {
-      const compWidths: any[] = this.components
-      .toArray()
-      .map((comp) =>
-        ( {width: comp.nativeElement.clientWidth, id: comp.nativeElement.getAttribute('data-resp') }));
+      const children = Array.from<HTMLElement>(this.projectedToolbarActions.nativeElement.children);
+      const projectedCompWidths: any[] = children.map(comp => ({
+        width: comp.clientWidth,
+        id: comp.getAttribute('data-resp')
+      }));
 
-      if(this.initialCompWidths.length === 0){
-        this.initialCompWidths = compWidths;
+      const compWidths: any[] = this.components
+        .toArray()
+        .map((comp) => ({width: comp.nativeElement.clientWidth, id: comp.nativeElement.getAttribute('data-resp')}));
+
+      if (this.initialCompWidths.length === 0) {
+        const widths = [...compWidths];
+        const buttonsStartIndex = widths.findIndex(w => w.id?.includes('button'));
+        widths.splice(buttonsStartIndex, 0, ...projectedCompWidths);
+        this.initialCompWidths = widths;
       };
 
       this.updateToolbarComponentsVisibility();
@@ -150,8 +161,8 @@ export class <%= classify(name) %>CommandBarComponent implements AfterViewInit {
 
        for (let i = 0; i < this.initialCompWidths.length; i++) {
           const buttonWidth = this.initialCompWidths[i];
-          // 70 is for the width of the collapsed menu width
-          if (usedWidth + buttonWidth.width + 70 >= containerWidth) {
+          // 76 is for the width of the collapsed menu width
+          if (usedWidth + buttonWidth.width + 76 >= containerWidth) {
             this.hiddenComponents.push(buttonWidth.id);
           } else {
             usedWidth += buttonWidth.width;
