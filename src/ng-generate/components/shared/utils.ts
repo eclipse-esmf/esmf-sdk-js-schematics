@@ -107,21 +107,28 @@ function generateKey(name: string): string {
  */
 export function getTableColumValues(
     allProps: Array<Property>,
-    options: Schema,
+    options: Schema
 ): Array<{
     property: Property;
     index: number;
     complexPrefix: string;
+    isEnumeration: boolean;
 }> {
     return allProps.flatMap((property: Property, index: number) => {
+        const isEnumeration = property.characteristic && property.characteristic instanceof DefaultEnumeration;
         if (property.effectiveDataType?.isComplex && property.characteristic instanceof DefaultSingleEntity) {
             const complexPropObj = options.templateHelper.getComplexProperties(property, options);
             return complexPropObj.properties.map((complexProp: Property, index: number) => {
-                return {property: complexProp, index: index, complexPrefix: `${complexPropObj.complexProp}.`};
+                return {
+                    property: complexProp,
+                    index: index,
+                    complexPrefix: `${complexPropObj.complexProp}.`,
+                    isEnumeration,
+                };
             });
         }
 
-        return [{property: property, index: index, complexPrefix: ''}];
+        return [{property: property, index: index, complexPrefix: '', isEnumeration}];
     });
 }
 
@@ -168,11 +175,11 @@ export function getCustomRowActions(options: any): string {
               const formattedAction = action.replace(/\.[^/.]+$/, '');
               const formattedActionKebab = formattedAction.replace(/\s+/g, '-').toLowerCase();
               const commonParts = `data-test="custom-action-icon" *ngIf="is${classify(
-                  formattedActionKebab,
+                  formattedActionKebab
               )}Visible" (click)="executeCustomAction($event, '${formattedActionKebab}', row)" style="cursor: pointer;" matTooltip="{{ '${options.templateHelper.getVersionedAccessPrefix(
-                  options,
+                  options
               )}${formattedActionKebab}.customRowAction' | transloco }}" aria-hidden="false" attr.aria-label="{{ '${options.templateHelper.getVersionedAccessPrefix(
-                  options,
+                  options
               )}${formattedActionKebab}.customRowAction' | transloco }}"`;
               return `${action.lastIndexOf('.') > -1 ? `<mat-icon svgIcon="${formattedAction}" ${commonParts}></mat-icon>` : ''}${
                   action.lastIndexOf('.') === -1 ? `<mat-icon ${commonParts} class="material-icons">${action}</mat-icon>` : ''
@@ -246,7 +253,7 @@ export function resolveJsPropertyType(property: Property): string {
         if (property.characteristic.elementCharacteristic) {
             return resolveJsCharacteristicType(
                 property.characteristic.elementCharacteristic,
-                property.characteristic.elementCharacteristic.dataType,
+                property.characteristic.elementCharacteristic.dataType
             );
         }
 
