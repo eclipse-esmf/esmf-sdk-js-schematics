@@ -11,17 +11,7 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-import {
-    apply,
-    applyTemplates,
-    MergeStrategy,
-    mergeWith,
-    move,
-    Rule,
-    SchematicContext,
-    Tree,
-    url
-} from '@angular-devkit/schematics';
+import {apply, applyTemplates, MergeStrategy, mergeWith, move, Rule, SchematicContext, Tree, url} from '@angular-devkit/schematics';
 import {strings} from '@angular-devkit/core';
 import {Values} from '../../../schema';
 import {getTableColumValues} from '../../../utils';
@@ -33,15 +23,15 @@ export function generateSemanticExplanation(options: Values): Rule {
                 applyTemplates({
                     classify: strings.classify,
                     dasherize: strings.dasherize,
-                    options: {...options,
-                        tableColumns: getTableColumValues(options.listAllProperties, options)
+                    options: {
+                        ...options,
+                        tableColumns: getTableColumValues(options.listAllProperties, options),
                     },
-                    name: options.name
+                    name: options.name,
                 }),
-                move('src/app/shared/constants')
+                move('src/app/shared/constants'),
             ]),
-            options.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error,
+            options.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error
         );
     };
-
 }
