@@ -1,14 +1,6 @@
 /** <%= options.generationDisclaimerText %> **/
 @import 'general.component';
 
-::ng-deep .table-column-tooltip {
-  max-height: none;
-
-  .mdc-tooltip__surface {
-    display: block;
-  }
-}
-
 .table-header-icon {
   margin-left: 0.5rem;
   cursor: default;
