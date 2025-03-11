@@ -269,4 +269,13 @@ $gray-300: #e0e0e0;
   max-width: max-content !important;
 }
 
+.table-cell-tooltip,
+.table-column-tooltip {
+  max-height: none;
+
+  .mat-mdc-tooltip-surface.mdc-tooltip__surface {
+    display: block;
+  }
+}
+
 <%= customStyleImports %>
