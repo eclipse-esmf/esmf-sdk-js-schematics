@@ -109,10 +109,8 @@ private requestData() {
             catchError((error: any) => {
                 this.dataLoadError = false;
                 <% if (options.componentType === 'card') { %>
-                    this.dataToShow = [];
-                    this.dataSource.data = [];
+                    this.dataSource.setData([]);
                 <% } else { %>
-                    const dataToShow = [];
                     this.dataSource.setData([]);
                 <% } %>
 
