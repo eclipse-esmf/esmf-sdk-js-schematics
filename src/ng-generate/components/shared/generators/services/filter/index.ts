@@ -274,7 +274,10 @@ const getChipLabelEnum = (filterProp: PropValue) => {
 
 function getDateRemote(values: PropValue[]): string {
     const template = (value: any) => ` 
-        this.applyFilterForTime(query, '${value.propertyName}');
+        if(this.${value.propertyName}Group.valid) {
+            const {fromControl, toControl} = this.${value.propertyName}Group.value;
+            this.applySingleDateFilter(query, fromControl, toControl, '${value.propertyName}');
+        }
     `;
 
     const activeFilters = values.map(template).join('');
@@ -284,61 +287,54 @@ function getDateRemote(values: PropValue[]): string {
             ${activeFilters}
         }
         
-        applyFilterForTime(query: AbstractLogicalNode, timeType: string): void {
+        private applySingleDateFilter(query: AbstractLogicalNode, from: number, to: number, filterPropName: string): void {
             const conditions = [];
-            const group = (this as any)[\`\${timeType}Group\`];
-            
-            if (group.invalid) {
-                return;
-            }
-            
-            const {fromControl, toControl} = group.value;
-
-            const startDateUTC: string | null = fromControl ? this.createDateAsUTC(new Date(fromControl)).toISOString() : null;
-            let endDateUTC: Date | null = toControl ? this.createDateAsUTC(new Date(toControl)) : null;
+    
+            const fromDateUTC: string | null = from ? this.createDateAsUTC(new Date(from)).toISOString() : null;
+            let toDateUTC: string | null = null;
+            let toDate: Date | null = to ? this.createDateAsUTC(new Date(to)) : null;
         
-            if (endDateUTC) {
-              endDateUTC = new Date(endDateUTC.setHours(23, 59, 59, 999));
+            if (toDate) {
+                toDateUTC = new Date(toDate.setHours(23, 59, 59, 999)).toISOString();
             }
         
-            if (startDateUTC) {
-              conditions.push(new Ge(timeType, \`\${startDateUTC}\`));
+            if (fromDateUTC) {
+                conditions.push(new Ge(filterPropName, fromDateUTC));
             }
-            if (endDateUTC) {
-              conditions.push(new Le(timeType, \`\${endDateUTC.toISOString()}\`));
+            if (toDateUTC) {
+                conditions.push(new Le(filterPropName, toDateUTC));
             }
             if (conditions.length > 0) {
-              query.addNode(conditions.length > 1 ? new And(conditions) : conditions[0]);
+                query.addNode(conditions.length > 1 ? new And(conditions) : conditions[0]);
             }
-
-            let label = this.translateService.translate(\`${sharedOptions.translationPath}\${timeType}.preferredName\`);
-
-            if (startDateUTC && endDateUTC) {
-              label += \`: \${this.getFormattedDate(startDateUTC)} - \${this.getFormattedDate(endDateUTC.toISOString())}\`;
-              this.updateActiveFilters(timeType, label);
-            } else if (endDateUTC) {
-              label += \`: to \${this.getFormattedDate(endDateUTC.toISOString())}\`;
-              this.updateActiveFilters(timeType, label);
-            } else if (startDateUTC) {
-              label += \`: from \${this.getFormattedDate(startDateUTC)}\`;
-              this.updateActiveFilters(timeType, label);
-            }
-        }
         
-        updateActiveFilters(prop: string, label: string) {
-            const filter = this.activeFilters.find(af => af.prop === prop);
-            if (!filter) {
-              this.activeFilters.push(<FilterType>{
-                removable: true,
-                type: FilterEnums.Date,
-                label: label,
-                prop: prop
-              });
-            } else {
-              filter.label = label;
+            // DCV-SPECIFIC: wrap the rest of the code in if condition to avoid chip list not updating or removing
+            if (fromDateUTC || toDateUTC) {
+                const filterIndex = this.activeFilters.findIndex(af => af.prop === filterPropName);
+        
+                let label = this.translateService.translate('batch.v030.' + filterPropName + '.preferredName');
+        
+                if (fromDateUTC && toDateUTC) {
+                    label += ' ' + this.getFormattedDate(fromDateUTC) + ' - ' + this.getFormattedDate(toDateUTC);
+                } else if (toDateUTC) {
+                    label += ' to ' + this.getFormattedDate(toDateUTC);
+                } else if (fromDateUTC) {
+                    label += ' from ' + this.getFormattedDate(fromDateUTC);
+                }
+        
+                if (filterIndex === -1) {
+                    this.activeFilters.push({
+                        removable: true,
+                        type: FilterEnums.Date,
+                        label,
+                        prop: filterPropName
+                    });
+                } else {
+                    this.activeFilters[filterIndex].label = label;
+                }
             }
-        }
-    `;
+      }
+`;
 }
 
 function getDateNotRemote(values: PropValue[]): string {
