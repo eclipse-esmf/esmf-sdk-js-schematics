@@ -295,7 +295,7 @@ function getDateRemote(values: PropValue[]): string {
             let toDate: Date | null = to ? this.createDateAsUTC(new Date(to)) : null;
         
             if (toDate) {
-                toDateUTC = new Date(toDate.setHours(23, 59, 59, 999)).toISOString();
+                toDateUTC = this.createDateAsUTC(new Date(toDate.setHours(23, 59, 59, 999))).toISOString();
             }
         
             if (fromDateUTC) {
@@ -315,9 +315,9 @@ function getDateRemote(values: PropValue[]): string {
                 let label = this.translateService.translate('batch.v030.' + filterPropName + '.preferredName');
         
                 if (fromDateUTC && toDateUTC) {
-                    label += ' ' + this.getFormattedDate(fromDateUTC) + ' - ' + this.getFormattedDate(toDateUTC);
+                    label += ' ' + this.getFormattedDate(fromDateUTC) + ' - ' + this.getFormattedDate(toDate.toISOString());
                 } else if (toDateUTC) {
-                    label += ' to ' + this.getFormattedDate(toDateUTC);
+                    label += ' to ' + this.getFormattedDate(toDate.toISOString());
                 } else if (fromDateUTC) {
                     label += ' from ' + this.getFormattedDate(fromDateUTC);
                 }
