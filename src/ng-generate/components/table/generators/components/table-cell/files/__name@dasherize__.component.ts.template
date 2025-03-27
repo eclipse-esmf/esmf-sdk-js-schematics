@@ -24,6 +24,10 @@ export class EsmfTableCellComponent {
     return this.configs.find((config: Config) => config.name.includes('highlight'))?.selected;
   }
 
+  get notEmptyValue(): boolean {
+    return this.value !== null && this.value !== undefined && this.value.trim() !== '-';
+  }
+
   constructor(private readonly clipboard: Clipboard) {}
 
   copyToClipboard(value: any, event: MouseEvent): void {
