@@ -102,12 +102,34 @@
                         <% if(options.enableVersionSupport) { %>
                             <th data-test="custom-column-header" mat-header-cell *matHeaderCellDef mat-sort-header
                                 [resizeColumn]="true" [index]="<%= customColumnIndex %>" (dragging)='dragging = $event'>
-                                {{'<%= options.selectedModelTypeName.toLowerCase() %>.v<%= options.formatedAspectModelVersion %>.customColumn.<%= columnName %>' | transloco }}
+                                <span data-test="table-header-text">
+                                    {{'<%= options.selectedModelTypeName.toLowerCase() %>.v<%= options.formatedAspectModelVersion %>.customColumn.<%= columnName %>' | transloco }}
+                                </span>
+                                <mat-icon
+                                    class="table-header-icon material-icons"
+                                    *ngIf="!headerTooltipsOff"
+                                    [matTooltip]="'<%= options.selectedModelTypeName.toLowerCase() %>.v<%= options.formatedAspectModelVersion %>.<%= columnName %>.description' | transloco"
+                                    (click)="$event.stopPropagation()"
+                                    matTooltipClass="table-column-tooltip"
+                                    matTooltipPosition="above"
+                                    data-test="column-info-icon"
+                                >info_outlined</mat-icon>
                             </th>
                         <% } else { %>
                             <th data-test="custom-column-header" mat-header-cell *matHeaderCellDef mat-sort-header
                                 [resizeColumn]="true" [index]="<%= customColumnIndex %>" (dragging)='dragging = $event'>
-                                {{ '<%= options.selectedModelTypeName.toLowerCase() %>.customColumn.<%= columnName %>' | transloco }}
+                                <span data-test="table-header-text">
+                                    {{ '<%= options.selectedModelTypeName.toLowerCase() %>.customColumn.<%= columnName %>' | transloco }}
+                                </span>
+                                <mat-icon
+                                    class="table-header-icon material-icons"
+                                    *ngIf="!headerTooltipsOff"
+                                    [matTooltip]="'<%= options.selectedModelTypeName.toLowerCase() %>.<%= columnName %>.description' | transloco"
+                                    (click)="$event.stopPropagation()"
+                                    matTooltipClass="table-column-tooltip"
+                                    matTooltipPosition="above"
+                                    data-test="column-info-icon"
+                                >info_outlined</mat-icon>
                             </th>
                         <% } %>
                         <td data-test="custom-column-cell" mat-cell *matCellDef="let row">
