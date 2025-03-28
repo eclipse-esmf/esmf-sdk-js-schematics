@@ -13,7 +13,7 @@
 <div>
   <mat-icon
     (click)="copyToClipboard(value, $event)"
-    *ngIf="!(value === null || value === undefined)"
+    *ngIf="notEmptyValue"
     class="material-icons copy-to-clipboard"
     data-test="copy-to-clipboard-icon"
   >
