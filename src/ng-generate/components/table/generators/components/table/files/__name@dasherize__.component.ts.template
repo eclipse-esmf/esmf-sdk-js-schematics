@@ -677,13 +677,15 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
         }
     <% } %>
 
-    protected isAvailableRowAction(action: RowAction, rowData: <%= options.aspectModelTypeName %>): boolean {
-        if (!this.actionResolvers || !this.actionResolvers[action]) {
-            return true;
-        }
+    <% if (hasCustomRowActions) { %>
+        protected isAvailableRowAction(action: RowAction, rowData: <%= options.aspectModelTypeName %>): boolean {
+            if (!this.actionResolvers || !this.actionResolvers[action]) {
+                return true;
+            }
 
-        return this.actionResolvers[action](rowData) ?? true;
-    }
+            return this.actionResolvers[action](rowData) ?? true;
+        }
+    <% } %>
 
     <% if (options.hasSearchBar) { %>
         private initializeHighlightConfig(): void {
