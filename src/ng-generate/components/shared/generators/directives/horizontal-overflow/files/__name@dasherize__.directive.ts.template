@@ -6,7 +6,8 @@ import {MatChipListbox} from "@angular/material/chips";
 
 @Directive({
     selector: '[horizontalOverflow]',
-    exportAs: 'horizontalOverflow'
+    exportAs: 'horizontalOverflow',
+    standalone: false
 })
 export class <%= classify(name) %>Directive implements AfterContentInit, OnDestroy {
     @Input('chipsObj') chips!: MatChipListbox;

@@ -22,7 +22,6 @@ export const <%= options.fieldConfig.name %>FormControl = new FormControl(null, 
 
 @Component({
     selector: '<%= options.fieldConfig.selector %>',
-    standalone: true,
     imports: [
         CommonModule,
         FormsModule,

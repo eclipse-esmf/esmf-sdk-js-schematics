@@ -23,7 +23,8 @@ import { MatDialog } from '@angular/material/dialog';
 @Component({
     selector: '<%= dasherize(name) %>-command-bar',
     templateUrl: './<%= dasherize(name) %>-command-bar.component.html',
-    styleUrls: ['./<%= dasherize(name) %>-command-bar.component.scss']
+    styleUrls: ['./<%= dasherize(name) %>-command-bar.component.scss'],
+    standalone: false
 })
 export class <%= classify(name) %>CommandBarComponent implements AfterViewInit {
     @Input() isMultipleSelectionEnabled = true;

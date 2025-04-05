@@ -15,6 +15,7 @@ interface HighlightRange {
 
 @Directive({
     selector: '[highlight]',
+    standalone: false
 })
 export class <%= classify(name) %>Directive implements OnChanges, OnInit {
     @Input() highlightSource: string | null = null;

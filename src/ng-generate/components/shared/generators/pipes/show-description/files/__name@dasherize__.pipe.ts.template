@@ -1,7 +1,7 @@
 /** <%= options.generationDisclaimerText %> **/
 import {Pipe, PipeTransform} from "@angular/core";
 
-@Pipe({name: 'showDescription'})
+@Pipe({name: 'showDescription', standalone: false})
 export class <%= classify(name) %>Pipe implements PipeTransform {
     transform(value: any, getByValueFn: any, onlyDesc?: boolean): any {
         value = value?.toString();

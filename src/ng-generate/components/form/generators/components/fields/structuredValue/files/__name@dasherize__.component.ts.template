@@ -41,7 +41,6 @@ export const <%= options.fieldConfig.name %>FormGroup = new FormGroup<<%= option
 
 @Component({
     selector: '<%= options.fieldConfig.selector %>',
-    standalone: true,
     imports: [
         CommonModule,
         FormsModule,

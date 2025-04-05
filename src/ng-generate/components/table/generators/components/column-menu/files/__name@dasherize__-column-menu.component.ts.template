@@ -6,8 +6,9 @@ import {JSSdkLocalStorageService} from "<% if (options.enableVersionSupport) { %
 
 @Component({
     selector: '<%= dasherize(name) %>-column-menu',
-    styleUrls: ['./<%= dasherize(name) %>-column-menu.component.scss'],
     templateUrl: './<%= dasherize(name) %>-column-menu.component.html',
+    styleUrls: ['./<%= dasherize(name) %>-column-menu.component.scss'],
+    standalone: false
 })
 export class <%= classify(name) %>ColumnMenuComponent {
 

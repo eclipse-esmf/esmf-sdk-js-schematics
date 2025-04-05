@@ -61,7 +61,6 @@ export type DataSourceSelection = DataSourceSelectionItem[];
 
 @Component({
     selector: '<%= options.fieldConfig.selector %>',
-    standalone: true,
     imports: [
         CommonModule,
         FormsModule,

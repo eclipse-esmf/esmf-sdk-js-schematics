@@ -13,7 +13,8 @@ export enum Action {
 @Component({
     selector: '<%= dasherize(name) %>',
     templateUrl: './<%= dasherize(name) %>.component.html',
-    styleUrls: ['./<%= dasherize(name) %>.component.scss']
+    styleUrls: ['./<%= dasherize(name) %>.component.scss'],
+    standalone: false
 })
 export class <%= classify(name) %>Component implements AfterViewInit {
     @ViewChild('exportAllPages') exportAllPages!: MatCheckbox;
