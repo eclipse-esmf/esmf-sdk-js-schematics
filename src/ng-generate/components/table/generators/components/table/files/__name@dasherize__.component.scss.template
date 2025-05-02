@@ -1,5 +1,5 @@
 /** <%= options.generationDisclaimerText %> **/
-@import 'general.component';
+@use 'general.component' as *;
 
 .table-header-icon {
   margin-left: 0.5rem;
