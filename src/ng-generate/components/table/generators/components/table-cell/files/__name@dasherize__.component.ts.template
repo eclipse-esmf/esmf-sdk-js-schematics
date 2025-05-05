@@ -25,7 +25,7 @@ export class EsmfTableCellComponent {
   }
 
   get notEmptyValue(): boolean {
-    return this.value !== null && this.value !== undefined && this.value.trim() !== '-';
+    return this.value !== null && this.value !== undefined && this.value.toString().trim() !== '-';
   }
 
   constructor(private readonly clipboard: Clipboard) {}
