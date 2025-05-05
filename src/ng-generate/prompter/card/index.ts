@@ -17,7 +17,7 @@ import {Tree} from '@angular-devkit/schematics/src/tree/interface';
 import {Observable, Subscriber} from 'rxjs';
 import {generate} from '../index';
 
-export default function (options: CardSchema): Rule {
+export default function (options: CardSchema) {
     return (tree: Tree, context: SchematicContext) => {
         return new Observable<Tree>((subscriber: Subscriber<Tree>) => {
             generate(subscriber, tree, options, 'card');

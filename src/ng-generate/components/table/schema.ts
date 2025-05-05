@@ -19,6 +19,8 @@ export interface TableSchema extends Values {
     customColumns: Array<string>;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface ConfigurationDefaultsSchema {}
 
 // class to define default values that are not asked in the prompter

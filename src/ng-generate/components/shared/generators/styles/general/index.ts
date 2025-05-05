@@ -17,9 +17,12 @@ import {strings} from '@angular-devkit/core';
 export function generateGeneralStyle(options: any): Rule {
     return (tree: Tree, _context: SchematicContext) => {
         const globalStylePath = 'src/styles.scss';
-        tree.exists(globalStylePath)
-            ? tree.overwrite(globalStylePath, contentForGlobalStyles())
-            : tree.create(globalStylePath, contentForGlobalStyles());
+
+        if(tree.exists(globalStylePath)) {
+            tree.overwrite(globalStylePath, contentForGlobalStyles())
+        } else {
+            tree.create(globalStylePath, contentForGlobalStyles());
+        }
 
         const scssPath = 'src/assets/scss/general.component.scss';
 
