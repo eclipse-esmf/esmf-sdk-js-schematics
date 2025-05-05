@@ -8,6 +8,7 @@ import {MAT_DIALOG_DATA} from '@angular/material/dialog';
     selector: '<%= dasherize(name) %>-config-menu',
     templateUrl: './<%= dasherize(name) %>-config-menu.component.html',
     styleUrls: ['./<%= dasherize(name) %>.component.scss'],
+    standalone: false
 })
 export class <%= classify(name) %>ConfigMenuComponent {
     @Output() configChangedEvent = new EventEmitter<Array<Config>>();

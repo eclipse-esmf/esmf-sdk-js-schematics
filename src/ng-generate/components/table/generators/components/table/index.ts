@@ -111,9 +111,7 @@ function getCustomColumnsInput(): string {
 
 function getCustomColumn(): string {
     return `${sharedOptions.customColumns
-        .map((value: string) => {
-            `'${value.trim()}'`;
-        })
+        .map((value: string) => `'${value.trim()}'`)
         .join(', ')}`;
 }
 

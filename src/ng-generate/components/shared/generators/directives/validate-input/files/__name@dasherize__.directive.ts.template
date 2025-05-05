@@ -18,6 +18,7 @@ import {ErrorStateMatcher} from '@angular/material/core';
         multi: true,
         useExisting: <%= classify(name) %>Directive,
     }],
+    standalone: false
 })
 export class <%= classify(name) %>Directive {
     /** Pass here the regex pattern as string, e.g. '^[a-zA-Z0-9-_.,+ ]+$' */

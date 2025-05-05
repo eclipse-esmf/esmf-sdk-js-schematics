@@ -13,8 +13,12 @@
 
 import {Values} from '../shared/schema';
 
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface CardSchema extends Values {}
 
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface ConfigurationDefaultsSchema {}
 
 // class to define default values that are not asked in the prompter

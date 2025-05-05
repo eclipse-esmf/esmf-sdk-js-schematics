@@ -4,6 +4,7 @@ import {DOCUMENT} from '@angular/common';
 
 @Directive({
     selector: '[resizeColumn]',
+    standalone: false
 })
 export class <%= classify(name) %>Directive implements OnInit {
     @Input('resizeColumn') resizable: boolean = false;

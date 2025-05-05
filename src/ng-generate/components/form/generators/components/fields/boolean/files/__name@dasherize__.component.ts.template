@@ -19,7 +19,6 @@ export const <%= options.fieldConfig.name %>FormControl = new FormControl(false,
 
 @Component({
     selector: '<%= options.fieldConfig.selector %>',
-    standalone: true,
     imports: [CommonModule, FormsModule, MatFormFieldModule, MatInputModule, MatCheckboxModule, ReactiveFormsModule],
     templateUrl: './<%= dasherize(options.fieldConfig.name) %>.component.html',
     styleUrls: ['./<%= dasherize(options.fieldConfig.name) %>.component.scss'],

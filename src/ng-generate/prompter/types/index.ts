@@ -17,7 +17,7 @@ import {Observable, Subscriber} from 'rxjs';
 import {generate} from '../index';
 import {TypesSchema} from '../../types/schema';
 
-export default function (options: TypesSchema): Rule {
+export default function (options: TypesSchema) {
     return (tree: Tree, context: SchematicContext) => {
         return new Observable<Tree>((subscriber: Subscriber<Tree>) => {
             generate(subscriber, tree, options, 'types');

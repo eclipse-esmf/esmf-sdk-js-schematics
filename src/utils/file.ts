@@ -15,8 +15,7 @@ import {Rule, SchematicContext, Tree} from '@angular-devkit/schematics';
 import * as fs from 'fs';
 import {DefaultSchema} from '../ng-generate/default-schema';
 
-/* eslint-disable @typescript-eslint/no-var-requires */
-const prettier = require('prettier');
+import * as prettier from 'prettier';
 
 // this resolves the config provided by the schematics lib
 const defaultPrettierConfigPath = require.resolve('../../.prettierrc');

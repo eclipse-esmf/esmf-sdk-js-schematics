@@ -58,7 +58,8 @@ export enum <%= classify(name) %>CardValues {
 @Component({
     selector: '<%= options.selector %>',
     templateUrl: './<%= dasherize(name) %>.component.html',
-    styleUrls: ['./<%= dasherize(name) %>.component.<%= options.style %>']
+    styleUrls: ['./<%= dasherize(name) %>.component.<%= options.style %>'],
+    standalone: false
     <% if (options.changeDetection) { %>, changeDetection: ChangeDetectionStrategy.<%= options.changeDetection %><% } %>
     <% if (options.viewEncapsulation) { %>,encapsulation: ViewEncapsulation.<%= options.viewEncapsulation %><% } else { %>,encapsulation: ViewEncapsulation.None<% } %>
 })

@@ -5,7 +5,8 @@ import {FilterEnums, FilterType, <%= classify(name) %>FilterService} from './<%=
 @Component({
     selector: '<%= dasherize(name) %>-chip-list',
     templateUrl: './<%= dasherize(name) %>-chip-list.component.html',
-    styleUrls: ['./<%= dasherize(name) %>-chip-list.component.scss']
+    styleUrls: ['./<%= dasherize(name) %>-chip-list.component.scss'],
+    standalone: false
 })
 export class <%= classify(name) %>ChipListComponent {
     @Output() removeFilter = new EventEmitter<any>();

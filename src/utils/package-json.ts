@@ -24,21 +24,21 @@ interface NodeScript {
 
 export const DEFAULT_DEPENDENCIES = [
     {type: NodeDependencyType.Dev, version: '^5.3.14', name: '@types/papaparse', overwrite: false},
-    {type: NodeDependencyType.Default, version: '^18.0.5', name: '@angular/cdk', overwrite: false},
-    {type: NodeDependencyType.Default, version: '^18.0.5', name: '@angular/material', overwrite: false},
-    {type: NodeDependencyType.Default, version: '^7.4.2', name: '@jsverse/transloco', overwrite: false},
+    {type: NodeDependencyType.Default, version: '~19.2.8', name: '@angular/cdk', overwrite: false},
+    {type: NodeDependencyType.Default, version: '~19.2.8', name: '@angular/material', overwrite: false},
+    {type: NodeDependencyType.Default, version: '^7.5.1', name: '@jsverse/transloco', overwrite: false},
+    {type: NodeDependencyType.Default, version: '^7.0.2', name: '@jsverse/transloco-utils', overwrite: false},
     {type: NodeDependencyType.Default, version: '^5.4.1', name: 'papaparse', overwrite: false},
     {type: NodeDependencyType.Default, version: '^1.0.1', name: 'path-browserify', overwrite: false},
 ];
 
 export const REMOTE_HANDLING_DEPENDENCIES = [
-    {type: NodeDependencyType.Default, version: '~0.9.4', name: 'rollun-ts-rql', overwrite: false},
+    {type: NodeDependencyType.Default, version: '~0.10.0', name: 'rollun-ts-rql', overwrite: false},
     {type: NodeDependencyType.Default, version: '~4.2.0', name: 'crypto-js', overwrite: false},
 ];
 
 export const DATE_QUICK_FILTER_DEPENDENCIES = [
-    {type: NodeDependencyType.Default, version: '~2.30.1', name: 'moment', overwrite: false},
-    {type: NodeDependencyType.Default, version: '^18.0.5', name: '@angular/material-moment-adapter', overwrite: false},
+    {type: NodeDependencyType.Default, version: '~19.2.8', name: '@angular/material-moment-adapter', overwrite: false},
 ];
 
 export function addPackageJsonDependencies(skipImport: boolean, spinner: Ora, dependencies: NodeDependency[] = []): Rule {

@@ -68,7 +68,7 @@ In order to generate code based on the available schematics, the following steps
 1. Install [node](https://nodejs.org/en/) (LTS version).
 
 2. Schematics are part of the Angular ecosystem so angular-cli must be installed by running this command in a terminal:
-   Run `npm install -g @angular/cli@18`
+   Run `npm install -g @angular/cli@19`
 
 3. To create an Angular application without generating a new project structure that lacks app.module.ts and other
    essential files, use the --no-standalone flag.
@@ -100,7 +100,7 @@ cd demo-schematic
 3. run (if not already installed):
 
 ```bash
-npm install -g @angular-devkit/schematics-cli@18
+npm install -g @angular-devkit/schematics-cli@19
 ```
 
 4. Optionally add some .ttl files in the same folder in order to use in the schema generation process. The schematic
@@ -232,7 +232,7 @@ export interface SpatialPosition {
 https://eclipse-esmf.github.io/ame-guide/modeling/operation.html
 Modeling Events
 The table schematics can be used for table generation. This is achieved by using the table provided in
-the [angular material package](https://v18.material.angular.io/components/table/overview).
+the [angular material package](https://v19.material.angular.io/components/table/overview).
 
 **_NOTE:_** The JavaScript SDK does not automatically generate code for Operations and Events. If you need UI code that
 represents the Operations available for an aspect, or the Events that an aspect can trigger, you'll need to implement
@@ -279,7 +279,7 @@ and [Modeling Events](https://eclipse-esmf.github.io/ame-guide/modeling/event.ht
 ## The _card_ schematics
 
 The card schematics can be used for card generation. This is achieved by using the card provided in
-the [angular material package](https://v18.material.angular.io/components/card/overview).
+the [angular material package](https://v19.material.angular.io/components/card/overview).
 
 ### Features provided by the schematics card
 

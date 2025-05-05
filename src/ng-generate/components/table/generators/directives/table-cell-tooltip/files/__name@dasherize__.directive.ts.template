@@ -5,7 +5,8 @@ import {MatTooltip} from '@angular/material/tooltip';
 
 @Directive({
   selector: '[tableCellTooltip]',
-  hostDirectives: [MatTooltip]
+  hostDirectives: [MatTooltip],
+  standalone: false
 })
 export class TableCellTooltipDirective {
   @Input() value = '';
