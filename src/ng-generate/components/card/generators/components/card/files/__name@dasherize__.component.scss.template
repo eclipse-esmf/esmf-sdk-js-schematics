@@ -1,5 +1,5 @@
 /** <%= options.generationDisclaimerText %> **/
-@import 'general.component';
+@use 'general.component' as *;
 
 .data-card {
   margin: 15px 0 10px 0;
