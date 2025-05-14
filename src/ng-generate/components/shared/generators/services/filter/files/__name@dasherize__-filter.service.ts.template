@@ -8,7 +8,7 @@
         Ge,
         In,
         Le,
-        Like,
+        Alike,
         Limit,
         Or,
         Query,
@@ -293,12 +293,12 @@ export class <%= classify(name) %>FilterService {
     <% } %>
 
     <% if (options.enableRemoteDataHandling) { %>
-        addSelectedColumnsQuery(selectedStringColumn: string, searchString: string): Like[] {
+        addSelectedColumnsQuery(selectedStringColumn: string, searchString: string): Alike[] {
             if (selectedStringColumn !== this.advancedSearchAllValue) {
-                return [new Like(selectedStringColumn, `*${searchString}*`)];
+                return [new Alike(selectedStringColumn, `*${searchString}*`)];
             } else {
                 return this.stringColumns.map((column: string) => {
-                    return new Like(column, `*${searchString}*`);
+                    return new Alike(column, `*${searchString}*`);
                 });
            }
         }
