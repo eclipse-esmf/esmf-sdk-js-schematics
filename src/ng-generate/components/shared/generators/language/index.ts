@@ -50,10 +50,10 @@ function getProperties(language: string) {
         .getProperties(sharedOptions, sharedOptions.getExcludedPropLabels)
         .map((property: Property) => {
             return `
-                "${property.name}.preferredName": "${property.getPreferredName(language) || property.name}",
-                "${property.name}.description": "${property.getDescription(language)}",
-                ${getBlockEntityInstance(property, language)}
-                ${getBlockTransEntity(property, language)}`;
+                "${property.name}.preferredName": "${replaceIncorrectSymbols(property.getPreferredName(language)) || property.name}",
+                "${property.name}.description": "${replaceIncorrectSymbols(property.getDescription(language))}",
+                ${replaceIncorrectSymbols(getBlockEntityInstance(property, language))}
+                ${replaceIncorrectSymbols(getBlockTransEntity(property, language))}`;
         })
         .join('');
 }
@@ -68,9 +68,9 @@ function getBlockTransEntity(property: Property, lang: string): string {
                 const blockEntityInstance = getBlockEntityInstance(effProp, lang, property.name);
 
                 return `
-                    "${property.name}.${name}.preferredName": "${preferredName}",
-                    "${property.name}.${name}.description": "${description}",
-                    ${blockEntityInstance}`;
+                    "${property.name}.${name}.preferredName": "${replaceIncorrectSymbols(preferredName)}",
+                    "${property.name}.${name}.description": "${replaceIncorrectSymbols(description)}",
+                    ${replaceIncorrectSymbols(blockEntityInstance)}`;
             })
             .join('');
     }
@@ -147,4 +147,8 @@ function getBlockCustomCommandBarActions(): string {
     const actionStrings = actions.map((action: string) => `"${action}.customCommandBarAction": "${action}"`);
 
     return actionStrings.length > 0 ? `${actionStrings},` : '';
+}
+
+function replaceIncorrectSymbols(str: string = ''): string {
+    return str.replace(/[\n\r\t]+/g, ' ');
 }
