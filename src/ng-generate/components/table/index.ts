@@ -70,16 +70,16 @@ export function generateTable(tableSchema: TableSchema): Rule {
 function tableSpecificGeneration(): Array<Rule> {
     return [
         generateTableComponent(options),
-        generateTableCellComponent(options),
-        generateTableCellLinkComponent(options),
+        generateTableCellComponent(options), // General
+        generateTableCellLinkComponent(options), // General
         generateDataSource(options),
-        generateStorageService(options),
-        generateColumnMenu(options),
-        generateConfigMenu(options),
-        generateExportTableDialog(options),
+        generateStorageService(options), // General
+        generateColumnMenu(options), // General
+        generateConfigMenu(options), // General
+        generateExportTableDialog(options), // General
         generatePaginatorSelectConfigProvider(options),
-        generateResizeDirective(options),
-        generateHighlightDirective(options),
-        generateTableCellTooltipDirective(options),
+        generateResizeDirective(options), // General
+        generateHighlightDirective(options), // General
+        generateTableCellTooltipDirective(options), // General
     ];
 }
