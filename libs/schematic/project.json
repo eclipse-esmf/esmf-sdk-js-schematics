@@ -16,6 +16,7 @@
     "build": {
       "executor": "@nx/angular:package",
       "outputs": ["{workspaceRoot}/dist/{projectRoot}"],
+      "dependsOn": ["build-generators"],
       "options": {
         "project": "libs/schematic/ng-package.json",
         "tsConfig": "libs/schematic/tsconfig.lib.json"
@@ -27,6 +28,13 @@
         "development": {}
       },
       "defaultConfiguration": "production"
+    },
+    "build-generators": {
+      "executor": "nx:run-commands",
+      "outputs": ["{workspaceRoot}/libs/schematic/.tmp-generators"],
+      "options": {
+        "command": "tsc -p libs/schematic/tsconfig.generators.json"
+      }
     },
     "nx-release-publish": {
       "options": {

@@ -4,6 +4,7 @@
 dist
 tmp
 out-tsc
+libs/schematic/.tmp-generators
 
 # dependencies
 node_modules

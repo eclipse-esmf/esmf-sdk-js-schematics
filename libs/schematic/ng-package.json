@@ -5,6 +5,16 @@
     "entryFile": "src/index.ts"
   },
   "assets": [
-    "generators"
+    {
+      "input": "./generators",
+      "glob": "**/*",
+      "ignore": ["**/*.ts"],
+      "output": "./generators"
+    },
+    {
+      "input": "./.tmp-generators",
+      "glob": "**/*",
+      "output": "./generators"
+    }
   ]
 }
