@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/schema",
-  "title": "My Generator",
+  "title": "Table Options Schema",
   "type": "object",
   "properties": {
     "name": {
