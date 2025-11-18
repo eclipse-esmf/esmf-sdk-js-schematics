@@ -6,7 +6,7 @@ on:
   pull_request:
     branches: [ '**' ]
     paths-ignore:
-      - 'documentation/decisions/**'
+      - '../../_legacy/documentation/decisions/**'
 
 jobs:
   build:

@@ -1,0 +1,22 @@
+# Outputs
+src/**/*.js
+src/**/*.js.map
+src/**/*.d.ts
+
+# IDEs
+../.idea/
+jsconfig.json
+.vscode/
+
+# Misc
+jest-stare/
+.yalc/
+node_modules/
+.npm
+npm-debug.log*
+yarn-error.log*
+*wizard.config.json
+
+# Mac OSX Finder files.
+**/.DS_Store
+.DS_Store
