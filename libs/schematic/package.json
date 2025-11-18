@@ -5,5 +5,9 @@
     "@angular/common": "^20.3.0",
     "@angular/core": "^20.3.0"
   },
-  "sideEffects": false
+  "sideEffects": false,
+  "nx-migrations": {
+    "collection": "./generators/collection.json"
+  },
+  "schematics": "./generators/collection.json"
 }

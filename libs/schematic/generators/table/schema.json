@@ -1,0 +1,12 @@
+{
+  "$schema": "http://json-schema.org/schema",
+  "title": "My Generator",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Name for the file"
+    }
+  },
+  "required": ["name"]
+}

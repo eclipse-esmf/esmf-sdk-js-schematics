@@ -1,0 +1,10 @@
+{
+  "$schema": "../../../node_modules/@angular-devkit/schematics/collection-schema.json",
+  "schematics": {
+    "table": {
+      "factory": "./table",
+      "schema": "./table/schema.json",
+      "description": "Generate a table component"
+    }
+  }
+}
