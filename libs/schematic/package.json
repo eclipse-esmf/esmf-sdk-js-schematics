@@ -1,9 +1,19 @@
 {
   "name": "@esmf/semantic-ui-schematic",
   "version": "0.0.1",
+  "dependencies": {
+    "@esmf/aspect-model-loader": "https://github.com/eclipse-esmf/esmf-sdk-js-aspect-model-loader/releases/download/v2.3.3/esmf-aspect-model-loader-2.3.3.tgz",
+    "inquirer": "8.2.5",
+    "inquirer-fuzzy-path": "2.3.0",
+    "inquirer-prompt-suggest": "0.1.0",
+    "inquirer-search-list": "^1.2.6",
+    "path": "^0.12.7"
+  },
   "peerDependencies": {
     "@angular/common": "^20.3.0",
-    "@angular/core": "^20.3.0"
+    "@angular/core": "^20.3.0",
+    "@angular/forms": "^20.3.0",
+    "@angular/material": "^20.2.0"
   },
   "sideEffects": false,
   "nx-migrations": {
