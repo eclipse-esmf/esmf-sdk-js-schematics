@@ -1,16 +1,16 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {Schematic} from './schematic';
+import {TableCell} from './table-cell';
 
-describe('Schematic', () => {
-  let component: Schematic;
-  let fixture: ComponentFixture<Schematic>;
+describe('TableCell', () => {
+  let component: TableCell;
+  let fixture: ComponentFixture<TableCell>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [Schematic],
+      imports: [TableCell],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(Schematic);
+    fixture = TestBed.createComponent(TableCell);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

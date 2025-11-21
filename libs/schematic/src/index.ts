@@ -1,1 +1,1 @@
-export * from './lib/schematic/schematic';
+export * from './lib/table-cell/table-cell';
