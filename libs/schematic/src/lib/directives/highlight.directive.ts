@@ -13,7 +13,7 @@ interface HighlightRange {
 }
 
 @Directive({
-  selector: '[highlight]',
+  selector: '[esmfHighlight]',
 })
 export class HighlightDirective implements OnChanges, OnInit {
   @Input() highlightSource: string | null = null;
@@ -60,7 +60,7 @@ export class HighlightDirective implements OnChanges, OnInit {
     this.handleHighlightText();
   }
 
-  private handleHighlightText(): void {
+  public handleHighlightText(): void {
     if (this._selected) {
       this.transformText();
     } else if (this.isStringHighlighted) {
@@ -164,6 +164,6 @@ export class HighlightDirective implements OnChanges, OnInit {
   }
 
   private clearHighlights(): void {
-    (this.el.nativeElement as HTMLElement).innerHTML = this.highlightSource;
+    (this.el.nativeElement as HTMLElement).innerHTML = this.highlightSource || '';
   }
 }
