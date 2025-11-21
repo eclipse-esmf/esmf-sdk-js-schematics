@@ -77,7 +77,7 @@ function tableSpecificGeneration(): Array<Rule> {
         generateColumnMenu(options), // General
         generateConfigMenu(options), // General
         generateExportTableDialog(options), // General
-        generatePaginatorSelectConfigProvider(options),
+        generatePaginatorSelectConfigProvider(options), // General
         generateResizeDirective(options), // General
         generateHighlightDirective(options), // General
         generateTableCellTooltipDirective(options), // General

@@ -2,7 +2,7 @@
   "name": "schematic",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "libs/schematic/src",
-  "prefix": "lib",
+  "prefix": "esmf",
   "projectType": "library",
   "release": {
     "version": {
@@ -51,6 +51,11 @@
     },
     "lint": {
       "executor": "@nx/eslint:lint"
+    }
+  },
+  "generators": {
+    "@nx/angular:component": {
+      "style": "scss"
     }
   }
 }
