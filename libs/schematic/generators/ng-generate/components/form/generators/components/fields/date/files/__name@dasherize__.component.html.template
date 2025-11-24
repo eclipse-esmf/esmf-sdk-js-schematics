@@ -1,0 +1,17 @@
+<mat-form-field class="form-field">
+    <mat-label><%= options.fieldConfig.name %></mat-label>
+    <input matInput [matDatepicker]="<%= options.fieldConfig.name %>picker" [formControl]="formControl" (ngModelChange)="value = $event"
+     data-test="<%= options.fieldConfig.name %>-date" />
+    <mat-datepicker-toggle matSuffix [for]="<%= options.fieldConfig.name %>picker"></mat-datepicker-toggle>
+    <mat-datepicker #<%= options.fieldConfig.name %>picker [color]="color"></mat-datepicker>
+
+    <% if (options.fieldConfig.exampleValue) {
+        %><mat-hint align="start">exampleValue: <%= options.fieldConfig.exampleValue %></mat-hint>
+    <% } %>
+
+    <mat-error *ngIf="formControl.invalid">
+        <ng-container *ngIf="error as err">
+            {{ err.translationKey | transloco: err.translationParams }}
+        </ng-container>
+    </mat-error>
+</mat-form-field>

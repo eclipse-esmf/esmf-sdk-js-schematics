@@ -1,10 +1,71 @@
 {
   "$schema": "../../../node_modules/@angular-devkit/schematics/collection-schema.json",
   "schematics": {
+    "ng-add": {
+      "description": "Add ui schematics library",
+      "factory": "./ng-add/index#add"
+    },
     "table": {
-      "factory": "./table",
-      "schema": "./table/schema.json",
-      "description": "Generate a table component"
+      "description": "Create a component that displays data with a data-table",
+      "factory": "./ng-generate/components/table/index",
+      "schema": "./ng-generate/components/table/schema.json"
+    },
+    "table-prompter": {
+      "description": "generate custom prompter",
+      "factory": "./ng-generate/prompter/table/index"
+    },
+    "table-generation": {
+      "description": "Executes the table generation",
+      "factory": "./ng-generate/components/table/index#generateTable",
+      "schema": "./ng-generate/components/table/schema.json"
+    },
+    "card": {
+      "description": "Create a component that displays data with a card",
+      "factory": "./ng-generate/components/card/index",
+      "schema": "./ng-generate/components/card/schema.json"
+    },
+    "card-prompter": {
+      "description": "generate custom prompter",
+      "factory": "./ng-generate/prompter/card/index"
+    },
+    "card-generation": {
+      "description": "Executes the card generation",
+      "factory": "./ng-generate/components/card/index#generateCard",
+      "schema": "./ng-generate/components/card/schema.json"
+    },
+    "form": {
+      "description": "Create a component that generate a form",
+      "factory": "./ng-generate/components/form/index",
+      "schema": "./ng-generate/components/form/schema.json"
+    },
+    "form-prompter": {
+      "description": "generate custom prompter",
+      "factory": "./ng-generate/prompter/form/index"
+    },
+    "form-generation": {
+      "description": "Executes the form generation",
+      "factory": "./ng-generate/components/form/index#generateForm",
+      "schema": "./ng-generate/components/form/schema.json"
+    },
+    "i18n": {
+      "description": "Add i18n strategy to the application",
+      "factory": "./ng-generate/i18n/index",
+      "schema": "./ng-generate/i18n/schema.json"
+    },
+    "types": {
+      "description": "Generate type definitions for an aspect model",
+      "factory": "./ng-generate/types/index",
+      "schema": "./ng-generate/types/schema.json"
+    },
+    "types-prompter": {
+      "description": "generate custom prompter",
+      "factory": "./ng-generate/prompter/types/index"
+    },
+    "tasks": {
+      "description": "generate custom prompter",
+      "run-prettier": {
+        "implementation": "./prettier-task"
+      }
     }
   }
 }

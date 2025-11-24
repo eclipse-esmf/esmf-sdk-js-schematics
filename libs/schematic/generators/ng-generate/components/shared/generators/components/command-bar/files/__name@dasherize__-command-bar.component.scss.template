@@ -1,0 +1,16 @@
+/** <%= options.generationDisclaimerText %> **/
+
+<% if (options.componentType === 'card' && options.addCommandBar) { %>
+    .sorting-content {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      padding-right: 20px;
+    }
+<% } %>
+
+mat-toolbar {
+    overflow: hidden;
+}
+
+.padding-40 { padding:40px; }

@@ -1,0 +1,123 @@
+private requestData() {
+    <% if (options.hasSearchBar) { %>
+        if (this.filterService.searchString.errors) {
+            return;
+        }
+        <% } %>
+
+    const query = new And();
+
+    <% if (options.isEnumQuickFilter) { %>
+        this.filterService.applyEnumFilter(query);
+        <% } %>
+
+    <% if (options.hasSearchBar) { %>
+        this.filterService.applyStringSearchFilter(query);
+        <% } %>
+
+    <% if (options.isDateQuickFilter) { %>
+        this.filterService.applyDateFilter(query);
+        <% } %>
+
+    if (this.customFilterExtension) this.customFilterExtension.apply(query);
+
+    const queryFilter = new Query({query: query});
+
+    const queryOption = new Query();
+
+    <% if (options.componentType === 'card') { %>
+      if (this.filterService.sortedProperty) {
+        const sortProperty = this.filterService.sortedProperty;
+        const sortDirection = this.filterService.sortCard === SortCard.ASCENDING ? 1 : -1;
+
+        queryOption.setSort(new Sort({[sortProperty]: sortDirection}));
+      }
+    <% } else { %>
+        if (this.sort.active) {
+          const sortProperty = this.sort.active;
+          const sortDirection = this.sort.direction === 'asc' ? 1 : -1;
+
+          queryOption.setSort(new Sort({[sortProperty]: sortDirection}));
+        }
+    <% } %>
+
+    queryOption.setLimit(new Limit(this.paginator.pageIndex * this.paginator.pageSize, this.paginator.pageSize));
+
+    if (this.customOptionsExtension) this.customOptionsExtension.apply(queryOption);
+
+    const additionalCondition = new Eq('local', <% if (options.chooseLanguageForSearch) { %>'<%= options.chooseLanguageForSearch.toUpperCase() %>'<% } else { %>'EN'<% } %>);
+    queryFilter?.queryNode.subNodes.push(additionalCondition);
+
+    const filterRQLQuery = queryFilter ? QueryStringifier.stringify(queryFilter) : '';
+    const optionsRQLQuery = QueryStringifier.stringify(queryOption).replace(/&/g, ',');
+
+    let rqlStringTemp = '';
+    if (filterRQLQuery.length > 0) {
+        rqlStringTemp = `filter=${filterRQLQuery}`;
+    }
+
+    if (optionsRQLQuery.length > 0) {
+        rqlStringTemp = `${rqlStringTemp}${rqlStringTemp !== '' ? '&' : ''}option=${optionsRQLQuery}`;
+    }
+
+    if (!(QueryStringifier as any)['superParseQueryNode']) {
+        (QueryStringifier as any)['superParseQueryNode'] = QueryStringifier['parseQueryNode'];
+    }
+
+    QueryStringifier['parseQueryNode'] = (node?: AbstractNode): string => {
+        let result = (QueryStringifier as any)['superParseQueryNode'](node);
+        if (node instanceof AbstractArrayNode) {
+            const arrayNode = <AbstractArrayNode>node;
+            const encodedValues = arrayNode.values.map(value => QueryStringifier['withType'](QueryStringifier['withEncoding'](value)));
+
+            // ensure outer brackets are not used. valid query ..in(<name>, "value1", "value2", ...)..
+            result = `${QueryStringifier['withEncoding'](arrayNode.name, {isField: true})}(${QueryStringifier['withEncoding'](arrayNode.field, {
+                isField: true,
+            })}, ${encodedValues.join(',')})`;
+        }
+        return result;
+    };
+
+    this.rqlString = rqlStringTemp;
+
+    if (this.requestSubscription && !this.requestSubscription.closed) {
+        this.requestSubscription.unsubscribe();
+    }
+
+    this.requestSubscription = this.<%= camelize((options.customRemoteService ? 'custom' : '') + '-' + options.name) %>Service.requestData(this.remoteAPI, {query: rqlStringTemp})
+        .pipe(
+            tap((movementResponse: <%= classify(options.aspectModel.name) %>Response) => {
+                this.dataLoadError = false;
+                this.totalItems =
+                    movementResponse.totalItems !== null && movementResponse.totalItems !== undefined
+                        ? movementResponse.totalItems
+                        : movementResponse.items.length;
+                this.maxExportRows = this.totalItems;
+
+                <% if (options.componentType === 'card') { %>
+                    this.dataToShow = movementResponse.items;
+                    this.dataSource.data = this.dataToShow;
+                    this.paginator.length = this.dataToShow.length;
+                <% } else { %>
+                    const dataToShow = movementResponse.items;
+                    this.dataSource.setData(dataToShow);
+                <% } %>
+
+                this.dataSource.paginator = this.paginator;
+                this.<% if (options.componentType === 'card') { %>card<% } else { %>table<% } %>UpdateFinishedEvent.emit();
+            }),
+            catchError((error: any) => {
+                this.dataLoadError = false;
+                <% if (options.componentType === 'card') { %>
+                    this.dataSource.setData([]);
+                <% } else { %>
+                    this.dataSource.setData([]);
+                <% } %>
+
+                this.<% if (options.componentType === 'card') { %>card<% } else { %>table<% } %>UpdateFinishedEvent.emit(error);
+                throw new Error(error.message);
+            }),
+            takeUntil(this.ngUnsubscribe)
+       )
+    .subscribe();
+}
