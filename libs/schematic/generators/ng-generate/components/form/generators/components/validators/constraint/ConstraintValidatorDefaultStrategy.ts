@@ -16,11 +16,11 @@ import {Constraint} from '@esmf/aspect-model-loader';
 import {ValidatorConfig} from '../validatorsTypes';
 
 export class ConstraintValidatorDefaultStrategy extends ConstraintValidatorStrategy {
-    static isTargetStrategy(constraint: Constraint): boolean {
-        return true;
-    }
+  static isTargetStrategy(constraint: Constraint): boolean {
+    return true;
+  }
 
-    getValidatorsConfigs(): ValidatorConfig[] {
-        return [];
-    }
+  getValidatorsConfigs(): ValidatorConfig[] {
+    return [];
+  }
 }

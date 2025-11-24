@@ -16,8 +16,8 @@ import {addPackageJsonDependencies, DEFAULT_DEPENDENCIES} from '../utils/package
 import {NodePackageInstallTask} from '@angular-devkit/schematics/tasks';
 
 export function add(options: any): Rule {
-    return (tree: Tree, context: SchematicContext) => {
-        context.addTask(new NodePackageInstallTask());
-        return chain([addPackageJsonDependencies(options.skipImport, options, DEFAULT_DEPENDENCIES)])(tree, context);
-    };
+  return (tree: Tree, context: SchematicContext) => {
+    context.addTask(new NodePackageInstallTask());
+    return chain([addPackageJsonDependencies(options.skipImport, options, DEFAULT_DEPENDENCIES)])(tree, context);
+  };
 }

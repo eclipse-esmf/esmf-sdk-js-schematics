@@ -17,21 +17,21 @@ import {Values} from '../../../schema';
 import {getTableColumValues} from '../../../utils';
 
 export function generateSemanticExplanation(options: Values): Rule {
-    return (tree: Tree, _context: SchematicContext) => {
-        return mergeWith(
-            apply(url('../shared/generators/constants/semantic-explanation/files'), [
-                applyTemplates({
-                    classify: strings.classify,
-                    dasherize: strings.dasherize,
-                    options: {
-                        ...options,
-                        tableColumns: getTableColumValues(options.listAllProperties, options),
-                    },
-                    name: options.name,
-                }),
-                move('src/app/shared/constants'),
-            ]),
-            options.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error
-        );
-    };
+  return (tree: Tree, _context: SchematicContext) => {
+    return mergeWith(
+      apply(url('../shared/generators/constants/semantic-explanation/files'), [
+        applyTemplates({
+          classify: strings.classify,
+          dasherize: strings.dasherize,
+          options: {
+            ...options,
+            tableColumns: getTableColumValues(options.listAllProperties, options),
+          },
+          name: options.name,
+        }),
+        move('src/app/shared/constants'),
+      ]),
+      options.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error
+    );
+  };
 }

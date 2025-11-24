@@ -16,29 +16,27 @@ import {FormFieldConfig, FormFieldStrategy} from '../FormFieldStrategy';
 import {getFormFieldStrategy} from '../index';
 
 export class ComplexFormFieldStrategy extends FormFieldStrategy {
-    pathToFiles = './generators/components/fields/complex/files';
-    hasChildren = true;
+  pathToFiles = './generators/components/fields/complex/files';
+  hasChildren = true;
 
-    static isTargetStrategy(child: Characteristic): boolean {
-        return child.dataType !== null && !!child.dataType?.isComplex;
-    }
+  static isTargetStrategy(child: Characteristic): boolean {
+    return child.dataType !== null && !!child.dataType?.isComplex;
+  }
 
-    buildConfig(): FormFieldConfig {
-        return {
-            ...this.getBaseFormFieldConfig(),
-            validators: this.getValidatorsConfigs(),
-            children: this.getChildConfigs(),
-        };
-    }
+  buildConfig(): FormFieldConfig {
+    return {
+      ...this.getBaseFormFieldConfig(),
+      validators: this.getValidatorsConfigs(),
+      children: this.getChildConfigs(),
+    };
+  }
 
-    getChildStrategies(): FormFieldStrategy[] {
-        const untypedDataType = this.child.dataType as any;
-        return untypedDataType?.properties
-            ? untypedDataType.properties.map((p: Property) => this.getChildStrategy(p, p.characteristic))
-            : [];
-    }
+  getChildStrategies(): FormFieldStrategy[] {
+    const untypedDataType = this.child.dataType as any;
+    return untypedDataType?.properties ? untypedDataType.properties.map((p: Property) => this.getChildStrategy(p, p.characteristic)) : [];
+  }
 
-    getChildStrategy(parent: Property, child: Characteristic): FormFieldStrategy {
-        return getFormFieldStrategy(this.options, this.context, parent, child, parent.name);
-    }
+  getChildStrategy(parent: Property, child: Characteristic): FormFieldStrategy {
+    return getFormFieldStrategy(this.options, this.context, parent, child, parent.name);
+  }
 }

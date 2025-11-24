@@ -15,40 +15,37 @@ import {Characteristic, DefaultCollection, DefaultEntity, DefaultList, DefaultSe
 import {FormFieldConfig, FormFieldStrategy} from '../FormFieldStrategy';
 
 export class ListFormFieldStrategy extends FormFieldStrategy {
-    pathToFiles = './generators/components/fields/list/files';
-    hasChildren = false;
-    isList = true;
+  pathToFiles = './generators/components/fields/list/files';
+  hasChildren = false;
+  isList = true;
 
-    declare child: DefaultList | DefaultCollection | DefaultSet | DefaultSortedSet;
+  declare child: DefaultList | DefaultCollection | DefaultSet | DefaultSortedSet;
 
-    static isTargetStrategy(child: Characteristic): boolean {
-        return (
-            child instanceof DefaultList ||
-            child instanceof DefaultCollection ||
-            child instanceof DefaultSet ||
-            child instanceof DefaultSortedSet
-        );
-    }
+  static isTargetStrategy(child: Characteristic): boolean {
+    return (
+      child instanceof DefaultList || child instanceof DefaultCollection || child instanceof DefaultSet || child instanceof DefaultSortedSet
+    );
+  }
 
-    buildConfig(): FormFieldConfig {
-        return {
-            ...this.getBaseFormFieldConfig(),
-            validators: this.getValidatorsConfigs(),
-            children: this.getChildConfigs(),
-            isList: this.isList,
-            isScalarChild: this.isScalarChild(),
-        };
-    }
+  buildConfig(): FormFieldConfig {
+    return {
+      ...this.getBaseFormFieldConfig(),
+      validators: this.getValidatorsConfigs(),
+      children: this.getChildConfigs(),
+      isList: this.isList,
+      isScalarChild: this.isScalarChild(),
+    };
+  }
 
-    getChildStrategies(): FormFieldStrategy[] {
-        return this.child.dataType instanceof DefaultEntity
-            ? this.child.dataType.properties.map(property => this.getChildStrategy(property, property.characteristic))
-            : this.isScalarChild()
-              ? [this.getChildStrategy(this.parent, this.child.elementCharacteristic!)]
-              : [];
-    }
+  getChildStrategies(): FormFieldStrategy[] {
+    return this.child.dataType instanceof DefaultEntity
+      ? this.child.dataType.properties.map(property => this.getChildStrategy(property, property.characteristic))
+      : this.isScalarChild()
+      ? [this.getChildStrategy(this.parent, this.child.elementCharacteristic!)]
+      : [];
+  }
 
-    private isScalarChild(): boolean {
-        return !!this.child.elementCharacteristic;
-    }
+  private isScalarChild(): boolean {
+    return !!this.child.elementCharacteristic;
+  }
 }

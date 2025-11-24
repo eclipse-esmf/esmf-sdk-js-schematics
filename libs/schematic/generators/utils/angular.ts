@@ -18,7 +18,7 @@ import {
   addModuleImportToModule,
   buildComponent,
   findModuleFromOptions,
-  parseSourceFile
+  parseSourceFile,
 } from '@angular/cdk/schematics';
 import {MODULE_EXT} from '@schematics/angular/utility/find-module';
 import {Schema} from '../ng-generate/components/shared/schema';

@@ -14,19 +14,19 @@
 import {chain, Rule, SchematicContext} from '@angular-devkit/schematics';
 import {Tree} from '@angular-devkit/schematics/src/tree/interface';
 import {
-    addAndUpdateConfigurationFilesRule,
-    formatAllFilesRule,
-    generateComponent,
-    generateGeneralFilesRules,
-    insertVersionIntoPathRule,
-    insertVersionIntoSelectorRule,
-    loadAspectModelRule,
-    loadRdfRule,
-    options,
-    prepareOptions,
-    setComponentNameRule,
-    setCustomActionsAndFiltersRule,
-    setTemplateOptionValuesRule,
+  addAndUpdateConfigurationFilesRule,
+  formatAllFilesRule,
+  generateComponent,
+  generateGeneralFilesRules,
+  insertVersionIntoPathRule,
+  insertVersionIntoSelectorRule,
+  loadAspectModelRule,
+  loadRdfRule,
+  options,
+  prepareOptions,
+  setComponentNameRule,
+  setCustomActionsAndFiltersRule,
+  setTemplateOptionValuesRule,
 } from '../shared/index';
 import {ComponentType} from '../shared/schema';
 import {generateStorageService} from './generators/services/storage/index';
@@ -44,42 +44,42 @@ import {generateTableCellComponent} from './generators/components/table-cell/ind
 import {generateTableCellLinkComponent} from './generators/components/table-cell-link/index';
 
 export default function (tableSchema: TableSchema): Rule {
-    return (tree: Tree, context: SchematicContext) => {
-        generateComponent(context, tableSchema, ComponentType.TABLE);
-    };
+  return (tree: Tree, context: SchematicContext) => {
+    generateComponent(context, tableSchema, ComponentType.TABLE);
+  };
 }
 
 export function generateTable(tableSchema: TableSchema): Rule {
-    prepareOptions(tableSchema, ComponentType.TABLE);
+  prepareOptions(tableSchema, ComponentType.TABLE);
 
-    return chain([
-        loadRdfRule(),
-        loadAspectModelRule(),
-        setCustomActionsAndFiltersRule(),
-        setComponentNameRule(ComponentType.TABLE),
-        insertVersionIntoSelectorRule(),
-        insertVersionIntoPathRule(),
-        setTemplateOptionValuesRule(),
-        ...generateGeneralFilesRules(),
-        ...tableSpecificGeneration(),
-        ...addAndUpdateConfigurationFilesRule(),
-        formatAllFilesRule(),
-    ]);
+  return chain([
+    loadRdfRule(),
+    loadAspectModelRule(),
+    setCustomActionsAndFiltersRule(),
+    setComponentNameRule(ComponentType.TABLE),
+    insertVersionIntoSelectorRule(),
+    insertVersionIntoPathRule(),
+    setTemplateOptionValuesRule(),
+    ...generateGeneralFilesRules(),
+    ...tableSpecificGeneration(),
+    // ...addAndUpdateConfigurationFilesRule(),
+    // formatAllFilesRule(),
+  ]);
 }
 
 function tableSpecificGeneration(): Array<Rule> {
-    return [
-        generateTableComponent(options),
-        generateTableCellComponent(options), // General
-        generateTableCellLinkComponent(options), // General
-        generateDataSource(options),
-        generateStorageService(options), // General
-        generateColumnMenu(options), // General
-        generateConfigMenu(options), // General
-        generateExportTableDialog(options), // General
-        generatePaginatorSelectConfigProvider(options), // General
-        generateResizeDirective(options), // General
-        generateHighlightDirective(options), // General
-        generateTableCellTooltipDirective(options), // General
-    ];
+  return [
+    generateTableComponent(options),
+    generateTableCellComponent(options), // General
+    generateTableCellLinkComponent(options), // General
+    generateDataSource(options),
+    generateStorageService(options), // General
+    generateColumnMenu(options), // General
+    generateConfigMenu(options), // General
+    generateExportTableDialog(options), // General
+    generatePaginatorSelectConfigProvider(options), // General
+    generateResizeDirective(options), // General
+    generateHighlightDirective(options), // General
+    generateTableCellTooltipDirective(options), // General
+  ];
 }

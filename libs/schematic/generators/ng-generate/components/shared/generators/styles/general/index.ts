@@ -15,39 +15,39 @@ import {apply, applyTemplates, MergeStrategy, mergeWith, move, noop, Rule, Schem
 import {strings} from '@angular-devkit/core';
 
 export function generateGeneralStyle(options: any): Rule {
-    return (tree: Tree, _context: SchematicContext) => {
-        const globalStylePath = 'src/styles.scss';
+  return (tree: Tree, _context: SchematicContext) => {
+    const globalStylePath = 'src/styles.scss';
 
-        if(tree.exists(globalStylePath)) {
-            tree.overwrite(globalStylePath, contentForGlobalStyles())
-        } else {
-            tree.create(globalStylePath, contentForGlobalStyles());
-        }
+    if (tree.exists(globalStylePath)) {
+      tree.overwrite(globalStylePath, contentForGlobalStyles());
+    } else {
+      tree.create(globalStylePath, contentForGlobalStyles());
+    }
 
-        const scssPath = 'src/assets/scss/general.component.scss';
+    const scssPath = 'src/assets/scss/general.component.scss';
 
-        if (!options.overwrite && tree.exists(scssPath)) {
-            return noop();
-        }
+    if (!options.overwrite && tree.exists(scssPath)) {
+      return noop();
+    }
 
-        return mergeWith(
-            apply(url('../shared/generators/styles/general/files'), [
-                applyTemplates({
-                    classify: strings.classify,
-                    dasherize: strings.dasherize,
-                    options: options,
-                    name: 'general',
-                    customStyleImports: options.customStyleImports.map((styleImport: string) => `@import '${styleImport}';`).join(''),
-                }),
-                move('src/assets/scss'),
-            ]),
-            options.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error,
-        );
-    };
+    return mergeWith(
+      apply(url('../shared/generators/styles/general/files'), [
+        applyTemplates({
+          classify: strings.classify,
+          dasherize: strings.dasherize,
+          options: options,
+          name: 'general',
+          customStyleImports: options.customStyleImports.map((styleImport: string) => `@import '${styleImport}';`).join(''),
+        }),
+        move('src/assets/scss'),
+      ]),
+      options.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error
+    );
+  };
 }
 
 function contentForGlobalStyles() {
-    return `@font-face { font-family: 'Material Icons'; font-style: normal;font-weight: 400; src: url(https://fonts.gstatic.com/s/materialicons/v48/flUhRq6tzZclQEJ-Vdg-IuiaDsNcIhQ8tQ.woff2) format('woff2');} .material-icons {font-family: 'Material Icons', serif;font-weight: normal;font-style: normal;font-size: 24px; line-height: 1; letter-spacing: normal; text-transform: none;display: inline-block;white-space: nowrap;word-wrap: normal;direction: ltr; -webkit-font-feature-settings: 'liga';-webkit-font-smoothing: antialiased; };
+  return `@font-face { font-family: 'Material Icons'; font-style: normal;font-weight: 400; src: url(https://fonts.gstatic.com/s/materialicons/v48/flUhRq6tzZclQEJ-Vdg-IuiaDsNcIhQ8tQ.woff2) format('woff2');} .material-icons {font-family: 'Material Icons', serif;font-weight: normal;font-style: normal;font-size: 24px; line-height: 1; letter-spacing: normal; text-transform: none;display: inline-block;white-space: nowrap;word-wrap: normal;direction: ltr; -webkit-font-feature-settings: 'liga';-webkit-font-smoothing: antialiased; };
             html,
             body {
                 margin: 0;

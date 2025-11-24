@@ -16,33 +16,33 @@ import {FormFieldConfig, FormFieldStrategy} from '../FormFieldStrategy';
 import {GenericValidator, ValidatorConfig} from '../../validators/validatorsTypes';
 
 export class EitherFormFieldStrategy extends FormFieldStrategy {
-    pathToFiles = './generators/components/fields/either/files';
-    hasChildren = true;
+  pathToFiles = './generators/components/fields/either/files';
+  hasChildren = true;
 
-    static isTargetStrategy(child: Characteristic): boolean {
-        return child instanceof DefaultEither;
-    }
+  static isTargetStrategy(child: Characteristic): boolean {
+    return child instanceof DefaultEither;
+  }
 
-    buildConfig(): FormFieldConfig {
-        return {
-            ...this.getBaseFormFieldConfig(),
-            validators: this.getValidatorsConfigs(),
-            children: this.getChildConfigs(),
-        };
-    }
+  buildConfig(): FormFieldConfig {
+    return {
+      ...this.getBaseFormFieldConfig(),
+      validators: this.getValidatorsConfigs(),
+      children: this.getChildConfigs(),
+    };
+  }
 
-    getDataTypeValidatorsConfigs(): ValidatorConfig[] {
-        return [
-            {
-                name: GenericValidator.UniqueValues,
-                definition: 'FormValidators.uniqueValuesValidator()',
-                isDirectGroupValidator: true,
-            },
-        ];
-    }
+  getDataTypeValidatorsConfigs(): ValidatorConfig[] {
+    return [
+      {
+        name: GenericValidator.UniqueValues,
+        definition: 'FormValidators.uniqueValuesValidator()',
+        isDirectGroupValidator: true,
+      },
+    ];
+  }
 
-    getChildStrategies(): FormFieldStrategy[] {
-        const typedChild = this.child as DefaultEither;
-        return [this.getChildStrategy(this.parent, typedChild.left), this.getChildStrategy(this.parent, typedChild.right)];
-    }
+  getChildStrategies(): FormFieldStrategy[] {
+    const typedChild = this.child as DefaultEither;
+    return [this.getChildStrategy(this.parent, typedChild.left), this.getChildStrategy(this.parent, typedChild.right)];
+  }
 }

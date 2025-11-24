@@ -21,21 +21,21 @@ import * as prettier from 'prettier';
 const defaultPrettierConfigPath = require.resolve('../../../../.prettierrc');
 
 export function loadAndApplyConfigFile(configFile: string, options: any): void {
-    try {
-        if (configFile && configFile !== '') {
-            const data = fs.readFileSync(configFile, 'utf8');
-            Object.assign(options, JSON.parse(data));
-        }
-    } catch (error) {
-        console.error('File cannot be found: ' + configFile, error);
+  try {
+    if (configFile && configFile !== '') {
+      const data = fs.readFileSync(configFile, 'utf8');
+      Object.assign(options, JSON.parse(data));
     }
+  } catch (error) {
+    console.error('File cannot be found: ' + configFile, error);
+  }
 }
 
 /**
  * Provide the path to the desired folder.
  */
 export interface FolderPathProvider {
-    getPath(options: DefaultSchema): string;
+  getPath(options: DefaultSchema): string;
 }
 
 /**
@@ -45,51 +45,51 @@ export interface FolderPathProvider {
  * @param fileFilter name of files to format
  */
 export function formatGeneratedFiles(folderProvider: FolderPathProvider, options: DefaultSchema, fileFilter?: Array<string>): Rule {
-    return async (tree: Tree, context: SchematicContext) => {
-        try {
-            const folderPath = folderProvider.getPath(options);
-            const prettierConfigPath = resolvePrettierConfigPath(options);
-            const prettierOptions = await resolvePrettierOptions(prettierConfigPath, options);
+  return async (tree: Tree, context: SchematicContext) => {
+    try {
+      const folderPath = folderProvider.getPath(options);
+      const prettierConfigPath = resolvePrettierConfigPath(options);
+      const prettierOptions = await resolvePrettierOptions(prettierConfigPath, options);
 
-            tree.getDir(folderPath).visit(async visitor => {
-                const fileEntry = tree.get(visitor);
-                if (fileEntry && (fileFilter === undefined || fileFilter.find(fileName => fileEntry.path.includes(fileName)))) {
-                    await formatFile(fileEntry, visitor, prettierOptions, options, tree);
-                }
-            });
-        } catch (err) {
-            options.spinner.fail(`Error error while trying to format the generated files (${err})`);
+      tree.getDir(folderPath).visit(async visitor => {
+        const fileEntry = tree.get(visitor);
+        if (fileEntry && (fileFilter === undefined || fileFilter.find(fileName => fileEntry.path.includes(fileName)))) {
+          await formatFile(fileEntry, visitor, prettierOptions, options, tree);
         }
-    };
+      });
+    } catch (err) {
+      options.spinner.fail(`Error error while trying to format the generated files (${err})`);
+    }
+  };
 }
 
 function resolvePrettierConfigPath(options: DefaultSchema) {
-    let prettierConfigPath = `${process.cwd()}/.prettierrc`;
+  let prettierConfigPath = `${process.cwd()}/.prettierrc`;
 
-    if (!fs.existsSync(prettierConfigPath)) {
-        options.spinner.info('Using the prettier config file .prettierrc from the schematics project.');
-        prettierConfigPath = defaultPrettierConfigPath;
-    }
-    return prettierConfigPath;
+  if (!fs.existsSync(prettierConfigPath)) {
+    options.spinner.info('Using the prettier config file .prettierrc from the schematics project.');
+    prettierConfigPath = defaultPrettierConfigPath;
+  }
+  return prettierConfigPath;
 }
 
 async function resolvePrettierOptions(prettierConfigPath: string, options: DefaultSchema) {
-    let prettierOptions = await prettier.resolveConfig(prettierConfigPath);
+  let prettierOptions = await prettier.resolveConfig(prettierConfigPath);
 
-    if (!prettierOptions) {
-        prettierOptions = {};
-        options.spinner.info('No prettier config file .prettierrc found. Using defaults.');
-    }
+  if (!prettierOptions) {
+    prettierOptions = {};
+    options.spinner.info('No prettier config file .prettierrc found. Using defaults.');
+  }
 
-    return prettierOptions;
+  return prettierOptions;
 }
 
 async function formatFile(fileEntry: any, visitor: any, prettierOptions: any, options: DefaultSchema, tree: Tree) {
-    if (!visitor.includes('DS_Store')) {
-        prettierOptions.filepath = visitor; // Infer the parser from the file extension
-        const srcFile = fileEntry.content.toString();
-        const dstFile = await prettier.format(srcFile, prettierOptions);
-        tree.overwrite(visitor, dstFile);
-        options.spinner.succeed(`Prettier ${visitor}`);
-    }
+  if (!visitor.includes('DS_Store')) {
+    prettierOptions.filepath = visitor; // Infer the parser from the file extension
+    const srcFile = fileEntry.content.toString();
+    const dstFile = await prettier.format(srcFile, prettierOptions);
+    tree.overwrite(visitor, dstFile);
+    options.spinner.succeed(`Prettier ${visitor}`);
+  }
 }

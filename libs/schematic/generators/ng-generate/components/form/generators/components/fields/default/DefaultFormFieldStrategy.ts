@@ -14,21 +14,21 @@
 import {FormFieldConfig, FormFieldStrategy} from '../FormFieldStrategy';
 
 export class DefaultFormFieldStrategy extends FormFieldStrategy {
-    pathToFiles = './generators/components/fields/default/files';
-    hasChildren = false;
+  pathToFiles = './generators/components/fields/default/files';
+  hasChildren = false;
 
-    static isTargetStrategy(): boolean {
-        return true;
-    }
+  static isTargetStrategy(): boolean {
+    return true;
+  }
 
-    buildConfig(): FormFieldConfig {
-        const untypedChild = this.child as any;
+  buildConfig(): FormFieldConfig {
+    const untypedChild = this.child as any;
 
-        return {
-            ...this.getBaseFormFieldConfig(),
-            exampleValue: this.parent.exampleValue || '',
-            unitName: untypedChild.unit?.name || '',
-            validators: this.getValidatorsConfigs(),
-        };
-    }
+    return {
+      ...this.getBaseFormFieldConfig(),
+      exampleValue: this.parent.exampleValue || '',
+      unitName: untypedChild.unit?.name || '',
+      validators: this.getValidatorsConfigs(),
+    };
+  }
 }

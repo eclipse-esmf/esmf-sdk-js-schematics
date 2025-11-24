@@ -18,9 +18,9 @@ import {Observable, Subscriber} from 'rxjs';
 import {generate} from '../index';
 
 export default function (options: TableSchema) {
-    return (tree: Tree, context: SchematicContext) => {
-        return new Observable<Tree>((subscriber: Subscriber<Tree>) => {
-            generate(subscriber, tree, options, 'table');
-        });
-    };
+  return (tree: Tree, context: SchematicContext) => {
+    return new Observable<Tree>((subscriber: Subscriber<Tree>) => {
+      generate(subscriber, tree, options, 'table');
+    });
+  };
 }

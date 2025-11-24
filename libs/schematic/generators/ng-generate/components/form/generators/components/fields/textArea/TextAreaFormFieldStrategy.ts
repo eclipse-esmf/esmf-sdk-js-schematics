@@ -16,36 +16,36 @@ import {FormFieldConfig, FormFieldStrategy} from '../FormFieldStrategy';
 import {DataType, DataTypeValidator, ValidatorConfig} from '../../validators/validatorsTypes';
 
 export class TextAreaFormFieldStrategy extends FormFieldStrategy {
-    pathToFiles = './generators/components/fields/textArea/files';
-    hasChildren = false;
+  pathToFiles = './generators/components/fields/textArea/files';
+  hasChildren = false;
 
-    static isTargetStrategy(child: Characteristic): boolean {
-        const type = this.getShortUrn(child);
-        return type === DataType.LangString;
-    }
+  static isTargetStrategy(child: Characteristic): boolean {
+    const type = this.getShortUrn(child);
+    return type === DataType.LangString;
+  }
 
-    buildConfig(): FormFieldConfig {
-        const untypedChild = this.child as any;
+  buildConfig(): FormFieldConfig {
+    const untypedChild = this.child as any;
 
-        return {
-            ...this.getBaseFormFieldConfig(),
-            exampleValue: this.parent.exampleValue || '',
-            unitName: untypedChild.unit?.name || '',
-            validators: this.getValidatorsConfigs(),
-        };
-    }
+    return {
+      ...this.getBaseFormFieldConfig(),
+      exampleValue: this.parent.exampleValue || '',
+      unitName: untypedChild.unit?.name || '',
+      validators: this.getValidatorsConfigs(),
+    };
+  }
 
-    getDataTypeValidatorsConfigs(): ValidatorConfig[] {
-        const type = FormFieldStrategy.getShortUrn(this.child);
+  getDataTypeValidatorsConfigs(): ValidatorConfig[] {
+    const type = FormFieldStrategy.getShortUrn(this.child);
 
-        return type === DataType.LangString
-            ? [
-                  {
-                      name: DataTypeValidator.LangString,
-                      definition: 'FormValidators.langStringValidator()',
-                      isDirectGroupValidator: false,
-                  },
-              ]
-            : [];
-    }
+    return type === DataType.LangString
+      ? [
+          {
+            name: DataTypeValidator.LangString,
+            definition: 'FormValidators.langStringValidator()',
+            isDirectGroupValidator: false,
+          },
+        ]
+      : [];
+  }
 }

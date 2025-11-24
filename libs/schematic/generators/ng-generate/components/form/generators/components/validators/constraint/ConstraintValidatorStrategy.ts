@@ -12,45 +12,42 @@
  */
 
 import {
-    Characteristic,
-    Constraint,
-    DefaultCollection,
-    DefaultEither,
-    DefaultList,
-    DefaultSet,
-    DefaultSortedSet,
-    DefaultStructuredValue,
+  Characteristic,
+  Constraint,
+  DefaultCollection,
+  DefaultEither,
+  DefaultList,
+  DefaultSet,
+  DefaultSortedSet,
+  DefaultStructuredValue,
 } from '@esmf/aspect-model-loader';
 import {ValidatorConfig} from '../validatorsTypes';
 
 export abstract class ConstraintValidatorStrategy {
-    constructor(
-        public constraint: Constraint,
-        public characteristic: Characteristic,
-    ) {}
+  constructor(public constraint: Constraint, public characteristic: Characteristic) {}
 
-    static isTargetStrategy(constraint: Constraint): boolean {
-        throw new Error('An implementation of the method has to be provided by a derived class');
-    }
+  static isTargetStrategy(constraint: Constraint): boolean {
+    throw new Error('An implementation of the method has to be provided by a derived class');
+  }
 
-    getValidatorsConfigs(): ValidatorConfig[] {
-        throw new Error('An implementation of the method has to be provided by a derived class');
-    }
+  getValidatorsConfigs(): ValidatorConfig[] {
+    throw new Error('An implementation of the method has to be provided by a derived class');
+  }
 
-    isList(): boolean {
-        return (
-            this.characteristic instanceof DefaultList ||
-            this.characteristic instanceof DefaultCollection ||
-            this.characteristic instanceof DefaultSet ||
-            this.characteristic instanceof DefaultSortedSet
-        );
-    }
+  isList(): boolean {
+    return (
+      this.characteristic instanceof DefaultList ||
+      this.characteristic instanceof DefaultCollection ||
+      this.characteristic instanceof DefaultSet ||
+      this.characteristic instanceof DefaultSortedSet
+    );
+  }
 
-    isComplex(): boolean {
-        return (
-            this.characteristic instanceof DefaultEither ||
-            this.characteristic instanceof DefaultStructuredValue ||
-            (this.characteristic.dataType !== null && !!this.characteristic.dataType?.isComplex)
-        );
-    }
+  isComplex(): boolean {
+    return (
+      this.characteristic instanceof DefaultEither ||
+      this.characteristic instanceof DefaultStructuredValue ||
+      (this.characteristic.dataType !== null && !!this.characteristic.dataType?.isComplex)
+    );
+  }
 }

@@ -23,39 +23,39 @@ let sharedOptions: any = {};
 let allProps: Array<Property> = [];
 
 export function generateCardComponent(options: any): Rule {
-    return (tree: Tree, _context: SchematicContext) => {
-        allProps = options.listAllProperties;
+  return (tree: Tree, _context: SchematicContext) => {
+    allProps = options.listAllProperties;
 
-        return chain([
-            ...(options.hasFilters ? [generateChipList(options)] : []),
-            ...(options.addCommandBar ? [generateCommandBar(options, allProps)] : []),
-            generateCard(options, _context),
-        ])(tree, _context);
-    };
+    return chain([
+      ...(options.hasFilters ? [generateChipList(options)] : []),
+      ...(options.addCommandBar ? [generateCommandBar(options, allProps)] : []),
+      generateCard(options, _context),
+    ])(tree, _context);
+  };
 }
 
 function generateCard(options: Schema, _context: SchematicContext): Rule {
-    sharedOptions = options;
+  sharedOptions = options;
 
-    return mergeWith(
-        apply(url('./generators/components/card/files'), [
-            templateInclude(_context, applyTemplate, options, '../shared/methods'),
-            move(sharedOptions.path),
-        ]),
-        sharedOptions.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error,
-    );
+  return mergeWith(
+    apply(url('./generators/components/card/files'), [
+      templateInclude(_context, applyTemplate, options, '../shared/methods'),
+      move(sharedOptions.path),
+    ]),
+    sharedOptions.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error
+  );
 }
 
 function applyTemplate(): Rule {
-    return applyTemplates({
-        classify: strings.classify,
-        dasherize: strings.dasherize,
-        camelize: strings.camelize,
-        options: sharedOptions,
-        name: sharedOptions.name,
-        selectedModelElementUrn: sharedOptions.selectedModelElement.aspectModelUrn,
-        aspectModelElementUrn: sharedOptions.aspectModel.aspectModelUrn,
-        enumProperties: getEnumProperties(sharedOptions),
-        enumPropertyDefinitions: getEnumPropertyDefinitions(sharedOptions, allProps),
-    });
+  return applyTemplates({
+    classify: strings.classify,
+    dasherize: strings.dasherize,
+    camelize: strings.camelize,
+    options: sharedOptions,
+    name: sharedOptions.name,
+    selectedModelElementUrn: sharedOptions.selectedModelElement.aspectModelUrn,
+    aspectModelElementUrn: sharedOptions.aspectModel.aspectModelUrn,
+    enumProperties: getEnumProperties(sharedOptions),
+    enumPropertyDefinitions: getEnumPropertyDefinitions(sharedOptions, allProps),
+  });
 }

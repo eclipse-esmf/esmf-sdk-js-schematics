@@ -24,32 +24,32 @@ import {Tree} from '@angular-devkit/schematics/src/tree/interface';
 import {ComponentType} from '../components/shared/schema';
 
 export default function (options: TypesSchema): Rule {
-    if (options && options.configFile !== undefined) {
-        options.spinner = ora().start();
-        options.templateHelper = new TemplateHelper();
+  if (options && options.configFile !== undefined) {
+    options.spinner = ora().start();
+    options.templateHelper = new TemplateHelper();
 
-        loadAndApplyConfigFile(options.configFile, options);
+    loadAndApplyConfigFile(options.configFile, options);
 
-        if (options.aspectModelTFilesString) {
-            options.aspectModelTFiles = options.aspectModelTFilesString.split(',');
-        }
-
-        return chain([
-            loadRDF(options),
-            loadAspectModel(options),
-            visitAspectModel(options),
-            formatGeneratedFiles(
-                {
-                    getPath(options: TypesSchema) {
-                        return `src/app/shared/types/${dasherize(options.aspectModel.name).toLowerCase()}`;
-                    },
-                },
-                options,
-            ),
-        ]);
-    } else {
-        return (tree: Tree, context: SchematicContext) => {
-            generateComponent(context, options, ComponentType.TYPES);
-        };
+    if (options.aspectModelTFilesString) {
+      options.aspectModelTFiles = options.aspectModelTFilesString.split(',');
     }
+
+    return chain([
+      loadRDF(options),
+      loadAspectModel(options),
+      visitAspectModel(options),
+      formatGeneratedFiles(
+        {
+          getPath(options: TypesSchema) {
+            return `src/app/shared/types/${dasherize(options.aspectModel.name).toLowerCase()}`;
+          },
+        },
+        options
+      ),
+    ]);
+  } else {
+    return (tree: Tree, context: SchematicContext) => {
+      generateComponent(context, options, ComponentType.TYPES);
+    };
+  }
 }

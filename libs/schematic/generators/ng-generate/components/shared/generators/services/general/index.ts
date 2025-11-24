@@ -16,20 +16,20 @@ import {strings} from '@angular-devkit/core';
 import {assetsPath} from '../../../../../../utils/aspect-model';
 
 export function generateGeneralService(options: any): Rule {
-    return (tree: Tree, _context: SchematicContext) => {
-        return mergeWith(
-            apply(url('../shared/generators/services/general/files'), [
-                applyTemplates({
-                    classify: strings.classify,
-                    dasherize: strings.dasherize,
-                    options: options,
-                    name: options.name,
-                    assetsPath: assetsPath,
-                    aspectModelName: options.aspectModel.name,
-                }),
-                move(options.path),
-            ]),
-            options.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error,
-        );
-    };
+  return (tree: Tree, _context: SchematicContext) => {
+    return mergeWith(
+      apply(url('../shared/generators/services/general/files'), [
+        applyTemplates({
+          classify: strings.classify,
+          dasherize: strings.dasherize,
+          options: options,
+          name: options.name,
+          assetsPath: assetsPath,
+          aspectModelName: options.aspectModel.name,
+        }),
+        move(options.path),
+      ]),
+      options.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error
+    );
+  };
 }
