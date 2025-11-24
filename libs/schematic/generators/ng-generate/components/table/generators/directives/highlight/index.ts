@@ -15,22 +15,22 @@ import {strings} from '@angular-devkit/core';
 import {apply, applyTemplates, MergeStrategy, mergeWith, move, noop, Rule, url} from '@angular-devkit/schematics';
 
 export function generateHighlightDirective(options: any): Rule {
-    return () => {
-        if (!options.hasSearchBar) {
-            return noop;
-        }
+  return () => {
+    if (!options.hasSearchBar) {
+      return noop;
+    }
 
-        return mergeWith(
-            apply(url('./generators/directives/highlight/files'), [
-                applyTemplates({
-                    classify: strings.classify,
-                    dasherize: strings.dasherize,
-                    options: options,
-                    name: 'highlight',
-                }),
-                move('src/app/shared/directives'),
-            ]),
-            options.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error,
-        );
-    };
+    return mergeWith(
+      apply(url('./generators/directives/highlight/files'), [
+        applyTemplates({
+          classify: strings.classify,
+          dasherize: strings.dasherize,
+          options: options,
+          name: 'highlight',
+        }),
+        move('src/app/shared/directives'),
+      ]),
+      options.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error
+    );
+  };
 }

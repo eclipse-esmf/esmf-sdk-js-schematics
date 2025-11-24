@@ -15,18 +15,18 @@ import {apply, applyTemplates, MergeStrategy, mergeWith, move, Rule, SchematicCo
 import {strings} from '@angular-devkit/core';
 
 export function generateTableCellComponent(options: any): Rule {
-    return (tree: Tree, _context: SchematicContext) => {
-        return mergeWith(
-            apply(url('./generators/components/table-cell/files'), [
-                applyTemplates({
-                    classify: strings.classify,
-                    dasherize: strings.dasherize,
-                    options: options,
-                    name: 'esmf-table-cell',
-                }),
-                move('src/app/shared/components/table-cell'),
-            ]),
-            options.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error,
-        );
-    };
+  return (tree: Tree, _context: SchematicContext) => {
+    return mergeWith(
+      apply(url('./generators/components/table-cell/files'), [
+        applyTemplates({
+          classify: strings.classify,
+          dasherize: strings.dasherize,
+          options: options,
+          name: 'esmf-table-cell',
+        }),
+        move('src/app/shared/components/table-cell'),
+      ]),
+      options.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error
+    );
+  };
 }

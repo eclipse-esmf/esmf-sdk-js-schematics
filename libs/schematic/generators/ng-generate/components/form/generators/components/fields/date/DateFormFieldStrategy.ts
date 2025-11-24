@@ -18,34 +18,34 @@ import {DataType} from '../../validators/validatorsTypes';
 
 const DEFAULT_FORMAT = 'yyyy-MM-DD';
 const typesConfigs = [
-    {
-        type: DataType.Date,
-        format: 'yyyy-MM-DD',
-    },
+  {
+    type: DataType.Date,
+    format: 'yyyy-MM-DD',
+  },
 ];
 const supportedTypes: DataType[] = typesConfigs.map(dt => dt.type);
 
 export class DateFormFieldStrategy extends FormFieldStrategy {
-    pathToFiles = './generators/components/fields/date/files';
-    hasChildren = false;
+  pathToFiles = './generators/components/fields/date/files';
+  hasChildren = false;
 
-    static isTargetStrategy(child: Characteristic): boolean {
-        const type = this.getShortUrn(child);
-        return type ? supportedTypes.includes(type) : false;
-    }
+  static isTargetStrategy(child: Characteristic): boolean {
+    const type = this.getShortUrn(child);
+    return type ? supportedTypes.includes(type) : false;
+  }
 
-    buildConfig(): FormFieldConfig {
-        return {
-            ...this.getBaseFormFieldConfig(),
-            exampleValue: this.parent.exampleValue || '',
-            validators: this.getValidatorsConfigs([ConstraintValidatorRangeStrategy]),
-            dataFormat: this.getDataFormat(),
-        };
-    }
+  buildConfig(): FormFieldConfig {
+    return {
+      ...this.getBaseFormFieldConfig(),
+      exampleValue: this.parent.exampleValue || '',
+      validators: this.getValidatorsConfigs([ConstraintValidatorRangeStrategy]),
+      dataFormat: this.getDataFormat(),
+    };
+  }
 
-    getDataFormat(): string {
-        const type = DateFormFieldStrategy.getShortUrn(this.child);
-        const format = typesConfigs.find(dt => dt.type === type)?.format;
-        return format || DEFAULT_FORMAT;
-    }
+  getDataFormat(): string {
+    const type = DateFormFieldStrategy.getShortUrn(this.child);
+    const format = typesConfigs.find(dt => dt.type === type)?.format;
+    return format || DEFAULT_FORMAT;
+  }
 }

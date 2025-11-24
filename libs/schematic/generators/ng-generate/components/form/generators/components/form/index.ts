@@ -15,9 +15,9 @@ import {chain, Rule, SchematicContext, Tree} from '@angular-devkit/schematics';
 import {RootFormField} from './RootFormFieldStrategy';
 
 export function generateFormComponent(options: any): Rule {
-    return (tree: Tree, _context: SchematicContext) => {
-        const rootFormField = new RootFormField(options, _context);
-        const rules = rootFormField.generate();
-        return chain(rules)(tree, _context);
-    };
+  return (tree: Tree, _context: SchematicContext) => {
+    const rootFormField = new RootFormField(options, _context);
+    const rules = rootFormField.generate();
+    return chain(rules)(tree, _context);
+  };
 }

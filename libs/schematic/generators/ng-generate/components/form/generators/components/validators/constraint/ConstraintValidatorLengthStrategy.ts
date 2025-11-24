@@ -16,29 +16,29 @@ import {Constraint, DefaultLengthConstraint} from '@esmf/aspect-model-loader';
 import {ValidatorConfig} from '../validatorsTypes';
 
 export class ConstraintValidatorLengthStrategy extends ConstraintValidatorStrategy {
-    static isTargetStrategy(constraint: Constraint): boolean {
-        return constraint instanceof DefaultLengthConstraint;
+  static isTargetStrategy(constraint: Constraint): boolean {
+    return constraint instanceof DefaultLengthConstraint;
+  }
+
+  getValidatorsConfigs(): ValidatorConfig[] {
+    const typedConstraint = this.constraint as DefaultLengthConstraint;
+
+    if (typedConstraint.minValue === undefined && typedConstraint.maxValue === undefined) {
+      return [];
     }
 
-    getValidatorsConfigs(): ValidatorConfig[] {
-        const typedConstraint = this.constraint as DefaultLengthConstraint;
+    const isApplyToChildren = this.isList() || this.isComplex();
 
-        if (typedConstraint.minValue === undefined && typedConstraint.maxValue === undefined) {
-            return [];
-        }
-
-        const isApplyToChildren = this.isList() || this.isComplex();
-
-        return [
-            {
-                name: this.constraint.name,
-                definition: this.isList()
-                    ? `FormValidators.listLengthValidator(${typedConstraint.minValue}, ${typedConstraint.maxValue})`
-                    : this.isComplex()
-                      ? `FormValidators.applyToChildren(FormValidators.lengthValidator(${typedConstraint.minValue}, ${typedConstraint.maxValue}))`
-                      : `FormValidators.lengthValidator(${typedConstraint.minValue}, ${typedConstraint.maxValue})`,
-                isDirectGroupValidator: !isApplyToChildren,
-            },
-        ];
-    }
+    return [
+      {
+        name: this.constraint.name,
+        definition: this.isList()
+          ? `FormValidators.listLengthValidator(${typedConstraint.minValue}, ${typedConstraint.maxValue})`
+          : this.isComplex()
+          ? `FormValidators.applyToChildren(FormValidators.lengthValidator(${typedConstraint.minValue}, ${typedConstraint.maxValue}))`
+          : `FormValidators.lengthValidator(${typedConstraint.minValue}, ${typedConstraint.maxValue})`,
+        isDirectGroupValidator: !isApplyToChildren,
+      },
+    ];
+  }
 }

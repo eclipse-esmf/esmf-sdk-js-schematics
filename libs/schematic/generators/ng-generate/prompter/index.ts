@@ -14,7 +14,7 @@
 import {Tree} from '@angular-devkit/schematics/src/tree/interface';
 import {Aspect} from '@esmf/aspect-model-loader';
 import * as fs from 'fs';
-import path from 'path';
+import * as path from 'path';
 import {lastValueFrom, Subscriber} from 'rxjs';
 import {TemplateHelper} from '../../utils/template-helper';
 import {ComponentType, Schema} from '../components/shared/schema';
@@ -31,20 +31,20 @@ import {loadInquirer} from '../../utils/angular';
 
 // Function to dynamically load inquirer-fuzzy-path and register the prompt
 async function registerFuzzyPathPrompt(): Promise<any> {
-    try {
-        const inquirerFuzzyPath = await import('inquirer-fuzzy-path');
-        const inquirerPromptSuggest = await import('inquirer-prompt-suggest');
-        const inquirerSearchList = await import('inquirer-search-list');
-        const inquirer = await loadInquirer();
+  try {
+    const inquirerFuzzyPath = await import('inquirer-fuzzy-path');
+    const inquirerPromptSuggest = await import('inquirer-prompt-suggest');
+    const inquirerSearchList = await import('inquirer-search-list');
+    const inquirer = await loadInquirer();
 
-        inquirer.registerPrompt('fuzzypath', inquirerFuzzyPath);
-        inquirer.registerPrompt('suggest', inquirerPromptSuggest);
-        inquirer.registerPrompt('search-list', inquirerSearchList);
+    inquirer.registerPrompt('fuzzypath', inquirerFuzzyPath);
+    inquirer.registerPrompt('suggest', inquirerPromptSuggest);
+    inquirer.registerPrompt('search-list', inquirerSearchList);
 
-        return inquirer;
-    } catch (err) {
-        console.error('Failed to register fuzzy path prompt:', err);
-    }
+    return inquirer;
+  } catch (err) {
+    console.error('Failed to register fuzzy path prompt:', err);
+  }
 }
 
 export let WIZARD_CONFIG_FILE = 'wizard.config.json';
@@ -69,21 +69,21 @@ export let aspect: Aspect;
  * @throws {Error} - Will throw an error if an error occurs during execution.
  */
 export async function generate(subscriber: Subscriber<Tree>, tree: Tree, options: Schema, type: string) {
-    console.log('\x1b[33m%s\x1b[0m', 'Welcome to the TTL schematic UI generator, answer some questions to get you started:');
+  console.log('\x1b[33m%s\x1b[0m', 'Welcome to the TTL schematic UI generator, answer some questions to get you started:');
 
-    inquirer = await registerFuzzyPathPrompt();
-    generationType = type as ComponentType;
-    initAnswers();
+  inquirer = await registerFuzzyPathPrompt();
+  generationType = type as ComponentType;
+  initAnswers();
 
-    runPrompts(subscriber, tree, new TemplateHelper(), options).finally(() => {
-        cleanUpOptionsObject(allAnswers);
-        Object.assign(options, allAnswers);
+  runPrompts(subscriber, tree, new TemplateHelper(), options).finally(() => {
+    cleanUpOptionsObject(allAnswers);
+    Object.assign(options, allAnswers);
 
-        if (!fromImport) {
-            WIZARD_CONFIG_FILE = allAnswers.configFile;
-            writeConfigAndExit(subscriber, tree, allAnswers);
-        }
-    });
+    if (!fromImport) {
+      WIZARD_CONFIG_FILE = allAnswers.configFile;
+      writeConfigAndExit(subscriber, tree, allAnswers);
+    }
+  });
 }
 
 /**
@@ -95,12 +95,12 @@ export async function generate(subscriber: Subscriber<Tree>, tree: Tree, options
  *
  */
 function initAnswers() {
-    allAnswers = {
-        aspectModelTFiles: [],
-        excludedProperties: [],
-        configFile: WIZARD_CONFIG_FILE,
-        complexProps: [],
-    };
+  allAnswers = {
+    aspectModelTFiles: [],
+    excludedProperties: [],
+    configFile: WIZARD_CONFIG_FILE,
+    complexProps: [],
+  };
 }
 
 /**
@@ -116,53 +116,53 @@ function initAnswers() {
  * @throws Will throw an error if an operation fails.
  */
 async function runPrompts(subscriber: Subscriber<Tree>, tree: Tree, templateHelper: TemplateHelper, options: Schema) {
-    try {
-        const answerConfigurationFileConfig = await getConfigurationFileConfig(subscriber, tree);
+  try {
+    const answerConfigurationFileConfig = await getConfigurationFileConfig(subscriber, tree);
 
-        if (!answerConfigurationFileConfig.importConfigFile) {
-            const answerAspectModelWithMainAspect = await getAspectModelWithMainAspect();
-            aspect = await loadAspectModel(answerAspectModelWithMainAspect.aspectModelUrnToLoad, tree);
-            switch (generationType) {
-                case ComponentType.TABLE:
-                    return tablePrompterQuestions(
-                        answerConfigurationFileConfig,
-                        answerAspectModelWithMainAspect,
-                        templateHelper,
-                        options,
-                        aspect,
-                        combineAnswers,
-                        allAnswers,
-                    );
-                case ComponentType.FORM:
-                    return formPrompterQuestions(
-                        answerConfigurationFileConfig,
-                        answerAspectModelWithMainAspect,
-                        templateHelper,
-                        options,
-                        aspect,
-                        combineAnswers,
-                        allAnswers,
-                    );
-                case ComponentType.CARD:
-                    return cardPrompterQuestions(
-                        answerConfigurationFileConfig,
-                        answerAspectModelWithMainAspect,
-                        templateHelper,
-                        options,
-                        aspect,
-                        combineAnswers,
-                        allAnswers,
-                    );
-                case ComponentType.TYPES:
-                    return typesPrompterQuestions(answerConfigurationFileConfig, answerAspectModelWithMainAspect, combineAnswers);
-                default:
-                    throw new Error('Invalid component type');
-            }
-        }
-    } catch (error) {
-        console.error('An error occurred:', error);
-        subscriber.error(error);
+    if (!answerConfigurationFileConfig.importConfigFile) {
+      const answerAspectModelWithMainAspect = await getAspectModelWithMainAspect();
+      aspect = await loadAspectModel(answerAspectModelWithMainAspect.aspectModelUrnToLoad, tree);
+      switch (generationType) {
+        case ComponentType.TABLE:
+          return tablePrompterQuestions(
+            answerConfigurationFileConfig,
+            answerAspectModelWithMainAspect,
+            templateHelper,
+            options,
+            aspect,
+            combineAnswers,
+            allAnswers
+          );
+        case ComponentType.FORM:
+          return formPrompterQuestions(
+            answerConfigurationFileConfig,
+            answerAspectModelWithMainAspect,
+            templateHelper,
+            options,
+            aspect,
+            combineAnswers,
+            allAnswers
+          );
+        case ComponentType.CARD:
+          return cardPrompterQuestions(
+            answerConfigurationFileConfig,
+            answerAspectModelWithMainAspect,
+            templateHelper,
+            options,
+            aspect,
+            combineAnswers,
+            allAnswers
+          );
+        case ComponentType.TYPES:
+          return typesPrompterQuestions(answerConfigurationFileConfig, answerAspectModelWithMainAspect, combineAnswers);
+        default:
+          throw new Error('Invalid component type');
+      }
     }
+  } catch (error) {
+    console.error('An error occurred:', error);
+    subscriber.error(error);
+  }
 }
 
 /**
@@ -180,17 +180,17 @@ async function runPrompts(subscriber: Subscriber<Tree>, tree: Tree, templateHelp
  * @returns {Promise<Object>} A promise that resolves to the answers from the user.
  */
 async function getConfigurationFileConfig(subscriber: Subscriber<Tree>, tree: Tree) {
-    const answerGeneralConfig = await inquirer.prompt([createOrImport, configFileName, importConfigFile, pathDecision(WIZARD_CONFIG_FILE)]);
+  const answerGeneralConfig = await inquirer.prompt([createOrImport, configFileName, importConfigFile, pathDecision(WIZARD_CONFIG_FILE)]);
 
-    if (answerGeneralConfig.importConfigFile) {
-        importFileConfig(answerGeneralConfig.importConfigFile, subscriber, tree);
-    }
+  if (answerGeneralConfig.importConfigFile) {
+    importFileConfig(answerGeneralConfig.importConfigFile, subscriber, tree);
+  }
 
-    if (answerGeneralConfig.paths) {
-        addFileToConfig(answerGeneralConfig.paths, allAnswers);
-        await askAnotherFile();
-    }
-    return answerGeneralConfig;
+  if (answerGeneralConfig.paths) {
+    addFileToConfig(answerGeneralConfig.paths, allAnswers);
+    await askAnotherFile();
+  }
+  return answerGeneralConfig;
 }
 
 /**
@@ -202,18 +202,18 @@ async function getConfigurationFileConfig(subscriber: Subscriber<Tree>, tree: Tr
  * @throws {Error} Throws an error if the provided TTL file name is not a string or if it is already included in the list of TTL files.
  */
 function addFileToConfig(aspectModel: string, allAnswers: any) {
-    if (!aspectModel) {
-        console.log('Error loading ttl. Try again with different file!');
-        throw new Error('Error loading ttl. Try again with different file!');
-    }
+  if (!aspectModel) {
+    console.log('Error loading ttl. Try again with different file!');
+    throw new Error('Error loading ttl. Try again with different file!');
+  }
 
-    if (allAnswers.aspectModelTFiles.includes(aspectModel)) {
-        console.log('File was already added');
-    } else {
-        allAnswers.aspectModelTFiles.push(aspectModel);
-    }
+  if (allAnswers.aspectModelTFiles.includes(aspectModel)) {
+    console.log('File was already added');
+  } else {
+    allAnswers.aspectModelTFiles.push(aspectModel);
+  }
 
-    anotherFile.name = `anotherFile${++index}`;
+  anotherFile.name = `anotherFile${++index}`;
 }
 
 /**
@@ -226,20 +226,22 @@ function addFileToConfig(aspectModel: string, allAnswers: any) {
  * @throws {Error} If an error occurs while loading the config file, an error will be thrown.
  */
 async function importFileConfig(configFilePath: string, subscriber: Subscriber<Tree>, tree: Tree) {
-    if (!configFilePath) {
-        console.log('Error loading config file. Try again with a different file!');
-        throw new Error('EndPrompting');
-    }
+  if (!configFilePath) {
+    console.log('Error loading config file. Try again with a different file!');
+    throw new Error('EndPrompting');
+  }
 
-    try {
-        const data = fs.readFileSync(configFilePath, 'utf8');
-        WIZARD_CONFIG_FILE = path.basename(configFilePath);
-        fromImport = true;
-        await writeConfigAndExit(subscriber, tree, JSON.parse(data), true);
-    } catch (err) {
-        console.log('Error loading config file. Try again with a different file!');
-        throw new Error('Error loading config file. Try again with a different file!');
-    }
+  try {
+    const data = fs.readFileSync(configFilePath, 'utf8');
+
+    WIZARD_CONFIG_FILE = path.basename(configFilePath);
+    fromImport = true;
+
+    await writeConfigAndExit(subscriber, tree, JSON.parse(data), true);
+  } catch (err) {
+    console.log('Error loading config file. Try again with a different file!');
+    throw new Error('Error loading config file. Try again with a different file!');
+  }
 }
 
 /**
@@ -250,16 +252,16 @@ async function importFileConfig(configFilePath: string, subscriber: Subscriber<T
  * @throws {Error} If there is an issue with the Inquirer prompts or accessing the file paths.
  */
 async function askAnotherFile() {
-    const anotherFileAnswer = await inquirer.prompt([anotherFile]);
+  const anotherFileAnswer = await inquirer.prompt([anotherFile]);
 
-    if (anotherFileAnswer[`anotherFile${index}`]) {
-        await inquirer.prompt([pathDecision(WIZARD_CONFIG_FILE, true)]).then((answer: any) => {
-            if (answer.paths) addFileToConfig(answer.paths, allAnswers);
-        });
+  if (anotherFileAnswer[`anotherFile${index}`]) {
+    await inquirer.prompt([pathDecision(WIZARD_CONFIG_FILE, true)]).then((answer: any) => {
+      if (answer.paths) addFileToConfig(answer.paths, allAnswers);
+    });
 
-        // Recursive call to ask another file
-        await askAnotherFile();
-    }
+    // Recursive call to ask another file
+    await askAnotherFile();
+  }
 }
 
 /**
@@ -269,7 +271,7 @@ async function askAnotherFile() {
  *
  */
 async function getAspectModelWithMainAspect(): Promise<any> {
-    return await inquirer.prompt([requestAspectModelWithAspect(allAnswers)]);
+  return await inquirer.prompt([requestAspectModelWithAspect(allAnswers)]);
 }
 
 /**
@@ -286,28 +288,28 @@ async function getAspectModelWithMainAspect(): Promise<any> {
  * @throws Will throw an error if loading the aspect model fails.
  */
 async function loadAspectModel(pathToAspectModelWithMainAspect: string, tree: Tree): Promise<Aspect> {
-    if (aspect) return aspect;
+  if (aspect) return aspect;
 
-    allAnswers.aspectModelTFiles = reorderAspectModelUrnToLoad(allAnswers.aspectModelTFiles, pathToAspectModelWithMainAspect);
+  allAnswers.aspectModelTFiles = reorderAspectModelUrnToLoad(allAnswers.aspectModelTFiles, pathToAspectModelWithMainAspect);
 
-    try {
-        const ttlFileContents: string[] = allAnswers.aspectModelTFiles
-            .filter((ttlFile: string) => ttlFile.endsWith('.ttl'))
-            .map((ttlFile: string) => {
-                const filePath = `${tree.root.path}${ttlFile.trim()}`;
-                const fileData: any = tree.read(filePath);
-                return virtualFs.fileBufferToString(fileData);
-            });
+  try {
+    const ttlFileContents: string[] = allAnswers.aspectModelTFiles
+      .filter((ttlFile: string) => ttlFile.endsWith('.ttl'))
+      .map((ttlFile: string) => {
+        const filePath = `${tree.root.path}${ttlFile.trim()}`;
+        const fileData: any = tree.read(filePath);
+        return virtualFs.fileBufferToString(fileData);
+      });
 
-        if (ttlFileContents.length > 1) {
-            return await lastValueFrom<Aspect>(loader.load('', ...ttlFileContents));
-        }
-
-        return await lastValueFrom(loader.loadSelfContainedModel(ttlFileContents[0]));
-    } catch (error) {
-        console.error(error);
-        throw error;
+    if (ttlFileContents.length > 1) {
+      return await lastValueFrom<Aspect>(loader.load('', ...ttlFileContents));
     }
+
+    return await lastValueFrom(loader.loadSelfContainedModel(ttlFileContents[0]));
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
 }
 
 /**
@@ -316,16 +318,16 @@ async function loadAspectModel(pathToAspectModelWithMainAspect: string, tree: Tr
  * @param allAnswers - An answer objects, being the result of all inquirer.prompt() calls.
  */
 function cleanUpOptionsObject(allAnswers: any) {
-    Object.keys(allAnswers).forEach((objectKey: any) => {
-        if (
-            objectKey.startsWith('paths') ||
-            objectKey.startsWith('anotherFile') ||
-            objectKey.startsWith('createOrImport') ||
-            objectKey.startsWith('importConfigFile')
-        ) {
-            delete allAnswers[objectKey];
-        }
-    });
+  Object.keys(allAnswers).forEach((objectKey: any) => {
+    if (
+      objectKey.startsWith('paths') ||
+      objectKey.startsWith('anotherFile') ||
+      objectKey.startsWith('createOrImport') ||
+      objectKey.startsWith('importConfigFile')
+    ) {
+      delete allAnswers[objectKey];
+    }
+  });
 }
 
 /**
@@ -335,8 +337,8 @@ function cleanUpOptionsObject(allAnswers: any) {
  * @param {...any[]} answers - An array of answer objects, each being the result of an inquirer.prompt() call.
  */
 function combineAnswers(...answers: any[]) {
-    const assign = Object.assign({}, ...answers);
-    Object.keys(assign).forEach(key => {
-        allAnswers[key] = assign[key];
-    });
+  const assign = Object.assign({}, ...answers);
+  Object.keys(assign).forEach(key => {
+    allAnswers[key] = assign[key];
+  });
 }

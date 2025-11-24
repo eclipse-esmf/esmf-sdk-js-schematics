@@ -15,24 +15,24 @@ import {apply, applyTemplates, MergeStrategy, mergeWith, move, noop, Rule, Schem
 import {strings} from '@angular-devkit/core';
 
 export function generateFormArrayReusable(options: any): Rule {
-    return (tree: Tree, _context: SchematicContext) => {
-        const tsPath = 'src/app/shared/utils/form-array-reusable.ts';
+  return (tree: Tree, _context: SchematicContext) => {
+    const tsPath = 'src/app/shared/utils/form-array-reusable.ts';
 
-        if (!options.overwrite && tree.exists(tsPath)) {
-            return noop();
-        }
+    if (!options.overwrite && tree.exists(tsPath)) {
+      return noop();
+    }
 
-        return mergeWith(
-            apply(url('../shared/generators/utils/form-array-reusable/files'), [
-                applyTemplates({
-                    classify: strings.classify,
-                    dasherize: strings.dasherize,
-                    options: options,
-                    name: 'form-array-reusable',
-                }),
-                move('src/app/shared/utils'),
-            ]),
-            options.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error,
-        );
-    };
+    return mergeWith(
+      apply(url('../shared/generators/utils/form-array-reusable/files'), [
+        applyTemplates({
+          classify: strings.classify,
+          dasherize: strings.dasherize,
+          options: options,
+          name: 'form-array-reusable',
+        }),
+        move('src/app/shared/utils'),
+      ]),
+      options.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error
+    );
+  };
 }

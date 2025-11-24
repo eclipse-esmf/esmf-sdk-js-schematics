@@ -23,11 +23,7 @@ describe('TableCellTooltipDirective', () => {
     } as MatTooltip;
 
     TestBed.configureTestingModule({
-      providers: [
-        TableCellTooltipDirective,
-        {provide: ElementRef, useValue: elementRefMock},
-        {provide: MatTooltip, useValue: tooltipMock},
-      ],
+      providers: [TableCellTooltipDirective, {provide: ElementRef, useValue: elementRefMock}, {provide: MatTooltip, useValue: tooltipMock}],
     });
 
     directive = TestBed.inject(TableCellTooltipDirective);

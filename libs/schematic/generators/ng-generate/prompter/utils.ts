@@ -14,19 +14,19 @@
 import {AspectModelLoader, DefaultEntity, Property} from '@esmf/aspect-model-loader';
 import {Tree} from '@angular-devkit/schematics/src/tree/interface';
 import {Subscriber} from 'rxjs';
-import fs from 'fs';
-import util from 'util';
+import * as fs from 'fs';
+import * as util from 'util';
 import {WIZARD_CONFIG_FILE} from './index';
 
 interface PropertyDetail {
-    name: string;
-    aspectModelUrn: string;
+  name: string;
+  aspectModelUrn: string;
 }
 
 interface ComplexProperty {
-    prop: string;
-    entityUrn: string;
-    propsToShow: PropertyDetail[];
+  prop: string;
+  entityUrn: string;
+  propsToShow: PropertyDetail[];
 }
 
 export const loader = new AspectModelLoader();
@@ -41,11 +41,11 @@ export const loader = new AspectModelLoader();
  * @returns {Array<string>} The reordered array of TTL file URNs.
  */
 export function reorderAspectModelUrnToLoad(aspectModelTFiles: Array<string>, aspectModelUrnToLoad: string): Array<string> {
-    if (aspectModelTFiles.includes(aspectModelUrnToLoad)) {
-        return [aspectModelUrnToLoad, ...aspectModelTFiles.filter((item: string) => item !== aspectModelUrnToLoad)];
-    }
+  if (aspectModelTFiles.includes(aspectModelUrnToLoad)) {
+    return [aspectModelUrnToLoad, ...aspectModelTFiles.filter((item: string) => item !== aspectModelUrnToLoad)];
+  }
 
-    return aspectModelTFiles;
+  return aspectModelTFiles;
 }
 
 /**
@@ -59,16 +59,16 @@ export function reorderAspectModelUrnToLoad(aspectModelTFiles: Array<string>, as
  * @returns {Object} The object with prop, entityUrn and propsToShow properties.
  */
 export function handleComplexPropList(property: Property, complexPropList: Array<ComplexProperty>) {
-    return {
-        prop: property.name,
-        entityUrn: (property.effectiveDataType as DefaultEntity).aspectModelUrn,
-        propsToShow: complexPropList.map((property: any) => {
-            const findByUrn = loader.findByUrn(property);
-            const name = findByUrn ? findByUrn.name : property.split('#')[1];
-            const aspectModelUrn = findByUrn ? findByUrn.aspectModelUrn : property;
-            return {name, aspectModelUrn} as PropertyDetail;
-        }),
-    } as ComplexProperty;
+  return {
+    prop: property.name,
+    entityUrn: (property.effectiveDataType as DefaultEntity).aspectModelUrn,
+    propsToShow: complexPropList.map((property: any) => {
+      const findByUrn = loader.findByUrn(property);
+      const name = findByUrn ? findByUrn.name : property.split('#')[1];
+      const aspectModelUrn = findByUrn ? findByUrn.aspectModelUrn : property;
+      return {name, aspectModelUrn} as PropertyDetail;
+    }),
+  } as ComplexProperty;
 }
 
 /**
@@ -82,16 +82,16 @@ export function handleComplexPropList(property: Property, complexPropList: Array
  * @param {boolean} [fromImport=false] - A flag to indicate if the operation is from an import.
  */
 export async function writeConfigAndExit(subscriber: Subscriber<Tree>, tree: Tree, config: any, fromImport = false) {
-    const writeFileAsync = util.promisify(fs.writeFile);
-    await writeFileAsync(WIZARD_CONFIG_FILE, JSON.stringify(config), 'utf8');
+  const writeFileAsync = util.promisify(fs.writeFile);
+  await writeFileAsync(WIZARD_CONFIG_FILE, JSON.stringify(config), 'utf8');
 
-    console.log(
-        '\x1b[33m%s\x1b[0m',
-        fromImport
-            ? `The import was successful, the config used for your generation can be found here: ${WIZARD_CONFIG_FILE}`
-            : `New config file was generated based on your choices, it can be found here: ${WIZARD_CONFIG_FILE}`,
-    );
+  console.log(
+    '\x1b[33m%s\x1b[0m',
+    fromImport
+      ? `The import was successful, the config used for your generation can be found here: ${WIZARD_CONFIG_FILE}`
+      : `New config file was generated based on your choices, it can be found here: ${WIZARD_CONFIG_FILE}`
+  );
 
-    subscriber.next(tree);
-    subscriber.complete();
+  subscriber.next(tree);
+  subscriber.complete();
 }

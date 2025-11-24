@@ -59,7 +59,13 @@ export class HighlightDirective {
 
   private canHighlightText(): boolean {
     const source = this.highlightSource();
-    return this.el?.nativeElement && this.highlightArray().length > 0 && typeof source === 'string' && source.length > 0 && !!this.highlightColor();
+    return (
+      this.el?.nativeElement &&
+      this.highlightArray().length > 0 &&
+      typeof source === 'string' &&
+      source.length > 0 &&
+      !!this.highlightColor()
+    );
   }
 
   private calcRangesToReplace(): HighlightRange[] {
@@ -107,7 +113,7 @@ export class HighlightDirective {
 
   private replaceHighlights(rangesToHighlight: HighlightRange[]): string {
     const highlightSource = this.highlightSource();
-    
+
     if (!highlightSource) return '';
     if (rangesToHighlight.length === 0) return highlightSource;
 

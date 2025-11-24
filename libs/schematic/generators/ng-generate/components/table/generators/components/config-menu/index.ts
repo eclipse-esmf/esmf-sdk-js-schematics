@@ -15,22 +15,22 @@ import {apply, applyTemplates, MergeStrategy, mergeWith, move, noop, Rule, Schem
 import {strings} from '@angular-devkit/core';
 
 export function generateConfigMenu(options: any): Rule {
-    return (tree: Tree, _context: SchematicContext) => {
-        if (!options.hasSearchBar) {
-            return noop();
-        }
+  return (tree: Tree, _context: SchematicContext) => {
+    if (!options.hasSearchBar) {
+      return noop();
+    }
 
-        return mergeWith(
-            apply(url('./generators/components/config-menu/files'), [
-                applyTemplates({
-                    classify: strings.classify,
-                    dasherize: strings.dasherize,
-                    options: options,
-                    name: options.name,
-                }),
-                move(options.path),
-            ]),
-            options.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error,
-        );
-    };
+    return mergeWith(
+      apply(url('./generators/components/config-menu/files'), [
+        applyTemplates({
+          classify: strings.classify,
+          dasherize: strings.dasherize,
+          options: options,
+          name: options.name,
+        }),
+        move(options.path),
+      ]),
+      options.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error
+    );
+  };
 }

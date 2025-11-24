@@ -15,21 +15,21 @@ import {Characteristic, DefaultEnumeration} from '@esmf/aspect-model-loader';
 import {FormFieldConfig, FormFieldStrategy} from '../FormFieldStrategy';
 
 export class EnumerationFormFieldStrategy extends FormFieldStrategy {
-    pathToFiles = './generators/components/fields/enumeration/files';
-    hasChildren = false;
+  pathToFiles = './generators/components/fields/enumeration/files';
+  hasChildren = false;
 
-    static isTargetStrategy(child: Characteristic): boolean {
-        return child instanceof DefaultEnumeration;
-    }
+  static isTargetStrategy(child: Characteristic): boolean {
+    return child instanceof DefaultEnumeration;
+  }
 
-    buildConfig(): FormFieldConfig {
-        const typedChild = this.child as DefaultEnumeration;
+  buildConfig(): FormFieldConfig {
+    const typedChild = this.child as DefaultEnumeration;
 
-        return {
-            ...this.getBaseFormFieldConfig(),
-            exampleValue: this.parent.exampleValue || '',
-            values: typedChild.values,
-            validators: this.getValidatorsConfigs(),
-        };
-    }
+    return {
+      ...this.getBaseFormFieldConfig(),
+      exampleValue: this.parent.exampleValue || '',
+      values: typedChild.values,
+      validators: this.getValidatorsConfigs(),
+    };
+  }
 }

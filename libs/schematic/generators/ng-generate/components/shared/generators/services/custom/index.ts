@@ -16,24 +16,24 @@ import {strings} from '@angular-devkit/core';
 import {dasherize} from '@angular-devkit/core/src/utils/strings';
 
 export function generateCustomService(options: any): Rule {
-    return (tree: Tree, _context: SchematicContext) => {
-        const targetPath = `${options.path}/custom-${dasherize(options.name)}.service.ts`;
+  return (tree: Tree, _context: SchematicContext) => {
+    const targetPath = `${options.path}/custom-${dasherize(options.name)}.service.ts`;
 
-        if (tree.exists(targetPath) || !(options.enableRemoteDataHandling && options.customRemoteService)) {
-            return noop();
-        }
+    if (tree.exists(targetPath) || !(options.enableRemoteDataHandling && options.customRemoteService)) {
+      return noop();
+    }
 
-        return mergeWith(
-            apply(url('../shared/generators/services/custom/files'), [
-                applyTemplates({
-                    classify: strings.classify,
-                    dasherize: strings.dasherize,
-                    options: options,
-                    name: options.name,
-                }),
-                move(options.path),
-            ]),
-            options.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error,
-        );
-    };
+    return mergeWith(
+      apply(url('../shared/generators/services/custom/files'), [
+        applyTemplates({
+          classify: strings.classify,
+          dasherize: strings.dasherize,
+          options: options,
+          name: options.name,
+        }),
+        move(options.path),
+      ]),
+      options.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error
+    );
+  };
 }

@@ -14,5 +14,5 @@
 import {Values} from '../shared/schema';
 
 export interface FormSchema extends Values {
-    readOnlyForm: boolean;
+  readOnlyForm: boolean;
 }

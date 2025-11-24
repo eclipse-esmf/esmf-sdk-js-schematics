@@ -16,25 +16,30 @@ import {strings} from '@angular-devkit/core';
 import {classify, dasherize} from '@angular-devkit/core/src/utils/strings';
 import {addModuleImportToModule} from '@angular/cdk/schematics';
 
+/**
+ * Generates a shared module and adds it to the app module.
+ * The method is used at forms generation only
+ * @param options
+ */
 export function generateSharedModule(options: any): Rule {
-    return (tree: Tree, _context: SchematicContext) => {
-        options.module = `${dasherize(options.name)}.module.ts`;
+  return (tree: Tree, _context: SchematicContext) => {
+    options.module = `${dasherize(options.name)}.module.ts`;
 
-        const sourcePath = options.path.replace('src/app', '.');
-        const modulePath = `${sourcePath}/${dasherize(options.name)}.module.ts`;
-        addModuleImportToModule(tree, '/src/app/app.module.ts', `${classify(options.name)}Module`, `${modulePath.replace('.ts', '')}`);
+    const sourcePath = options.path.replace('src/app', '.');
+    const modulePath = `${sourcePath}/${dasherize(options.name)}.module.ts`;
+    addModuleImportToModule(tree, '/src/app/app.module.ts', `${classify(options.name)}Module`, `${modulePath.replace('.ts', '')}`);
 
-        return mergeWith(
-            apply(url('../shared/generators/modules/shared/files'), [
-                applyTemplates({
-                    classify: strings.classify,
-                    dasherize: strings.dasherize,
-                    options: options,
-                    name: options.name,
-                }),
-                move(options.path),
-            ]),
-            options.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error,
-        );
-    };
+    return mergeWith(
+      apply(url('../shared/generators/modules/shared/files'), [
+        applyTemplates({
+          classify: strings.classify,
+          dasherize: strings.dasherize,
+          options: options,
+          name: options.name,
+        }),
+        move(options.path),
+      ]),
+      options.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error
+    );
+  };
 }
