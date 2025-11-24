@@ -41,7 +41,7 @@ export default function (options: TypesSchema): Rule {
       formatGeneratedFiles(
         {
           getPath(options: TypesSchema) {
-            return `src/app/shared/types/${dasherize(options.aspectModel.name).toLowerCase()}`;
+            return `${options.path}/${dasherize(options.aspectModel.name).toLowerCase()}`;
           },
         },
         options
