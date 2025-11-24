@@ -26,11 +26,13 @@ import {
   DefaultProperty,
   Entity,
   Enumeration,
-  Property,
+  Property
 } from '@esmf/aspect-model-loader';
 import {TypesSchema} from './schema';
 import {isLangString, processType, resolveJsPropertyType} from '../components/shared/utils';
-import {MultiLanguageText} from '@esmf/aspect-model-loader/dist/instantiator/characteristic/characteristic-instantiator-util';
+import {
+  MultiLanguageText
+} from '@esmf/aspect-model-loader/dist/instantiator/characteristic/characteristic-instantiator-util';
 
 export function visitAspectModel(options: TypesSchema): Rule {
   return async (tree: Tree) => {
@@ -41,21 +43,14 @@ export function visitAspectModel(options: TypesSchema): Rule {
 
     visitor.visit(aspect);
     const generatedTypeDefinitions = visitor.getGeneratedTypeDefinitions();
+    const pathToFile = `${options.path}/${aspectName}${
+      options.enableVersionSupport ? '/' + aspectModelVersion : ''
+    }/${aspectName}.types.ts`;
 
-    if (
-      tree.exists(
-        `src/app/shared/types/${aspectName}${options.enableVersionSupport ? '/' + aspectModelVersion : ''}/${aspectName}.types.ts`
-      )
-    ) {
-      tree.overwrite(
-        `src/app/shared/types/${aspectName}${options.enableVersionSupport ? '/' + aspectModelVersion : ''}/${aspectName}.types.ts`,
-        generatedTypeDefinitions
-      );
+    if (tree.exists(pathToFile)) {
+      tree.overwrite(pathToFile, generatedTypeDefinitions);
     } else {
-      tree.create(
-        `src/app/shared/types/${aspectName}${options.enableVersionSupport ? '/' + aspectModelVersion : ''}/${aspectName}.types.ts`,
-        generatedTypeDefinitions
-      );
+      tree.create(pathToFile, generatedTypeDefinitions);
     }
   };
 }
@@ -73,6 +68,7 @@ export class AspectModelTypeGeneratorVisitor extends DefaultAspectModelVisitor<B
 
   getGeneratedTypeDefinitions(): string {
     let typeDefinitionsAsString = '';
+    // @ts-expect-error The this.typeDefinitions.values() return type is incorrectly identified
     for (const lines of this.typeDefinitions.values()) {
       typeDefinitionsAsString = typeDefinitionsAsString.concat(...lines);
     }
@@ -167,7 +163,7 @@ export class AspectModelTypeGeneratorVisitor extends DefaultAspectModelVisitor<B
 
           const entityInstancePropsWithValues = this.getEntityInstanceValues(instance, instanceProps);
 
-          let values: string = '';
+          let values = '';
           entityInstancePropsWithValues.forEach(
             (item: {
               name: string;
@@ -226,7 +222,7 @@ export class AspectModelTypeGeneratorVisitor extends DefaultAspectModelVisitor<B
 
       lines.push(`
                 constructor(${constructorValues}){}\n
-             
+
                 /** Gets all defined values from ${classify(enumeration.name)} */
                 public static values(): Array<{${typeValues}}> {
                     return [
@@ -249,14 +245,14 @@ export class AspectModelTypeGeneratorVisitor extends DefaultAspectModelVisitor<B
                           `if(value === '${instance.value}') return ${classify(enumeration.name)}.${classify(instance.name)}`
                       )
                       .join('; ')}
-                    
+
                     return undefined;
                 }
-                
+
                   public static isEnumeration(): boolean {
                     return true;
-                  }  
-                
+                  }
+
             `);
     } else {
       lines.push(`export enum ${enumeration.name} {\n`);
