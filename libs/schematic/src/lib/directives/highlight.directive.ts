@@ -1,11 +1,5 @@
-import {Directive, ElementRef, Input, OnChanges, OnInit, SecurityContext, SimpleChange, SimpleChanges} from '@angular/core';
+import {Directive, ElementRef, SecurityContext, inject, input, effect, computed} from '@angular/core';
 import {DomSanitizer} from '@angular/platform-browser';
-
-interface HighlightSimpleChanges extends SimpleChanges {
-  highlight: SimpleChange;
-  caseSensitive: SimpleChange;
-  selected: SimpleChange;
-}
 
 interface HighlightRange {
   from: number;
@@ -15,53 +9,36 @@ interface HighlightRange {
 @Directive({
   selector: '[esmfHighlight]',
 })
-export class HighlightDirective implements OnChanges, OnInit {
-  @Input() highlightSource: string | null = null;
-  private regExpFlags = 'gi';
-  private _color: string | undefined = undefined;
+export class HighlightDirective {
+  highlightSource = input<string | null>();
+  highlightColor = input<string>();
+  highlight = input<string | string[]>();
+  selected = input<boolean>();
 
-  @Input() set highlightColor(value: string | undefined) {
-    if (value) {
-      this._color = value;
+  private readonly el = inject(ElementRef);
+  private readonly sanitizer = inject(DomSanitizer);
+  private readonly regExpFlags = 'gi';
+
+  private readonly highlightArray = computed(() => {
+    const value = this.highlight();
+    if (Array.isArray(value)) {
+      return value.filter((v): v is string => typeof v === 'string');
     }
-  }
-
-  private _highlight: string[] = [];
-
-  @Input() set highlight(value: string | string[]) {
-    this._highlight = Array.isArray(value) ? value : [value];
-  }
-
-  private _selected = false;
-
-  @Input() set selected(value: boolean | undefined) {
-    if (value !== undefined) {
-      this._selected = value;
-    }
-  }
+    return typeof value === 'string' ? [value] : [];
+  });
 
   private get isStringHighlighted(): boolean {
     return !!this.el.nativeElement.querySelector('mark');
   }
 
-  constructor(private el: ElementRef, private sanitizer: DomSanitizer) {}
-
-  ngOnChanges(changes: HighlightSimpleChanges) {
-    if (
-      (changes.highlight && !changes.highlight.firstChange) ||
-      (changes.caseSensitive && !changes.caseSensitive.firstChange) ||
-      (changes.selected && !changes.selected.firstChange)
-    ) {
+  constructor() {
+    effect(() => {
       this.handleHighlightText();
-    }
+    });
   }
 
-  ngOnInit(): void {
-    this.handleHighlightText();
-  }
-
-  public handleHighlightText(): void {
-    if (this._selected) {
+  private handleHighlightText(): void {
+    if (this.selected()) {
       this.transformText();
     } else if (this.isStringHighlighted) {
       this.clearHighlights();
@@ -81,24 +58,17 @@ export class HighlightDirective implements OnChanges, OnInit {
   }
 
   private canHighlightText(): boolean {
-    return (
-      this.el?.nativeElement &&
-      this._highlight &&
-      typeof this.highlightSource === 'string' &&
-      this.highlightSource.length > 0 &&
-      !!this._color
-    );
+    const source = this.highlightSource();
+    return this.el?.nativeElement && this.highlightArray().length > 0 && typeof source === 'string' && source.length > 0 && !!this.highlightColor();
   }
 
   private calcRangesToReplace(): HighlightRange[] {
-    return this._highlight
+    return this.highlightArray()
       .map(highlightString => {
         const len = highlightString.length;
-        const matches = this.highlightSource?.matchAll(new RegExp(highlightString.toLowerCase(), this.regExpFlags));
+        const matches = this.highlightSource()?.matchAll(new RegExp(highlightString.toLowerCase(), this.regExpFlags));
 
-        if (!matches) {
-          return [];
-        }
+        if (!matches) return [];
 
         return [...matches]
           .filter((a: RegExpMatchArray) => a && a.index !== undefined)
@@ -136,34 +106,25 @@ export class HighlightDirective implements OnChanges, OnInit {
   }
 
   private replaceHighlights(rangesToHighlight: HighlightRange[]): string {
-    if (!this.highlightSource || this._highlight.length === 0) {
-      if (this._highlight.every(h => !this.highlightSource?.includes(h))) {
-        return this.highlightSource || '';
-      }
-    }
-
-    if (!this.highlightSource) {
-      return '';
-    }
-
-    if (rangesToHighlight.length === 0) {
-      return this.highlightSource;
-    }
+    const highlightSource = this.highlightSource();
+    
+    if (!highlightSource) return '';
+    if (rangesToHighlight.length === 0) return highlightSource;
 
     let result = '';
     let lastIndex = 0;
 
     rangesToHighlight.forEach(({from, to}) => {
-      result += this.highlightSource?.substring(lastIndex, from);
-      result += `<mark style="background-color: ${this._color};">${this.highlightSource?.substring(from, to)}</mark>`;
+      result += highlightSource?.substring(lastIndex, from);
+      result += `<mark style="background-color: ${this.highlightColor()};">${highlightSource?.substring(from, to)}</mark>`;
       lastIndex = to;
     });
 
-    result += this.highlightSource?.substring(lastIndex);
+    result += highlightSource?.substring(lastIndex);
     return result;
   }
 
   private clearHighlights(): void {
-    (this.el.nativeElement as HTMLElement).innerHTML = this.highlightSource || '';
+    (this.el.nativeElement as HTMLElement).innerHTML = this.highlightSource() || '';
   }
 }
