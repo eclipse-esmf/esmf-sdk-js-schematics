@@ -1,0 +1,11 @@
+/** <%= options.generationDisclaimerText %> **/
+import {NgModule} from '@angular/core';
+import {<%= classify(name) %>Module} from './<%= dasherize(name) %>.module';
+
+@NgModule({
+    declarations: [],
+    imports: [<%= classify(name) %>Module],
+    providers: [],
+    exports: [],
+})
+export class <%= classify(name) %>Module {}

@@ -1,0 +1,40 @@
+/** <%= options.generationDisclaimerText %> **/
+
+import {Clipboard} from '@angular/cdk/clipboard';
+import {Component, EventEmitter, Input, Output} from '@angular/core';
+import {Config} from '../product-instance-table/v020/product-instance-table.component';
+
+@Component({
+  selector: '<%= dasherize(name) %>',
+  templateUrl: './<%= dasherize(name) %>.component.html',
+  styleUrls: ['./<%= dasherize(name) %>.component.scss'],
+  standalone: false
+})
+export class EsmfTableCellComponent {
+  @Input() value: any;
+  @Input() description: string;
+  @Input() highlightString: string[];
+  @Input() configs: Array<Config> = [];
+  @Output() copyToClipboardEvent = new EventEmitter<any>();
+
+  get highlightConfigColor(): string | undefined {
+    return this.configs.find((config: Config) => config.name.includes('highlight'))?.color;
+  }
+
+  get highlightConfigSelector(): boolean | undefined {
+    return this.configs.find((config: Config) => config.name.includes('highlight'))?.selected;
+  }
+
+  get notEmptyValue(): boolean {
+    return this.value !== null && this.value !== undefined && this.value.toString().trim() !== '-';
+  }
+
+  constructor(private readonly clipboard: Clipboard) {}
+
+  copyToClipboard(value: any, event: MouseEvent): void {
+    event.stopPropagation();
+    event.preventDefault();
+    this.clipboard.copy(value);
+    this.copyToClipboardEvent.emit(value);
+  }
+}

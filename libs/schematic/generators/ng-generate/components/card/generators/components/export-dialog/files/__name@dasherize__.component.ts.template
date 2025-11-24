@@ -1,0 +1,64 @@
+/** <%= options.generationDisclaimerText %> **/
+import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
+import {AfterViewInit, Component, Inject, ViewChild} from '@angular/core';
+import { TranslocoService } from '@jsverse/transloco';
+import {MatCheckbox} from '@angular/material/checkbox';
+import {ChangeDetectorRef} from '@angular/core';
+
+export enum Action {
+  export= 'export',
+  cancel = 'cancel'
+}
+
+@Component({
+    selector: '<%= dasherize(name) %>',
+    templateUrl: './<%= dasherize(name) %>.component.html',
+    styleUrls: ['./<%= dasherize(name) %>.component.scss'],
+    standalone: false
+})
+export class <%= classify(name) %>Component implements AfterViewInit {
+    @ViewChild('exportFirstPage') exportFirstPage!: MatCheckbox;
+
+
+    action = Action;
+    dialogDescription = '';
+    showAllColumnsBox = true;
+
+    constructor(
+        public dialogRef: MatDialogRef<<%= classify(name) %>Component>,
+        private translateService: TranslocoService,
+        private cdRef:ChangeDetectorRef,
+        @Inject(MAT_DIALOG_DATA)
+        public data: {
+            <% if (options.enableRemoteDataHandling) { %>extendedCsvExporter: boolean,<% } %>
+            maxExportRows: number;
+        }
+    ) {}
+
+    ngAfterViewInit() {
+        this.setDialogDescription();
+        this.cdRef.detectChanges();
+    }
+
+    setDialogDescription() {
+        const {maxExportRows} = this.data;
+        const isExportAllPagesChecked = this.exportFirstPage.checked;
+
+        let translationKey = 'exportData.description.default';
+
+        if (isExportAllPagesChecked) {
+            translationKey = 'exportData.description.exportOnlyFirstPage';
+        }
+
+        this.dialogDescription = this.translateService.translate(translationKey, {
+            maxExportRows
+        });
+    }
+
+    exportData() {
+        this.dialogRef.close({
+            action: Action.export,
+            exportFirstPage: this.exportFirstPage.checked,
+        });
+    }
+}

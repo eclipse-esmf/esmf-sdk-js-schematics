@@ -1,0 +1,24 @@
+/** <%= options.generationDisclaimerText %> **/
+import {Injectable} from '@angular/core';
+import {HttpClient} from '@angular/common/http';
+import {<%= classify(options.name) %>Service} from './<%= dasherize(options.name) %>.service';
+import { TranslocoService } from '@jsverse/transloco';
+
+/**
+* Custom service which extend the original API service for fetching
+* ${this.options.selectedModelElement.name} data from the configured
+* remote API.
+*
+* If you need to override or to extend the current functionality,
+* this is the right place to do. All modifications are preserved while
+* generating the table component again, also in combination with
+* the cli parameter '--force'.
+*/
+@Injectable({
+    providedIn: 'root'
+})
+export class Custom<%= classify(options.name) %>Service extends <%= classify(options.name) %>Service {
+    constructor(http: HttpClient, translationService: TranslocoService) {
+        super(http, translationService);
+    }
+}

@@ -1,0 +1,12 @@
+/** <%= options.generationDisclaimerText %> **/
+@use 'general.component' as *;
+
+.table-header-icon {
+  margin-left: 0.5rem;
+  cursor: default;
+  font-size: 20px;
+  min-width: 20px;
+  width: 20px;
+  height: 20px;
+  color: gray;
+}

@@ -1,0 +1,31 @@
+<div class="js-sdk-component-container">
+    <% if (options.addCommandBar) { %>
+      <<%= dasherize(name) %>-command-bar
+        [totalItems]="totalItems"
+        (applyFilters)="applyFilters()"
+        (reloadFilter)="reloadFilter()"
+        (exportToCsv)="openExportConfirmationDialog()"
+        (sorting)="sorting()">
+      </<%= dasherize(name) %>-command-bar>
+    <% } %>
+
+    <% if (options.hasFilters) { %>
+        <<%= dasherize(name) %>-chip-list (removeFilter)="removeFilter($event)"></<%= dasherize(name) %>-chip-list>
+    <% } %>
+
+  <mat-card class="data-card"
+            *ngFor="let data of dataToShow | slice:(paginator.pageIndex * paginator.pageSize):(paginator.pageIndex * paginator.pageSize + paginator.pageSize)">
+    <div class="data-card-header">
+      <div class="data-card-content">
+        <mat-card-content>
+            <ng-container *ngTemplateOutlet="cardTemplate; context: getContext(data)"></ng-container>
+        </mat-card-content>
+      </div>
+      <button class="more-button" data-test="card-more-button" mat-icon-button (click)="detailInformation(data)">
+        <mat-icon>more_vert</mat-icon>
+      </button>
+    </div>
+  </mat-card>
+
+  <mat-paginator [pageSizeOptions]="[5, 10, 25, 50, 100]" data-test="paginator-card"></mat-paginator>
+</div>

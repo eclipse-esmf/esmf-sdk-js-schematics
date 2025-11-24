@@ -4,6 +4,14 @@
   "lib": {
     "entryFile": "src/index.ts"
   },
+  "allowedNonPeerDependencies": [
+    "@esmf/aspect-model-loader",
+    "inquirer",
+    "inquirer-fuzzy-path",
+    "inquirer-prompt-suggest",
+    "inquirer-search-list",
+    "path"
+  ],
   "assets": [
     {
       "input": "./generators",

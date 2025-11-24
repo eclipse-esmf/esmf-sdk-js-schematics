@@ -1,0 +1,381 @@
+/** <%= options.generationDisclaimerText %> **/
+import {
+  Component,
+  ElementRef,
+  EventEmitter,
+  Input,
+  <% if (options.enableRemoteDataHandling || options.hasSearchBar) { %>OnDestroy,<% } %>
+  <% if (options.enableRemoteDataHandling) { %>ChangeDetectorRef,<% } %>
+  <% if (options.changeDetection !== 'Default') { %>ChangeDetectionStrategy,<% } %>
+  OnInit,
+  AfterViewInit,
+  Output,
+  ViewChild,
+  ViewEncapsulation,
+  ContentChild,
+  TemplateRef
+} from '@angular/core';
+import {TranslocoService} from '@jsverse/transloco';
+
+import {
+    <%= classify(options.selectedModelTypeName) %>
+    <% if (selectedModelElementUrn !== aspectModelElementUrn && !isCollectionAspect) { %>
+        , <%= classify(options.aspectModelTypeName) %>
+    <% } %>
+    <% if (options.isEnumQuickFilter) { %>
+        , <%= enumProperties %>
+    <% } %>
+} from '<%= options.typePath %>';
+
+import {<%= options.filterServiceName %>, SortCard} from './<%= dasherize(name) %>-filter.service'
+
+<% if (options.addCommandBar) { %>
+    import {filter} from "rxjs/operators";
+    import {MatDialog} from '@angular/material/dialog';
+    import {unparse} from "papaparse";
+    import {Action, ExportCardDialogComponent} from '<% if (options.enableVersionSupport) { %>../<% } %>../export-confirmation-dialog/export-card-dialog.component';
+<% } %>
+
+<% if (options.hasSearchBar || options.enableRemoteDataHandling) { %>
+    import {takeUntil} from "rxjs/operators";
+    import {<% if (options.enableRemoteDataHandling) { %>catchError, finalize, tap, Subscription,<% } %>Subject} from 'rxjs';
+<% } %>
+
+import {MatPaginator} from "@angular/material/paginator";
+import {MatTableDataSource} from "@angular/material/table";
+
+<% if (options.enableRemoteDataHandling) { %>
+    <%= options.include('/remote-handling/imports.ts.template') %>
+    <%= options.include('/remote-handling/custom-rql-filter-extensions.ts.template') %>
+<% } else { %>
+    import {<%= classify(name) %>Service} from './<%= dasherize(name) %>.service';
+<% } %>
+
+export enum <%= classify(name) %>CardValues {
+    <%= enumPropertyDefinitions %>
+}
+
+@Component({
+    selector: '<%= options.selector %>',
+    templateUrl: './<%= dasherize(name) %>.component.html',
+    styleUrls: ['./<%= dasherize(name) %>.component.<%= options.style %>'],
+    standalone: false
+    <% if (options.changeDetection) { %>, changeDetection: ChangeDetectionStrategy.<%= options.changeDetection %><% } %>
+    <% if (options.viewEncapsulation) { %>,encapsulation: ViewEncapsulation.<%= options.viewEncapsulation %><% } else { %>,encapsulation: ViewEncapsulation.None<% } %>
+})
+export class <%= classify(name) %>Component implements OnInit, AfterViewInit<% if (options.hasSearchBar || options.enableRemoteDataHandling) { %>, OnDestroy<% } %> {
+    @ContentChild('cardTemplate') cardTemplate!: TemplateRef<any>;
+
+    @Input() data: Array<<%= options.aspectModelTypeName %>> = [];
+
+    <% if (options.hasSearchBar) { %>
+        @Input() initialSearchString = '';
+        @Input() regexValidator: string = '';
+    <% } %>
+
+    @Input() minNumberCharacters: number = 2;
+    @Input() maxNumberCharacters: number = 50;
+
+    <% if (options.enableRemoteDataHandling) { %>
+        @Input() maxExportRows: number = 5000;
+        @Input() customFilterExtension: CustomRQLFilterExtension | undefined;
+        @Input() customOptionsExtension: CustomRQLOptionExtension | undefined;
+        @Input() extendedCsvExporter: ExtendedCsvExporter | undefined;
+        @Input() remoteAPI: string = '';
+    <% } else { %>
+        @Input() maxExportRows: number = 0;
+    <% } %>
+
+    @Output() cardUpdateStartEvent = new EventEmitter<any>();
+    @Output() cardUpdateFinishedEvent = new EventEmitter<any>();
+
+    <% if (options.addCommandBar) { %>
+        @Output() downloadEvent = new EventEmitter<{ error: boolean; success: boolean; inProgress: boolean }>();
+    <% } %>
+
+    @Output() detail = new EventEmitter<any>();
+
+    <% if (options.addCommandBar) { %>
+        @ViewChild('searchInput') searchInput!: ElementRef;
+    <% } %>
+
+    @ViewChild(MatPaginator, {static: true}) paginator!: MatPaginator;
+
+    currentLanguage: string;
+
+    dataSource: MatTableDataSource<<%= options.aspectModelTypeName %>> =  new MatTableDataSource<<%= options.aspectModelTypeName %>>();
+
+    dataToShow: Array<<%= options.aspectModelTypeName %>> = [];
+    totalItems: number = 0;
+    dataLoadError = false;
+
+    <% if (options.enableRemoteDataHandling) { %>
+        rqlString: string = '';
+    <% } %>
+
+    <%= camelize(name) %>CardValues = Object.values(<%= classify(name) %>CardValues);
+
+    <% if (options.hasSearchBar || options.enableRemoteDataHandling) { %>
+        private readonly destroy$ = new Subject<void>();
+    <% } %>
+
+    <% if (options.enableRemoteDataHandling) { %>
+        private requestSubscription: Subscription = new Subscription();
+    <% } %>
+
+    <% if (options.enableRemoteDataHandling) { %>
+        constructor(private translateService: TranslocoService,
+                    private filterService: <%= classify(name) %>FilterService,
+                    <% if (options.addCommandBar) { %>
+                        public dialog: MatDialog,
+                    <% } %>
+                    private <% if (options.customRemoteService) { %>custom<% } %><%= classify(name) %>Service: <% if (options.customRemoteService) { %>Custom<% } %><%= classify(name) %>Service) {
+            this.currentLanguage = this.translateService.getActiveLang();
+        }
+    <% } else { %>
+        constructor(private translateService: TranslocoService,
+                    private <%= camelize(name) %>Service: <%= classify(name) %>Service,
+                    private filterService: <%= classify(name) %>FilterService,
+                    <% if (options.addCommandBar) { %>
+                        public dialog: MatDialog,
+                    <% } %>) {
+            this.currentLanguage = this.translateService.getActiveLang();
+        }
+     <% } %>
+
+    getContext(data: <%= options.aspectModelTypeName %>) {
+        return {
+            <%= camelize(name) %>CardValues: this.<%= camelize(name) %>CardValues,
+            $implicit: data,
+            getElementValue: this.getElementValue.bind(this),
+            translateService: this.translateService,
+        };
+    }
+
+    ngOnInit() {
+        <% if (options.hasSearchBar) { %>
+            this.filterService.searchStringInit(this.initialSearchString, this.regexValidator, this.minNumberCharacters, this.maxNumberCharacters);
+            this.subscribeToSelectedStringColumn();
+        <% } %>
+    }
+
+    ngAfterViewInit() {
+        <% if (options.defaultSortingCol) { %>
+            this.defaultSorting();
+        <% } %>
+
+        <% if (options.enableRemoteDataHandling) { %>
+            this.requestData();
+        <% } else { %>
+            this.dataToShow = [...this.data];
+            this.totalItems = this.dataToShow.length;
+            this.dataSource.data = this.dataToShow;
+            this.dataSource.paginator = this.paginator;
+            this.paginator.length = this.dataToShow.length;
+        <% } %>
+    }
+
+    <% if (options.defaultSortingCol) { %>
+        private defaultSorting() {
+            this.filterService.sortedProperty = '<%= options.defaultSortingCol %>';
+            <% if (!options.enableRemoteDataHandling) { %>
+                this.sorting();
+            <% } %>
+        }
+    <% } %>
+
+    <% if (options.hasFilters) { %>
+        removeFilter(filterData: any) {
+            <% if (options.hasFilters) { %>
+                this.filterService.removeFilter(filterData);
+            <% } %>
+
+            this.paginator.firstPage();
+
+            <% if (options.hasSearchBar) { %>
+                this.filterService.searchString.reset();
+            <% } %>
+
+            this.applyFilters();
+        }
+    <% } %>
+
+
+    reloadFilter(): void {
+        this.applyFilters();
+    }
+
+    applyFilters(): void {
+        <% if (options.hasSearchBar) { %>
+            if (this.filterService.searchString.errors) {
+              return;
+            }
+       <% } %>
+
+      this.cardUpdateStartEvent.emit();
+
+      <% if (options.enableRemoteDataHandling) { %>
+          this.requestData();
+      <% } else { %>
+          this.dataToShow = this.applyAllFilters(this.data);
+          this.totalItems = this.dataToShow.length;
+          this.maxExportRows = this.totalItems;
+
+          this.cardUpdateFinishedEvent.emit();
+      <% } %>
+    }
+
+    <% if (options.enableRemoteDataHandling) { %>
+        <%= options.include('/remote-handling/requestData.ts.template') %>
+    <% } %>
+
+
+    <% if (!options.enableRemoteDataHandling) { %>
+        private applyAllFilters(data: any[]): any[] {
+            let dataTemp = [...data];
+
+            <% if (options.isEnumQuickFilter) { %>
+                dataTemp = this.filterService.applyEnumFilter(dataTemp);
+            <% } %>
+
+             <% if (options.hasSearchBar) { %>
+                 dataTemp = this.filterService.applyStringSearchFilter(dataTemp);
+             <% } %>
+
+             <% if (options.isDateQuickFilter) { %>
+                 dataTemp = this.filterService.applyDateFilter(dataTemp);
+              <% } %>
+
+              return dataTemp;
+        }
+
+        sorting() {
+            this.data.sort((a, b) => {
+                let aValue = (a as any)[this.filterService.sortedProperty];
+                let bValue = (b as any)[this.filterService.sortedProperty];
+
+                if (typeof aValue === 'boolean') {
+                    aValue = aValue ? 1 : 0;
+                    bValue = bValue ? 1 : 0;
+                }
+
+                if (Date.parse(aValue)) {
+                    aValue = new Date(aValue);
+                    bValue = new Date(bValue);
+                }
+
+                 if (this.filterService.sortCard === SortCard.ASCENDING) {
+                     if (aValue < bValue) return -1;
+                         if (aValue > bValue) return 1;
+
+                 return 0;
+                 } else {
+                     if (aValue < bValue) return 1;
+                     if (aValue > bValue) return -1;
+
+                     return 0;
+                }
+            });
+
+            this.applyFilters();
+        }
+    <% } %>
+
+    <% if (options.enableRemoteDataHandling) { %>
+        sorting() {
+            this.applyFilters();
+        }
+    <% } %>
+
+    <% if (options.hasSearchBar) { %>
+        private subscribeToSelectedStringColumn() {
+        this.filterService.selectedStringColumn.valueChanges
+            .pipe(takeUntil(this.destroy$))
+            .subscribe(() => {
+                if (this.searchInput) {
+                    this.searchInput.nativeElement.focus();
+                }
+            });
+        }
+    <% } %>
+
+    <% if (options.addCommandBar) { %>
+        openExportConfirmationDialog() {
+            const dialogRef = this.dialog.open(ExportCardDialogComponent, {
+                data: {maxExportRows: this.maxExportRows},
+                maxWidth: 478,
+            }).afterClosed()
+                .pipe(filter(e => !!e))
+                .subscribe((event: { action: Action; exportFirstPage: boolean }) => {
+                    if (event.action === Action.cancel) {
+                        return;
+                    }
+
+                    const exportData = JSON.parse(JSON.stringify(this.data));
+
+                    if(event.exportFirstPage && exportData.length > this.paginator.pageSize) {
+                        exportData.length = this.paginator.pageSize;
+                    }
+
+                    if (!event.exportFirstPage && this.data.length > this.maxExportRows) {
+                        exportData.length = this.maxExportRows;
+                    }
+
+                    this.exportToCsv(exportData);
+            });
+        }
+
+        private exportToCsv(exportData: Array<<%= options.aspectModelTypeName %>>) {
+            const headersCSV = unparse({
+                fields: this.<%= camelize(name) %>CardValues.map(columnName => {
+                    const translatedHeader = this.translateService.translate(`<%= options.aspectModelTypeName.toLowerCase() %>.${columnName}.preferredName`);
+                    return translatedHeader !== `<%= options.aspectModelTypeName.toLowerCase() %>.${columnName}.preferredName` ? translatedHeader : columnName;
+                }) as string[],
+                data: [],
+            });
+
+            this.downloadCsv(`${headersCSV}${unparse(exportData, {header: false, columns: this.<%= camelize(name) %>CardValues})}`);
+        }
+
+        private downloadCsv(csvArray: string) {
+            this.downloadEvent.emit({error: false, success: false, inProgress: true});
+            try {
+                <% if (options.enableRemoteDataHandling && options.customRemoteService) { %>
+                    this.<%= ((options.customRemoteService ? 'custom' : '') + classify(name)) %>Service.downloadCsv(csvArray);
+                <% } else { %>
+                    this.<%= camelize(name) %>Service.downloadCsv(csvArray);
+                <% } %>
+                this.downloadEvent.emit({error: false, success: true, inProgress: false});
+            } catch (error: any) {
+                this.downloadEvent.emit({error: true, success: false, inProgress: false});
+            }
+        }
+    <% } %>
+
+    detailInformation(data: <%= options.aspectModelTypeName %>) {
+      this.detail.emit(data);
+    }
+
+    getElementValue(data: any, element: string) {
+        const properties = element.split('.');
+
+        return properties.reduce((currentValue, property) => {
+            if (currentValue && currentValue.hasOwnProperty(property)) {
+                return currentValue[property];
+            } else {
+                return undefined;
+            }
+        }, data);
+    }
+
+    <% if (options.enableRemoteDataHandling || options.hasSearchBar ) { %>
+        ngOnDestroy() {
+            <% if (options.hasSearchBar || options.isEnumQuickFilter || options.isDateQuickFilter) { %>
+                this.filterService.reset();
+            <% } %>
+
+            this.destroy$.next();
+            this.destroy$.complete();
+        }
+    <% } %>
+}
