@@ -179,7 +179,7 @@ export function setComponentNameRule(componentType: ComponentType): Rule {
   return (tree: Tree, context: SchematicContext) => {
     if (options.name === componentType) {
       options.name = `${options.selectedModelElement?.name}-${options.name}`;
-      context.logger.info('Option name set.');
+      context.logger.info(`Option name set "${options.name}"`);
     }
   };
 }

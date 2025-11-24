@@ -25,10 +25,11 @@ import {
 } from '../../../../shared/utils';
 import {templateInclude} from '../../../../shared/include';
 import {Schema} from '../../../../shared/schema';
+import {TableSchema} from '../../../schema';
 
 let sharedOptions: any = {};
 
-export function generateTableComponent(options: any): Rule {
+export function generateTableComponent(options: TableSchema): Rule {
   return (tree: Tree, _context: SchematicContext) => {
     sharedOptions = options;
     sharedOptions['allProps'] = options.listAllProperties;
@@ -126,7 +127,7 @@ function hasCustomActions(): boolean {
 }
 
 function getSharedCustomRows(): string {
-  return `this.currentLanguage = this.translateService.getActiveLang(); 
+  return `this.currentLanguage = this.translateService.getActiveLang();
     ${[...sharedOptions.customRowActions, ...sharedOptions.customCommandBarActions]
       .map(
         (customRowActions: string) =>
