@@ -1,0 +1,34 @@
+<div class="scrollable-chips-container" *ngIf="filterService.activeFilters.length">
+    <button data-test="scroll-left-button" mat-mini-fab class="mat-elevation-z0"
+            [disabled]="chipsScrollEl.disableLeftBtn" (click)="chipsScrollEl.scrollChipList('left')"
+            *ngIf="chipsScrollEl.scrollable">
+        <mat-icon data-test="scroll-left-icon" class="material-icons"
+                  [matTooltip]="'scroll.left' | transloco">chevron_left
+        </mat-icon>
+    </button>
+    <div class="chip-list-container" data-test="chip-list-container" horizontalOverflow
+         #chipsScrollEl="horizontalOverflow" #chipList [chipsObj]="chips">
+        <mat-chip-listbox data-test="chip-list" #chips>
+            <mat-chip-option
+                    data-test="chip"
+                    *ngFor="let filter of filterService.activeFilters"
+                    [removable]="filter.removable"
+                    (removed)="triggerRemoveFilter(filter)"
+            >
+                <div data-test="chip-text" class="chip-text" matTooltip="{{ chipListValue(filter) }}">
+                    {{ chipListValue(filter) }}
+                </div>
+                <button *ngIf="filter.removable" matChipRemove data-test="mat-chip-remove">
+                    <mat-icon class="material-icons" data-test="remove-chip">cancel</mat-icon>
+                </button>
+            </mat-chip-option>
+        </mat-chip-listbox>
+    </div>
+    <button data-test="scroll-right-button" mat-mini-fab class="mat-elevation-z0"
+            [disabled]="chipsScrollEl.disableRightBtn" (click)="chipsScrollEl.scrollChipList('right')"
+            *ngIf="chipsScrollEl.scrollable">
+        <mat-icon data-test="scroll-right-icon" class="material-icons"
+                  [matTooltip]="'scroll.right' | transloco">chevron_right
+        </mat-icon>
+    </button>
+</div>

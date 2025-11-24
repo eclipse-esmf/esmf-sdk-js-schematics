@@ -1,0 +1,706 @@
+/** <%= options.generationDisclaimerText %> **/
+<%
+  var tableColumnsEnumName = classify(name) + 'Column';
+  var cmpFileName = dasherize(name);
+  var hasCustomRowActions = options.customRowActions.length > 0;
+  var customRowActionNames = options.customRowActions.map(action => `'${action.replace(/\.[^/.]+$/, '')}'`);
+%>
+import {
+    AfterViewInit,
+    Component,
+    Input,
+    ViewChild,
+    Output,
+    EventEmitter,
+    SimpleChanges,
+    HostBinding,
+    Inject,
+    OnChanges,
+    OnInit,
+    AfterViewChecked,
+    TemplateRef,
+    ElementRef,
+    ViewEncapsulation,
+    <% if (options.enableRemoteDataHandling || options.hasSearchBar) { %>OnDestroy,<% } %>
+    <% if (options.changeDetection) { %>ChangeDetectionStrategy,<% } %>
+} from '@angular/core';
+import { MatPaginator, MatPaginatorSelectConfig } from '@angular/material/paginator';
+import { MatSort, SortDirection } from '@angular/material/sort';
+import { MatTable } from '@angular/material/table';
+
+<% if (options.hasFilters || options.hasSearchBar) { %>
+    import { FilterEnums, <%= options.filterServiceName %>} from './<%= dasherize(name) %>-filter.service';
+<% } %>
+
+<% if (options.addCommandBar) { %>
+    import {unparse} from 'papaparse';
+    import {Action, ExportTableDialogComponent} from '<% if (options.enableVersionSupport) { %>../<% } %>../export-confirmation-dialog/export-table-dialog.component';
+<% } %>
+
+import {MatDialog} from '@angular/material/dialog';
+import {
+    <%= classify(options.selectedModelTypeName) %>
+    <% if (selectedModelElementUrn !== aspectModelElementUrn && !isCollectionAspect) { %>
+        , <%= classify(options.aspectModelTypeName) %>
+    <% } %>
+    <% if (options.isEnumQuickFilter) { %>
+        , <%= enumProperties %>
+    <% } %>
+} from '<%= options.typePath %>';
+import {<%= classify(name) %>DataSource} from './<%= dasherize(name) %>-datasource';
+
+<% if (options.isDateQuickFilter) { %>
+    import {DateAdapter, MAT_DATE_FORMATS, MatDateFormats} from '@angular/material/core';
+<% } %>
+
+<% if ([...options.customRowActions, ...options.customCommandBarActions].findIndex(element => element.includes('.')) !== -1) { %>
+    import { MatIconRegistry } from '@angular/material/icon';
+<% } %>
+
+import {DomSanitizer} from '@angular/platform-browser';
+import {SelectionModel} from '@angular/cdk/collections';
+import { TranslocoService } from '@jsverse/transloco';
+import {PaginatorSelectConfigInjector} from "<% if (options.enableVersionSupport) { %>../<% } %>../../services/paginator-select-config.provider";
+import {JSSdkLocalStorageService} from "<% if (options.enableVersionSupport) { %>../<% } %>../../services/storage.service";
+import {<%= classify(name) %>CommandBarComponent} from "./<%= dasherize(name) %>-command-bar.component";
+import {<%= classify(name) %>ColumnMenuComponent} from './<%= dasherize(name) %>-column-menu.component';
+
+<% if (options.hasSearchBar) { %>
+    import {<%= classify(name) %>ConfigMenuComponent} from './<%= dasherize(name) %>-config-menu.component';
+<% } %>
+
+<% if (options.hasFilters) { %>
+    import {debounceTime, filter, map, takeUntil} from 'rxjs/operators'
+<% } else if (options.hasSearchBar) { %>
+    import {debounceTime, filter, takeUntil} from 'rxjs/operators';
+<% } else { %>
+    import {filter, takeUntil} from 'rxjs/operators';
+<% } %>
+
+import {<% if (options.enableRemoteDataHandling) { %>catchError, finalize, tap, Subscription,<% } %>Subject} from 'rxjs';
+
+<% if (options.enableRemoteDataHandling) { %>
+    <%= options.include('/remote-handling/imports.ts.template') %>
+    <%= options.include('/remote-handling/custom-rql-filter-extensions.ts.template') %>
+<% } else { %>
+    import {<%= classify(name) %>Service, <%= classify(aspectModelName) %>Response} from './<%= dasherize(name) %>.service';
+<% } %>
+
+<% if (options.hasSearchBar) { %>
+    <%= options.include('/interfaces/config.ts.template') %>
+<% } %>
+
+<%= options.include('/interfaces/column.ts.template') %>
+
+/**
+ * Enumeration of all available columns which can be shown/hide in the table.
+ */
+export enum <%= tableColumnsEnumName %> {
+    <% if (options.addRowCheckboxes) { %>CHECKBOX = 'checkboxes',<% } %>
+    <%= enumPropertyDefinitions %>
+    <%= enumCustomColumns %>
+    <% if (hasCustomRowActions) { %>CUSTOM_ROW_ACTIONS = 'customRowActions',<% } %>
+    COLUMNS_MENU = 'columnsMenu'
+}
+
+export const NON_DATA_COLUMNS: <%= tableColumnsEnumName %>[] = [
+    <% if (hasCustomRowActions) { %>
+    <%= tableColumnsEnumName %>.CUSTOM_ROW_ACTIONS,
+    <% } %>
+    <%= tableColumnsEnumName %>.COLUMNS_MENU
+];
+
+<% if (hasCustomRowActions) { %>
+    type RowAction = <%= customRowActionNames.join(' | ') %>;
+    export type <%= options.aspectModelTypeName %>ActionsResolvers = Partial<Record<RowAction, (rowData: <%= options.aspectModelTypeName %>) => boolean>> | undefined;
+<% } %>
+
+
+
+@Component({
+    selector: '<%= options.selector %>',
+    templateUrl: './<%= dasherize(name) %>.component.html',
+    styleUrls: ['./<%= dasherize(name) %>.component.<%= options.style %>'],
+    standalone: false
+    <% if (options.changeDetection) { %>, changeDetection: ChangeDetectionStrategy.<%= options.changeDetection %><% } %>
+    <% if (options.viewEncapsulation) { %>,encapsulation: ViewEncapsulation.<%= options.viewEncapsulation %><% } else { %>,encapsulation: ViewEncapsulation.None<% } %>
+})
+export class <%= classify(name) %>Component implements OnInit, AfterViewInit, AfterViewChecked, OnChanges<% if (options.hasSearchBar || options.enableRemoteDataHandling) { %>, OnDestroy<% } %> {
+    <% if (options.hasSearchBar) { %>@Input() initialSearchString = '';<% } %>
+    <%= customRowActionInput %>
+    <% if (options.dateProperties) { %>@Input() tableDateFormat = 'short';<% } %>
+    <% if (options.dateTimeStampProperties) { %>@Input() tableDateTimeFormat = 'short';<% } %>
+    <% if (options.timeProperties) { %>@Input() tableTimeFormat = 'shortTime';<% } %>
+
+    @Input() data: Array<<%= options.aspectModelTypeName %>> = [];
+    @Input() customTemplate?: TemplateRef<any>;
+    @Input() searchHint?: string;
+    @Input() showFirstLastButtons: boolean = true;
+
+    <%= customColumnsInput %>
+
+    @Input() pageSize: number = 20;
+    @Input() pageSizeOptions: Array<number> = [5, 20, 50, 100];
+
+    @Input() highlightSelectedRow: boolean = true;
+    @Input() highlightColor = 'rgba(127, 198, 231, 0.3)';
+    @Input() isMultipleSelectionEnabled = true;
+    @Input() noDataMessage: string = '';
+    @Input() dataLoadErrorMessage: string = '';
+    @Input() visibleRowActionsIcons: number = 3;
+    @Input() headerTooltipsOff: boolean = false;
+    @Input() setStickRowActions: boolean = true;
+    @Input() customTableClass: string = '';
+    @Input() debounceTime: number = 500;
+    @Input() minNumberCharacters: number = 2;
+    @Input() maxNumberCharacters: number = 50;
+    @Input() allowedCharacters: string = '';
+    @Input() regexValidator:string = '';
+
+    @Input() hideColumns: <%= tableColumnsEnumName %>[] = [];
+
+    <% if (options.hasSearchBar) { %>@Input() hasAdvancedSearch: boolean = this.filterService.stringColumns.length > 1;<% } %>
+    <% if (options.enableRemoteDataHandling) { %>
+        @Input() maxExportRows: number = 5000;
+        @Input() customFilterExtension: CustomRQLFilterExtension | undefined;
+        @Input() customOptionsExtension: CustomRQLOptionExtension | undefined;
+        @Input() extendedCsvExporter: ExtendedCsvExporter | undefined;
+        @Input() remoteAPI: string = '';
+    <% } else { %>
+        @Input() maxExportRows: number = 0;
+    <% } %>
+
+    <% if (hasCustomRowActions) { %>
+        @Input() actionResolvers: <%= options.aspectModelTypeName %>ActionsResolvers = {};
+    <% } %>
+
+    @Output() rowClickEvent = new EventEmitter<any>();
+    @Output() rowDblClickEvent = new EventEmitter<any>();
+    @Output() rowRightClickEvent = new EventEmitter<any>();
+    @Output() tableUpdateStartEvent = new EventEmitter<any>();
+    @Output() tableUpdateFinishedEvent = new EventEmitter<any>();
+    @Output() copyToClipboardEvent = new EventEmitter<any>();
+    @Output() downloadEvent = new EventEmitter<{error: boolean, success: boolean, inProgress: boolean}>();
+    @Output() rowSelectionEvent = new EventEmitter<any>();
+
+    <% if (hasCustomRowActions) { %>
+        @Output() customActionEvent = new EventEmitter<any>();
+    <% } %>
+    <% if (options.customCommandBarActions.length > 0) { %>
+        @Output() customCommandBarActionEvent = new EventEmitter<any>();
+    <% } %>
+
+    @ViewChild(MatSort) private sort!: MatSort;
+    @ViewChild(MatPaginator) private paginator!: MatPaginator
+    @ViewChild(MatTable) private table!: MatTable<<%= classify(aspectModelTypeName) %>>;
+    @ViewChild(<%= classify(name) %>ColumnMenuComponent) private columMenuComponent!: <%= classify(name) %>ColumnMenuComponent;
+
+    <% if (options.hasSearchBar) { %>
+        @ViewChild(<%= classify(name) %>ConfigMenuComponent) private configurationComponent!: <%= classify(name) %>ConfigMenuComponent;
+    <% } %>
+
+    @ViewChild('searchInput') searchInput!: ElementRef;
+    @ViewChild(<%= classify(name) %>CommandBarComponent) commandBar: <%= classify(name) %>CommandBarComponent;
+
+    @HostBinding("attr.style")
+    public get valueAsStyle(): any {
+        if(!this.highlightColor) {
+            return;
+        }
+        return this.sanitizer.bypassSecurityTrustStyle(`--selected-row-highlight-color: ${this.highlightColor}`);
+    }
+
+    readonly <%= options.localStorageKeyColumns %> = '<%= options.localStorageKeyColumns.replace(options.localStoragePrefix, '').toLowerCase() %>';
+
+    <% if (options.hasSearchBar) { %>
+        readonly <%= options.localStorageKeyConfig %> = '<%= options.localStorageKeyConfig.replace(options.localStoragePrefix, '').toLowerCase() %>';
+    <% } %>
+
+    totalItems: number = 0;
+    selection = new SelectionModel<any>(this.isMultipleSelectionEnabled, []);
+    dataSource: <%= classify(name) %>DataSource;
+
+    columnToSort:{sortColumnName: string, sortDirection: SortDirection} = {sortColumnName:'<%= options.defaultSortingCol %>', sortDirection : 'asc'};
+    // The list of column names that are displayed in the table, including NON_DATA_COLUMNS
+    displayedColumns: <%= tableColumnsEnumName %>[] = [];
+    // The list of available columns to select
+    columns: Array<Column> = [];
+
+    <% if (options.hasSearchBar) { %>
+        configs: Array<Config> = [];
+    <% } %>
+
+    currentLanguage: string;
+    filteredData: Array<<%= classify(aspectModelTypeName) %>> = [];
+    dragging: boolean = false;
+    customRowActionsLength: number = <%= options.customRowActions.length %>;
+    closeColumnMenu: boolean = false;
+    rqlString: string = '';
+    searchFocused: boolean = false;
+    dataLoadError = false;
+
+    <% if (options.hasSearchBar) { %>
+        highlightString: string[] = [];
+    <% } %>
+
+    <%= byValueFunction %>
+
+    <% if (options.hasSearchBar || options.enableRemoteDataHandling) { %>
+        private readonly ngUnsubscribe = new Subject<void>();
+    <% } %>
+
+    <% if (options.enableRemoteDataHandling) { %>
+        private requestSubscription: Subscription = new Subscription();
+    <% } %>
+
+    <% if (options.enableRemoteDataHandling) { %>
+        constructor(<%= commonImports %>
+        private <% if (options.customRemoteService) { %>custom<% } %><%= classify(name) %>Service: <% if (options.customRemoteService) { %>Custom<% } %><%= classify(name) %>Service) {
+            this.dataSource = new <%= classify(name) %>DataSource();
+            <%= sharedCustomRows %>
+        }
+    <% } else { %>
+        constructor(<%= commonImports %> private <%= camelize(name) %>Service: <%= classify(name) %>Service) {
+            this.dataSource = new <%= classify(name) %>DataSource(this.translateService);
+            <%= sharedCustomRows %>
+        }
+    <% } %>
+
+    ngOnInit(): void {
+        <% if (options.hasSearchBar) { %>
+            this.filterService.searchStringInit(this.initialSearchString, this.regexValidator, this.minNumberCharacters, this.maxNumberCharacters);
+            this.filterService.selectedStringColumn.valueChanges.pipe(takeUntil(this.ngUnsubscribe), debounceTime(100)).subscribe(() => {
+                if(this.searchInput) {
+                    this.searchInput.nativeElement.focus();
+                }
+            })
+        <% } %>
+
+        this.initializeColumns();
+
+           <% if (options.hasSearchBar) { %>
+             this.initializeHighlightConfig();
+           <% } %>
+        <% if (!options.enableRemoteDataHandling) { %>
+            this.maxExportRows = this.data.length;
+        <% } %>
+    }
+
+    ngOnChanges(changes: SimpleChanges): void {
+        if (changes.hideColumns && !changes.hideColumns.isFirstChange()) {
+            this.initializeColumns();
+        }
+
+        <% if (options.enableRemoteDataHandling) { %>
+            if (
+                (changes?.remoteAPI?.currentValue && !changes.remoteAPI.isFirstChange()) ||
+                (changes?.customFilterExtension?.currentValue && !changes.customFilterExtension.isFirstChange())
+            ) {
+                if (this.paginator.pageIndex !== 0) {
+                    this.paginator.firstPage();
+                } else {
+                    this.applyFilters();
+                }
+            }
+        <% } else { %>
+            if (this.table) {
+                this.applyFilters();
+            }
+        <% } %>
+   }
+
+
+    <% if (options.hasSearchBar || options.enableRemoteDataHandling) { %>
+        ngOnDestroy(): void {
+            <% if (options.hasSearchBar || options.isEnumQuickFilter || options.isDateQuickFilter) { %>
+                this.filterService.reset();
+            <% } %>
+            this.ngUnsubscribe.next();
+            this.ngUnsubscribe.complete();
+        }
+    <% } %>
+
+    ngAfterViewInit(): void {
+        this.dataSource.paginator = this.paginator;
+        this.dataSource.sort = this.sort;
+        this.pageChange();
+    }
+
+    ngAfterViewChecked(): void {
+        if (this.table) {
+            this.table.updateStickyColumnStyles();
+        }
+    }
+
+    initializeColumns(): void {
+        this.columns = [];
+        this.displayedColumns = Object.values(<%= tableColumnsEnumName %>).filter(
+            column => !this.hideColumns.includes(column)
+        );
+
+        const columnStorage = this.storageService.getItem(this.<%= options.localStorageKeyColumns %>);
+
+        if (columnStorage?.length > 0) {
+            columnStorage
+                .filter(
+                (column: Column) =>
+                    !this.hideColumns.includes(column.name as <%= tableColumnsEnumName %>) &&
+                    this.displayedColumns.find(columnName => columnName === column.name)
+                )
+                .forEach((column: Column) => this.columns.push({name: column.name, selected: column.selected}));
+        }
+
+        this.displayedColumns.forEach((displayedColumn: string): void => {
+            if (<% if (options.addRowCheckboxes) { %>displayedColumn === <%= tableColumnsEnumName %>['CHECKBOX'] ||<% } %>
+                !this.isAvailableDataColumn(displayedColumn as <%= tableColumnsEnumName %>) ||
+                this.columns.find(column => column.name === displayedColumn)) {
+                    return;
+            }
+
+            this.columns.push({name: displayedColumn, selected: true});
+        });
+
+        // if no column besides checkboxes and column actions is active, reset and show all columns
+        if (!this.columns.find((column: Column) => column.selected)) {
+             this.columns.forEach((column: Column) => (column.selected = true));
+        }
+
+        this.setDisplayedColumns(this.columns);
+    }
+
+    <% if (options.customColumns.length > 0) { %>
+        isCustomColumn(columnName: string): boolean {
+            const customColumns: any = [<%= customColumn %>];
+            return customColumns.includes(columnName);
+        }
+    <% } %>
+
+    pageChange(): void {
+        this.applyFilters();
+        <% if (!options.enableRemoteDataHandling && options.addRowCheckboxes) { %>
+            this.selection.clear();
+            this.rowSelectionEvent.emit(this.selection.selected);
+        <% } %>
+    }
+
+    sortData(): void {
+        this.applyFilters();
+    }
+
+    rowClicked(row: any, $event: MouseEvent): boolean {
+        if (this.highlightSelectedRow) {
+            this.checkboxClicked(row);
+        }
+
+        if ($event.type === 'contextmenu') {
+            $event.preventDefault();
+            const mousePositionOnClick = { x: $event.clientX + 'px', y: $event.clientY + 'px' };
+            this.rowRightClickEvent.emit({ data: row, mousePosition: mousePositionOnClick });
+        }
+
+        <% if (hasCustomRowActions) { %>
+            if ($event.type === 'click' && this.isAvailableRowAction('forward-right', row)) {
+                this.rowClickEvent.emit({ data: row })
+            }
+        <% } else {%>
+            if ($event.type === 'click') {
+                this.rowClickEvent.emit({ data: row })
+            }
+        <% }%>
+
+        return false;
+    }
+
+    rowDblClicked(row: any, $event: MouseEvent): void {
+        this.rowDblClickEvent.emit({data: row});
+    }
+
+    copyToClipboard(value: any): void {
+        this.copyToClipboardEvent.emit(value);
+    }
+
+    checkboxClicked(row: any): void {
+        if(!this.isMultipleSelectionEnabled) {
+            this.selection.clear();
+        }
+
+        this.selection.toggle(row);
+        this.rowSelectionEvent.emit(this.selection.selected);
+    }
+
+    <% if (options.addRowCheckboxes) { %>
+        isAllSelected(): boolean {
+            return this.selection.selected.length == this.dataSource.displayedData.length;
+        }
+
+        toggleSelectAll(): void {
+            this.isAllSelected() ? this.selection.clear() : this.dataSource.displayedData.forEach(item => this.selection.select(item));
+            this.rowSelectionEvent.emit(this.selection.selected);
+        }
+
+        <% if (!options.enableRemoteDataHandling && options.addRowCheckboxes) { %>
+            trimSelectionToCurrentPage(): void {
+                const indexOfLastItemOnPreviousPage = this.paginator.pageSize * this.paginator.pageIndex - 1;
+                const indexOfFirstItemOnNextPage = this.paginator.pageSize * (this.paginator.pageIndex + 1);
+                this.selection.selected.forEach((u): void => {
+                    if(!this.filteredData.includes(u)) {
+                        this.selection.deselect(u);
+                    }
+                })
+
+                this.filteredData.forEach((u, i): void => {
+                    if (i >= indexOfFirstItemOnNextPage || i <= indexOfLastItemOnPreviousPage) {
+                        this.selection.deselect(this.filteredData[i]);
+                    }
+                });
+
+                this.rowSelectionEvent.emit(this.selection.selected);
+            }
+        <% } %>
+    <% } %>
+
+    <% if (hasCustomRowActions) { %>
+        executeCustomAction($event: MouseEvent, action: string, row:any): void{
+            if(this.customRowActionsLength <= this.visibleRowActionsIcons) {
+                   $event.stopPropagation();
+            }
+
+            this.customActionEvent.emit({action: action, data: row})
+        }
+    <% } %>
+
+    <% if (options.customCommandBarActions.length > 0) { %>
+        handleCustomCommandBarActionEvent(action: string) {
+            this.customCommandBarActionEvent.emit({action: action})
+        }
+    <% } %>
+
+    <% if (options.hasFilters) { %>
+        removeFilter(filterData: any) {
+            <% if (options.hasFilters) { %>
+                this.filterService.removeFilter(filterData);
+            <% } %>
+
+            this.paginator.firstPage();
+
+            <% if (options.hasSearchBar) { %>
+                this.filterService.searchString.reset();
+            <% } %>
+
+            this.applyFilters();
+        }
+    <% } %>
+
+    reloadFilter(): void {
+        this.paginator.firstPage();
+        this.applyFilters();
+    }
+
+    <% if (options.enableRemoteDataHandling) { %>
+        <%= options.include('/remote-handling/requestData.ts.template') %>
+    <% } %>
+
+
+    applyFilters() {
+        <% if (options.hasSearchBar) { %>
+            if (this.filterService.searchString.errors) {
+              return;
+            }
+       <% } %>
+
+      this.tableUpdateStartEvent.emit();
+
+      <% if (options.enableRemoteDataHandling) { %>
+          this.requestData();
+      <% } else { %>
+          const dataToShow = this.applyAllFilters(this.data);
+          this.dataSource.setData(dataToShow);
+          this.filteredData = dataToShow;
+          this.totalItems = this.data.length;
+          this.maxExportRows = this.totalItems;
+          this.checkIfOnValidPage();
+
+          <% if (options.addRowCheckboxes) { %>
+              this.trimSelectionToCurrentPage();
+          <% } %>
+
+          this.tableUpdateFinishedEvent.emit();
+      <% } %>
+    }
+
+    <% if (!options.enableRemoteDataHandling) { %>
+        private applyAllFilters(data: any[]): any[] {
+            let dataTemp = [...data];
+
+            <% if (options.isEnumQuickFilter) { %>
+                dataTemp = this.filterService.applyEnumFilter(dataTemp);
+            <% } %>
+
+             <% if (options.hasSearchBar) { %>
+                 dataTemp = this.filterService.applyStringSearchFilter(dataTemp);
+                this.highlightString = this.filterService.activeFilters
+                    .filter(elem => elem.type === FilterEnums.Search && elem.filterValue !== undefined)
+                    .map(elem => elem.filterValue as string);
+             <% } %>
+
+             <% if (options.isDateQuickFilter) { %>
+                 dataTemp = this.filterService.applyDateFilter(dataTemp);
+              <% } %>
+
+              return dataTemp;
+        }
+    <% } %>
+
+    <% if (options.addCommandBar) { %>
+        exportToCsv() {
+            this.openExportConfirmationDialog();
+        }
+
+        openExportConfirmationDialog() {
+            const dataColumns = this.displayedColumns.filter(col => this.isAvailableDataColumn(col));
+
+            const dialogRef = this.dialog.open(ExportTableDialogComponent, {
+                data: {
+                    <% if (options.enableRemoteDataHandling) { %>
+                        extendedCsvExporter: this.extendedCsvExporter,
+                    <% } %>
+                    allColumns: this.columns.length,
+                    displayedColumns: dataColumns.length,
+                    maxExportRows: this.maxExportRows,
+                },
+                maxWidth: 478,
+            });
+
+            dialogRef.afterClosed()
+                .pipe(filter(e => !!e))
+                .subscribe((event: { action: Action, exportAllPages: boolean; exportAllColumns: boolean }): void => {
+                    if (event.action === Action.cancel) {
+                        return;
+                    }
+
+                    if (event.exportAllPages && this.data.length > this.maxExportRows) {
+                        this.data.length = this.maxExportRows;
+                    }
+
+                    <% if (options.enableRemoteDataHandling) { %>
+                        const columns = event.exportAllColumns ? this.columns.map(c => c.name) : dataColumns;
+                        this.extendedCsvExporter?.export(columns, this.rqlString);
+                    <% } else { %>
+                        this.prepareCsv(this.<%= (camelize((options.enableRemoteDataHandling && options.customRemoteService ? 'custom' : '') + name)) %>Service.flatten(this.data), event.exportAllColumns, event.exportAllPages,this.paginator.pageSize);
+                    <% } %>
+                });
+        }
+    <% } %>
+
+    <% if (options.addCommandBar && !options.enableRemoteDataHandling) { %>
+        prepareCsv(data: any, exportAllColumns: boolean, exportAllPages: boolean, currentPageSize: number): void {
+            if (!exportAllPages && data.length > currentPageSize) {
+                data.length = currentPageSize;
+            }
+
+            const headersToExport = exportAllColumns ? this.columns.map(c => c.name) : this.displayedColumns.filter(col => this.isAvailableDataColumn(col));
+
+            const headersCSV = unparse({
+                fields: headersToExport
+                <% if (!options.isAspectSelected) { %>.map(columnName => columnName.split('.').pop())<% } %>
+                .map(columnName => {
+                    const translatedHeader = this.translateService.translate(`<%= columnTransKeyPrefix %>${columnName}.preferredName`);
+                    return translatedHeader !== `<%= columnTransKeyPrefix %>${columnName}.preferredName` ? translatedHeader : columnName;
+                }) as string[],
+                data: [],
+            });
+
+            this.downloadCsv(`${headersCSV}${unparse(data, {header: false, columns: headersToExport})}`);
+        }
+
+        downloadCsv(csvArray: any): void {
+            this.downloadEvent.emit({error: false, success: false, inProgress: true});
+            try {
+                <% if (options.enableRemoteDataHandling && options.customRemoteService) { %>
+                    this.<%= ((options.customRemoteService ? 'custom' : '') + classify(name)) %>Service.downloadCsv(csvArray);
+                <% } else { %>
+                    this.<%= camelize(name) %>Service.downloadCsv(csvArray);
+                <% } %>
+                this.downloadEvent.emit({error: false, success: true, inProgress: false});
+            } catch(error: any) {
+                this.downloadEvent.emit({error: true, success: false, inProgress: false});
+            }
+        }
+    <% } %>
+
+    initOpenedColumnMenuDialog(): void {
+        this.columMenuComponent.keyLocalStorage = this.<%= options.localStorageKeyColumns %>;
+        this.columMenuComponent.columnsDefault = [
+            ...Object.values(<%= tableColumnsEnumName %>)
+            .filter(columnName => this.isAvailableDataColumn(columnName))
+            .map(columnName => ({name: columnName, selected: true})),
+        ];
+        this.columMenuComponent.columns.splice(0, this.columMenuComponent.columns.length);
+        this.columMenuComponent.columns.push(...this.columns);
+    }
+
+    <% if (options.hasSearchBar) { %>
+        setConfiguration(configs: Array<Config>): void {
+            this.configs = [...configs];
+        }
+    <% } %>
+
+    setDisplayedColumns(columns: Array<Column>): void {
+        let displayedColumnsTmp: Array<Column> = [];
+
+        <% if (options.addRowCheckboxes) { %>
+            if (columns[0].name !== <%= tableColumnsEnumName %>['CHECKBOX']) {
+                displayedColumnsTmp.push({name: <%= tableColumnsEnumName %>['CHECKBOX'], selected: true});
+            }
+        <% } %>
+
+        displayedColumnsTmp.push(...columns);
+
+        <% if (hasCustomRowActions) { %>
+            displayedColumnsTmp.push({name: <%= tableColumnsEnumName %>['CUSTOM_ROW_ACTIONS'], selected: true});
+        <% } %>
+
+        displayedColumnsTmp.push({name: <%= tableColumnsEnumName %>['COLUMNS_MENU'], selected: true});
+
+        this.columns = [...columns];
+        this.displayedColumns = displayedColumnsTmp.filter(column => column.selected).map(column => column.name as <%= tableColumnsEnumName %>);
+    }
+
+    loadCustomTemplate(): TemplateRef<any> | null {
+        return this.customTemplate ? this.customTemplate as TemplateRef<any> : null;
+    }
+
+    <% if (!options.enableRemoteDataHandling) { %>
+        checkIfOnValidPage(): void {
+            if(this.paginator.length  > this.filteredData.length){
+                this.paginator.firstPage();
+            }
+        }
+    <% } %>
+
+    <% if (hasCustomRowActions) { %>
+        protected isAvailableRowAction(action: RowAction, rowData: <%= options.aspectModelTypeName %>): boolean {
+            if (!this.actionResolvers || !this.actionResolvers[action]) {
+                return true;
+            }
+
+            return this.actionResolvers[action](rowData) ?? true;
+        }
+    <% } %>
+
+    <% if (options.hasSearchBar) { %>
+        private initializeHighlightConfig(): void {
+            const configStorage = this.storageService.getItem(this.<%= options.localStorageKeyConfig %>);
+
+            if (configStorage?.length > 0) {
+                configStorage.forEach((config: Config) => this.configs.push(config));
+            } else {
+                this.configs.push({name: 'settings.highlight.name', desc: 'settings.highlight.desc', selected: false, color: '#FFFF00'});
+            }
+        }
+    <% } %>
+
+    private isAvailableDataColumn(column: <%= tableColumnsEnumName %>): boolean {
+        return !(Array.isArray(this.hideColumns) && this.hideColumns.includes(column)) && !NON_DATA_COLUMNS.includes(column);
+    }
+}

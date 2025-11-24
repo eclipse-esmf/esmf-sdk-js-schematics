@@ -1,0 +1,11 @@
+
+/** <%= options.generationDisclaimerText %> **/
+
+/** TODO does it make sense to all restrictions by Table Columns Enum to match all the active columns??? **/
+
+export const <%= classify(name) %>SemanticExplanation: Record<string, {name: string; description: string}> = {
+    <% for(let column of options.tableColumns) {
+        let propertyLocaleKeyPath = `${options.templateHelper.getVersionedAccessPrefix(options)}${options.isAspectSelected ? options.jsonAccessPath : ''}${column.complexPrefix}${column.property.name}`; %>
+        '<%= column.property.name %>': {name: '<%= propertyLocaleKeyPath %>.preferredName', description: '<%= propertyLocaleKeyPath %>.description'},
+    <% } %>
+};

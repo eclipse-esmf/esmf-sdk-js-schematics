@@ -1,0 +1,22 @@
+<form [formGroup]="formGroup">
+    <fieldset class="form-group" [class.invalid]="formGroup.invalid && formGroup.touched">
+        <mat-error *ngIf="formGroup.invalid && formGroup.touched && groupSpecificError as err">
+            <ng-container *ngIf="err">
+                {{ err.translationKey | transloco : err.translationParams }}
+            </ng-container>
+        </mat-error>
+
+        <legend
+            data-test="<%= options.fieldConfig.name %>-group"
+        ><%= options.fieldConfig.name %></legend>
+        <% if (options.fieldConfig.deconstructionRule) {
+            %><p class="form-info">Deconstruction rule: <code>{{deconstructionRule}}</code></p>
+        <% } %>
+        <section class="form-fields">
+            <% for (let childConfig of options.fieldConfig.children) {
+                %><<%= childConfig.selector %> formControlName="<%= childConfig.name %>"
+                ></<%= childConfig.selector %>>
+            <% } %>
+        </section>
+    </fieldset>
+</form>

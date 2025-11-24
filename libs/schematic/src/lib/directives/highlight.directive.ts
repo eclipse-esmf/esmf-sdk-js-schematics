@@ -1,5 +1,6 @@
-import {Directive, ElementRef, Input, OnChanges, OnInit, SecurityContext, SimpleChange, SimpleChanges} from '@angular/core';
+import {Directive, ElementRef, inject, Input, OnChanges, OnInit, SecurityContext, SimpleChange, SimpleChanges} from '@angular/core';
 import {DomSanitizer} from '@angular/platform-browser';
+import {MatTooltip} from '@angular/material/tooltip';
 
 interface HighlightSimpleChanges extends SimpleChanges {
   highlight: SimpleChange;
@@ -13,6 +14,7 @@ interface HighlightRange {
 }
 
 @Directive({
+  // eslint-disable-next-line @angular-eslint/directive-selector
   selector: '[highlight]',
 })
 export class HighlightDirective implements OnChanges, OnInit {
@@ -44,7 +46,8 @@ export class HighlightDirective implements OnChanges, OnInit {
     return !!this.el.nativeElement.querySelector('mark');
   }
 
-  constructor(private el: ElementRef, private sanitizer: DomSanitizer) {}
+  private readonly el = inject(ElementRef);
+  private readonly sanitizer = inject(DomSanitizer);
 
   ngOnChanges(changes: HighlightSimpleChanges) {
     if (
@@ -164,6 +167,8 @@ export class HighlightDirective implements OnChanges, OnInit {
   }
 
   private clearHighlights(): void {
-    (this.el.nativeElement as HTMLElement).innerHTML = this.highlightSource;
+    if(this.highlightSource) {
+      (this.el.nativeElement as HTMLElement).innerHTML = this.highlightSource;
+    }
   }
 }

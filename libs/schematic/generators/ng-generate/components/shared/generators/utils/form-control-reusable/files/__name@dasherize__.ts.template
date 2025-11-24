@@ -1,0 +1,51 @@
+/** <%= options.generationDisclaimerText %> **/
+import {ControlValueAccessor, FormControl} from '@angular/forms';
+import {CustomControlValidationError} from "./form-validators";
+
+export abstract class FormControlReusable implements ControlValueAccessor {
+    abstract formControl: FormControl<any>
+    abstract formControlName: string;
+    val: any;
+
+    onChange: any = () => {};
+    onTouch: any = () => {};
+
+    set value(val: any) {
+        this.val = val;
+        this.onChange(val);
+        this.onTouch(val);
+    }
+
+    get value(): any {
+        return this.val;
+    }
+
+    get error(): CustomControlValidationError {
+        if (this.formControl.errors && this.formControl.errors['required']) {
+            return {
+                translationKey: 'validation.required',
+                translationParams: {},
+            };
+        }
+
+        const errors = Object.values(this.formControl.errors ?? []);
+        const error = errors.find(value => !!value);
+
+        return error ?? {
+            translationKey: 'validation.default',
+            translationParams: {},
+        };
+    }
+
+    writeValue(value: any): void {
+        this.value = value;
+    }
+
+    registerOnChange(fn: any): void {
+        this.onChange = fn;
+    }
+
+    registerOnTouched(fn: any): void {
+        this.onTouch = fn;
+    }
+}
