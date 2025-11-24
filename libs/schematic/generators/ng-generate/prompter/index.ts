@@ -32,12 +32,10 @@ import {loadInquirer} from '../../utils/angular';
 // Function to dynamically load inquirer-fuzzy-path and register the prompt
 async function registerFuzzyPathPrompt(): Promise<any> {
     try {
-        const inquirerFuzzyPath = await import('inquirer-fuzzy-path').then(mod => mod.default);
-        const inquirerPromptSuggest = await import('inquirer-prompt-suggest').then(mod => mod.default);
-        const inquirerSearchList = await import('inquirer-search-list').then(mod => mod.default);
+        const inquirerFuzzyPath = await import('inquirer-fuzzy-path');
+        const inquirerPromptSuggest = await import('inquirer-prompt-suggest');
+        const inquirerSearchList = await import('inquirer-search-list');
         const inquirer = await loadInquirer();
-
-        console.log(inquirer);
 
         inquirer.registerPrompt('fuzzypath', inquirerFuzzyPath);
         inquirer.registerPrompt('suggest', inquirerPromptSuggest);
