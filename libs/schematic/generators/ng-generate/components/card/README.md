@@ -1,20 +1,19 @@
 ## Table of Contents
 
 - [Generate a card component with the schematics command](#generate-a-card-component-with-the-schematics-command)
-    - [Flags and options that can be used in the generation process](#flags-and-options-that-can-be-used-in-the-generation-process)
-        - [Generate a component with a custom name](#generate-a-component-with-a-custom-name)
-        - [Exclude one or more properties from the generation](#exclude-one-or-more-properties-from-the-generation)
-        - [Multi-version support for Aspect Models](#multi-version-support-for-aspect-models)
-        - [Manual adaptions in _app.module.ts_](#manual-adaptions-in-appmodulets)
-        - [Show customized information in the card with ng-template](#show-customized-information-in-the-card-with-ng-template)
-        - [Export functionality](#export-functionality)
-    - [Custom icons for the command bar](#custom-icons-for-the-command-bar)
-    - [Add translations](#add-translations)
-    - [Pre-load config file](#pre-load-config-file)
-    - [Skip Installation](#skip-install)
-    - [Overwrite](#overwrite)
-    - [Add material css theme](#Add-material-css-theme)
-    - [Set View Encapsulation strategy](#Set-View-Encapsulation-strategy)
+  - [Flags and options that can be used in the generation process](#flags-and-options-that-can-be-used-in-the-generation-process)
+    - [Generate a component with a custom name](#generate-a-component-with-a-custom-name)
+    - [Exclude one or more properties from the generation](#exclude-one-or-more-properties-from-the-generation)
+    - [Multi-version support for Aspect Models](#multi-version-support-for-aspect-models)
+    - [Show customized information in the card with ng-template](#show-customized-information-in-the-card-with-ng-template)
+    - [Export functionality](#export-functionality)
+  - [Custom icons for the command bar](#custom-icons-for-the-command-bar)
+  - [Add translations](#add-translations)
+  - [Pre-load config file](#pre-load-config-file)
+  - [Skip Installation](#skip-install)
+  - [Overwrite](#overwrite)
+  - [Add material css theme](#Add-material-css-theme)
+  - [Set View Encapsulation strategy](#Set-View-Encapsulation-strategy)
 
 # Generate a card component with the schematics command
 
@@ -54,9 +53,9 @@ this will be the result in the generated component .ts file
 
 ```typescript
 @Component({
-    selector: 'esmf-sdk-ui-movement-card',
-    templateUrl: './movement-card.component.html',
-    styleUrls: ['./movement-card.component.scss'],
+  selector: 'esmf-sdk-ui-movement-card',
+  templateUrl: './movement-card.component.html',
+  styleUrls: ['./movement-card.component.scss'],
 })
 export class MovementCardComponent {}
 ```
@@ -72,9 +71,9 @@ selector.
 
 ```typescript
 @Component({
-    selector: 'esmf-sdk-ui-custom-card', // <- provided name reflected in the selector name
-    templateUrl: './custom-card.component.html', // <- provided name reflected in the component path
-    styleUrls: ['./custom-card.component.scss'], // <- provided name reflected in the component files
+  selector: 'esmf-sdk-ui-custom-card', // <- provided name reflected in the selector name
+  templateUrl: './custom-card.component.html', // <- provided name reflected in the component path
+  styleUrls: ['./custom-card.component.scss'], // <- provided name reflected in the component files
 })
 export class CustomCardComponent {} // <- provided name reflected in the component class name
 ```
@@ -148,45 +147,6 @@ component and the language files.
 
 ---
 
-## Manual adaptions in _app.module.ts_
-
-Please note that you (eventually) need to manually adapt file
-_src/app/app.module.ts_ in order to specify which versions of the card UI
-component you would like to use. In the example below, versions 1.0.0 and
-1.1.0 are to be used as components.
-
-```typescript
-import {NgModule} from '@angular/core';
-import {BrowserModule} from '@angular/platform-browser';
-
-import {AppComponent} from './app.component';
-import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import {
-    MovementCardModule as MovementCardModule_v100
-} from './shared/components/movement-card/v100/movement-card.module';
-import {
-    MovementCardModule as MovementCardModule_v110
-} from './shared/components/movement-card/v110/movement-card.module';
-
-@NgModule({
-    imports: [
-        MovementCardModule_v100, // <-- Manually added
-        MovementTCardModule_v110  // <-- Manually added
-    ]
-})
-```
-
-This gives you the choice to decide which UI components (and in which version) are used to compose your web application.
-You then can use this specific version of the card UI component, e.g. in _src/app/app.component.html_:
-
-```angular2html
-
-<esmf-sdk-ui-movement-card-v100></esmf-sdk-ui-movement-card-v100>
-<esmf-sdk-ui-movement-card-v110></esmf-sdk-ui-movement-card-v110>
-```
-
----
-
 ## Show customized information in the card with ng-template
 
 In your parent HTML file, you have the ability to define a custom ng-template.
@@ -194,8 +154,8 @@ This template will be integrated directly into the card's content.
 
 You can either:
 
-* Utilize the pre-defined elements and their values, or
-* Introduce entirely custom content according to your requirements.
+- Utilize the pre-defined elements and their values, or
+- Introduce entirely custom content according to your requirements.
 
 This flexibility allows you to tailor the card's appearance and behavior to fit specific scenarios.
 
@@ -207,11 +167,17 @@ Without versioning:
 
 ```html
 <esmf-sdk-ui-movement-card-v100>
-    <ng-template #cardTemplate let-data let-element="<componentName>CardValues" let-getElementValue="getElementValue" let-translateService="translateService">
-        <div class="data-card-element" *ngFor="let elem of element">
-            <b>{{ elem + ".preferredName" | transloco }}</b>: {{ getElementValue(data, elem) }}
-        </div>
-    </ng-template>
+  <ng-template
+    #cardTemplate
+    let-data
+    let-element="<componentName>CardValues"
+    let-getElementValue="getElementValue"
+    let-translateService="translateService"
+  >
+    <div class="data-card-element" *ngFor="let elem of element">
+      <b>{{ elem + ".preferredName" | transloco }}</b>: {{ getElementValue(data, elem) }}
+    </div>
+  </ng-template>
 </esmf-sdk-ui-movement-card-v100>
 ```
 
@@ -219,11 +185,17 @@ With versioning:
 
 ```html
 <esmf-sdk-ui-movement-card-v100>
-    <ng-template #cardTemplate let-data let-element="<componentName>CardValues" let-getElementValue="getElementValue" let-translateService="translateService">
-        <div class="data-card-element" *ngFor="let elem of element">
-            <b>{{ 'movement.v210.' + elem + ".preferredName" | transloco }}</b>: {{ getElementValue(data, elem) }}
-        </div>
-    </ng-template>
+  <ng-template
+    #cardTemplate
+    let-data
+    let-element="<componentName>CardValues"
+    let-getElementValue="getElementValue"
+    let-translateService="translateService"
+  >
+    <div class="data-card-element" *ngFor="let elem of element">
+      <b>{{ 'movement.v210.' + elem + ".preferredName" | transloco }}</b>: {{ getElementValue(data, elem) }}
+    </div>
+  </ng-template>
 </esmf-sdk-ui-movement-card-v100>
 ```
 
@@ -251,35 +223,35 @@ By pressing it, a modal dialog window will appear with multiple options.
 
 1. If the data is handled on the client side, the following options will appear:
 
-    1. Export all pages (by default)
-       Pressing this button will result into a full data export to a csv file.
-    2. Export only first page
-       If this option appears, this will lead to a csv file being exported including only the first page from the view.
+   1. Export all pages (by default)
+      Pressing this button will result into a full data export to a csv file.
+   2. Export only first page
+      If this option appears, this will lead to a csv file being exported including only the first page from the view.
 
 2. If the data is handled remotely, the following options will be visible:
 
-    1. Export all pages (by default) - option which exports a csv containing the set of data which can be visible on
-       that
-       page.
-    2. Export only first page
-       If this option appears, this will lead to a csv file being exported including only the first page from the view.
-    3. Export all pages (only if an ExtendedCsvExporter function is passed to the card through bindings) - will result
-       in exporting the data by calling an external function passed to the generated component through binding by using
-       the `extendedCsvExporter` attribute.
+   1. Export all pages (by default) - option which exports a csv containing the set of data which can be visible on
+      that
+      page.
+   2. Export only first page
+      If this option appears, this will lead to a csv file being exported including only the first page from the view.
+   3. Export all pages (only if an ExtendedCsvExporter function is passed to the card through bindings) - will result
+      in exporting the data by calling an external function passed to the generated component through binding by using
+      the `extendedCsvExporter` attribute.
 
-    ```html
-    <esmf-sdk-ui-movement-card-v321 [extendedCsvExporter]="csvExporter"></esmf-sdk-ui-movement-card-v321>
-    ```
+   ```html
+   <esmf-sdk-ui-movement-card-v321 [extendedCsvExporter]="csvExporter"></esmf-sdk-ui-movement-card-v321>
+   ```
 
    The `csvExporter` function will have a type `ExtendedCsvExporter` exported in the component's service file, and it
    will need to implement a function with 2 arguments, the displayed columns and the RQL query which will query the data
    from the backend.
 
-    ```typescript
-    export interface ExtendedCsvExporter {
-        export(displayedColumns: string[], rqlQuery: string): void;
-    }
-    ```
+   ```typescript
+   export interface ExtendedCsvExporter {
+     export(displayedColumns: string[], rqlQuery: string): void;
+   }
+   ```
 
    If this function is not exposed to the component, this option will not appear in the export dialog window.
 
@@ -317,38 +289,38 @@ ng generate @esmf/semantic-ui-schematics:card --configFile=<config-file-name>-wi
 
 Example of configuration file:
 
-[//]: # (TODO check this is up to date)
+[//]: # 'TODO check this is up to date'
 
 ```json
 {
-    "aspectModelTFiles": ["FOLDER\\Movement.ttl"],
-    "excludedProperties": [],
-    "configFile": "wizard.config.json",
-    "complexProps": [
-        {
-            "prop": "position",
-            "propsToShow": ["x", "y", "z"]
-        }
-    ],
-    "selectedModelElementUrn": "urn:samm:org.eclipse.esmf.test:1.0.0#Movement",
-    "jsonAccessPath": "",
-    "defaultSortingCol": "moving",
-    "customRowActions": ["schedule"],
-    "addCommandBar": true,
-    "enabledCommandBarFunctions": ["addCustomCommandBarActions", "addSearchBar", "addEnumQuickFilters", "addDateQuickFilters"],
-    "customCommandBarActions": ["edit.svg"],
-    "enableRemoteDataHandling": true,
-    "enableVersionSupport": true,
-    "overwrite": true,
-    "getOptionalMaterialTheme": false,
-    "datePickers": [
-      {
-        "propertyUrn": "urn:samm:org.eclipse.test:1.0.0#datePicker",
-        "datePicker": {
-          "type": "singleDatePicker"
-        }
+  "aspectModelTFiles": ["FOLDER\\Movement.ttl"],
+  "excludedProperties": [],
+  "configFile": "wizard.config.json",
+  "complexProps": [
+    {
+      "prop": "position",
+      "propsToShow": ["x", "y", "z"]
+    }
+  ],
+  "selectedModelElementUrn": "urn:samm:org.eclipse.esmf.test:1.0.0#Movement",
+  "jsonAccessPath": "",
+  "defaultSortingCol": "moving",
+  "customRowActions": ["schedule"],
+  "addCommandBar": true,
+  "enabledCommandBarFunctions": ["addCustomCommandBarActions", "addSearchBar", "addEnumQuickFilters", "addDateQuickFilters"],
+  "customCommandBarActions": ["edit.svg"],
+  "enableRemoteDataHandling": true,
+  "enableVersionSupport": true,
+  "overwrite": true,
+  "getOptionalMaterialTheme": false,
+  "datePickers": [
+    {
+      "propertyUrn": "urn:samm:org.eclipse.test:1.0.0#datePicker",
+      "datePicker": {
+        "type": "singleDatePicker"
       }
-    ]
+    }
+  ]
 }
 ```
 

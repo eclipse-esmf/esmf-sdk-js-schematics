@@ -14,13 +14,12 @@
 import {Values} from '../shared/schema';
 
 export interface TableSchema extends Values {
-    customRowActions: string[];
-    addRowCheckboxes: boolean;
-    customColumns: Array<string>;
+  customRowActions: string[];
+  addRowCheckboxes: boolean;
+  customColumns: Array<string>;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type,@typescript-eslint/no-empty-interface
 export interface ConfigurationDefaultsSchema {}
 
 // class to define default values that are not asked in the prompter

@@ -22,179 +22,179 @@ import {ConstraintValidatorStrategyClass} from '../validators/constraint/constra
 import {DataType, GenericValidator, ValidatorConfig} from '../validators/validatorsTypes';
 
 export interface BaseFormFieldConfig {
-    name: string;
-    nameDasherized: string;
-    selector: string;
+  name: string;
+  nameDasherized: string;
+  selector: string;
 }
 
 export interface FormFieldConfig extends BaseFormFieldConfig {
-    validators: ValidatorConfig[];
-    exampleValue?: string;
-    values?: any[];
-    unitName?: string;
-    children?: FormFieldConfig[];
-    dataFormat?: string;
-    placeholder?: string;
-    deconstructionRule?: string;
-    isList?: boolean;
-    isScalarChild?: boolean;
+  validators: ValidatorConfig[];
+  exampleValue?: string;
+  values?: any[];
+  unitName?: string;
+  children?: FormFieldConfig[];
+  dataFormat?: string;
+  placeholder?: string;
+  deconstructionRule?: string;
+  isList?: boolean;
+  isScalarChild?: boolean;
 }
 
 export abstract class FormFieldStrategy {
-    pathToFiles = '';
-    hasChildren = false;
-    options: any;
-    isList = false;
+  pathToFiles = '';
+  hasChildren = false;
+  options: any;
+  isList = false;
 
-    constructor(
-        options: any,
-        public context: SchematicContext,
-        public parent: Property,
-        public child: Characteristic,
-        public fieldName: string,
-        public constraints: Constraint[],
-    ) {
-        this.options = {...options};
+  constructor(
+    options: any,
+    public context: SchematicContext,
+    public parent: Property,
+    public child: Characteristic,
+    public fieldName: string,
+    public constraints: Constraint[]
+  ) {
+    this.options = {...options};
+  }
+
+  static isTargetStrategy(child: Characteristic): boolean {
+    throw new Error('An implementation of the method has to be provided by a derived class');
+  }
+
+  static getShortUrn(child: Characteristic): DataType {
+    return child.dataType?.shortUrn as DataType;
+  }
+
+  getValidatorsConfigs(ignoreConstraintValidatorStrategies: ConstraintValidatorStrategyClass = []): ValidatorConfig[] {
+    return [
+      ...this.getBaseValidatorsConfigs(),
+      ...this.getDataTypeValidatorsConfigs(),
+      ...this.getConstraintValidatorsConfigs(ignoreConstraintValidatorStrategies),
+    ];
+  }
+
+  getBaseValidatorsConfigs(): ValidatorConfig[] {
+    const validatorsConfigs: ValidatorConfig[] = [];
+
+    if (!this.parent.isOptional) {
+      validatorsConfigs.push({
+        name: GenericValidator.Required,
+        definition: 'Validators.required',
+        isDirectGroupValidator: false,
+      });
     }
 
-    static isTargetStrategy(child: Characteristic): boolean {
-        throw new Error('An implementation of the method has to be provided by a derived class');
-    }
+    return validatorsConfigs;
+  }
 
-    static getShortUrn(child: Characteristic): DataType {
-        return child.dataType?.shortUrn as DataType;
-    }
+  getDataTypeValidatorsConfigs(): ValidatorConfig[] {
+    return [];
+  }
 
-    getValidatorsConfigs(ignoreConstraintValidatorStrategies: ConstraintValidatorStrategyClass = []): ValidatorConfig[] {
-        return [
-            ...this.getBaseValidatorsConfigs(),
-            ...this.getDataTypeValidatorsConfigs(),
-            ...this.getConstraintValidatorsConfigs(ignoreConstraintValidatorStrategies),
-        ];
-    }
+  getConstraintValidatorsConfigs(ignoreStrategies: ConstraintValidatorStrategyClass): ValidatorConfig[] {
+    const applicableConstraints: Constraint[] = this.constraints.filter(
+      constraint =>
+        // Check that it's not excluded explicitly
+        !this.options.excludedConstraints.includes(constraint.aspectModelUrn) &&
+        // It's not a direct instance of "DefaultConstraint" (it contains no validation rules)
+        constraint.constructor !== DefaultConstraint
+    );
 
-    getBaseValidatorsConfigs(): ValidatorConfig[] {
-        const validatorsConfigs: ValidatorConfig[] = [];
+    return applicableConstraints.reduce((acc, constraint) => {
+      const validatorStrategy = getConstraintValidatorStrategy(constraint, this.child);
+      const isIgnoredStrategy = !!ignoreStrategies.find(ignoredStrategy => validatorStrategy instanceof ignoredStrategy);
 
-        if (!this.parent.isOptional) {
-            validatorsConfigs.push({
-                name: GenericValidator.Required,
-                definition: 'Validators.required',
-                isDirectGroupValidator: false,
-            });
-        }
+      if (isIgnoredStrategy) {
+        return acc;
+      }
 
-        return validatorsConfigs;
-    }
+      return [...acc, ...validatorStrategy.getValidatorsConfigs()];
+    }, []);
+  }
 
-    getDataTypeValidatorsConfigs(): ValidatorConfig[] {
-        return [];
-    }
+  getBaseFormFieldConfig(): BaseFormFieldConfig {
+    return {
+      name: this.fieldName,
+      nameDasherized: this.getNameDasherized(),
+      selector: this.getSelector(),
+    };
+  }
 
-    getConstraintValidatorsConfigs(ignoreStrategies: ConstraintValidatorStrategyClass): ValidatorConfig[] {
-        const applicableConstraints: Constraint[] = this.constraints.filter(
-            constraint =>
-                // Check that it's not excluded explicitly
-                !this.options.excludedConstraints.includes(constraint.aspectModelUrn) &&
-                // It's not a direct instance of "DefaultConstraint" (it contains no validation rules)
-                constraint.constructor !== DefaultConstraint,
-        );
+  getSelector(): string {
+    return `${this.options.prefix}-${strings.dasherize(this.fieldName)}`;
+  }
 
-        return applicableConstraints.reduce((acc, constraint) => {
-            const validatorStrategy = getConstraintValidatorStrategy(constraint, this.child);
-            const isIgnoredStrategy = !!ignoreStrategies.find(ignoredStrategy => validatorStrategy instanceof ignoredStrategy);
+  getNameDasherized(): string {
+    return strings.dasherize(this.fieldName.charAt(0).toLowerCase() + this.fieldName.slice(1));
+  }
 
-            if (isIgnoredStrategy) {
-                return acc;
-            }
+  applyTemplate(): Rule {
+    return () => {
+      return applyTemplates({
+        classify: strings.classify,
+        dasherize: strings.dasherize,
+        options: {...this.options, name: this.fieldName},
+        name: this.fieldName,
+      });
+    };
+  }
 
-            return [...acc, ...validatorStrategy.getValidatorsConfigs()];
-        }, []);
-    }
+  buildConfig(): FormFieldConfig {
+    throw new Error('An implementation of the method has to be provided by a derived class');
+  }
 
-    getBaseFormFieldConfig(): BaseFormFieldConfig {
-        return {
-            name: this.fieldName,
-            nameDasherized: this.getNameDasherized(),
-            selector: this.getSelector(),
-        };
-    }
+  generate(): Rule {
+    const fieldConfig = this.buildConfig();
+    this.options.fieldConfig = fieldConfig;
 
-    getSelector(): string {
-        return `${this.options.prefix}-${strings.dasherize(this.fieldName)}`;
-    }
+    const modules = [
+      {
+        name: strings.classify(this.fieldName) + 'Component',
+        fromLib: `./${fieldConfig.nameDasherized}/${fieldConfig.nameDasherized}.component`,
+      },
+    ];
 
-    getNameDasherized(): string {
-        return strings.dasherize(this.fieldName.charAt(0).toLowerCase() + this.fieldName.slice(1));
-    }
-
-    applyTemplate(): Rule {
-        return () => {
-            return applyTemplates({
-                classify: strings.classify,
-                dasherize: strings.dasherize,
-                options: {...this.options, name: this.fieldName},
-                name: this.fieldName,
-            });
-        };
-    }
-
-    buildConfig(): FormFieldConfig {
-        throw new Error('An implementation of the method has to be provided by a derived class');
-    }
-
-    generate(): Rule {
-        const fieldConfig = this.buildConfig();
-        this.options.fieldConfig = fieldConfig;
-
-        const modules = [
-            {
-                name: strings.classify(this.fieldName) + 'Component',
-                fromLib: `./${fieldConfig.nameDasherized}/${fieldConfig.nameDasherized}.component`,
-            },
-        ];
-
-        const operations = [
-            mergeWith(
-                apply(url(this.pathToFiles), [
-                    templateInclude(
-                        this.context,
-                        this.applyTemplate(),
-                        {
-                            ...this.options,
-                            name: this.fieldName,
-                        },
-                        '../shared/methods',
-                    ),
-                    move(this.options.path + `/${fieldConfig.nameDasherized}`),
-                ]),
-                this.options.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error,
-            ),
-            addToComponentModule(this.options.skipImport, this.options, modules),
-        ];
-
-        if (this.hasChildren) {
-            operations.push(...this.getChildStrategies().map(strategy => strategy.generate()));
-        }
-
-        return chain(operations);
-    }
-
-    getChildConfigs(): FormFieldConfig[] {
-        return this.getChildStrategies().map(strategy => strategy.buildConfig());
-    }
-
-    getChildStrategies(): FormFieldStrategy[] {
-        throw new Error('An implementation of the method has to be provided by a derived class');
-    }
-
-    getChildStrategy(parent: Property, child: Characteristic): FormFieldStrategy {
-        return getFormFieldStrategy(
-            this.options,
+    const operations = [
+      mergeWith(
+        apply(url(this.pathToFiles), [
+          templateInclude(
             this.context,
-            this.parent,
-            child,
-            child instanceof DefaultTrait ? child.baseCharacteristic.name : child.name,
-        );
+            this.applyTemplate(),
+            {
+              ...this.options,
+              name: this.fieldName,
+            },
+            '../shared/methods'
+          ),
+          move(this.options.path + `/${fieldConfig.nameDasherized}`),
+        ]),
+        this.options.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error
+      ),
+      addToComponentModule(this.options.skipImport, this.options, modules),
+    ];
+
+    if (this.hasChildren) {
+      operations.push(...this.getChildStrategies().map(strategy => strategy.generate()));
     }
+
+    return chain(operations);
+  }
+
+  getChildConfigs(): FormFieldConfig[] {
+    return this.getChildStrategies().map(strategy => strategy.buildConfig());
+  }
+
+  getChildStrategies(): FormFieldStrategy[] {
+    throw new Error('An implementation of the method has to be provided by a derived class');
+  }
+
+  getChildStrategy(parent: Property, child: Characteristic): FormFieldStrategy {
+    return getFormFieldStrategy(
+      this.options,
+      this.context,
+      this.parent,
+      child,
+      child instanceof DefaultTrait ? child.baseCharacteristic.name : child.name
+    );
+  }
 }

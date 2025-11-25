@@ -12,69 +12,69 @@
  */
 
 import {
-    apply,
-    applyTemplates,
-    chain,
-    MergeStrategy,
-    mergeWith,
-    move,
-    noop,
-    Rule,
-    SchematicContext,
-    Tree,
-    url,
+  apply,
+  applyTemplates,
+  chain,
+  MergeStrategy,
+  mergeWith,
+  move,
+  noop,
+  Rule,
+  SchematicContext,
+  Tree,
+  url,
 } from '@angular-devkit/schematics';
 import {strings} from '@angular-devkit/core';
 import {Schema} from '../../../schema';
 import {parseSourceFile} from '@angular/cdk/schematics';
 
 export function generateTranslationModule(options: any): Rule {
-    return (tree: Tree, _context: SchematicContext) => {
-        if (isTranslocoProviderDefined(tree, 'src/app/shared/app-shared.module.ts')) {
-            return noop();
-        }
+  return (tree: Tree, _context: SchematicContext) => {
+    if (isTranslocoProviderDefined(tree, 'src/app/shared/app-shared.module.ts')) {
+      return noop();
+    }
 
-        return chain([generateModuleDefinition(options, _context), generateProviderDefinition(options, _context)])(tree, _context);
-    };
+    return chain([generateModuleDefinition(options, _context), generateProviderDefinition(options, _context)])(tree, _context);
+  };
 }
 
 function isTranslocoProviderDefined(tree: Tree, modulePath: string): boolean {
-    return tree.exists(modulePath) && parseSourceFile(tree, modulePath).text.includes(transLocoProviderInformation());
+  return tree.exists(modulePath) && parseSourceFile(tree, modulePath).text.includes(transLocoProviderInformation());
 }
 
 function generateModuleDefinition(options: Schema, _context: SchematicContext): Rule {
-    return mergeWith(
-        apply(url('../shared/generators/modules/translation/module-files'), [
-            applyTemplates({
-                classify: strings.classify,
-                dasherize: strings.dasherize,
-                options: options,
-                providerInfo: transLocoProviderInformation(),
-                name: 'app-shared',
-            }),
-            move('src/app/shared'),
-        ]),
-        options.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error,
-    );
+  return mergeWith(
+    apply(url('../shared/generators/modules/translation/module-files'), [
+      applyTemplates({
+        classify: strings.classify,
+        dasherize: strings.dasherize,
+        options: options,
+        providerInfo: transLocoProviderInformation(),
+        name: 'app-shared',
+      }),
+      move('src/app/shared'),
+    ]),
+    options.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error
+  );
 }
 
 function generateProviderDefinition(options: Schema, _context: SchematicContext): Rule {
-    return mergeWith(
-        apply(url('../shared/generators/modules/translation/provider-files'), [
-            applyTemplates({
-                classify: strings.classify,
-                dasherize: strings.dasherize,
-                options: options,
-                name: 'trans-loco-http-loader',
-            }),
-            move('src/app/shared'),
-        ]),
-        options.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error,
-    );
+  return mergeWith(
+    apply(url('../shared/generators/modules/translation/provider-files'), [
+      applyTemplates({
+        classify: strings.classify,
+        dasherize: strings.dasherize,
+        options: options,
+        name: 'trans-loco-http-loader',
+      }),
+      move('src/app/shared'),
+    ]),
+    options.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error
+  );
 }
 
 function transLocoProviderInformation(): string {
-    return `provideTransloco({
+  return `provideTransloco({
       config: {
         availableLangs: ['en'],
         defaultLang: 'en',

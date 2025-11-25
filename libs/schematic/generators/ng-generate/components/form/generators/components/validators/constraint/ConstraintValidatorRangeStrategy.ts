@@ -16,27 +16,27 @@ import {Constraint, DefaultRangeConstraint} from '@esmf/aspect-model-loader';
 import {ValidatorConfig} from '../validatorsTypes';
 
 export class ConstraintValidatorRangeStrategy extends ConstraintValidatorStrategy {
-    static isTargetStrategy(constraint: Constraint): boolean {
-        return constraint instanceof DefaultRangeConstraint;
+  static isTargetStrategy(constraint: Constraint): boolean {
+    return constraint instanceof DefaultRangeConstraint;
+  }
+
+  getValidatorsConfigs(): ValidatorConfig[] {
+    const typedConstraint = this.constraint as DefaultRangeConstraint;
+
+    if (typedConstraint.minValue === undefined && typedConstraint.maxValue === undefined) {
+      return [];
     }
 
-    getValidatorsConfigs(): ValidatorConfig[] {
-        const typedConstraint = this.constraint as DefaultRangeConstraint;
+    const isApplyToChildren = this.isList() || this.isComplex();
 
-        if (typedConstraint.minValue === undefined && typedConstraint.maxValue === undefined) {
-            return [];
-        }
-
-        const isApplyToChildren = this.isList() || this.isComplex();
-
-        return [
-            {
-                name: this.constraint.name,
-                definition: isApplyToChildren
-                    ? `FormValidators.applyToChildren(FormValidators.rangeValidator(${typedConstraint.minValue}, "${typedConstraint.lowerBoundDefinition}", ${typedConstraint.maxValue}, "${typedConstraint.upperBoundDefinition}"))`
-                    : `FormValidators.rangeValidator(${typedConstraint.minValue}, "${typedConstraint.lowerBoundDefinition}", ${typedConstraint.maxValue}, "${typedConstraint.upperBoundDefinition}")`,
-                isDirectGroupValidator: !isApplyToChildren,
-            },
-        ];
-    }
+    return [
+      {
+        name: this.constraint.name,
+        definition: isApplyToChildren
+          ? `FormValidators.applyToChildren(FormValidators.rangeValidator(${typedConstraint.minValue}, "${typedConstraint.lowerBoundDefinition}", ${typedConstraint.maxValue}, "${typedConstraint.upperBoundDefinition}"))`
+          : `FormValidators.rangeValidator(${typedConstraint.minValue}, "${typedConstraint.lowerBoundDefinition}", ${typedConstraint.maxValue}, "${typedConstraint.upperBoundDefinition}")`,
+        isDirectGroupValidator: !isApplyToChildren,
+      },
+    ];
+  }
 }

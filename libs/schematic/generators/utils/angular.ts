@@ -18,12 +18,13 @@ import {
   addModuleImportToModule,
   buildComponent,
   findModuleFromOptions,
-  parseSourceFile
+  parseSourceFile,
 } from '@angular/cdk/schematics';
 import {MODULE_EXT} from '@schematics/angular/utility/find-module';
 import {Schema} from '../ng-generate/components/shared/schema';
 import {dasherize} from '@angular-devkit/core/src/utils/strings';
 import {InsertChange} from '@schematics/angular/utility/change';
+import {PromptModule} from 'inquirer';
 
 declare interface ModuleDefinition {
   name: string;
@@ -144,6 +145,8 @@ export function wrapBuildComponentExecution(options: Schema): Rule {
 }
 
 // Dynamic import for the inquirer
-export async function loadInquirer() {
-  return await import('inquirer');
+export async function loadInquirer(): Promise<PromptModule> {
+  const inquirer = await import('inquirer');
+
+  return inquirer as unknown as PromptModule;
 }

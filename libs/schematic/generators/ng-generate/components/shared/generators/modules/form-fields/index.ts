@@ -17,29 +17,24 @@ import {classify, dasherize} from '@angular-devkit/core/src/utils/strings';
 import {addModuleImportToModule} from '@angular/cdk/schematics';
 
 export function generateFormFieldsModule(options: any): Rule {
-    return (tree: Tree, _context: SchematicContext) => {
-        const {classify, dasherize} = strings;
-        const name = 'form-fields';
+  return (tree: Tree, _context: SchematicContext) => {
+    const {classify, dasherize} = strings;
+    const name = 'form-fields';
 
-        const modulePath = `${options.path}/${dasherize(options.name)}.module.ts`;
-        addModuleImportToModule(
-            tree,
-            '/src/app/shared/app-shared.module.ts',
-            `${classify(name)}Module`,
-            `${modulePath.replace('.ts', '')}`,
-        );
+    const modulePath = `${options.path}/${dasherize(options.name)}.module.ts`;
+    addModuleImportToModule(tree, '/src/app/shared/app-shared.module.ts', `${classify(name)}Module`, `${modulePath.replace('.ts', '')}`);
 
-        return mergeWith(
-            apply(url(`../shared/generators/modules/${name}/files`), [
-                applyTemplates({
-                    classify,
-                    dasherize,
-                    options,
-                    name,
-                }),
-                move(`src/app/shared/components/${name}`),
-            ]),
-            options.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error,
-        );
-    };
+    return mergeWith(
+      apply(url(`../shared/generators/modules/${name}/files`), [
+        applyTemplates({
+          classify,
+          dasherize,
+          options,
+          name,
+        }),
+        move(`src/app/shared/components/${name}`),
+      ]),
+      options.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error
+    );
+  };
 }

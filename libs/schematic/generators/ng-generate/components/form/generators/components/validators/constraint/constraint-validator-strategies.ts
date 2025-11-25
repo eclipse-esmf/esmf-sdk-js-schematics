@@ -19,11 +19,11 @@ import {ConstraintValidatorRangeStrategy} from './ConstraintValidatorRangeStrate
 import {ConstraintValidatorRegularExpressionStrategy} from './ConstraintValidatorRegularExpressionStrategy';
 
 export const CONSTRAINT_VALIDATOR_STRATEGIES = [
-    ConstraintValidatorEncodingStrategy,
-    ConstraintValidatorFixedPointStrategy,
-    ConstraintValidatorLengthStrategy,
-    ConstraintValidatorRangeStrategy,
-    ConstraintValidatorRegularExpressionStrategy,
+  ConstraintValidatorEncodingStrategy,
+  ConstraintValidatorFixedPointStrategy,
+  ConstraintValidatorLengthStrategy,
+  ConstraintValidatorRangeStrategy,
+  ConstraintValidatorRegularExpressionStrategy,
 ];
 
 export const CONSTRAINT_VALIDATOR_DEFAULT_STRATEGY = ConstraintValidatorDefaultStrategy;

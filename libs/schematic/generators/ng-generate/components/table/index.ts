@@ -14,72 +14,63 @@
 import {chain, Rule, SchematicContext} from '@angular-devkit/schematics';
 import {Tree} from '@angular-devkit/schematics/src/tree/interface';
 import {
-    addAndUpdateConfigurationFilesRule,
-    formatAllFilesRule,
-    generateComponent,
-    generateGeneralFilesRules,
-    insertVersionIntoPathRule,
-    insertVersionIntoSelectorRule,
-    loadAspectModelRule,
-    loadRdfRule,
-    options,
-    prepareOptions,
-    setComponentNameRule,
-    setCustomActionsAndFiltersRule,
-    setTemplateOptionValuesRule,
+  formatAllFilesRule,
+  generateComponent,
+  generateGeneralFilesRules,
+  insertVersionIntoPathRule,
+  insertVersionIntoSelectorRule,
+  loadAspectModelRule,
+  loadRdfRule,
+  options,
+  prepareOptions,
+  setComponentNameRule,
+  setCustomActionsAndFiltersRule,
+  setTemplateOptionValuesRule,
 } from '../shared/index';
 import {ComponentType} from '../shared/schema';
 import {generateStorageService} from './generators/services/storage/index';
 import {generateColumnMenu} from './generators/components/column-menu/index';
 import {generateConfigMenu} from './generators/components/config-menu/index';
 import {generateResizeDirective} from './generators/directives/resize/index';
-import {generateHighlightDirective} from './generators/directives/highlight/index';
 import {generateTableComponent} from './generators/components/table/index';
 import {generateDataSource} from './generators/data-source/index';
 import {TableSchema} from './schema';
 import {generateExportTableDialog} from './generators/components/export-dialog/index';
-import {generatePaginatorSelectConfigProvider} from '../shared/generators/index';
-import {generateTableCellTooltipDirective} from './generators/directives/table-cell-tooltip/index';
-import {generateTableCellComponent} from './generators/components/table-cell/index';
 import {generateTableCellLinkComponent} from './generators/components/table-cell-link/index';
 
 export default function (tableSchema: TableSchema): Rule {
-    return (tree: Tree, context: SchematicContext) => {
-        generateComponent(context, tableSchema, ComponentType.TABLE);
-    };
+  return (tree: Tree, context: SchematicContext) => {
+    generateComponent(context, tableSchema, ComponentType.TABLE);
+  };
 }
 
 export function generateTable(tableSchema: TableSchema): Rule {
-    prepareOptions(tableSchema, ComponentType.TABLE);
+  prepareOptions(tableSchema, ComponentType.TABLE);
 
-    return chain([
-        loadRdfRule(),
-        loadAspectModelRule(),
-        setCustomActionsAndFiltersRule(),
-        setComponentNameRule(ComponentType.TABLE),
-        insertVersionIntoSelectorRule(),
-        insertVersionIntoPathRule(),
-        setTemplateOptionValuesRule(),
-        ...generateGeneralFilesRules(),
-        ...tableSpecificGeneration(),
-        ...addAndUpdateConfigurationFilesRule(),
-        formatAllFilesRule(),
-    ]);
+  return chain([
+    loadRdfRule(),
+    loadAspectModelRule(),
+    setCustomActionsAndFiltersRule(),
+    setComponentNameRule(ComponentType.TABLE),
+    insertVersionIntoSelectorRule(),
+    insertVersionIntoPathRule(),
+    setTemplateOptionValuesRule(),
+    ...generateGeneralFilesRules(),
+    ...tableSpecificGeneration(),
+    // TODO check how we can handle it at in standalone app ...addAndUpdateConfigurationFilesRule(),
+    formatAllFilesRule(),
+  ]);
 }
 
 function tableSpecificGeneration(): Array<Rule> {
-    return [
-        generateTableComponent(options),
-        generateTableCellComponent(options), // General
-        generateTableCellLinkComponent(options), // General
-        generateDataSource(options),
-        generateStorageService(options), // General
-        generateColumnMenu(options), // General
-        generateConfigMenu(options), // General
-        generateExportTableDialog(options), // General
-        generatePaginatorSelectConfigProvider(options), // General
-        generateResizeDirective(options), // General
-        generateHighlightDirective(options), // General
-        generateTableCellTooltipDirective(options), // General
-    ];
+  return [
+    generateTableComponent(options as TableSchema),
+    generateTableCellLinkComponent(options), // General
+    generateDataSource(options),
+    generateStorageService(options), // General
+    generateColumnMenu(options), // General
+    generateConfigMenu(options), // General
+    generateExportTableDialog(options), // General
+    generateResizeDirective(options), // General
+  ];
 }
