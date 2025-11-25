@@ -1,35 +1,35 @@
 ## Table of Contents
 
 - [Generate a form component with the schematics command](#generate-a-form-component-with-the-schematics-command)
-    - [Flags and options that can be used in the generation process](#flags-and-options-that-can-be-used-in-the-generation-process)
-        - [Generate a component with a custom name](#generate-a-component-with-a-custom-name)
-        - [Select the element for which the form will be generated](#select-the-element-for-which-the-form-will-be-generated)
-        - [Exclude one or more properties from the generation](#exclude-one-or-more-properties-from-the-generation)
-        - [Exclude one or more constraints from the generation](#exclude-one-or-more-constraints-from-the-generation)
-        - [Multi-version support for Aspect Models](#multi-version-support-for-aspect-models)
-        - [Manual adaptions in _app.module.ts_](#manual-adaptions-in-appmodulets)
-        - [Show form as read only](#show-form-as-read-only)
-    - [Add translations](#add-translations)
-    - [Pre-load config file](#pre-load-config-file)
-    - [Skip Installation](#skip-install)
-    - [Overwrite](#overwrite)
-    - [Add material css theme](#add-material-css-theme)
-    - [Set View Encapsulation strategy](#set-View-Encapsulation-strategy)
-    - [Generate the environments files](#generate-the-environments-files)
+  - [Flags and options that can be used in the generation process](#flags-and-options-that-can-be-used-in-the-generation-process)
+    - [Generate a component with a custom name](#generate-a-component-with-a-custom-name)
+    - [Select the element for which the form will be generated](#select-the-element-for-which-the-form-will-be-generated)
+    - [Exclude one or more properties from the generation](#exclude-one-or-more-properties-from-the-generation)
+    - [Exclude one or more constraints from the generation](#exclude-one-or-more-constraints-from-the-generation)
+    - [Multi-version support for Aspect Models](#multi-version-support-for-aspect-models)
+    - [Manual adaptions in _app.module.ts_](#manual-adaptions-in-appmodulets)
+    - [Show form as read only](#show-form-as-read-only)
+  - [Add translations](#add-translations)
+  - [Pre-load config file](#pre-load-config-file)
+  - [Skip Installation](#skip-install)
+  - [Overwrite](#overwrite)
+  - [Add material css theme](#add-material-css-theme)
+  - [Set View Encapsulation strategy](#set-View-Encapsulation-strategy)
+  - [Generate the environments files](#generate-the-environments-files)
 - [Output](#output)
-    - [Form structure](#form-structure)
-    - [Validation](#validation)
-        - [Base validators](#base-validators)
-        - [Constraint validators](#constraint-validators)
-            - [Supported Constraint types](#supported-constraint-types)
-            - [Unsupported Constraint types](#unsupported-constraint-types)
-        - [Type-specific validators](#type-specific-validators)
-            - [Supported complex data types](#supported-complex-data-types)
-            - [Unsupported complex data types](#unsupported-complex-data-types)
-            - [Supported scalar data types](#supported-scalar-data-types)
-            - [Unsupported scalar data types](#unsupported-scalar-data-types)
-    - [Usage](#usage)
-    - [Working with list-like controls](#working-with-list-like-controls)
+  - [Form structure](#form-structure)
+  - [Validation](#validation)
+    - [Base validators](#base-validators)
+    - [Constraint validators](#constraint-validators)
+      - [Supported Constraint types](#supported-constraint-types)
+      - [Unsupported Constraint types](#unsupported-constraint-types)
+    - [Type-specific validators](#type-specific-validators)
+      - [Supported complex data types](#supported-complex-data-types)
+      - [Unsupported complex data types](#unsupported-complex-data-types)
+      - [Supported scalar data types](#supported-scalar-data-types)
+      - [Unsupported scalar data types](#unsupported-scalar-data-types)
+  - [Usage](#usage)
+  - [Working with list-like controls](#working-with-list-like-controls)
 
 # Generate a form component with the schematics command
 
@@ -87,12 +87,11 @@ selector.
 
 ```typescript
 @Component({
-    selector: 'esmf-sdk-ui-custom-form', // <- provided name reflected in the selector name
-    templateUrl: './custom-form.component.html', // <- provided name reflected in the component path
-    styleUrls: ['./custom-form.component.scss'], // <- provided name reflected in the component files
+  selector: 'esmf-sdk-ui-custom-form', // <- provided name reflected in the selector name
+  templateUrl: './custom-form.component.html', // <- provided name reflected in the component path
+  styleUrls: ['./custom-form.component.scss'], // <- provided name reflected in the component files
 })
-export class CustomFormComponent {
-} // <- provided name reflected in the component class name
+export class CustomFormComponent {} // <- provided name reflected in the component class name
 ```
 
 ---
@@ -282,17 +281,17 @@ Example of configuration file:
 
 ```json
 {
-    "aspectModelTFiles": ["Movement.ttl"],
-    "excludedProperties": [],
-    "configFile": "test-wizard.config.json",
-    "complexProps": [],
-    "configFileName": "test",
-    "selectedModelElementUrn": "urn:samm:org.eclipse.examples.movement:1.0.0#Movement",
-    "enableVersionSupport": true,
-    "getOptionalMaterialTheme": false,
-    "viewEncapsulation": "Emulated",
-    "readOnlyForm": false,
-    "overwrite": true
+  "aspectModelTFiles": ["Movement.ttl"],
+  "excludedProperties": [],
+  "configFile": "test-wizard.config.json",
+  "complexProps": [],
+  "configFileName": "test",
+  "selectedModelElementUrn": "urn:samm:org.eclipse.examples.movement:1.0.0#Movement",
+  "enableVersionSupport": true,
+  "getOptionalMaterialTheme": false,
+  "viewEncapsulation": "Emulated",
+  "readOnlyForm": false,
+  "overwrite": true
 }
 ```
 
@@ -379,9 +378,9 @@ and types.
 
 ## Form structure
 
-Generated form structure may vary depending on the model: from a *Root Form Group* with a set of simple *Child Form
-Controls* to nested controls with `FormGroup`s and `FormArray`s.
-Despite the possible variations, each form consists of a *Root Form Group* and *Child Form Controls*, which are
+Generated form structure may vary depending on the model: from a _Root Form Group_ with a set of simple _Child Form
+Controls_ to nested controls with `FormGroup`s and `FormArray`s.
+Despite the possible variations, each form consists of a _Root Form Group_ and _Child Form Controls_, which are
 generated as separate components and can be accessed/reused directly if needed.
 
 Since the generated form is an Angular Reactive Form, all its methods are available for usage, according to the
@@ -415,17 +414,17 @@ for more details on how different types of constraints work with different eleme
 
 #### Supported Constraint types
 
-* EncodingConstraint
-* FixedPointConstraint
-* LengthConstraint
-* RangeConstraint (except dates)
-* RegularExpressionConstraint
+- EncodingConstraint
+- FixedPointConstraint
+- LengthConstraint
+- RangeConstraint (except dates)
+- RegularExpressionConstraint
 
 #### Unsupported Constraint types
 
-* LanguageConstraint
-* LocaleConstraint
-* RangeConstraint (for dates)
+- LanguageConstraint
+- LocaleConstraint
+- RangeConstraint (for dates)
 
 ### Type-specific validators
 
@@ -436,8 +435,8 @@ specified and unique.
 
 #### Supported complex data types
 
-* Either
-* StructuredValue
+- Either
+- StructuredValue
 
 #### Unsupported complex data types
 
@@ -445,44 +444,44 @@ _None/Unknown_
 
 #### Supported scalar data types
 
-* xsd:string
-* xsd:boolean
-* xsd:decimal
-* xsd:integer
-* xsd:double
-* xsd:float
-* xsd:byte
-* xsd:short
-* xsd:int
-* xsd:long
-* xsd:unsignedByte
-* xsd:unsignedShort
-* xsd:unsignedInt
-* xsd:unsignedLong
-* xsd:positiveInteger
-* xsd:nonNegativeInteger
-* xsd:negativeInteger
-* xsd:nonPositiveInteger
-* xsd:gYear
-* xsd:gMonth
-* xsd:gDay
-* xsd:gYearMonth
-* xsd:gMonthDay
-* xsd:duration
-* xsd:yearMonthDuration
-* xsd:dayTimeDuration
-* xsd:time
-* xsd:hexBinary
-* xsd:base64Binary
-* xsd:anyURI
-* samm:curie
-* rdf:langString
+- xsd:string
+- xsd:boolean
+- xsd:decimal
+- xsd:integer
+- xsd:double
+- xsd:float
+- xsd:byte
+- xsd:short
+- xsd:int
+- xsd:long
+- xsd:unsignedByte
+- xsd:unsignedShort
+- xsd:unsignedInt
+- xsd:unsignedLong
+- xsd:positiveInteger
+- xsd:nonNegativeInteger
+- xsd:negativeInteger
+- xsd:nonPositiveInteger
+- xsd:gYear
+- xsd:gMonth
+- xsd:gDay
+- xsd:gYearMonth
+- xsd:gMonthDay
+- xsd:duration
+- xsd:yearMonthDuration
+- xsd:dayTimeDuration
+- xsd:time
+- xsd:hexBinary
+- xsd:base64Binary
+- xsd:anyURI
+- samm:curie
+- rdf:langString
 
 #### Unsupported scalar data types
 
-* xsd:date
-* xsd:dateTime
-* xsd:dateTimeStamp
+- xsd:date
+- xsd:dateTime
+- xsd:dateTimeStamp
 
 ---
 
@@ -496,32 +495,32 @@ For simple scenarios, the root component of the generated form provides the foll
 ```
 
 However, more complex scenarios, like patching form value, manually updating its validity, manipulating child controls,
-etc., may require a direct access to the *Root Form Group* or its *Child Form Controls*, that is why each control has
+etc., may require a direct access to the _Root Form Group_ or its _Child Form Controls_, that is why each control has
 been made public and can be imported and used directly.
 
 An example with root "Movement" form:
 
 ```typescript
-import {MovementForm} from "./shared/components/movement-form/v100/movement-form.component";
-import {TrafficLight} from "./shared/types/movement/v100/movement.types";
+import {MovementForm} from './shared/components/movement-form/v100/movement-form.component';
+import {TrafficLight} from './shared/types/movement/v100/movement.types';
 
 // ...
 
 export class AppComponent implements OnInit {
-    ngOnInit() {
-        MovementForm.disable();
-        MovementForm.patchValue(<any>{
-            isMoving: true,
-            position: {
-                latitude: 1,
-                longitude: 2,
-                altitude: 3
-            },
-            speed: 100,
-            speedLimitWarning: TrafficLight.Yellow
-        });
-        MovementForm.get('isMoving')?.addValidators([Validators.required])
-    }
+  ngOnInit() {
+    MovementForm.disable();
+    MovementForm.patchValue(<any>{
+      isMoving: true,
+      position: {
+        latitude: 1,
+        longitude: 2,
+        altitude: 3,
+      },
+      speed: 100,
+      speedLimitWarning: TrafficLight.Yellow,
+    });
+    MovementForm.get('isMoving')?.addValidators([Validators.required]);
+  }
 }
 ```
 
@@ -545,36 +544,38 @@ Usage example:
 
 ```typescript
 import {
-    listPropertyEvents,
-    listPropertyFormControl
-} from "./shared/components/complex-list-types-form/v100/list-property/list-property.component";
+  listPropertyEvents,
+  listPropertyFormControl,
+} from './shared/components/complex-list-types-form/v100/list-property/list-property.component';
 
 // ...
 
 export class AppComponent implements OnInit {
-    ngOnInit() {
-        listPropertyEvents.add$.subscribe(() => {
-            listPropertyFormControl.push(new FormControl({
-                CharacteristicX: 1,
-                CharacteristicY: 2,
-                CharacteristicZ: 3
-            }))
-        });
+  ngOnInit() {
+    listPropertyEvents.add$.subscribe(() => {
+      listPropertyFormControl.push(
+        new FormControl({
+          CharacteristicX: 1,
+          CharacteristicY: 2,
+          CharacteristicZ: 3,
+        })
+      );
+    });
 
-        listPropertyEvents.edit$.subscribe((selection) => {
-            selection.forEach(item => {
-                const control = listPropertyFormControl.at(item.controlIndex);
-                const newValue = {
-                    CharacteristicX: 1,
-                    CharacteristicY: 2,
-                    CharacteristicZ: 3
-                }
-                control.patchValue(newValue);
-            });
-        });
-        listPropertyEvents.delete$.subscribe((selection) => {
-            selection.forEach(item => listPropertyFormControl.removeAt(item.controlIndex));
-        });
-    }
+    listPropertyEvents.edit$.subscribe(selection => {
+      selection.forEach(item => {
+        const control = listPropertyFormControl.at(item.controlIndex);
+        const newValue = {
+          CharacteristicX: 1,
+          CharacteristicY: 2,
+          CharacteristicZ: 3,
+        };
+        control.patchValue(newValue);
+      });
+    });
+    listPropertyEvents.delete$.subscribe(selection => {
+      selection.forEach(item => listPropertyFormControl.removeAt(item.controlIndex));
+    });
+  }
 }
 ```

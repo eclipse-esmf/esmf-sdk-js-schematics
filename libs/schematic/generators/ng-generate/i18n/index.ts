@@ -29,41 +29,41 @@ import {NodePackageInstallTask} from '@angular-devkit/schematics/tasks';
  * @returns {Rule} - The rule to be applied to the Tree.
  */
 export default function (options: Schema): Rule {
-    const spinner = ora().start();
-    options.spinner = spinner;
-    (options as any).templateHelper = new TemplateHelper();
-    return chain([
-        addPackageJsonDependencies(options.skipImport, spinner, dependencies),
-        addPackageJsonScripts(scripts),
-        generateTranslationModule(options),
-        formatGeneratedFiles(
-            {
-                getPath() {
-                    return `src/app/shared`;
-                },
-            },
-            options,
-            ['app-shared.module.ts'],
-        ),
-        installPackages(),
-    ]);
+  const spinner = ora().start();
+  options.spinner = spinner;
+  (options as any).templateHelper = new TemplateHelper();
+  return chain([
+    addPackageJsonDependencies(options.skipImport, spinner, dependencies),
+    addPackageJsonScripts(scripts),
+    generateTranslationModule(options),
+    formatGeneratedFiles(
+      {
+        getPath() {
+          return `src/app/shared`;
+        },
+      },
+      options,
+      ['app-shared.module.ts']
+    ),
+    installPackages(),
+  ]);
 }
 
 const dependencies = [
-    {type: NodeDependencyType.Default, version: '^7.4.2', name: '@jsverse/transloco-locale', overwrite: false},
-    {type: NodeDependencyType.Default, version: '~1.2.0', name: 'ngx-i18n-combine', overwrite: false},
+  {type: NodeDependencyType.Default, version: '^7.4.2', name: '@jsverse/transloco-locale', overwrite: false},
+  {type: NodeDependencyType.Default, version: '~1.2.0', name: 'ngx-i18n-combine', overwrite: false},
 ];
 
 const scripts = [
-    {
-        name: 'combine-i18n',
-        command: 'ngx-i18n-combine -i ./src/**/i18n/shared/components/**/*.translation.json -o ./src/assets/i18n/{en,de}.json',
-    },
+  {
+    name: 'combine-i18n',
+    command: 'ngx-i18n-combine -i ./src/**/i18n/shared/components/**/*.translation.json -o ./src/assets/i18n/{en,de}.json',
+  },
 ];
 
 function installPackages(): Rule {
-    return (tree: Tree, context: SchematicContext) => {
-        context.addTask(new NodePackageInstallTask());
-        return tree;
-    };
+  return (tree: Tree, context: SchematicContext) => {
+    context.addTask(new NodePackageInstallTask());
+    return tree;
+  };
 }

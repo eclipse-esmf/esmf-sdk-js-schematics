@@ -15,24 +15,24 @@ import {apply, applyTemplates, MergeStrategy, mergeWith, move, noop, Rule, Schem
 import {strings} from '@angular-devkit/core';
 
 export function generateFormValidators(options: any): Rule {
-    return (tree: Tree, _context: SchematicContext) => {
-        const tsPath = 'src/app/shared/utils/form-validators.ts';
+  return (tree: Tree, _context: SchematicContext) => {
+    const tsPath = 'src/app/shared/utils/form-validators.ts';
 
-        if (!options.overwrite && tree.exists(tsPath)) {
-            return noop();
-        }
+    if (!options.overwrite && tree.exists(tsPath)) {
+      return noop();
+    }
 
-        return mergeWith(
-            apply(url('../shared/generators/utils/form-validators/files'), [
-                applyTemplates({
-                    classify: strings.classify,
-                    dasherize: strings.dasherize,
-                    options: options,
-                    name: 'form-validators',
-                }),
-                move('src/app/shared/utils'),
-            ]),
-            options.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error,
-        );
-    };
+    return mergeWith(
+      apply(url('../shared/generators/utils/form-validators/files'), [
+        applyTemplates({
+          classify: strings.classify,
+          dasherize: strings.dasherize,
+          options: options,
+          name: 'form-validators',
+        }),
+        move('src/app/shared/utils'),
+      ]),
+      options.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error
+    );
+  };
 }

@@ -16,7 +16,7 @@ import {ConstraintValidatorStrategy} from './ConstraintValidatorStrategy';
 import {CONSTRAINT_VALIDATOR_DEFAULT_STRATEGY, CONSTRAINT_VALIDATOR_STRATEGIES} from './constraint-validator-strategies';
 
 export function getConstraintValidatorStrategy(constraint: Constraint, characteristic: Characteristic): ConstraintValidatorStrategy {
-    const strategy =
-        CONSTRAINT_VALIDATOR_STRATEGIES.find(strategy => strategy.isTargetStrategy(constraint)) ?? CONSTRAINT_VALIDATOR_DEFAULT_STRATEGY;
-    return new strategy(constraint, characteristic);
+  const strategy =
+    CONSTRAINT_VALIDATOR_STRATEGIES.find(strategy => strategy.isTargetStrategy(constraint)) ?? CONSTRAINT_VALIDATOR_DEFAULT_STRATEGY;
+  return new strategy(constraint, characteristic);
 }

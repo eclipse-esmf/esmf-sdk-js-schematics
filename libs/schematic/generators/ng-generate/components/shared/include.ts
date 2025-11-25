@@ -25,10 +25,10 @@ type IncludeFunction = (path: string, data?: Schema) => string;
  * Context for the template include function.
  */
 interface IncludeContext {
-    includeBaseDirectory?: string;
-    context: SchematicContext;
-    include: IncludeFunction;
-    data: Schema;
+  includeBaseDirectory?: string;
+  context: SchematicContext;
+  include: IncludeFunction;
+  data: Schema;
 }
 
 /**
@@ -41,10 +41,10 @@ interface IncludeContext {
  * @returns {Rule} Bound template rule.
  */
 export function templateInclude(context: SchematicContext, applyTemplate: Rule, options: Schema, includeBaseDirectory?: string): Rule {
-    const includeContext = createIncludeContext(context, options, includeBaseDirectory);
-    (options as any).include = includeContext.include;
+  const includeContext = createIncludeContext(context, options, includeBaseDirectory);
+  (options as any).include = includeContext.include;
 
-    return applyTemplate.bind(includeContext);
+  return applyTemplate.bind(includeContext);
 }
 
 /**
@@ -56,12 +56,12 @@ export function templateInclude(context: SchematicContext, applyTemplate: Rule, 
  * @returns {IncludeContext} Formed include context.
  */
 function createIncludeContext(context: SchematicContext, data: Schema, includeBaseDirectory?: string): IncludeContext {
-    const includeContext: Partial<IncludeContext> = {context, data};
+  const includeContext: Partial<IncludeContext> = {context, data};
 
-    includeContext.includeBaseDirectory = includeBaseDirectory;
-    includeContext.include = include.bind(includeContext);
+  includeContext.includeBaseDirectory = includeBaseDirectory;
+  includeContext.include = include.bind(includeContext);
 
-    return includeContext as IncludeContext;
+  return includeContext as IncludeContext;
 }
 
 /**
@@ -73,14 +73,14 @@ function createIncludeContext(context: SchematicContext, data: Schema, includeBa
  * @returns {string} Processed template content.
  */
 export function include(this: IncludeContext, filepath: string, templateData: Schema = this.data): string {
-    const {directory, filename} = getDirectoryAndFilename(filepath, this.includeBaseDirectory);
-    const tree = createTreeFromSource(this.context, directory);
+  const {directory, filename} = getDirectoryAndFilename(filepath, this.includeBaseDirectory);
+  const tree = createTreeFromSource(this.context, directory);
 
-    validateTreeContainsFile(tree, filename);
+  validateTreeContainsFile(tree, filename);
 
-    const result = generateContentTemplate(templateData, tree.get(filename)!);
+  const result = generateContentTemplate(templateData, tree.get(filename)!);
 
-    return result.content.toString();
+  return result.content.toString();
 }
 
 /**
@@ -91,16 +91,16 @@ export function include(this: IncludeContext, filepath: string, templateData: Sc
  * @returns {Object} Directory and filename details.
  */
 function getDirectoryAndFilename(
-    filepath: string,
-    includeBaseDirectory?: string,
+  filepath: string,
+  includeBaseDirectory?: string
 ): {
-    directory: string;
-    filename: string;
+  directory: string;
+  filename: string;
 } {
-    return {
-        directory: includeBaseDirectory || dirname(filepath),
-        filename: includeBaseDirectory ? filepath : basename(filepath),
-    };
+  return {
+    directory: includeBaseDirectory || dirname(filepath),
+    filename: includeBaseDirectory ? filepath : basename(filepath),
+  };
 }
 
 /**
@@ -111,7 +111,7 @@ function getDirectoryAndFilename(
  * @returns {Tree} The generated tree.
  */
 function createTreeFromSource(context: SchematicContext, directory: string): Tree {
-    return url(directory)(context) as Tree;
+  return url(directory)(context) as Tree;
 }
 
 /**
@@ -121,9 +121,9 @@ function createTreeFromSource(context: SchematicContext, directory: string): Tre
  * @param {string} filename - The filename to validate.
  */
 function validateTreeContainsFile(tree: Tree, filename: string) {
-    if (!tree.exists(filename)) {
-        throw new SchematicsException(`Template file: "${filename}" not found.`);
-    }
+  if (!tree.exists(filename)) {
+    throw new SchematicsException(`Template file: "${filename}" not found.`);
+  }
 }
 
 /**
@@ -134,17 +134,17 @@ function validateTreeContainsFile(tree: Tree, filename: string) {
  * @returns {FileEntry} Processed file.
  */
 function generateContentTemplate(templateData: Schema, file: FileEntry): FileEntry {
-    const result = applyContentTemplate({
-        classify: strings.classify,
-        dasherize: strings.dasherize,
-        camelize: strings.camelize,
-        options: {...templateData},
-        name: templateData.name,
-    })(file);
+  const result = applyContentTemplate({
+    classify: strings.classify,
+    dasherize: strings.dasherize,
+    camelize: strings.camelize,
+    options: {...templateData},
+    name: templateData.name,
+  })(file);
 
-    if (!result) {
-        throw new SchematicsException('Problem generating content template.');
-    }
+  if (!result) {
+    throw new SchematicsException('Problem generating content template.');
+  }
 
-    return result;
+  return result;
 }

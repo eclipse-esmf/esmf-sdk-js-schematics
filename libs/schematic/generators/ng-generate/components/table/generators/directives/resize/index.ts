@@ -15,18 +15,18 @@ import {apply, applyTemplates, MergeStrategy, mergeWith, move, Rule, SchematicCo
 import {strings} from '@angular-devkit/core';
 
 export function generateResizeDirective(options: any): Rule {
-    return (tree: Tree, _context: SchematicContext) => {
-        return mergeWith(
-            apply(url('./generators/directives/resize/files'), [
-                applyTemplates({
-                    classify: strings.classify,
-                    dasherize: strings.dasherize,
-                    options: options,
-                    name: 'resize-column',
-                }),
-                move('src/app/shared/directives'),
-            ]),
-            options.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error,
-        );
-    };
+  return (tree: Tree, _context: SchematicContext) => {
+    return mergeWith(
+      apply(url('./generators/directives/resize/files'), [
+        applyTemplates({
+          classify: strings.classify,
+          dasherize: strings.dasherize,
+          options: options,
+          name: 'resize-column',
+        }),
+        move('src/app/shared/directives'),
+      ]),
+      options.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error
+    );
+  };
 }

@@ -14,5 +14,5 @@
 import {DefaultSchema} from '../default-schema';
 
 export interface Schema extends DefaultSchema {
-    skipImport: boolean;
+  skipImport: boolean;
 }

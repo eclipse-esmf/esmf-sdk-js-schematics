@@ -16,22 +16,22 @@ import {Constraint, DefaultFixedPointConstraint} from '@esmf/aspect-model-loader
 import {ValidatorConfig} from '../validatorsTypes';
 
 export class ConstraintValidatorFixedPointStrategy extends ConstraintValidatorStrategy {
-    static isTargetStrategy(constraint: Constraint): boolean {
-        return constraint instanceof DefaultFixedPointConstraint;
-    }
+  static isTargetStrategy(constraint: Constraint): boolean {
+    return constraint instanceof DefaultFixedPointConstraint;
+  }
 
-    getValidatorsConfigs(): ValidatorConfig[] {
-        const typedConstraint = this.constraint as DefaultFixedPointConstraint;
-        const isApplyToChildren = this.isList() || this.isComplex();
+  getValidatorsConfigs(): ValidatorConfig[] {
+    const typedConstraint = this.constraint as DefaultFixedPointConstraint;
+    const isApplyToChildren = this.isList() || this.isComplex();
 
-        return [
-            {
-                name: this.constraint.name,
-                definition: isApplyToChildren
-                    ? `FormValidators.applyToChildren(FormValidators.fixedPointValidator(${typedConstraint.integer}, ${typedConstraint.scale}))`
-                    : `FormValidators.fixedPointValidator(${typedConstraint.integer}, ${typedConstraint.scale})`,
-                isDirectGroupValidator: !isApplyToChildren,
-            },
-        ];
-    }
+    return [
+      {
+        name: this.constraint.name,
+        definition: isApplyToChildren
+          ? `FormValidators.applyToChildren(FormValidators.fixedPointValidator(${typedConstraint.integer}, ${typedConstraint.scale}))`
+          : `FormValidators.fixedPointValidator(${typedConstraint.integer}, ${typedConstraint.scale})`,
+        isDirectGroupValidator: !isApplyToChildren,
+      },
+    ];
+  }
 }

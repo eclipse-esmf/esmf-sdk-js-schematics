@@ -15,18 +15,18 @@ import {apply, applyTemplates, MergeStrategy, mergeWith, move, Rule, SchematicCo
 import {strings} from '@angular-devkit/core';
 
 export function generateStorageService(options: any): Rule {
-    return (tree: Tree, _context: SchematicContext) => {
-        return mergeWith(
-            apply(url('./generators/services/storage/files'), [
-                applyTemplates({
-                    classify: strings.classify,
-                    dasherize: strings.dasherize,
-                    options: options,
-                    name: 'storage',
-                }),
-                move('src/app/shared/services'),
-            ]),
-            options.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error,
-        );
-    };
+  return (tree: Tree, _context: SchematicContext) => {
+    return mergeWith(
+      apply(url('./generators/services/storage/files'), [
+        applyTemplates({
+          classify: strings.classify,
+          dasherize: strings.dasherize,
+          options: options,
+          name: 'storage',
+        }),
+        move('src/app/shared/services'),
+      ]),
+      options.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error
+    );
+  };
 }

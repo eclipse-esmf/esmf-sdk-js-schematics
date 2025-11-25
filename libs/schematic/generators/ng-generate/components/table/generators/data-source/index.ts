@@ -18,80 +18,80 @@ import {DefaultSingleEntity, Property} from '@esmf/aspect-model-loader';
 let sharedOptions: any = {};
 
 export function generateDataSource(options: any): Rule {
-    return (tree: Tree, _context: SchematicContext) => {
-        sharedOptions = options;
+  return (tree: Tree, _context: SchematicContext) => {
+    sharedOptions = options;
 
-        return mergeWith(
-            apply(url('./generators/data-source/files'), [
-                applyTemplates({
-                    classify: strings.classify,
-                    dasherize: strings.dasherize,
-                    options: sharedOptions,
-                    name: sharedOptions.name,
-                    getSorting: getSorting(),
-                }),
-                move(sharedOptions.path),
-            ]),
-            options.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error,
-        );
-    };
+    return mergeWith(
+      apply(url('./generators/data-source/files'), [
+        applyTemplates({
+          classify: strings.classify,
+          dasherize: strings.dasherize,
+          options: sharedOptions,
+          name: sharedOptions.name,
+          getSorting: getSorting(),
+        }),
+        move(sharedOptions.path),
+      ]),
+      options.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error
+    );
+  };
 }
 
 function getSorting(): string {
-    return sharedOptions.templateHelper
-        .getProperties(sharedOptions)
-        .flatMap((prop: Property) => getSortingProperties(prop))
-        .join('');
+  return sharedOptions.templateHelper
+    .getProperties(sharedOptions)
+    .flatMap((prop: Property) => getSortingProperties(prop))
+    .join('');
 }
 
 function getSortingProperties(prop: Property): string[] {
-    const properties: string[] = [];
+  const properties: string[] = [];
 
-    if (prop.effectiveDataType?.isComplex && prop.characteristic instanceof DefaultSingleEntity) {
-        const complexProps = sharedOptions.templateHelper.getComplexProperties(prop, sharedOptions);
-        properties.push(
-            ...complexProps.properties
-                .filter(isNotExcludedAndScalarOrEnum)
-                .map((complexProp: Property) => getCompareLogicForProperty(complexProp, `${complexProps.complexProp}.${complexProp.name}`)),
-        );
-    }
+  if (prop.effectiveDataType?.isComplex && prop.characteristic instanceof DefaultSingleEntity) {
+    const complexProps = sharedOptions.templateHelper.getComplexProperties(prop, sharedOptions);
+    properties.push(
+      ...complexProps.properties
+        .filter(isNotExcludedAndScalarOrEnum)
+        .map((complexProp: Property) => getCompareLogicForProperty(complexProp, `${complexProps.complexProp}.${complexProp.name}`))
+    );
+  }
 
-    if (isNotExcludedAndScalarOrEnum(prop)) {
-        properties.push(getCompareLogicForProperty(prop));
-    }
+  if (isNotExcludedAndScalarOrEnum(prop)) {
+    properties.push(getCompareLogicForProperty(prop));
+  }
 
-    return properties;
+  return properties;
 }
 
 function isNotExcludedAndScalarOrEnum(prop: Property): boolean {
-    const isExcluded = sharedOptions.excludedProperties.some(
-        (excludedProp: any) => excludedProp.propToExcludeAspectModelUrn === prop.aspectModelUrn,
-    );
-    const isScalarOrEnumWithEntityValues =
-        (prop.effectiveDataType && prop.effectiveDataType.isScalar) || sharedOptions.templateHelper.isEnumPropertyWithEntityValues(prop);
+  const isExcluded = sharedOptions.excludedProperties.some(
+    (excludedProp: any) => excludedProp.propToExcludeAspectModelUrn === prop.aspectModelUrn
+  );
+  const isScalarOrEnumWithEntityValues =
+    (prop.effectiveDataType && prop.effectiveDataType.isScalar) || sharedOptions.templateHelper.isEnumPropertyWithEntityValues(prop);
 
-    return !isExcluded && isScalarOrEnumWithEntityValues;
+  return !isExcluded && isScalarOrEnumWithEntityValues;
 }
 
 function getCompareLogicForProperty(
-    prop: Property,
-    propName: string = !sharedOptions.templateHelper.isAspectSelected(sharedOptions)
-        ? `${sharedOptions.jsonAccessPath}${prop.name}`
-        : prop.name,
+  prop: Property,
+  propName: string = !sharedOptions.templateHelper.isAspectSelected(sharedOptions)
+    ? `${sharedOptions.jsonAccessPath}${prop.name}`
+    : prop.name
 ) {
-    const isEnumPropertyWithEntityValues = sharedOptions.templateHelper.isEnumPropertyWithEntityValues(prop);
-    const isEnumProperty = sharedOptions.templateHelper.isEnumProperty(prop);
-    const isStringProperty = sharedOptions.templateHelper.isStringProperty(prop);
-    const isMultiStringProperty = sharedOptions.templateHelper.isMultiStringProperty(prop);
+  const isEnumPropertyWithEntityValues = sharedOptions.templateHelper.isEnumPropertyWithEntityValues(prop);
+  const isEnumProperty = sharedOptions.templateHelper.isEnumProperty(prop);
+  const isStringProperty = sharedOptions.templateHelper.isStringProperty(prop);
+  const isMultiStringProperty = sharedOptions.templateHelper.isMultiStringProperty(prop);
 
-    if (isEnumPropertyWithEntityValues) {
-        const valuePayloadKey = sharedOptions.templateHelper.getEnumEntityInstancePayloadKey(prop);
-        return `case '${propName}': return this.compare(a.${propName}.${valuePayloadKey}.toString(),b.${propName}.${valuePayloadKey}.toString(), isSortingAsc);`;
-    } else if (isEnumProperty && isStringProperty) {
-        return `case '${propName}': return this.compare(a.${propName}.toString(),b.${propName}.toString(), isSortingAsc);`;
-    } else if (isMultiStringProperty) {
-        return `case '${propName}': return this.compare(a.${propName} ? a.${propName}[this.translateService.getActiveLang()] : '', b.${propName} ? b.${propName}[this.translateService.getActiveLang()] : '', isSortingAsc);`;
-    } else {
-        return `case '${propName}': return this.compare(a.${propName}, b.${propName}, isSortingAsc);`;
-    }
+  if (isEnumPropertyWithEntityValues) {
+    const valuePayloadKey = sharedOptions.templateHelper.getEnumEntityInstancePayloadKey(prop);
+    return `case '${propName}': return this.compare(a.${propName}.${valuePayloadKey}.toString(),b.${propName}.${valuePayloadKey}.toString(), isSortingAsc);`;
+  } else if (isEnumProperty && isStringProperty) {
+    return `case '${propName}': return this.compare(a.${propName}.toString(),b.${propName}.toString(), isSortingAsc);`;
+  } else if (isMultiStringProperty) {
+    return `case '${propName}': return this.compare(a.${propName} ? a.${propName}[this.translateService.getActiveLang()] : '', b.${propName} ? b.${propName}[this.translateService.getActiveLang()] : '', isSortingAsc);`;
+  } else {
+    return `case '${propName}': return this.compare(a.${propName}, b.${propName}, isSortingAsc);`;
+  }
 }

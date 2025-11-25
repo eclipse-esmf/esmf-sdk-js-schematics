@@ -15,48 +15,48 @@ import {CardSchema} from './schema';
 import {chain, Rule, SchematicContext} from '@angular-devkit/schematics';
 import {Tree} from '@angular-devkit/schematics/src/tree/interface';
 import {
-    addAndUpdateConfigurationFilesRule,
-    formatAllFilesRule,
-    generateComponent,
-    generateGeneralFilesRules,
-    insertVersionIntoPathRule,
-    insertVersionIntoSelectorRule,
-    loadAspectModelRule,
-    loadRdfRule,
-    options,
-    prepareOptions,
-    setComponentNameRule,
-    setCustomActionsAndFiltersRule,
-    setTemplateOptionValuesRule,
+  addAndUpdateConfigurationFilesRule,
+  formatAllFilesRule,
+  generateComponent,
+  generateGeneralFilesRules,
+  insertVersionIntoPathRule,
+  insertVersionIntoSelectorRule,
+  loadAspectModelRule,
+  loadRdfRule,
+  options,
+  prepareOptions,
+  setComponentNameRule,
+  setCustomActionsAndFiltersRule,
+  setTemplateOptionValuesRule,
 } from '../shared/index';
 import {ComponentType, Schema} from '../shared/schema';
 import {generateCardComponent} from './generators/components/card/index';
 import {generateExportCardDialog} from './generators/components/export-dialog/index';
 
 export default function (cardSchema: CardSchema): Rule {
-    return (tree: Tree, context: SchematicContext) => {
-        generateComponent(context, cardSchema, ComponentType.CARD);
-    };
+  return (tree: Tree, context: SchematicContext) => {
+    generateComponent(context, cardSchema, ComponentType.CARD);
+  };
 }
 
 export function generateCard(cardSchema: Schema): Rule {
-    prepareOptions(cardSchema, ComponentType.CARD);
+  prepareOptions(cardSchema, ComponentType.CARD);
 
-    return chain([
-        loadRdfRule(),
-        loadAspectModelRule(),
-        setCustomActionsAndFiltersRule(),
-        setComponentNameRule(ComponentType.CARD),
-        insertVersionIntoSelectorRule(),
-        insertVersionIntoPathRule(),
-        setTemplateOptionValuesRule(),
-        ...generateGeneralFilesRules(),
-        ...cardSpecificGeneration(),
-        ...addAndUpdateConfigurationFilesRule(),
-        formatAllFilesRule(),
-    ]);
+  return chain([
+    loadRdfRule(),
+    loadAspectModelRule(),
+    setCustomActionsAndFiltersRule(),
+    setComponentNameRule(ComponentType.CARD),
+    insertVersionIntoSelectorRule(),
+    insertVersionIntoPathRule(),
+    setTemplateOptionValuesRule(),
+    ...generateGeneralFilesRules(),
+    ...cardSpecificGeneration(),
+    ...addAndUpdateConfigurationFilesRule(),
+    formatAllFilesRule(),
+  ]);
 }
 
 function cardSpecificGeneration(): Array<Rule> {
-    return [generateCardComponent(options), generateExportCardDialog(options)];
+  return [generateCardComponent(options), generateExportCardDialog(options)];
 }

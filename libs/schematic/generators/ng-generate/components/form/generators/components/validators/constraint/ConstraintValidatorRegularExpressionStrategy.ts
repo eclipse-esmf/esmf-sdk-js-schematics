@@ -16,27 +16,27 @@ import {Constraint, DefaultRegularExpressionConstraint} from '@esmf/aspect-model
 import {ValidatorConfig} from '../validatorsTypes';
 
 export class ConstraintValidatorRegularExpressionStrategy extends ConstraintValidatorStrategy {
-    static isTargetStrategy(constraint: Constraint): boolean {
-        return constraint instanceof DefaultRegularExpressionConstraint;
+  static isTargetStrategy(constraint: Constraint): boolean {
+    return constraint instanceof DefaultRegularExpressionConstraint;
+  }
+
+  getValidatorsConfigs(): ValidatorConfig[] {
+    const typedConstraint = this.constraint as DefaultRegularExpressionConstraint;
+
+    if (!typedConstraint.value) {
+      return [];
     }
 
-    getValidatorsConfigs(): ValidatorConfig[] {
-        const typedConstraint = this.constraint as DefaultRegularExpressionConstraint;
+    const isApplyToChildren = this.isList() || this.isComplex();
 
-        if (!typedConstraint.value) {
-            return [];
-        }
-
-        const isApplyToChildren = this.isList() || this.isComplex();
-
-        return [
-            {
-                name: this.constraint.name,
-                definition: isApplyToChildren
-                    ? `FormValidators.applyToChildren(FormValidators.regularExpression(${typedConstraint.value}))`
-                    : `FormValidators.regularExpression(${typedConstraint.value})`,
-                isDirectGroupValidator: !isApplyToChildren,
-            },
-        ];
-    }
+    return [
+      {
+        name: this.constraint.name,
+        definition: isApplyToChildren
+          ? `FormValidators.applyToChildren(FormValidators.regularExpression(${typedConstraint.value}))`
+          : `FormValidators.regularExpression(${typedConstraint.value})`,
+        isDirectGroupValidator: !isApplyToChildren,
+      },
+    ];
+  }
 }

@@ -16,16 +16,16 @@ import * as ora from 'ora';
 import {TemplateHelper} from '../utils/template-helper';
 
 export interface DefaultSchema {
-    spinner: ora.Ora;
-    ttl: Array<string>;
-    aspectModel: Aspect;
-    aspectModelVersion: string;
-    enableVersionSupport: boolean;
-    selectedModelElement: Aspect | Entity;
-    aspectModelTFiles: string[];
-    aspectModelTFilesString: string;
-    aspectModelUrnToLoad: string;
-    selectedModelElementUrn: string;
-    configFile: string;
-    templateHelper: TemplateHelper;
+  spinner: ora.Ora;
+  ttl: Array<string>;
+  aspectModel: Aspect;
+  aspectModelVersion: string;
+  enableVersionSupport: boolean;
+  selectedModelElement: Aspect | Entity;
+  aspectModelTFiles: string[];
+  aspectModelTFilesString: string;
+  aspectModelUrnToLoad: string;
+  selectedModelElementUrn: string;
+  configFile: string;
+  templateHelper: TemplateHelper;
 }

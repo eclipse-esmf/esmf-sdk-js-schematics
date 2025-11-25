@@ -29,6 +29,7 @@
     "inquirer-fuzzy-path": "2.3.0",
     "inquirer-prompt-suggest": "0.1.0",
     "inquirer-search-list": "^1.2.6",
+    "path": "^0.12.7",
     "rxjs": "~7.8.0",
     "zone.js": "~0.15.0"
   },

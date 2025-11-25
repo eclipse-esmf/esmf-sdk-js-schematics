@@ -14,28 +14,28 @@
 import {ComponentType, Schema} from '../../../components/shared/schema';
 import {TemplateHelper} from '../../../../utils/template-helper';
 import {
-    chooseLanguageForSearch,
-    customCommandBarActions,
-    excludedProperties,
-    extractComplexPropertyDetails,
-    extractPropertyElements,
-    generateLabelsForExcludedProperties,
-    getCommandBarFilterOrder,
-    getDatePickerType,
-    requestCommandBarFunctionality,
-    requestDefaultSorting,
-    requestOptionalMaterialTheme,
-    requestOverwriteFiles,
-    requestSelectedModelElement,
-    selectedAspectModelJsonPath,
+  chooseLanguageForSearch,
+  customCommandBarActions,
+  excludedProperties,
+  extractComplexPropertyDetails,
+  extractPropertyElements,
+  generateLabelsForExcludedProperties,
+  getCommandBarFilterOrder,
+  getDatePickerType,
+  requestCommandBarFunctionality,
+  requestDefaultSorting,
+  requestOptionalMaterialTheme,
+  requestOverwriteFiles,
+  requestSelectedModelElement,
+  selectedAspectModelJsonPath,
 } from '../shared/prompt-complex-questions';
 import {
-    requestAddCommandBar,
-    requestAspectModelVersionSupport,
-    requestCustomService,
-    requestCustomStyleImports,
-    requestEnableRemoteDataHandling,
-    requestSetViewEncapsulation,
+  requestAddCommandBar,
+  requestAspectModelVersionSupport,
+  requestCustomService,
+  requestCustomStyleImports,
+  requestEnableRemoteDataHandling,
+  requestSetViewEncapsulation,
 } from '../shared/prompt-simple-questions';
 import {Aspect, BaseMetaModelElement, DefaultEntity} from '@esmf/aspect-model-loader';
 import {ConfigurationDefaultsSchema} from '../../../components/table/schema';
@@ -57,100 +57,100 @@ import {loadInquirer} from '../../../../utils/angular';
  * @returns {Promise<void>} - A promise that resolves once all configurations are combined and processed.
  */
 export async function cardPrompterQuestions(
-    answerConfigurationFileConfig: any,
-    answerAspectModel: any,
-    templateHelper: TemplateHelper,
-    options: Schema,
-    aspect: Aspect,
-    combineAnswers: (...answers: any[]) => any,
-    allAnswers: any,
+  answerConfigurationFileConfig: any,
+  answerAspectModel: any,
+  templateHelper: TemplateHelper,
+  options: Schema,
+  aspect: Aspect,
+  combineAnswers: (...answers: any[]) => any,
+  allAnswers: any
 ): Promise<void> {
-    const defaultConfiguration: ConfigurationDefaultsSchema = new CardDefaultsSchema();
+  const defaultConfiguration: ConfigurationDefaultsSchema = new CardDefaultsSchema();
 
-    combineAnswers(
-        answerConfigurationFileConfig,
-        answerAspectModel,
-        await fetchUserSpecificCardConfigurations(
-            templateHelper,
-            options,
-            aspect,
-            allAnswers,
-            Object.keys(defaultConfiguration).length > 0 ? defaultConfiguration : {},
-        ),
-    );
+  combineAnswers(
+    answerConfigurationFileConfig,
+    answerAspectModel,
+    await fetchUserSpecificCardConfigurations(
+      templateHelper,
+      options,
+      aspect,
+      allAnswers,
+      Object.keys(defaultConfiguration).length > 0 ? defaultConfiguration : {}
+    )
+  );
 }
 
 async function fetchUserSpecificCardConfigurations(
-    templateHelper: TemplateHelper,
-    options: Schema,
-    aspect: Aspect,
-    allAnswers: any,
-    defaultConfiguration?: ConfigurationDefaultsSchema,
+  templateHelper: TemplateHelper,
+  options: Schema,
+  aspect: Aspect,
+  allAnswers: any,
+  defaultConfiguration?: ConfigurationDefaultsSchema
 ): Promise<object> {
-    const inquirer = await loadInquirer();
-    const gatherInitialModelElement = await inquirer.prompt([
-        requestSelectedModelElement(ComponentType.CARD, aspect, requestSelectedModelCondition),
-    ]);
-    const complexPropertiesAnswers = extractComplexPropertyDetails(templateHelper, gatherInitialModelElement, allAnswers, aspect);
-    const propertyElementAnswers = await extractPropertyElements(ComponentType.CARD, complexPropertiesAnswers);
-    const selectedAspectModelJsonPathAnswers = await inquirer.prompt([
-        selectedAspectModelJsonPath(aspect, gatherInitialModelElement, allAnswers),
-    ]);
-    const excludedPropertiesAnswers = await inquirer.prompt([
-        excludedProperties(ComponentType.CARD, allAnswers, templateHelper, gatherInitialModelElement, aspect),
-    ]);
-    const labelsForExcludedPropsAnswers = await inquirer.prompt([generateLabelsForExcludedProperties(gatherInitialModelElement)]);
-    const defaultSortingAnswers = await inquirer.prompt([requestDefaultSorting(aspect, allAnswers, templateHelper)]);
-    const commandbarFunctionalityAnswers = await inquirer.prompt([
-        requestAddCommandBar,
-        requestCommandBarFunctionality(aspect, allAnswers, templateHelper),
-        chooseLanguageForSearch(aspect, allAnswers, templateHelper),
-    ]);
-    const datePickerTypeAnswers = commandbarFunctionalityAnswers.enabledCommandBarFunctions.includes('addDateQuickFilters')
-        ? await getDatePickerType(templateHelper, allAnswers, gatherInitialModelElement, aspect)
-        : {};
-    const customBarActionsAnswers = await inquirer.prompt([customCommandBarActions(allAnswers, templateHelper)]);
+  const inquirer = await loadInquirer();
+  const gatherInitialModelElement = await inquirer.prompt([
+    requestSelectedModelElement(ComponentType.CARD, aspect, requestSelectedModelCondition),
+  ]);
+  const complexPropertiesAnswers = extractComplexPropertyDetails(templateHelper, gatherInitialModelElement, allAnswers, aspect);
+  const propertyElementAnswers = await extractPropertyElements(ComponentType.CARD, complexPropertiesAnswers);
+  const selectedAspectModelJsonPathAnswers = await inquirer.prompt([
+    selectedAspectModelJsonPath(aspect, gatherInitialModelElement, allAnswers),
+  ]);
+  const excludedPropertiesAnswers = await inquirer.prompt([
+    excludedProperties(ComponentType.CARD, allAnswers, templateHelper, gatherInitialModelElement, aspect),
+  ]);
+  const labelsForExcludedPropsAnswers = await inquirer.prompt([generateLabelsForExcludedProperties(gatherInitialModelElement)]);
+  const defaultSortingAnswers = await inquirer.prompt([requestDefaultSorting(aspect, allAnswers, templateHelper)]);
+  const commandbarFunctionalityAnswers = await inquirer.prompt([
+    requestAddCommandBar,
+    requestCommandBarFunctionality(aspect, allAnswers, templateHelper),
+    chooseLanguageForSearch(aspect, allAnswers, templateHelper),
+  ]);
+  const datePickerTypeAnswers = commandbarFunctionalityAnswers.enabledCommandBarFunctions.includes('addDateQuickFilters')
+    ? await getDatePickerType(templateHelper, allAnswers, gatherInitialModelElement, aspect)
+    : {};
+  const customBarActionsAnswers = await inquirer.prompt([customCommandBarActions(allAnswers, templateHelper)]);
 
-    const setCommandBarFilterOrder = await getCommandBarFilterOrder(
-        templateHelper,
-        allAnswers,
-        gatherInitialModelElement,
-        aspect,
-        options,
-        commandbarFunctionalityAnswers.enabledCommandBarFunctions,
-    );
+  const setCommandBarFilterOrder = await getCommandBarFilterOrder(
+    templateHelper,
+    allAnswers,
+    gatherInitialModelElement,
+    aspect,
+    options,
+    commandbarFunctionalityAnswers.enabledCommandBarFunctions
+  );
 
-    const enableRemoteDataHandlingAnswers = await inquirer.prompt([requestEnableRemoteDataHandling, requestCustomService]);
-    const aspectModelVersionSupportAnswers = await inquirer.prompt([requestAspectModelVersionSupport]);
-    const optionalMaterialThemeAnswers = await inquirer.prompt([requestOptionalMaterialTheme(options)]);
-    const customStyleImportsAnswers = await inquirer.prompt([requestCustomStyleImports]);
-    const setViewEncapsulationAnswers = await inquirer.prompt([requestSetViewEncapsulation]);
-    const overwriteFilesAnswers = await inquirer.prompt([requestOverwriteFiles(options)]);
+  const enableRemoteDataHandlingAnswers = await inquirer.prompt([requestEnableRemoteDataHandling, requestCustomService]);
+  const aspectModelVersionSupportAnswers = await inquirer.prompt([requestAspectModelVersionSupport]);
+  const optionalMaterialThemeAnswers = await inquirer.prompt([requestOptionalMaterialTheme(options)]);
+  const customStyleImportsAnswers = await inquirer.prompt([requestCustomStyleImports]);
+  const setViewEncapsulationAnswers = await inquirer.prompt([requestSetViewEncapsulation]);
+  const overwriteFilesAnswers = await inquirer.prompt([requestOverwriteFiles(options)]);
 
-    return {
-        ...gatherInitialModelElement,
-        ...propertyElementAnswers,
-        ...selectedAspectModelJsonPathAnswers,
-        ...excludedPropertiesAnswers,
-        ...labelsForExcludedPropsAnswers,
-        ...defaultSortingAnswers,
-        ...commandbarFunctionalityAnswers,
-        ...datePickerTypeAnswers,
-        ...customBarActionsAnswers,
-        ...setCommandBarFilterOrder,
-        ...enableRemoteDataHandlingAnswers,
-        ...aspectModelVersionSupportAnswers,
-        ...optionalMaterialThemeAnswers,
-        ...customStyleImportsAnswers,
-        ...setViewEncapsulationAnswers,
-        ...overwriteFilesAnswers,
-        ...defaultConfiguration,
-    };
+  return {
+    ...gatherInitialModelElement,
+    ...propertyElementAnswers,
+    ...selectedAspectModelJsonPathAnswers,
+    ...excludedPropertiesAnswers,
+    ...labelsForExcludedPropsAnswers,
+    ...defaultSortingAnswers,
+    ...commandbarFunctionalityAnswers,
+    ...datePickerTypeAnswers,
+    ...customBarActionsAnswers,
+    ...setCommandBarFilterOrder,
+    ...enableRemoteDataHandlingAnswers,
+    ...aspectModelVersionSupportAnswers,
+    ...optionalMaterialThemeAnswers,
+    ...customStyleImportsAnswers,
+    ...setViewEncapsulationAnswers,
+    ...overwriteFilesAnswers,
+    ...defaultConfiguration,
+  };
 }
 
 function requestSelectedModelCondition(aspect: Aspect, baseModelLoader: BaseModelLoader): boolean {
-    return (
-        !aspect.isCollectionAspect &&
-        baseModelLoader.filterElements((entry: BaseMetaModelElement) => entry instanceof DefaultEntity).length >= 1
-    );
+  return (
+    !aspect.isCollectionAspect &&
+    baseModelLoader.filterElements((entry: BaseMetaModelElement) => entry instanceof DefaultEntity).length >= 1
+  );
 }
