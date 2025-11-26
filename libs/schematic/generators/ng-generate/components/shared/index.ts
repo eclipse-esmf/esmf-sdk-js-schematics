@@ -106,27 +106,17 @@ export function prepareOptions(schema: Schema, componentType: ComponentType): Sc
     ...options,
   };
 
-  console.warn('===> prepareOptions');
-  console.log(options);
-
   loadAndApplyConfigFile(options.configFile, options);
 
   if (options.aspectModelTFilesString) {
     options.aspectModelTFiles = options.aspectModelTFilesString.split(',');
   }
 
-  console.warn('===> LOADED OPTIONS');
   validateUrns(options);
 
   if (options.jsonAccessPath.length > 0 && !options.jsonAccessPath.endsWith('.')) {
     options.jsonAccessPath = `${options.jsonAccessPath}.`;
   }
-
-  // FIXME assign pathToSource from answers to path or default?..
-  options.path = options.path || 'src/app/shared/components';
-
-  console.log(options);
-  // throw new Error('Stop execution to check prepared options.');
 
   return options;
 }
