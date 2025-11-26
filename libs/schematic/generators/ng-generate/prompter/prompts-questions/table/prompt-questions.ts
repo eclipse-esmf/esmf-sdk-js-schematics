@@ -64,7 +64,7 @@ export async function tablePrompterQuestions(
   combineAnswers: (...answers: any[]) => any,
   allAnswers: any
 ): Promise<void> {
-  const defaultConfiguration: ConfigurationDefaultsSchema = new TableDefaultsSchema();
+  const defaultConfiguration: ConfigurationDefaultsSchema = {};
 
   combineAnswers(
     answerConfigurationFileConfig,
