@@ -1,0 +1,11 @@
+<button
+  [matTooltipDisabled]="!isDisabled()"
+  [class.button-disabled]="isDisabled()"
+  [matTooltip]="tooltipMessage()"
+  (click)="openExternalLink()"
+  matTooltipPosition="above"
+  mat-icon-button
+  aria-label="link row"
+>
+  <mat-icon class="material-icons">open_in_new</mat-icon>
+</button>
