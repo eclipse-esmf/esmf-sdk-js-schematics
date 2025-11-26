@@ -31,12 +31,11 @@ import {ComponentType} from '../shared/schema';
 import {generateStorageService} from './generators/services/storage/index';
 import {generateColumnMenu} from './generators/components/column-menu/index';
 import {generateConfigMenu} from './generators/components/config-menu/index';
-import {generateResizeDirective} from './generators/directives/resize/index';
 import {generateTableComponent} from './generators/components/table/index';
 import {generateDataSource} from './generators/data-source/index';
 import {TableSchema} from './schema';
-import {generateExportTableDialog} from './generators/components/export-dialog/index';
 import {generateTableCellLinkComponent} from './generators/components/table-cell-link/index';
+import {LOG_COLOR} from '../../../utils/constants';
 
 export default function (tableSchema: TableSchema): Rule {
   return (tree: Tree, context: SchematicContext) => {
@@ -45,6 +44,8 @@ export default function (tableSchema: TableSchema): Rule {
 }
 
 export function generateTable(tableSchema: TableSchema): Rule {
+  console.log(LOG_COLOR, 'Start generating Table component...');
+
   prepareOptions(tableSchema, ComponentType.TABLE);
 
   return chain([
@@ -70,7 +71,5 @@ function tableSpecificGeneration(): Array<Rule> {
     generateStorageService(options), // General
     generateColumnMenu(options), // General
     generateConfigMenu(options), // General
-    generateExportTableDialog(options), // General
-    generateResizeDirective(options), // General
   ];
 }

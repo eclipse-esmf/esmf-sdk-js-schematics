@@ -21,13 +21,20 @@ import {ComponentType, Schema} from '../components/shared/schema';
 
 import {loader, reorderAspectModelUrnToLoad, writeConfigAndExit} from './utils';
 import {virtualFs} from '@angular-devkit/core';
-import {anotherFile, configFileName, createOrImport, importConfigFile} from './prompts-questions/shared/prompt-simple-questions';
+import {
+  anotherFile,
+  configFileName,
+  createOrImport,
+  importConfigFile,
+  requestPath,
+} from './prompts-questions/shared/prompt-simple-questions';
 import {tablePrompterQuestions} from './prompts-questions/table/prompt-questions';
 import {pathDecision, requestAspectModelWithAspect} from './prompts-questions/shared/prompt-complex-questions';
 import {formPrompterQuestions} from './prompts-questions/form/prompt-questions';
 import {cardPrompterQuestions} from './prompts-questions/card/prompt-questions';
 import {typesPrompterQuestions} from './prompts-questions/types/prompt-questions';
 import {loadInquirer} from '../../utils/angular';
+import {LOG_COLOR} from '../../utils/constants';
 
 // Function to dynamically load inquirer-fuzzy-path and register the prompt
 async function registerFuzzyPathPrompt(): Promise<any> {
@@ -69,13 +76,16 @@ export let aspect: Aspect;
  * @throws {Error} - Will throw an error if an error occurs during execution.
  */
 export async function generate(subscriber: Subscriber<Tree>, tree: Tree, options: Schema, type: string) {
-  console.log('\x1b[33m%s\x1b[0m', 'Welcome to the TTL schematic UI generator, answer some questions to get you started:');
+  console.log(LOG_COLOR, 'Welcome to the TTL schematic UI generator, answer some questions to get you started:');
 
   inquirer = await registerFuzzyPathPrompt();
   generationType = type as ComponentType;
   initAnswers();
 
   runPrompts(subscriber, tree, new TemplateHelper(), options).finally(() => {
+    // "path" is the default options property for schematics to determine where to generate files
+    allAnswers.path = allAnswers.pathToSource;
+
     cleanUpOptionsObject(allAnswers);
     Object.assign(options, allAnswers);
 
@@ -180,7 +190,7 @@ async function runPrompts(subscriber: Subscriber<Tree>, tree: Tree, templateHelp
  * @returns {Promise<Object>} A promise that resolves to the answers from the user.
  */
 async function getConfigurationFileConfig(subscriber: Subscriber<Tree>, tree: Tree) {
-  const answerGeneralConfig = await inquirer.prompt([createOrImport, configFileName, importConfigFile, pathDecision(WIZARD_CONFIG_FILE)]);
+  const answerGeneralConfig = await inquirer.prompt([createOrImport, requestPath, configFileName, importConfigFile, pathDecision(WIZARD_CONFIG_FILE)]);
 
   if (answerGeneralConfig.importConfigFile) {
     importFileConfig(answerGeneralConfig.importConfigFile, subscriber, tree);
@@ -323,7 +333,8 @@ function cleanUpOptionsObject(allAnswers: any) {
       objectKey.startsWith('paths') ||
       objectKey.startsWith('anotherFile') ||
       objectKey.startsWith('createOrImport') ||
-      objectKey.startsWith('importConfigFile')
+      objectKey.startsWith('importConfigFile') ||
+      objectKey.startsWith('pathToSource')
     ) {
       delete allAnswers[objectKey];
     }

@@ -24,7 +24,7 @@ export function generateTableCellLinkComponent(options: any): Rule {
           options: options,
           name: 'esmf-table-cell-link',
         }),
-        move('src/app/shared/components/table-cell-link'),
+        move(`${options.path}/table-cell-link`),
       ]),
       options.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error
     );

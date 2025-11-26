@@ -17,7 +17,7 @@ import {Values} from '../../../schema';
 import {getTableColumValues} from '../../../utils';
 
 export function generateSemanticExplanation(options: Values): Rule {
-  return (tree: Tree, _context: SchematicContext) => {
+  return (_tree: Tree, _context: SchematicContext) => {
     return mergeWith(
       apply(url('../shared/generators/constants/semantic-explanation/files'), [
         applyTemplates({
@@ -29,7 +29,7 @@ export function generateSemanticExplanation(options: Values): Rule {
           },
           name: options.name,
         }),
-        move('src/app/shared/constants'),
+        move(options.path),
       ]),
       options.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error
     );
