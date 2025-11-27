@@ -84,7 +84,7 @@ export const tableModules = (options: Schema) => [
   {name: 'DragDropModule', fromLib: '@angular/cdk/drag-drop'},
   {name: 'NgTemplateOutlet', fromLib: '@angular/common'},
   {name: 'DatePipe', fromLib: '@angular/common'},
-  {name: 'EsmfTableCellLinkComponent', fromLib: '../../table-cell-link/esmf-table-cell-link.component'},
+  {name: 'TableCellLinkComponent', fromLib: '../../src/lib/components/table-cell-link/table-cell-link.component'},
   {
     name: 'MatCheckboxModule',
     fromLib: '@angular/material/checkbox',

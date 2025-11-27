@@ -1,0 +1,27 @@
+@let val = value();
+
+<div
+  class="cell-content"
+  esmfHighlight
+  esmfTableCellTooltip
+  [highlight]="highlightString()"
+  [highlightSource]="val"
+  [highlightColor]="color()"
+  [selected]="selected()"
+  [value]="val"
+  [description]="description()"
+>
+  {{ val === null ? '-' : val }}
+</div>
+
+@if (hasValue()) {
+  <div>
+    <mat-icon
+      class="material-icons copy-to-clipboard"
+      data-test="copy-to-clipboard-icon"
+      (click)="copyToClipboard(val, $event)"
+    >
+      content_copy
+    </mat-icon>
+  </div>
+}
