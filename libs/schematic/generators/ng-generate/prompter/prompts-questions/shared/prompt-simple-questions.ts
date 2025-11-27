@@ -103,3 +103,13 @@ export const requestSetViewEncapsulation = {
   choices: [ViewEncapsulation.None, ViewEncapsulation.Emulated, ViewEncapsulation.ShadowDom],
   default: ViewEncapsulation.None,
 };
+
+export const requestPath = {
+  type: 'input',
+  name: 'pathToSource',
+  message: `Input the path to the source files where the component files should be generated (e.g., src/app/components):`,
+  filter: (input: string) => input.trim(),
+  default: 'src/app/shared',
+  when: answer => answer['createOrImport'],
+};
+

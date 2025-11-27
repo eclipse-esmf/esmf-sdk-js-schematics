@@ -22,9 +22,11 @@ import {TypesSchema} from './schema';
 import {generateComponent} from '../components/shared/index';
 import {Tree} from '@angular-devkit/schematics/src/tree/interface';
 import {ComponentType} from '../components/shared/schema';
+import {LOG_COLOR} from '../../utils/constants';
 
 export default function (options: TypesSchema): Rule {
   if (options && options.configFile !== undefined) {
+    console.log(LOG_COLOR, 'Start generating types...');
     options.spinner = ora().start();
     options.templateHelper = new TemplateHelper();
 
@@ -41,6 +43,8 @@ export default function (options: TypesSchema): Rule {
       formatGeneratedFiles(
         {
           getPath(options: TypesSchema) {
+            // FIXME use options.selectedModelElement?.name with version option to generate types in the right folder
+            // `${dasherize(options.selectedModelElement?.name).toLowerCase()}`
             return `${options.path}/${dasherize(options.aspectModel.name).toLowerCase()}`;
           },
         },

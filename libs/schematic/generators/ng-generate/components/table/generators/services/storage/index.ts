@@ -24,7 +24,7 @@ export function generateStorageService(options: any): Rule {
           options: options,
           name: 'storage',
         }),
-        move('src/app/shared/services'),
+        move(options.path),
       ]),
       options.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error
     );

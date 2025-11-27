@@ -17,6 +17,7 @@ import {Subscriber} from 'rxjs';
 import * as fs from 'fs';
 import * as util from 'util';
 import {WIZARD_CONFIG_FILE} from './index';
+import {LOG_COLOR} from '../../utils/constants';
 
 interface PropertyDetail {
   name: string;
@@ -81,12 +82,13 @@ export function handleComplexPropList(property: Property, complexPropList: Array
  * @param {any} config - The configuration to write to the file.
  * @param {boolean} [fromImport=false] - A flag to indicate if the operation is from an import.
  */
+// TODO add config file name as parameter
 export async function writeConfigAndExit(subscriber: Subscriber<Tree>, tree: Tree, config: any, fromImport = false) {
   const writeFileAsync = util.promisify(fs.writeFile);
   await writeFileAsync(WIZARD_CONFIG_FILE, JSON.stringify(config), 'utf8');
 
   console.log(
-    '\x1b[33m%s\x1b[0m',
+    LOG_COLOR,
     fromImport
       ? `The import was successful, the config used for your generation can be found here: ${WIZARD_CONFIG_FILE}`
       : `New config file was generated based on your choices, it can be found here: ${WIZARD_CONFIG_FILE}`

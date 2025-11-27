@@ -145,8 +145,8 @@ export function wrapBuildComponentExecution(options: Schema): Rule {
 }
 
 // Dynamic import for the inquirer
-export async function loadInquirer(): Promise<PromptModule> {
+export async function loadInquirer(): Promise<{prompt: PromptModule, registerPrompt: PromptModule['registerPrompt']}> {
   const inquirer = await import('inquirer');
 
-  return inquirer as unknown as PromptModule;
+  return inquirer as unknown as {prompt: PromptModule, registerPrompt: PromptModule['registerPrompt']};
 }

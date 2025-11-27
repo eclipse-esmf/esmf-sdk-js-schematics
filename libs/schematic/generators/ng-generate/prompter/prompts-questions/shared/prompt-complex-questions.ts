@@ -204,7 +204,7 @@ export const requestAspectModelWithAspect = (allAnswers: any) => ({
   default: '',
 });
 
-export const pathDecision: any = (configFile: string, anotherFile: boolean = false) => ({
+export const pathDecision: any = (configFile: string, anotherFile = false) => ({
   type: 'fuzzypath',
   name: 'paths',
   excludeFilter: (nodePath: string) => !nodePath.endsWith('.ttl'),
