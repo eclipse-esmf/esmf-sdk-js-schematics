@@ -32,6 +32,7 @@ import { MatTable } from '@angular/material/table';
 
 <% if (options.hasFilters || options.hasSearchBar) { %>
     import { FilterEnums, <%= options.filterServiceName %>} from './<%= cmpFileName %>-filter.service';
+    import {EsmfChipListComponent} from '@esmf/semantic-ui-schematic';
 <% } %>
 
 <% if (options.addCommandBar) { %>
@@ -123,14 +124,14 @@ export const NON_DATA_COLUMNS: <%= tableColumnsEnumName %>[] = [
 
 @Component({
     selector: '<%= options.selector %>',
+    imports: [EsmfChipListComponent],
     templateUrl: './<%= cmpFileName %>.component.html',
     styleUrls: ['./<%= cmpFileName %>.component.<%= options.style %>'],
     providers: [
       <%= tableServiceName %>
     ],
-    standalone: false
-    <% if (options.changeDetection) { %>, changeDetection: ChangeDetectionStrategy.<%= options.changeDetection %><% } %>
-    <% if (options.viewEncapsulation) { %>,encapsulation: ViewEncapsulation.<%= options.viewEncapsulation %><% } else { %>,encapsulation: ViewEncapsulation.None<% } %>
+    <% if (options.changeDetection) { %>changeDetection: ChangeDetectionStrategy.<%= options.changeDetection %>,<% } %>
+    <% if (options.viewEncapsulation) { %>encapsulation: ViewEncapsulation.<%= options.viewEncapsulation %>,<% } else { %>encapsulation: ViewEncapsulation.None,<% } %>
 })
 export class <%= classify(name) %>Component implements OnInit, AfterViewInit, AfterViewChecked, OnChanges<% if (options.hasSearchBar || options.enableRemoteDataHandling) { %>, OnDestroy<% } %> {
   private tableService = inject(<%= tableServiceName %><<%= options.aspectModelTypeName %>>);

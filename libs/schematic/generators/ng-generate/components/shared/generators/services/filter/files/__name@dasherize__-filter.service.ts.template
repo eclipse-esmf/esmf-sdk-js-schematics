@@ -18,6 +18,9 @@
 <% } %>
 
 <% if (options.hasSearchBar || options.isDateQuickFilter) { %>import { TranslocoService } from '@jsverse/transloco';<% } %>
+<% if (options.hasSearchBar || options.isEnumQuickFilter || options.isDateQuickFilter) { %>
+  import {FilterEnums, FilterType} from '@esmf/semantic-ui-schematic';
+<% } %>
 
 import {AbstractControl, FormControl, ValidationErrors, ValidatorFn} from '@angular/forms';
 import {Injectable<% if (options.isDateQuickFilter) { %>, Inject<% } %>} from '@angular/core';
@@ -38,22 +41,6 @@ import {<%= classify(options.selectedModelTypeName) %>
 <% } %>
 
 } from '<%= options.typePath %>';
-
-<% if (options.hasSearchBar || options.isEnumQuickFilter || options.isDateQuickFilter) { %>
-    export enum FilterEnums {
-        Date,
-        Search,
-        Enum,
-    }
-
-    export type FilterType = {
-        type: FilterEnums;
-        label: string;
-        prop: string|null;
-        filterValue?:string;
-        removable?: boolean;
-    };
-<% } %>
 
 <% if (options.componentType === 'card') { %>
     export enum SortCard {

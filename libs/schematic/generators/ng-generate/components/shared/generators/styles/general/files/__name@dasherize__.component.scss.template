@@ -110,31 +110,6 @@ $gray-300: #e0e0e0;
     overflow: hidden;
     text-overflow: ellipsis;
   }
-
-  ::ng-deep .mat-chip-list-wrapper {
-    margin: 0;
-    display: flex;
-    flex-direction: row;
-    flex-wrap: nowrap;
-    align-items: center;
-
-    .mat-mdc-chip {
-      flex: 0 0 auto;
-    }
-  }
-
-  .scrollable-chips-container {
-    display: flex;
-    align-content: center;
-    position: relative;
-    overflow-x: auto;
-
-    .chip-list-container {
-      display: flex;
-      overflow: hidden;
-      scroll-behavior: smooth;
-    }
-  }
 }
 
 .resizing {
