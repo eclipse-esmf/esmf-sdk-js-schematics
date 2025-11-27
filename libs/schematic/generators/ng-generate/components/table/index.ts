@@ -34,6 +34,7 @@ import {generateConfigMenu} from './generators/components/config-menu/index';
 import {generateTableComponent} from './generators/components/table/index';
 import {generateDataSource} from './generators/data-source/index';
 import {TableSchema} from './schema';
+import {LOG_COLOR} from '../../../utils/constants';
 
 export default function (tableSchema: TableSchema): Rule {
   return (tree: Tree, context: SchematicContext) => {
@@ -42,6 +43,8 @@ export default function (tableSchema: TableSchema): Rule {
 }
 
 export function generateTable(tableSchema: TableSchema): Rule {
+  console.log(LOG_COLOR, 'Start generating Table component...');
+
   prepareOptions(tableSchema, ComponentType.TABLE);
 
   return chain([

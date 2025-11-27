@@ -13,4 +13,3 @@
 
 export * from './chip-list/index';
 export * from './command-bar/index';
-export * from '../../../table/generators/components/export-dialog/index';

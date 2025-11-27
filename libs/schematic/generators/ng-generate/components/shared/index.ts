@@ -118,11 +118,6 @@ export function prepareOptions(schema: Schema, componentType: ComponentType): Sc
     options.jsonAccessPath = `${options.jsonAccessPath}.`;
   }
 
-  options.path = options.path || 'src/app/shared/components';
-
-  console.log(options);
-  // throw new Error('Stop execution to check prepared options.');
-
   return options;
 }
 
@@ -243,7 +238,7 @@ export function generateGeneralFilesRules(): Array<Rule> {
   return [
     generateFilterService(options),
     generateGeneralStyle(options),
-    generateTranslationFiles(options),
+    generateTranslationFiles(options, false),
     wrapBuildComponentExecution(options),
     generateGeneralService(options),
     generateCustomService(options),

@@ -139,7 +139,7 @@ function findCollectionElement(aspect: Aspect): Aspect | Entity | undefined {
   return collectionElement?.effectiveDataType?.isComplex ? (collectionElement.effectiveDataType as Entity) : aspect;
 }
 
-export function generateTranslationFiles(options: Schema): Rule {
+export function generateTranslationFiles(options: Schema, formsPathCompatibility = true): Rule {
   return (tree: Tree, _context: SchematicContext) => {
     const element = options.selectedModelElement as Aspect | Entity;
 
@@ -154,7 +154,7 @@ export function generateTranslationFiles(options: Schema): Rule {
 
     const aspectModelPath = `/${dasherize(options.name).toLowerCase()}`;
     const versionPath = options.enableVersionSupport ? `/v${options.aspectModelVersion.replace(/\./g, '')}` : '';
-    const assetsPath = `${baseAssetsPath}${aspectModelPath}${versionPath}`;
+    const assetsPath =  formsPathCompatibility ?`${baseAssetsPath}${aspectModelPath}${versionPath}` : options.path;
 
     const translationRules = Array.from(languages, language => generateLanguageTranslationAsset(options, assetsPath, language));
 
