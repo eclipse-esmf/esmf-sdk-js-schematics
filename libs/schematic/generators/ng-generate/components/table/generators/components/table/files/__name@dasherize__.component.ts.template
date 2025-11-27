@@ -4,6 +4,7 @@
   var cmpFileName = dasherize(name);
   var hasCustomRowActions = options.customRowActions.length > 0;
   var customRowActionNames = options.customRowActions.map(action => `'${action.replace(/\.[^/.]+$/, '')}'`);
+  var tableServiceName = options.enableRemoteDataHandling ? (options.customRemoteService ? `Custom${classify(name)}Service` : 'RemoteTableService') : 'StaticTableService';
 %>
 import {
     AfterViewInit,
@@ -21,6 +22,7 @@ import {
     TemplateRef,
     ElementRef,
     ViewEncapsulation,
+    inject,
     <% if (options.enableRemoteDataHandling || options.hasSearchBar) { %>OnDestroy,<% } %>
     <% if (options.changeDetection) { %>ChangeDetectionStrategy,<% } %>
 } from '@angular/core';
@@ -29,7 +31,7 @@ import { MatSort, SortDirection } from '@angular/material/sort';
 import { MatTable } from '@angular/material/table';
 
 <% if (options.hasFilters || options.hasSearchBar) { %>
-    import { FilterEnums, <%= options.filterServiceName %>} from './<%= dasherize(name) %>-filter.service';
+    import { FilterEnums, <%= options.filterServiceName %>} from './<%= cmpFileName %>-filter.service';
 <% } %>
 
 <% if (options.addCommandBar) { %>
@@ -47,7 +49,7 @@ import {
         , <%= enumProperties %>
     <% } %>
 } from '<%= options.typePath %>';
-import {<%= classify(name) %>DataSource} from './<%= dasherize(name) %>-datasource';
+import {<%= classify(name) %>DataSource} from './<%= cmpFileName %>-datasource';
 
 <% if (options.isDateQuickFilter) { %>
     import {DateAdapter, MAT_DATE_FORMATS, MatDateFormats} from '@angular/material/core';
@@ -62,11 +64,11 @@ import {SelectionModel} from '@angular/cdk/collections';
 import { TranslocoService } from '@jsverse/transloco';
 import {PaginatorSelectConfigInjector} from "<% if (options.enableVersionSupport) { %>../<% } %>../../services/paginator-select-config.provider";
 import {JSSdkLocalStorageService} from "<% if (options.enableVersionSupport) { %>../<% } %>../../services/storage.service";
-import {<%= classify(name) %>CommandBarComponent} from "./<%= dasherize(name) %>-command-bar.component";
-import {<%= classify(name) %>ColumnMenuComponent} from './<%= dasherize(name) %>-column-menu.component';
+import {<%= classify(name) %>CommandBarComponent} from "./<%= cmpFileName %>-command-bar.component";
+import {<%= classify(name) %>ColumnMenuComponent} from './<%= cmpFileName %>-column-menu.component';
 
 <% if (options.hasSearchBar) { %>
-    import {<%= classify(name) %>ConfigMenuComponent} from './<%= dasherize(name) %>-config-menu.component';
+    import {<%= classify(name) %>ConfigMenuComponent} from './<%= cmpFileName %>-config-menu.component';
 <% } %>
 
 <% if (options.hasFilters) { %>
@@ -83,7 +85,9 @@ import {<% if (options.enableRemoteDataHandling) { %>catchError, finalize, tap, 
     <%= options.include('/remote-handling/imports.ts.template') %>
     <%= options.include('/remote-handling/custom-rql-filter-extensions.ts.template') %>
 <% } else { %>
-    import {<%= classify(name) %>Service, <%= classify(aspectModelName) %>Response} from './<%= dasherize(name) %>.service';
+    // TODO remove the commented line bellow
+    // import {<%= classify(name) %>Service, <%= classify(aspectModelName) %>Response} from './<%= cmpFileName %>.service';
+    import {StaticTableService} from '@esmf/semantic-ui-schematic';
 <% } %>
 
 <% if (options.hasSearchBar) { %>
@@ -119,13 +123,18 @@ export const NON_DATA_COLUMNS: <%= tableColumnsEnumName %>[] = [
 
 @Component({
     selector: '<%= options.selector %>',
-    templateUrl: './<%= dasherize(name) %>.component.html',
-    styleUrls: ['./<%= dasherize(name) %>.component.<%= options.style %>'],
+    templateUrl: './<%= cmpFileName %>.component.html',
+    styleUrls: ['./<%= cmpFileName %>.component.<%= options.style %>'],
+    providers: [
+      <%= tableServiceName %>
+    ],
     standalone: false
     <% if (options.changeDetection) { %>, changeDetection: ChangeDetectionStrategy.<%= options.changeDetection %><% } %>
     <% if (options.viewEncapsulation) { %>,encapsulation: ViewEncapsulation.<%= options.viewEncapsulation %><% } else { %>,encapsulation: ViewEncapsulation.None<% } %>
 })
 export class <%= classify(name) %>Component implements OnInit, AfterViewInit, AfterViewChecked, OnChanges<% if (options.hasSearchBar || options.enableRemoteDataHandling) { %>, OnDestroy<% } %> {
+  private tableService = inject(<%= tableServiceName %><<%= options.aspectModelTypeName %>>);
+
     <% if (options.hasSearchBar) { %>@Input() initialSearchString = '';<% } %>
     <%= customRowActionInput %>
     <% if (options.dateProperties) { %>@Input() tableDateFormat = 'short';<% } %>
@@ -253,14 +262,14 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
         private requestSubscription: Subscription = new Subscription();
     <% } %>
 
+
     <% if (options.enableRemoteDataHandling) { %>
-        constructor(<%= commonImports %>
-        private <% if (options.customRemoteService) { %>custom<% } %><%= classify(name) %>Service: <% if (options.customRemoteService) { %>Custom<% } %><%= classify(name) %>Service) {
+        constructor(<%= commonImports %>) {
             this.dataSource = new <%= classify(name) %>DataSource();
             <%= sharedCustomRows %>
         }
     <% } else { %>
-        constructor(<%= commonImports %> private <%= camelize(name) %>Service: <%= classify(name) %>Service) {
+        constructor(<%= commonImports %>) {
             this.dataSource = new <%= classify(name) %>DataSource(this.translateService);
             <%= sharedCustomRows %>
         }
