@@ -34,9 +34,7 @@ import {generateConfigMenu} from './generators/components/config-menu/index';
 import {generateTableComponent} from './generators/components/table/index';
 import {generateDataSource} from './generators/data-source/index';
 import {TableSchema} from './schema';
-import {generateTableCellLinkComponent} from './generators/components/table-cell-link/index';
 import {LOG_COLOR} from '../../../utils/constants';
-
 export default function (tableSchema: TableSchema): Rule {
   return (tree: Tree, context: SchematicContext) => {
     generateComponent(context, tableSchema, ComponentType.TABLE);
@@ -66,7 +64,6 @@ export function generateTable(tableSchema: TableSchema): Rule {
 function tableSpecificGeneration(): Array<Rule> {
   return [
     generateTableComponent(options as TableSchema),
-    generateTableCellLinkComponent(options), // General
     generateDataSource(options),
     generateStorageService(options), // General
     generateColumnMenu(options), // General
