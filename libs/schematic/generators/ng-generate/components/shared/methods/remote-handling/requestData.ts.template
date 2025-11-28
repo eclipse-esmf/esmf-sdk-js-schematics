@@ -84,7 +84,7 @@ private requestData() {
         this.requestSubscription.unsubscribe();
     }
 
-    this.requestSubscription = this.<%= camelize((options.customRemoteService ? 'custom' : '') + '-' + options.name) %>Service.requestData(this.remoteAPI, {query: rqlStringTemp})
+    this.requestSubscription = this.tableService.requestData(this.remoteAPI, {query: rqlStringTemp})
         .pipe(
             tap((movementResponse: <%= classify(options.aspectModel.name) %>Response) => {
                 this.dataLoadError = false;

@@ -1,4 +1,9 @@
-import {<% if (options.customRemoteService) { %>Custom<% } %><%= classify(options.name) %>Service} from './<% if (options.customRemoteService) { %>custom<% } %>-<%= dasherize(options.name) %>.service';
+<% if (options.customRemoteService) { %>
+  import {Custom<%= classify(name) %>Service} from './custom-<%= dasherize(name) %>.service';
+<% } else { %>
+  import {RemoteTableService} from '@esmf/semantic-ui-schematic';
+<% } %>
+
 import {<%= options.aspectModel.name %>Response} from './<%= dasherize(options.name) %>.service';
 import {AbstractArrayNode, AbstractNode, And, Eq, Limit, Query, QueryStringifier, Sort} from 'rollun-ts-rql';
 import {SortOptions} from "rollun-ts-rql/dist/nodes/Sort";

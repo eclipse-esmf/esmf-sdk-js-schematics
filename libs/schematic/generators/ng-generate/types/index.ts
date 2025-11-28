@@ -43,9 +43,9 @@ export default function (options: TypesSchema): Rule {
       formatGeneratedFiles(
         {
           getPath(options: TypesSchema) {
-            // FIXME use options.selectedModelElement?.name with version option to generate types in the right folder
-            // `${dasherize(options.selectedModelElement?.name).toLowerCase()}`
-            return `${options.path}/${dasherize(options.aspectModel.name).toLowerCase()}`;
+            return [options.path, dasherize(options.selectedModelElement?.name).toLowerCase(), options.versionedAccessPrefix]
+              .filter(chunk => !!chunk)
+              .join('/');
           },
         },
         options

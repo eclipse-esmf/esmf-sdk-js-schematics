@@ -30,7 +30,6 @@ import ora from 'ora';
 import {
   generateCustomService,
   generateFilterService,
-  generateGeneralService,
   generateGeneralStyle,
   generateHorizontalOverflowDirective,
   generateShowDescriptionPipe,
@@ -240,7 +239,6 @@ export function generateGeneralFilesRules(): Array<Rule> {
     generateGeneralStyle(options),
     generateTranslationFiles(options, false),
     wrapBuildComponentExecution(options),
-    generateGeneralService(options),
     generateCustomService(options),
     generateValidateInputDirective(options),
     generateHorizontalOverflowDirective(options),
