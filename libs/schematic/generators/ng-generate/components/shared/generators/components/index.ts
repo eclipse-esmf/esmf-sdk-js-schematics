@@ -11,5 +11,5 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-export * from './chip-list/index';
+
 export * from './command-bar/index';

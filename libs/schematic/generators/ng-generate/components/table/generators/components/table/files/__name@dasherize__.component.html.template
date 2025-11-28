@@ -35,7 +35,7 @@
     <ng-container *ngTemplateOutlet="loadCustomTemplate()"></ng-container>
   </ng-container>
   <% if (options.hasFilters) { %>
-    <<%= dasherize(name) %>-chip-list (removeFilter)="removeFilter($event)"></<%= dasherize(name) %>-chip-list>
+    <esmf-chip-list [activeFilters]="filterService.activeFilters" (removeFilter)="removeFilter($event)"></esmf-chip-list>
   <% } %>
 
   <%= options.include('/generation/extended-table.html.template') %>

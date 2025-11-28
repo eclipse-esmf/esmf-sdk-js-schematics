@@ -15,7 +15,7 @@ import {apply, applyTemplates, chain, MergeStrategy, mergeWith, move, Rule, Sche
 import {strings} from '@angular-devkit/core';
 import {camelize, classify, dasherize} from '@angular-devkit/core/src/utils/strings';
 import {getAllEnumProps} from '../../../../../../utils/aspect-model';
-import {generateChipList, generateCommandBar} from '../../../../shared/generators/index';
+import {generateCommandBar} from '../../../../shared/generators/index';
 import {
   getCustomRowActions,
   getEnumProperties,
@@ -39,7 +39,6 @@ export function generateTableComponent(options: TableSchema): Rule {
     sharedOptions['getCustomRowActions'] = getCustomRowActions;
 
     return chain([
-      ...(options.hasFilters ? [generateChipList(sharedOptions)] : []),
       ...(options.addCommandBar ? [generateCommandBar(sharedOptions, sharedOptions.allProps)] : []),
       generateHtml(options, _context),
     ])(tree, _context);
