@@ -5,6 +5,7 @@
   var hasCustomRowActions = options.customRowActions.length > 0;
   var customRowActionNames = options.customRowActions.map(action => `'${action.replace(/\.[^/.]+$/, '')}'`);
   var tableServiceName = options.enableRemoteDataHandling ? (options.customRemoteService ? `Custom${classify(name)}Service` : 'EsmfRemoteTableService') : 'EsmfStaticTableService';
+  var tableDataSourceName = options.enableRemoteDataHandling ? 'EsmfRemoteTableDataSource' : 'EsmfStaticTableDataSource';
 %>
 import {
     AfterViewInit,
@@ -15,7 +16,6 @@ import {
     EventEmitter,
     SimpleChanges,
     HostBinding,
-    Inject,
     OnChanges,
     OnInit,
     AfterViewChecked,
@@ -26,51 +26,45 @@ import {
     <% if (options.enableRemoteDataHandling || options.hasSearchBar) { %>OnDestroy,<% } %>
     <% if (options.changeDetection) { %>ChangeDetectionStrategy,<% } %>
 } from '@angular/core';
-import { MatPaginator, MatPaginatorSelectConfig } from '@angular/material/paginator';
+import { MatPaginator } from '@angular/material/paginator';
 import { MatSort, SortDirection } from '@angular/material/sort';
 import { MatTable } from '@angular/material/table';
 
 <% if (options.hasFilters || options.hasSearchBar) { %>
-    import { FilterEnums, <%= options.filterServiceName %>} from './<%= cmpFileName %>-filter.service';
-    import {EsmfChipListComponent} from '@esmf/semantic-ui-schematic';
+    import {<%= options.filterServiceName %>} from './<%= cmpFileName %>-filter.service';
+    import {EsmfChipListComponent, EsmfTableCellComponent} from '@esmf/semantic-ui-schematic';
 <% } %>
 
 <% if (options.addCommandBar) { %>
     import {unparse} from 'papaparse';
-    import {Action, ExportTableDialogComponent} from '<% if (options.enableVersionSupport) { %>../<% } %>../export-confirmation-dialog/export-table-dialog.component';
+    import {Actions, Action, EsmfExportTableDialogComponent} from '@esmf/semantic-ui-schematic';
 <% } %>
 
 import {MatDialog} from '@angular/material/dialog';
 import {
     <%= classify(options.selectedModelTypeName) %>
-    <% if (selectedModelElementUrn !== aspectModelElementUrn && !isCollectionAspect) { %>
-        , <%= classify(options.aspectModelTypeName) %>
-    <% } %>
     <% if (options.isEnumQuickFilter) { %>
         , <%= enumProperties %>
     <% } %>
 } from '<%= options.typePath %>';
-import {<%= classify(name) %>DataSource} from './<%= cmpFileName %>-datasource';
+import {<%= tableDataSourceName %>} from '@esmf/semantic-ui-schematic';
 
 <% if (options.isDateQuickFilter) { %>
     import {DateAdapter, MAT_DATE_FORMATS, MatDateFormats} from '@angular/material/core';
 <% } %>
 
-<% if ([...options.customRowActions, ...options.customCommandBarActions].findIndex(element => element.includes('.')) !== -1) { %>
-    import { MatIconRegistry } from '@angular/material/icon';
+<% if (hasCustomActions) { %>
+  import {MatIcon, MatIconRegistry} from '@angular/material/icon';
+<% } else { %>
+  import {MatIcon} from '@angular/material/icon';
 <% } %>
 
-import {DomSanitizer} from '@angular/platform-browser';
+import {DomSanitizer, SafeStyle} from '@angular/platform-browser';
 import {SelectionModel} from '@angular/cdk/collections';
-import { TranslocoService } from '@jsverse/transloco';
-import {EsmfPaginatorSelectConfigInjector} from "<% if (options.enableVersionSupport) { %>../<% } %>../../services/paginator-select-config.provider";
-import {EsmfLocalStorageService} from "<% if (options.enableVersionSupport) { %>../<% } %>../../services/storage.service";
+import {EsmfPaginatorSelectConfigInjector} from '@esmf/semantic-ui-schematic';
+import {EsmfLocalStorageService} from '@esmf/semantic-ui-schematic';
 import {<%= classify(name) %>CommandBarComponent} from "./<%= cmpFileName %>-command-bar.component";
 import {<%= classify(name) %>ColumnMenuComponent} from './<%= cmpFileName %>-column-menu.component';
-
-<% if (options.hasSearchBar) { %>
-    import {<%= classify(name) %>ConfigMenuComponent} from './<%= cmpFileName %>-config-menu.component';
-<% } %>
 
 <% if (options.hasFilters) { %>
     import {debounceTime, filter, map, takeUntil} from 'rxjs/operators'
@@ -86,10 +80,12 @@ import {<% if (options.enableRemoteDataHandling) { %>catchError, finalize, tap, 
     <%= options.include('/remote-handling/imports.ts.template') %>
     <%= options.include('/remote-handling/custom-rql-filter-extensions.ts.template') %>
 <% } else { %>
-    // TODO remove the commented line bellow
-    // import {<%= classify(name) %>Service, <%= classify(aspectModelName) %>Response} from './<%= cmpFileName %>.service';
     import {EsmfStaticTableService} from '@esmf/semantic-ui-schematic';
 <% } %>
+import {MatMenu, MatMenuTrigger} from '@angular/material/menu';
+import {MatIconButton} from '@angular/material/button';
+import {NgClass} from '@angular/common';
+import {MatTooltip} from '@angular/material/tooltip';
 
 <% if (options.hasSearchBar) { %>
     <%= options.include('/interfaces/config.ts.template') %>
@@ -115,26 +111,42 @@ export const NON_DATA_COLUMNS: <%= tableColumnsEnumName %>[] = [
     <%= tableColumnsEnumName %>.COLUMNS_MENU
 ];
 
+type Entity = <%= classify(options.selectedModelTypeName) %>;
+
 <% if (hasCustomRowActions) { %>
     type RowAction = <%= customRowActionNames.join(' | ') %>;
-    export type <%= options.aspectModelTypeName %>ActionsResolvers = Partial<Record<RowAction, (rowData: <%= options.aspectModelTypeName %>) => boolean>> | undefined;
+    export type <%= options.aspectModelTypeName %>ActionsResolvers = Partial<Record<RowAction, (rowData: Entity) => boolean>> | undefined;
 <% } %>
 
 
 
 @Component({
     selector: '<%= options.selector %>',
-    imports: [EsmfChipListComponent],
+    imports: [
+      EsmfChipListComponent,
+      MatPaginator,
+      MatMenu,
+      MatIconButton,
+      MatSort,
+      NgClass,
+      MatTable,
+      MatIcon,
+      MatTooltip,
+      EsmfTableCellComponent,
+      MatMenuTrigger
+    ],
     templateUrl: './<%= cmpFileName %>.component.html',
     styleUrls: ['./<%= cmpFileName %>.component.<%= options.style %>'],
     providers: [
-      <%= tableServiceName %>
+      <%= tableServiceName %>,
+      EsmfLocalStorageService
     ],
     <% if (options.changeDetection) { %>changeDetection: ChangeDetectionStrategy.<%= options.changeDetection %>,<% } %>
     <% if (options.viewEncapsulation) { %>encapsulation: ViewEncapsulation.<%= options.viewEncapsulation %>,<% } else { %>encapsulation: ViewEncapsulation.None,<% } %>
 })
 export class <%= classify(name) %>Component implements OnInit, AfterViewInit, AfterViewChecked, OnChanges<% if (options.hasSearchBar || options.enableRemoteDataHandling) { %>, OnDestroy<% } %> {
-  private tableService = inject(<%= tableServiceName %><<%= options.aspectModelTypeName %>>);
+  <%= injections %>
+  private tableService = inject(<%= tableServiceName %><Entity>);
 
     <% if (options.hasSearchBar) { %>@Input() initialSearchString = '';<% } %>
     <%= customRowActionInput %>
@@ -142,42 +154,42 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
     <% if (options.dateTimeStampProperties) { %>@Input() tableDateTimeFormat = 'short';<% } %>
     <% if (options.timeProperties) { %>@Input() tableTimeFormat = 'shortTime';<% } %>
 
-    @Input() data: Array<<%= options.aspectModelTypeName %>> = [];
+    @Input() data: Entity[] = [];
     @Input() customTemplate?: TemplateRef<any>;
     @Input() searchHint?: string;
-    @Input() showFirstLastButtons: boolean = true;
+    @Input() showFirstLastButtons = true;
 
     <%= customColumnsInput %>
 
-    @Input() pageSize: number = 20;
-    @Input() pageSizeOptions: Array<number> = [5, 20, 50, 100];
+    @Input() pageSize = 20;
+    @Input() pageSizeOptions: number[] = [5, 20, 50, 100];
 
-    @Input() highlightSelectedRow: boolean = true;
+    @Input() highlightSelectedRow = true;
     @Input() highlightColor = 'rgba(127, 198, 231, 0.3)';
     @Input() isMultipleSelectionEnabled = true;
-    @Input() noDataMessage: string = '';
-    @Input() dataLoadErrorMessage: string = '';
-    @Input() visibleRowActionsIcons: number = 3;
-    @Input() headerTooltipsOff: boolean = false;
-    @Input() setStickRowActions: boolean = true;
-    @Input() customTableClass: string = '';
-    @Input() debounceTime: number = 500;
-    @Input() minNumberCharacters: number = 2;
-    @Input() maxNumberCharacters: number = 50;
-    @Input() allowedCharacters: string = '';
-    @Input() regexValidator:string = '';
+    @Input() noDataMessage = '';
+    @Input() dataLoadErrorMessage = '';
+    @Input() visibleRowActionsIcons = 3;
+    @Input() headerTooltipsOff = false;
+    @Input() setStickRowActions = true;
+    @Input() customTableClass = '';
+    @Input() debounceTime = 500;
+    @Input() minNumberCharacters = 2;
+    @Input() maxNumberCharacters = 50;
+    @Input() allowedCharacters = '';
+    @Input() regexValidator = '';
 
     @Input() hideColumns: <%= tableColumnsEnumName %>[] = [];
 
     <% if (options.hasSearchBar) { %>@Input() hasAdvancedSearch: boolean = this.filterService.stringColumns.length > 1;<% } %>
     <% if (options.enableRemoteDataHandling) { %>
-        @Input() maxExportRows: number = 5000;
+        @Input() maxExportRows = 5000;
         @Input() customFilterExtension: CustomRQLFilterExtension | undefined;
         @Input() customOptionsExtension: CustomRQLOptionExtension | undefined;
         @Input() extendedCsvExporter: ExtendedCsvExporter | undefined;
-        @Input() remoteAPI: string = '';
+        @Input() remoteAPI = '';
     <% } else { %>
-        @Input() maxExportRows: number = 0;
+        @Input() maxExportRows = 0;
     <% } %>
 
     <% if (hasCustomRowActions) { %>
@@ -202,18 +214,14 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
 
     @ViewChild(MatSort) private sort!: MatSort;
     @ViewChild(MatPaginator) private paginator!: MatPaginator
-    @ViewChild(MatTable) private table!: MatTable<<%= classify(aspectModelTypeName) %>>;
+    @ViewChild(MatTable) private table!: MatTable<Entity>;
     @ViewChild(<%= classify(name) %>ColumnMenuComponent) private columMenuComponent!: <%= classify(name) %>ColumnMenuComponent;
-
-    <% if (options.hasSearchBar) { %>
-        @ViewChild(<%= classify(name) %>ConfigMenuComponent) private configurationComponent!: <%= classify(name) %>ConfigMenuComponent;
-    <% } %>
 
     @ViewChild('searchInput') searchInput!: ElementRef;
     @ViewChild(<%= classify(name) %>CommandBarComponent) commandBar: <%= classify(name) %>CommandBarComponent;
 
     @HostBinding("attr.style")
-    public get valueAsStyle(): any {
+    public get valueAsStyle():  SafeStyle | undefined {
         if(!this.highlightColor) {
             return;
         }
@@ -226,9 +234,9 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
         readonly <%= options.localStorageKeyConfig %> = '<%= options.localStorageKeyConfig.replace(options.localStoragePrefix, '').toLowerCase() %>';
     <% } %>
 
-    totalItems: number = 0;
+    totalItems = 0;
     selection = new SelectionModel<any>(this.isMultipleSelectionEnabled, []);
-    dataSource: <%= classify(name) %>DataSource;
+    dataSource = new <%= tableDataSourceName %><Entity>();
 
     columnToSort:{sortColumnName: string, sortDirection: SortDirection} = {sortColumnName:'<%= options.defaultSortingCol %>', sortDirection : 'asc'};
     // The list of column names that are displayed in the table, including NON_DATA_COLUMNS
@@ -240,13 +248,12 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
         configs: Array<Config> = [];
     <% } %>
 
-    currentLanguage: string;
-    filteredData: Array<<%= classify(aspectModelTypeName) %>> = [];
-    dragging: boolean = false;
-    customRowActionsLength: number = <%= options.customRowActions.length %>;
-    closeColumnMenu: boolean = false;
-    rqlString: string = '';
-    searchFocused: boolean = false;
+    filteredData: Entity[] = [];
+    dragging = false;
+    customRowActionsLength = <%= options.customRowActions.length %>;
+    closeColumnMenu = false;
+    rqlString = '';
+    searchFocused = false;
     dataLoadError = false;
 
     <% if (options.hasSearchBar) { %>
@@ -260,21 +267,12 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
     <% } %>
 
     <% if (options.enableRemoteDataHandling) { %>
-        private requestSubscription: Subscription = new Subscription();
+        private requestSubscription = new Subscription();
     <% } %>
 
-
-    <% if (options.enableRemoteDataHandling) { %>
-        constructor(<%= commonImports %>) {
-            this.dataSource = new <%= classify(name) %>DataSource();
-            <%= sharedCustomRows %>
-        }
-    <% } else { %>
-        constructor(<%= commonImports %>) {
-            this.dataSource = new <%= classify(name) %>DataSource(this.translateService);
-            <%= sharedCustomRows %>
-        }
-    <% } %>
+    constructor(){
+      <%= registerCustomIcons %>
+    }
 
     ngOnInit(): void {
         <% if (options.hasSearchBar) { %>
@@ -569,7 +567,7 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
         openExportConfirmationDialog() {
             const dataColumns = this.displayedColumns.filter(col => this.isAvailableDataColumn(col));
 
-            const dialogRef = this.dialog.open(ExportTableDialogComponent, {
+            const dialogRef = this.dialog.open(EsmfExportTableDialogComponent, {
                 data: {
                     <% if (options.enableRemoteDataHandling) { %>
                         extendedCsvExporter: this.extendedCsvExporter,
@@ -584,7 +582,7 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
             dialogRef.afterClosed()
                 .pipe(filter(e => !!e))
                 .subscribe((event: { action: Action, exportAllPages: boolean; exportAllColumns: boolean }): void => {
-                    if (event.action === Action.cancel) {
+                    if (event.action === Actions.Cancel) {
                         return;
                     }
 
@@ -656,7 +654,7 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
     <% } %>
 
     setDisplayedColumns(columns: Array<Column>): void {
-        let displayedColumnsTmp: Array<Column> = [];
+        const displayedColumnsTmp: Column[] = [];
 
         <% if (options.addRowCheckboxes) { %>
             if (columns[0].name !== <%= tableColumnsEnumName %>['CHECKBOX']) {
@@ -689,7 +687,7 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
     <% } %>
 
     <% if (hasCustomRowActions) { %>
-        protected isAvailableRowAction(action: RowAction, rowData: <%= options.aspectModelTypeName %>): boolean {
+        protected isAvailableRowAction(action: RowAction, rowData: Entity): boolean {
             if (!this.actionResolvers || !this.actionResolvers[action]) {
                 return true;
             }

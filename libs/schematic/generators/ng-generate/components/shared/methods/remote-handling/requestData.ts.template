@@ -86,20 +86,20 @@ private requestData() {
 
     this.requestSubscription = this.tableService.requestData(this.remoteAPI, {query: rqlStringTemp})
         .pipe(
-            tap((movementResponse: <%= classify(options.aspectModel.name) %>Response) => {
+            tap((response: Response<Entity>) => {
                 this.dataLoadError = false;
                 this.totalItems =
-                    movementResponse.totalItems !== null && movementResponse.totalItems !== undefined
-                        ? movementResponse.totalItems
-                        : movementResponse.items.length;
+                    response.totalItems !== null && response.totalItems !== undefined
+                        ? response.totalItems
+                        : response.items.length;
                 this.maxExportRows = this.totalItems;
 
                 <% if (options.componentType === 'card') { %>
-                    this.dataToShow = movementResponse.items;
+                    this.dataToShow = response.items;
                     this.dataSource.data = this.dataToShow;
                     this.paginator.length = this.dataToShow.length;
                 <% } else { %>
-                    const dataToShow = movementResponse.items;
+                    const dataToShow = response.items;
                     this.dataSource.setData(dataToShow);
                 <% } %>
 

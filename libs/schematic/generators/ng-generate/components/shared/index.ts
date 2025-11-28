@@ -31,7 +31,6 @@ import {
   generateCustomService,
   generateFilterService,
   generateGeneralStyle,
-  generateHorizontalOverflowDirective,
   generateShowDescriptionPipe,
   generateValidateInputDirective,
 } from './generators/index';
@@ -241,7 +240,6 @@ export function generateGeneralFilesRules(): Array<Rule> {
     wrapBuildComponentExecution(options),
     generateCustomService(options),
     generateValidateInputDirective(options),
-    generateHorizontalOverflowDirective(options),
     generateShowDescriptionPipe(options),
     generateSemanticExplanation(options as Values),
   ];
