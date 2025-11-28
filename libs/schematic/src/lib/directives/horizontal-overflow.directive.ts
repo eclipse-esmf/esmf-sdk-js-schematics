@@ -9,7 +9,7 @@ import {MatChipListbox} from '@angular/material/chips';
   exportAs: 'horizontalOverflow',
 })
 //TODO add unit tests to the directive
-export class HorizontalOverflowDirective implements AfterContentInit, OnDestroy {
+export class EsmfHorizontalOverflowDirective implements AfterContentInit, OnDestroy {
   // eslint-disable-next-line @angular-eslint/no-input-rename
   @Input('chipsObj') chips!: MatChipListbox;
 
