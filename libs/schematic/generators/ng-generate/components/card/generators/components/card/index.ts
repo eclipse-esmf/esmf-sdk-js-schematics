@@ -14,7 +14,7 @@
 import {apply, applyTemplates, chain, MergeStrategy, mergeWith, move, Rule, SchematicContext, Tree, url} from '@angular-devkit/schematics';
 import {strings} from '@angular-devkit/core';
 import {Property} from '@esmf/aspect-model-loader';
-import {generateChipList, generateCommandBar} from '../../../../shared/generators/index';
+import {generateCommandBar} from '../../../../shared/generators/index';
 import {getEnumProperties, getEnumPropertyDefinitions} from '../../../../shared/utils';
 import {Schema} from '../../../../shared/schema';
 import {templateInclude} from '../../../../shared/include';
@@ -27,7 +27,6 @@ export function generateCardComponent(options: any): Rule {
     allProps = options.listAllProperties;
 
     return chain([
-      ...(options.hasFilters ? [generateChipList(options)] : []),
       ...(options.addCommandBar ? [generateCommandBar(options, allProps)] : []),
       generateCard(options, _context),
     ])(tree, _context);
