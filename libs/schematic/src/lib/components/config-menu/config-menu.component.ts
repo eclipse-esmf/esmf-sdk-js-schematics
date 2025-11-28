@@ -11,7 +11,7 @@ import {MatIcon} from '@angular/material/icon';
 /**
  * A base config for ConfigMenuComponent
  */
-export interface ConfigMenuBase {
+export interface Config {
   /** Column name **/
   name: string;
   /** Desc of the config **/
@@ -40,7 +40,7 @@ export interface ConfigMenuBase {
     TranslocoDirective,
   ],
 })
-export class EsmfConfigMenuComponent<Config extends ConfigMenuBase> {
+export class EsmfConfigMenuComponent {
   isOpenedFromMatMenu = input(false);
   configChangedEvent = output<Config[]>();
 

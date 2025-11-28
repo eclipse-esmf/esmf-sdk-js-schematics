@@ -47,7 +47,7 @@ import {
         , <%= enumProperties %>
     <% } %>
 } from '<%= options.typePath %>';
-import {<%= tableDataSourceName %>} from '@esmf/semantic-ui-schematic';
+import {<%= tableDataSourceName %>, EsmfPaginatorSelectConfigInjector, EsmfLocalStorageService, Config} from '@esmf/semantic-ui-schematic';
 
 <% if (options.isDateQuickFilter) { %>
     import {DateAdapter, MAT_DATE_FORMATS, MatDateFormats} from '@angular/material/core';
@@ -61,8 +61,6 @@ import {<%= tableDataSourceName %>} from '@esmf/semantic-ui-schematic';
 
 import {DomSanitizer, SafeStyle} from '@angular/platform-browser';
 import {SelectionModel} from '@angular/cdk/collections';
-import {EsmfPaginatorSelectConfigInjector} from '@esmf/semantic-ui-schematic';
-import {EsmfLocalStorageService} from '@esmf/semantic-ui-schematic';
 import {<%= classify(name) %>CommandBarComponent} from "./<%= cmpFileName %>-command-bar.component";
 import {<%= classify(name) %>ColumnMenuComponent} from './<%= cmpFileName %>-column-menu.component';
 
@@ -86,11 +84,6 @@ import {MatMenu, MatMenuTrigger} from '@angular/material/menu';
 import {MatIconButton} from '@angular/material/button';
 import {NgClass} from '@angular/common';
 import {MatTooltip} from '@angular/material/tooltip';
-
-<% if (options.hasSearchBar) { %>
-    <%= options.include('/interfaces/config.ts.template') %>
-<% } %>
-
 <%= options.include('/interfaces/column.ts.template') %>
 
 /**
@@ -118,8 +111,6 @@ type Entity = <%= classify(options.selectedModelTypeName) %>;
     export type <%= options.aspectModelTypeName %>ActionsResolvers = Partial<Record<RowAction, (rowData: Entity) => boolean>> | undefined;
 <% } %>
 
-
-
 @Component({
     selector: '<%= options.selector %>',
     imports: [
@@ -133,7 +124,8 @@ type Entity = <%= classify(options.selectedModelTypeName) %>;
       MatIcon,
       MatTooltip,
       EsmfTableCellComponent,
-      MatMenuTrigger
+      MatMenuTrigger,
+      <%= classify(name) %>CommandBarComponent
     ],
     templateUrl: './<%= cmpFileName %>.component.html',
     styleUrls: ['./<%= cmpFileName %>.component.<%= options.style %>'],
@@ -141,8 +133,8 @@ type Entity = <%= classify(options.selectedModelTypeName) %>;
       <%= tableServiceName %>,
       EsmfLocalStorageService
     ],
-    <% if (options.changeDetection) { %>changeDetection: ChangeDetectionStrategy.<%= options.changeDetection %>,<% } %>
-    <% if (options.viewEncapsulation) { %>encapsulation: ViewEncapsulation.<%= options.viewEncapsulation %>,<% } else { %>encapsulation: ViewEncapsulation.None,<% } %>
+    encapsulation: ViewEncapsulation.None,
+    <% if (options.changeDetection) { %>changeDetection: ChangeDetectionStrategy.<%= options.changeDetection %><% } %>
 })
 export class <%= classify(name) %>Component implements OnInit, AfterViewInit, AfterViewChecked, OnChanges<% if (options.hasSearchBar || options.enableRemoteDataHandling) { %>, OnDestroy<% } %> {
   <%= injections %>
@@ -242,10 +234,10 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
     // The list of column names that are displayed in the table, including NON_DATA_COLUMNS
     displayedColumns: <%= tableColumnsEnumName %>[] = [];
     // The list of available columns to select
-    columns: Array<Column> = [];
+    columns: Column[] = [];
 
     <% if (options.hasSearchBar) { %>
-        configs: Array<Config> = [];
+        configs: Config[] = [];
     <% } %>
 
     filteredData: Entity[] = [];
@@ -295,14 +287,14 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
     }
 
     ngOnChanges(changes: SimpleChanges): void {
-        if (changes.hideColumns && !changes.hideColumns.isFirstChange()) {
+        if (changes['hideColumns'] && !changes['hideColumns'].isFirstChange()) {
             this.initializeColumns();
         }
 
         <% if (options.enableRemoteDataHandling) { %>
             if (
-                (changes?.remoteAPI?.currentValue && !changes.remoteAPI.isFirstChange()) ||
-                (changes?.customFilterExtension?.currentValue && !changes.customFilterExtension.isFirstChange())
+                (changes?.['remoteAPI']?.currentValue && !changes['remoteAPI'].isFirstChange()) ||
+                (changes?.['customFilterExtension']?.currentValue && !changes['customFilterExtension'].isFirstChange())
             ) {
                 if (this.paginator.pageIndex !== 0) {
                     this.paginator.firstPage();
