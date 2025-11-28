@@ -1,4 +1,4 @@
-import {Component, EventEmitter, input, Output, ViewEncapsulation} from '@angular/core';
+import {Component, input, output, ViewEncapsulation} from '@angular/core';
 import {MatIcon} from '@angular/material/icon';
 import {MatTooltip} from '@angular/material/tooltip';
 import {FilterEnums, FilterType} from '../../models/filter.definition';
@@ -12,11 +12,11 @@ import {HorizontalOverflowDirective} from '../../directives/horizontal-overflow.
   imports: [MatIcon, MatTooltip, MatMiniFabButton, MatChipListbox, MatChipOption, HorizontalOverflowDirective],
   styleUrls: ['./chip-list.component.scss'],
   encapsulation: ViewEncapsulation.None,
-  host: { class: 'esmf-chip-list' }
+  host: {class: 'esmf-chip-list'},
 })
 export class EsmfChipListComponent {
   activeFilters = input.required<FilterType[]>();
-  @Output() removeFilter = new EventEmitter<FilterType>();
+  removeFilter = output<FilterType>();
 
   triggerRemoveFilter(filter: FilterType): void {
     this.removeFilter.emit(filter);
