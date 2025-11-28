@@ -189,11 +189,11 @@
 
 <% if (options.componentType === 'table' && options.hasSearchBar) { %>
     <mat-menu data-test="column-menu" #configurationMenu="matMenu" class="column-menu">
-      <<%= dasherize(name) %>-config-menu
+      <esmf-config-menu
         [isOpenedFromMatMenu]="true"
         #configurationMenuComponent
         (configChangedEvent)="triggerSetConfiguration($event)"
-      ></<%= dasherize(name) %>-config-menu>
+      ></esmf-config-menu>
     </mat-menu>
 <% } %>
 
