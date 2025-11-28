@@ -73,8 +73,9 @@ function applyTemplate(): Rule {
     customRowActionInput: getCustomRowActionInput(),
     customColumnsInput: getCustomColumnsInput(),
     byValueFunction: getByValueFunction(),
-    commonImports: commonImports(),
-    sharedCustomRows: getSharedCustomRows(),
+    injections: getInjections(),
+    hasCustomActions: hasCustomActions(),
+    registerCustomIcons: getCustomIconsRegistration(),
     customColumn: getCustomColumn(),
     columnTransKeyPrefix: getColumnTransKeyPrefix(),
   });
@@ -125,36 +126,41 @@ function hasCustomActions(): boolean {
   return [...sharedOptions.customRowActions, ...sharedOptions.customCommandBarActions].findIndex(element => element.includes('.')) !== -1;
 }
 
-function getSharedCustomRows(): string {
-  return `this.currentLanguage = this.translateService.getActiveLang();
-    ${[...sharedOptions.customRowActions, ...sharedOptions.customCommandBarActions]
-      .map(
-        (customRowActions: string) =>
-          `${
-            customRowActions.lastIndexOf('.') > -1
-              ? `iconRegistry.addSvgIcon('${customRowActions.replace(
-                  /\.[^/.]+$/,
-                  ''
-                )}', sanitizer.bypassSecurityTrustResourceUrl('./assets/icons/${customRowActions}'));`
-              : ``
-          }`
-      )
-      .join('')}`;
+function getCustomIconsRegistration(): string {
+  return hasCustomActions() ? `
+      const iconRegistry = inject(MatIconRegistry);
+      const sanitizer = inject(DomSanitizer);
+      ${[...sharedOptions.customRowActions, ...sharedOptions.customCommandBarActions]
+        .map(
+          (customRowActions: string) =>
+            `${
+              customRowActions.lastIndexOf('.') > -1
+                ? `iconRegistry.addSvgIcon('${customRowActions.replace(
+                    /\.[^/.]+$/,
+                    ''
+                  )}', sanitizer.bypassSecurityTrustResourceUrl('./assets/icons/${customRowActions}'));`
+                : ``
+            }`
+        )
+        .join('')}
+  ` : '';
 }
 
-function commonImports(): string {
-  return `${hasCustomActions() ? `iconRegistry: MatIconRegistry,` : ``}
-            private sanitizer: DomSanitizer,
-            private translateService: TranslocoService,
-            public dialog: MatDialog,
-            private storageService: EsmfLocalStorageService,
-            @Inject(EsmfPaginatorSelectConfigInjector) public paginatorSelectConfig: MatPaginatorSelectConfig,
-            ${sharedOptions.hasFilters ? `public filterService: ${sharedOptions.filterServiceName},` : ''}
+function getInjections(): string {
+  return `
+            private sanitizer = inject(DomSanitizer);
+            private dialog = inject(MatDialog);
+            private storageService = inject(EsmfLocalStorageService);
+            public paginatorSelectConfig = inject(EsmfPaginatorSelectConfigInjector);
+            ${sharedOptions.hasFilters ? `public filterService = inject( ${sharedOptions.filterServiceName});` : ''}
             ${
-              sharedOptions.isDateQuickFilter
-                ? 'private dateAdapter: DateAdapter<any>,@Inject(MAT_DATE_FORMATS) private dateFormats: MatDateFormats,'
-                : ''
-            }`;
+    sharedOptions.isDateQuickFilter
+      ? `
+                    private dateAdapter = inject(DateAdapter<any>);
+                    private dateFormats = inject(MAT_DATE_FORMATS);
+                  `
+      : ''
+  }`;
 }
 
 function getColumnTransKeyPrefix(): string {
