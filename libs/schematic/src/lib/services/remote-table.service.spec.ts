@@ -24,10 +24,6 @@ describe('RemoteTableService', () => {
     httpMock.verify();
   });
 
-  it('should be created', () => {
-    expect(service).toBeDefined();
-  });
-
   it('should make POST request with correct URL and body', () => {
     const url = 'https://api.example.com/data';
     const payload = {query: 'test'};
