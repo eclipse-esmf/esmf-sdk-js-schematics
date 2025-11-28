@@ -4,7 +4,7 @@ import {DOCUMENT} from '@angular/common';
 @Directive({
   selector: '[esmfResizeColumn]',
 })
-export class ResizeColumnDirective {
+export class EsmfResizeColumnDirective {
   resizable = input(false, {alias: 'esmfResizeColumn'});
   minWidth = input(50);
   initialWidth = input(200);

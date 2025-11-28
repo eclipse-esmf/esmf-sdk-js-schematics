@@ -1,7 +1,7 @@
 import {Component, DebugElement} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
-import {HighlightDirective} from './highlight.directive';
+import {EsmfHighlightDirective} from './highlight.directive';
 
 @Component({
   template: `
@@ -16,7 +16,7 @@ import {HighlightDirective} from './highlight.directive';
       {{ highlightSource }}
     </div>
   `,
-  imports: [HighlightDirective],
+  imports: [EsmfHighlightDirective],
 })
 class TestHostComponent {
   highlight: string | string[] = '';
@@ -25,7 +25,7 @@ class TestHostComponent {
   selected = false;
 }
 
-describe('HighlightDirective', () => {
+describe('EsmfHighlightDirective', () => {
   let fixture: ComponentFixture<TestHostComponent>;
   let host: TestHostComponent;
   let debugEl: DebugElement;
@@ -37,7 +37,7 @@ describe('HighlightDirective', () => {
     });
     fixture = TestBed.createComponent(TestHostComponent);
     host = fixture.componentInstance;
-    debugEl = fixture.debugElement.query(By.directive(HighlightDirective));
+    debugEl = fixture.debugElement.query(By.directive(EsmfHighlightDirective));
     el = debugEl.nativeElement;
   });
 

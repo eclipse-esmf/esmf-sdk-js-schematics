@@ -1,11 +1,10 @@
 import {ElementRef} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {MatTooltip} from '@angular/material/tooltip';
+import {EsmfTableCellTooltipDirective} from './table-cell-tooltip.directive';
 
-import {TableCellTooltipDirective} from './table-cell-tooltip.directive';
-
-describe('TableCellTooltipDirective', () => {
-  let directive: TableCellTooltipDirective;
+describe('EsmfTableCellTooltipDirective', () => {
+  let directive: EsmfTableCellTooltipDirective;
   let elementRefMock: ElementRef<{offsetParent: {offsetWidth: number}; offsetWidth: number}>;
   let tooltipMock: MatTooltip;
 
@@ -23,10 +22,14 @@ describe('TableCellTooltipDirective', () => {
     } as MatTooltip;
 
     TestBed.configureTestingModule({
-      providers: [TableCellTooltipDirective, {provide: ElementRef, useValue: elementRefMock}, {provide: MatTooltip, useValue: tooltipMock}],
+      providers: [
+        EsmfTableCellTooltipDirective,
+        {provide: ElementRef, useValue: elementRefMock},
+        {provide: MatTooltip, useValue: tooltipMock},
+      ],
     });
 
-    directive = TestBed.inject(TableCellTooltipDirective);
+    directive = TestBed.inject(EsmfTableCellTooltipDirective);
   });
 
   const setNativeElementDimensions = (cellWidth: number, contentWidth: number) => {

@@ -1,6 +1,6 @@
 import {TestBed} from '@angular/core/testing';
 import {HttpTestingController, provideHttpClientTesting} from '@angular/common/http/testing';
-import {RemoteTableService, Response} from './remote-table.service';
+import {EsmfRemoteTableService, Response} from './remote-table.service';
 import {provideHttpClient} from '@angular/common/http';
 
 interface TestItem {
@@ -8,15 +8,15 @@ interface TestItem {
   name: string;
 }
 
-describe('RemoteTableService', () => {
-  let service: RemoteTableService<TestItem>;
+describe('EsmfRemoteTableService', () => {
+  let service: EsmfRemoteTableService<TestItem>;
   let httpMock: HttpTestingController;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [provideHttpClient(), provideHttpClientTesting(), RemoteTableService],
+      providers: [provideHttpClient(), provideHttpClientTesting(), EsmfRemoteTableService],
     });
-    service = TestBed.inject(RemoteTableService);
+    service = TestBed.inject(EsmfRemoteTableService);
     httpMock = TestBed.inject(HttpTestingController);
   });
 

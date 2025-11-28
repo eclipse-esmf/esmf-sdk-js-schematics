@@ -30,7 +30,6 @@ import {
 import {ComponentType} from '../shared/schema';
 import {generateStorageService} from './generators/services/storage/index';
 import {generateColumnMenu} from './generators/components/column-menu/index';
-import {generateConfigMenu} from './generators/components/config-menu/index';
 import {generateTableComponent} from './generators/components/table/index';
 import {TableSchema} from './schema';
 import {LOG_COLOR} from '../../../utils/constants';
@@ -66,6 +65,5 @@ function tableSpecificGeneration(): Array<Rule> {
     generateTableComponent(options as TableSchema),
     generateStorageService(options), // General
     generateColumnMenu(options), // General
-    generateConfigMenu(options), // General
   ];
 }
