@@ -1,8 +1,8 @@
 import {ChangeDetectionStrategy, Component, computed, inject, input, output} from '@angular/core';
 import {Clipboard} from '@angular/cdk/clipboard';
 import {MatIcon} from '@angular/material/icon';
-import {TableCellTooltipDirective} from '../../directives/table-cell-tooltip.directive';
-import {HighlightDirective} from '../../directives/highlight.directive';
+import {EsmfTableCellTooltipDirective} from '../../directives/table-cell-tooltip.directive';
+import {EsmfHighlightDirective} from '../../directives/highlight.directive';
 
 interface Config {
   /** Column name **/
@@ -28,9 +28,9 @@ function convertToSafeString(val: unknown) {
   templateUrl: './table-cell.component.html',
   styleUrl: './table-cell.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [MatIcon, TableCellTooltipDirective, HighlightDirective],
+  imports: [MatIcon, EsmfTableCellTooltipDirective, EsmfHighlightDirective],
 })
-export class TableCellComponent {
+export class EsmfTableCellComponent {
   value = input.required<string, unknown>({transform: convertToSafeString});
   description = input<string>();
   highlightString = input<string[]>([]);

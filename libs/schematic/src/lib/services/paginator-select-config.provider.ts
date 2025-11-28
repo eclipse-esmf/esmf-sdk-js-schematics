@@ -1,10 +1,10 @@
 import {InjectionToken, Optional, Provider, SkipSelf} from '@angular/core';
 import {MatPaginatorSelectConfig} from '@angular/material/paginator';
 
-export const PaginatorSelectConfigInjector = new InjectionToken<MatPaginatorSelectConfig>('PaginatorSelectConfig');
+export const EsmfPaginatorSelectConfigInjector = new InjectionToken<MatPaginatorSelectConfig>('EsmfPaginatorSelectConfig');
 
-export const PaginatorSelectConfigProvider: Provider = {
-  provide: PaginatorSelectConfigInjector,
+export const EsmfPaginatorSelectConfigProvider: Provider = {
+  provide: EsmfPaginatorSelectConfigInjector,
   useFactory: (customConfig?: MatPaginatorSelectConfig) => customConfig || {disableOptionCentering: true},
-  deps: [[new Optional(), new SkipSelf(), PaginatorSelectConfigInjector]],
+  deps: [[new Optional(), new SkipSelf(), EsmfPaginatorSelectConfigInjector]],
 };

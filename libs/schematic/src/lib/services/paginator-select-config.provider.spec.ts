@@ -1,28 +1,28 @@
 import {TestBed} from '@angular/core/testing';
 import {FactoryProvider} from '@angular/core';
 import {MatPaginatorSelectConfig} from '@angular/material/paginator';
-import {PaginatorSelectConfigInjector, PaginatorSelectConfigProvider} from './paginator-select-config.provider';
+import {EsmfPaginatorSelectConfigInjector, EsmfPaginatorSelectConfigProvider} from './paginator-select-config.provider';
 
-describe('PaginatorSelectConfigProvider', () => {
-  describe('PaginatorSelectConfigInjector', () => {
+describe('EsmfPaginatorSelectConfigProvider', () => {
+  describe('EsmfPaginatorSelectConfigInjector', () => {
     it('should be defined', () => {
-      expect(PaginatorSelectConfigInjector).toBeDefined();
+      expect(EsmfPaginatorSelectConfigInjector).toBeDefined();
     });
 
     it('should have correct token description', () => {
-      expect(PaginatorSelectConfigInjector.toString()).toContain('PaginatorSelectConfig');
+      expect(EsmfPaginatorSelectConfigInjector.toString()).toContain('PaginatorSelectConfig');
     });
   });
 
-  describe('PaginatorSelectConfigProvider', () => {
-    const typedProvider = PaginatorSelectConfigProvider as FactoryProvider;
+  describe('EsmfPaginatorSelectConfigProvider', () => {
+    const typedProvider = EsmfPaginatorSelectConfigProvider as FactoryProvider;
 
     it('should be defined', () => {
-      expect(PaginatorSelectConfigProvider).toBeDefined();
+      expect(EsmfPaginatorSelectConfigProvider).toBeDefined();
     });
 
-    it('should provide PaginatorSelectConfigInjector token', () => {
-      expect(typedProvider.provide).toBe(PaginatorSelectConfigInjector);
+    it('should provide EsmfPaginatorSelectConfigInjector token', () => {
+      expect(typedProvider.provide).toBe(EsmfPaginatorSelectConfigInjector);
     });
 
     it('should have useFactory defined', () => {
@@ -39,12 +39,12 @@ describe('PaginatorSelectConfigProvider', () => {
   describe('useFactory behavior', () => {
     beforeEach(() => {
       TestBed.configureTestingModule({
-        providers: [PaginatorSelectConfigProvider],
+        providers: [EsmfPaginatorSelectConfigProvider],
       });
     });
 
     it('should return default config when no custom config is provided', () => {
-      const config = TestBed.inject(PaginatorSelectConfigInjector);
+      const config = TestBed.inject(EsmfPaginatorSelectConfigInjector);
 
       expect(config).toEqual({disableOptionCentering: true});
     });
@@ -58,13 +58,13 @@ describe('PaginatorSelectConfigProvider', () => {
       TestBed.configureTestingModule({
         providers: [
           {
-            provide: PaginatorSelectConfigInjector,
+            provide: EsmfPaginatorSelectConfigInjector,
             useValue: customConfig,
           },
         ],
       });
 
-      const childInjector = TestBed.inject(PaginatorSelectConfigInjector);
+      const childInjector = TestBed.inject(EsmfPaginatorSelectConfigInjector);
 
       expect(childInjector).toEqual(customConfig);
     });
@@ -79,13 +79,13 @@ describe('PaginatorSelectConfigProvider', () => {
       TestBed.configureTestingModule({
         providers: [
           {
-            provide: PaginatorSelectConfigInjector,
+            provide: EsmfPaginatorSelectConfigInjector,
             useValue: customConfig,
           },
         ],
       });
 
-      const childInjector = TestBed.inject(PaginatorSelectConfigInjector);
+      const childInjector = TestBed.inject(EsmfPaginatorSelectConfigInjector);
 
       expect(childInjector).toEqual(customConfig);
       expect(childInjector.panelClass).toBe('custom-panel');
@@ -93,7 +93,7 @@ describe('PaginatorSelectConfigProvider', () => {
   });
 
   describe('factory function directly', () => {
-    const typedProvider = PaginatorSelectConfigProvider as FactoryProvider;
+    const typedProvider = EsmfPaginatorSelectConfigProvider as FactoryProvider;
 
     it('should return default config when called with undefined', () => {
       const factory = typedProvider.useFactory as (config?: MatPaginatorSelectConfig) => MatPaginatorSelectConfig;

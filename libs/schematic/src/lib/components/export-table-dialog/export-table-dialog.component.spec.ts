@@ -1,15 +1,15 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {MatDialogRef, MAT_DIALOG_DATA} from '@angular/material/dialog';
-import {ExportTableDialogComponent, ExportTableDialogComponentData, Actions} from './export-table-dialog.component';
+import {EsmfExportTableDialogComponent, ExportTableDialogComponentData, Actions} from './export-table-dialog.component';
 import {TranslocoService} from '@jsverse/transloco';
 import {By} from '@angular/platform-browser';
 import {MatCheckbox} from '@angular/material/checkbox';
 import {of} from 'rxjs';
 
-describe('ExportTableDialogComponent', () => {
-  let component: ExportTableDialogComponent;
-  let fixture: ComponentFixture<ExportTableDialogComponent>;
-  let dialogRef: jest.Mocked<MatDialogRef<ExportTableDialogComponent>>;
+describe('EsmfExportTableDialogComponent', () => {
+  let component: EsmfExportTableDialogComponent;
+  let fixture: ComponentFixture<EsmfExportTableDialogComponent>;
+  let dialogRef: jest.Mocked<MatDialogRef<EsmfExportTableDialogComponent>>;
   let translocoService: jest.Mocked<TranslocoService>;
 
   const createMockData = (overrides?: Partial<ExportTableDialogComponentData>): ExportTableDialogComponentData => ({
@@ -28,7 +28,7 @@ describe('ExportTableDialogComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ExportTableDialogComponent],
+      imports: [EsmfExportTableDialogComponent],
       providers: [
         {provide: MatDialogRef, useValue: {close: jest.fn()}},
         {provide: MAT_DIALOG_DATA, useValue: createMockData()},
@@ -36,9 +36,9 @@ describe('ExportTableDialogComponent', () => {
       ],
     }).compileComponents();
 
-    dialogRef = TestBed.inject(MatDialogRef) as jest.Mocked<MatDialogRef<ExportTableDialogComponent>>;
+    dialogRef = TestBed.inject(MatDialogRef) as jest.Mocked<MatDialogRef<EsmfExportTableDialogComponent>>;
     translocoService = TestBed.inject(TranslocoService) as jest.Mocked<TranslocoService>;
-    fixture = TestBed.createComponent(ExportTableDialogComponent);
+    fixture = TestBed.createComponent(EsmfExportTableDialogComponent);
     component = fixture.componentInstance;
   });
 
@@ -235,14 +235,14 @@ describe('ExportTableDialogComponent', () => {
     it('should not display exportAllColumns checkbox when showAllColumnsBox is true', () => {
       TestBed.resetTestingModule();
       TestBed.configureTestingModule({
-        imports: [ExportTableDialogComponent],
+        imports: [EsmfExportTableDialogComponent],
         providers: [
           {provide: MatDialogRef, useValue: {close: jest.fn()}},
           {provide: MAT_DIALOG_DATA, useValue: createMockData({displayedColumns: 10, allColumns: 10})},
           {provide: TranslocoService, useValue: createTranslocoMock()},
         ],
       });
-      const newFixture = TestBed.createComponent(ExportTableDialogComponent);
+      const newFixture = TestBed.createComponent(EsmfExportTableDialogComponent);
       newFixture.detectChanges();
 
       expect(newFixture.debugElement.query(By.css('[data-test="exportAllColumns"]'))).toBeFalsy();

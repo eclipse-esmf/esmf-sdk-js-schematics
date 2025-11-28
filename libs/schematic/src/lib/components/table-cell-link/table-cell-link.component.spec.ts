@@ -1,12 +1,12 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {TableCellLinkComponent} from './table-cell-link.component';
+import {EsmfTableCellLinkComponent} from './table-cell-link.component';
 import {By} from '@angular/platform-browser';
 import {ComponentRef} from '@angular/core';
 
-describe('TableCellLinkComponent', () => {
-  let component: TableCellLinkComponent;
-  let fixture: ComponentFixture<TableCellLinkComponent>;
-  let componentRef: ComponentRef<TableCellLinkComponent>;
+describe('EsmfTableCellLinkComponent', () => {
+  let component: EsmfTableCellLinkComponent;
+  let fixture: ComponentFixture<EsmfTableCellLinkComponent>;
+  let componentRef: ComponentRef<EsmfTableCellLinkComponent>;
   let windowOpenSpy: jest.SpyInstance;
 
   const DISABLED_VALUE = '-';
@@ -17,10 +17,10 @@ describe('TableCellLinkComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [TableCellLinkComponent],
+      imports: [EsmfTableCellLinkComponent],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(TableCellLinkComponent);
+    fixture = TestBed.createComponent(EsmfTableCellLinkComponent);
     component = fixture.componentInstance;
     componentRef = fixture.componentRef;
     windowOpenSpy = jest.spyOn(window, 'open').mockImplementation();
