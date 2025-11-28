@@ -14,6 +14,7 @@ import {EsmfHorizontalOverflowDirective} from '../../directives/horizontal-overf
   encapsulation: ViewEncapsulation.None,
   host: {class: 'esmf-chip-list'},
 })
+// TODO: add unit tests to the component
 export class EsmfChipListComponent {
   activeFilters = input.required<FilterType[]>();
   removeFilter = output<FilterType>();

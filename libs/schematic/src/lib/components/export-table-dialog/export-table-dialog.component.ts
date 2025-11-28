@@ -25,10 +25,10 @@ export interface ExportTableDialogComponentData {
   imports: [MatIcon, MatDialogTitle, MatDialogClose, MatDialogContent, MatCheckbox, MatDialogActions, MatButton, TranslocoPipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ExportTableDialogComponent implements AfterViewInit {
+export class EsmfExportTableDialogComponent implements AfterViewInit {
   private readonly translateService = inject(TranslocoService);
 
-  readonly dialogRef = inject<MatDialogRef<ExportTableDialogComponent>>(MatDialogRef);
+  readonly dialogRef = inject<MatDialogRef<EsmfExportTableDialogComponent>>(MatDialogRef);
   readonly data = inject<ExportTableDialogComponentData>(MAT_DIALOG_DATA);
 
   readonly exportAllPages = viewChild.required<MatCheckbox>('exportAllPages');

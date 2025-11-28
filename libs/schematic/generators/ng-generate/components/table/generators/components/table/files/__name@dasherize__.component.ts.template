@@ -4,7 +4,7 @@
   var cmpFileName = dasherize(name);
   var hasCustomRowActions = options.customRowActions.length > 0;
   var customRowActionNames = options.customRowActions.map(action => `'${action.replace(/\.[^/.]+$/, '')}'`);
-  var tableServiceName = options.enableRemoteDataHandling ? (options.customRemoteService ? `Custom${classify(name)}Service` : 'RemoteTableService') : 'StaticTableService';
+  var tableServiceName = options.enableRemoteDataHandling ? (options.customRemoteService ? `Custom${classify(name)}Service` : 'EsmfRemoteTableService') : 'EsmfStaticTableService';
 %>
 import {
     AfterViewInit,
@@ -63,8 +63,8 @@ import {<%= classify(name) %>DataSource} from './<%= cmpFileName %>-datasource';
 import {DomSanitizer} from '@angular/platform-browser';
 import {SelectionModel} from '@angular/cdk/collections';
 import { TranslocoService } from '@jsverse/transloco';
-import {PaginatorSelectConfigInjector} from "<% if (options.enableVersionSupport) { %>../<% } %>../../services/paginator-select-config.provider";
-import {JSSdkLocalStorageService} from "<% if (options.enableVersionSupport) { %>../<% } %>../../services/storage.service";
+import {EsmfPaginatorSelectConfigInjector} from "<% if (options.enableVersionSupport) { %>../<% } %>../../services/paginator-select-config.provider";
+import {EsmfLocalStorageService} from "<% if (options.enableVersionSupport) { %>../<% } %>../../services/storage.service";
 import {<%= classify(name) %>CommandBarComponent} from "./<%= cmpFileName %>-command-bar.component";
 import {<%= classify(name) %>ColumnMenuComponent} from './<%= cmpFileName %>-column-menu.component';
 
@@ -88,7 +88,7 @@ import {<% if (options.enableRemoteDataHandling) { %>catchError, finalize, tap, 
 <% } else { %>
     // TODO remove the commented line bellow
     // import {<%= classify(name) %>Service, <%= classify(aspectModelName) %>Response} from './<%= cmpFileName %>.service';
-    import {StaticTableService} from '@esmf/semantic-ui-schematic';
+    import {EsmfStaticTableService} from '@esmf/semantic-ui-schematic';
 <% } %>
 
 <% if (options.hasSearchBar) { %>

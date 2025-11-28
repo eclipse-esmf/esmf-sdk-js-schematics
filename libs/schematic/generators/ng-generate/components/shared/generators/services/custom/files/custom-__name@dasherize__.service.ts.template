@@ -1,6 +1,6 @@
 /** <%= options.generationDisclaimerText %> **/
 <%
-  var serviceName = options.enableRemoteDataHandling  ? 'RemoteTableService' : 'StaticTableService';
+  var serviceName = options.enableRemoteDataHandling  ? 'EsmfRemoteTableService' : 'EsmfStaticTableService';
 %>
 import {Injectable} from '@angular/core';
 import {<%= serviceName %>} from '@esmf/semantic-ui-schematic';

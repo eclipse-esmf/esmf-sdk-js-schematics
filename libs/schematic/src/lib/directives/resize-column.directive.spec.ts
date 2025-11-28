@@ -1,7 +1,7 @@
 import {Component, DebugElement} from '@angular/core';
 import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
-import {ResizeColumnDirective} from './resize-column.directive';
+import {EsmfResizeColumnDirective} from './resize-column.directive';
 
 @Component({
   template: `
@@ -16,7 +16,7 @@ import {ResizeColumnDirective} from './resize-column.directive';
       </thead>
     </table>
   `,
-  imports: [ResizeColumnDirective],
+  imports: [EsmfResizeColumnDirective],
 })
 class TestComponent {
   resizable = true;
@@ -29,7 +29,7 @@ class TestComponent {
   }
 }
 
-describe('ResizeColumnDirective', () => {
+describe('EsmfResizeColumnDirective', () => {
   let component: TestComponent;
   let fixture: ComponentFixture<TestComponent>;
   let directiveElement: DebugElement;
@@ -43,7 +43,7 @@ describe('ResizeColumnDirective', () => {
     component = fixture.componentInstance;
     fixture.detectChanges();
 
-    directiveElement = fixture.debugElement.query(By.directive(ResizeColumnDirective));
+    directiveElement = fixture.debugElement.query(By.directive(EsmfResizeColumnDirective));
   });
 
   afterEach(fakeAsync(() => {
@@ -274,7 +274,7 @@ describe('ResizeColumnDirective', () => {
       testComponent.resizable = false;
       testFixture.detectChanges();
 
-      const testDirectiveElement = testFixture.debugElement.query(By.directive(ResizeColumnDirective));
+      const testDirectiveElement = testFixture.debugElement.query(By.directive(EsmfResizeColumnDirective));
       const handle = testDirectiveElement.nativeElement.querySelector('.handle');
       expect(handle).toBeFalsy();
 
@@ -289,7 +289,7 @@ describe('ResizeColumnDirective', () => {
       testComponent.resizable = false;
       testFixture.detectChanges();
 
-      const testDirectiveElement = testFixture.debugElement.query(By.directive(ResizeColumnDirective));
+      const testDirectiveElement = testFixture.debugElement.query(By.directive(EsmfResizeColumnDirective));
       const column = testDirectiveElement.nativeElement;
 
       // Mouse enter should not create handle
@@ -350,7 +350,7 @@ describe('ResizeColumnDirective', () => {
       testComponent.resizable = true;
       testFixture.detectChanges();
 
-      const testDirectiveElement = testFixture.debugElement.query(By.directive(ResizeColumnDirective));
+      const testDirectiveElement = testFixture.debugElement.query(By.directive(EsmfResizeColumnDirective));
       const column = testDirectiveElement.nativeElement;
       expect(column.style.minWidth).toBe('300px');
 

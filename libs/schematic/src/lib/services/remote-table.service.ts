@@ -16,7 +16,7 @@ interface Payload {
 }
 
 @Injectable()
-export class RemoteTableService<T> {
+export class EsmfRemoteTableService<T> {
   private http = inject(HttpClient);
 
   requestData(remoteAPI: string, body: Payload) {
