@@ -35,6 +35,7 @@ import {generateTableComponent} from './generators/components/table/index';
 import {generateDataSource} from './generators/data-source/index';
 import {TableSchema} from './schema';
 import {LOG_COLOR} from '../../../utils/constants';
+
 export default function (tableSchema: TableSchema): Rule {
   return (tree: Tree, context: SchematicContext) => {
     generateComponent(context, tableSchema, ComponentType.TABLE);
