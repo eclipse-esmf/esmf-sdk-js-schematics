@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 
 @Injectable()
-export class StaticTableService<T> {
+export class EsmfStaticTableService<T> {
   flatten(csvArray: T[]): T[] {
     return csvArray.map((item: T): T => {
       return this.flattenObj(item);

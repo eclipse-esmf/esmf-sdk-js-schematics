@@ -1,19 +1,19 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {TableCellComponent} from './table-cell.component';
+import {EsmfTableCellComponent} from './table-cell.component';
 import {Clipboard} from '@angular/cdk/clipboard';
 import {By} from '@angular/platform-browser';
 
-describe('TableCellComponent', () => {
-  let component: TableCellComponent;
-  let fixture: ComponentFixture<TableCellComponent>;
+describe('EsmfTableCellComponent', () => {
+  let component: EsmfTableCellComponent;
+  let fixture: ComponentFixture<EsmfTableCellComponent>;
   let clipboardSpy: jest.SpyInstance;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [TableCellComponent],
+      imports: [EsmfTableCellComponent],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(TableCellComponent);
+    fixture = TestBed.createComponent(EsmfTableCellComponent);
     component = fixture.componentInstance;
     clipboardSpy = jest.spyOn(TestBed.inject(Clipboard), 'copy');
   });

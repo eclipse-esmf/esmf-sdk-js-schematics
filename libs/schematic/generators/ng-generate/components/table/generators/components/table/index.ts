@@ -147,8 +147,8 @@ function commonImports(): string {
             private sanitizer: DomSanitizer,
             private translateService: TranslocoService,
             public dialog: MatDialog,
-            private storageService: JSSdkLocalStorageService,
-            @Inject(PaginatorSelectConfigInjector) public paginatorSelectConfig: MatPaginatorSelectConfig,
+            private storageService: EsmfLocalStorageService,
+            @Inject(EsmfPaginatorSelectConfigInjector) public paginatorSelectConfig: MatPaginatorSelectConfig,
             ${sharedOptions.hasFilters ? `public filterService: ${sharedOptions.filterServiceName},` : ''}
             ${
               sharedOptions.isDateQuickFilter

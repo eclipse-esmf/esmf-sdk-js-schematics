@@ -1,5 +1,3 @@
-/** <%= options.generationDisclaimerText %> **/
-
 import {ChangeDetectionStrategy, Component, computed, input} from '@angular/core';
 import {MatTooltipModule} from '@angular/material/tooltip';
 import {MatIconModule} from '@angular/material/icon';
@@ -12,7 +10,7 @@ import {MatIconButton} from '@angular/material/button';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [MatTooltipModule, MatIconModule, MatIconButton],
 })
-export class TableCellLinkComponent {
+export class EsmfTableCellLinkComponent {
   value = input.required<string>();
   tooltipMessage = input.required<string>();
 

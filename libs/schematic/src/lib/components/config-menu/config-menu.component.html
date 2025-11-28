@@ -1,0 +1,80 @@
+<ng-container *transloco="let t">
+  <div class="mat-h3 selection-title" role="button" tabindex="0" (click)="$event.stopPropagation()">{{ t('settings.title') }}</div>
+
+  <mat-divider></mat-divider>
+  <mat-selection-list cdkDropList data-test="config-selection-list" class="selection-list">
+    @for (config of configs(); track config) {
+    <mat-list-option
+      cdkDrag
+      data-test="configuration-list-option"
+      togglePosition="before"
+      [selected]="config.selected"
+      (click)="configClick($event, config)"
+    >
+      <div class="list-content">
+        <div class="list-text">
+          <div data-test="config-option-name">{{ t(config.name) }}</div>
+          <div class="mat-small" data-test="config-option-desc">{{ t(config.desc) }}</div>
+        </div>
+        <div class="list-text">
+          <input
+            #colorPicker
+            type="color"
+            name="color-picker"
+            id="color-picker"
+            value="{{ config.color }}"
+            (click)="$event.stopPropagation()"
+            (change)="colorChange($event, config)"
+          />
+        </div>
+      </div>
+    </mat-list-option>
+    }
+  </mat-selection-list>
+
+  <mat-divider></mat-divider>
+  <div
+    data-test="config-menu-actions-container"
+    class="menu-actions-container"
+    role="button"
+    tabindex="0"
+    (click)="stopMenuClosing($event)"
+  >
+    <span class="spacer"></span>
+    @if (!isOpenedFromMatMenu()) {
+    <button
+      data-test="config-menu-cancel-button"
+      mat-stroked-button
+      color="accent"
+      class="config-menu-cancel-btn"
+      [mat-dialog-close]="false"
+      (click)="closeMenu()"
+    >
+      <mat-icon data-test="config-menu-cancel-icon" class="material-icons">close</mat-icon>
+      <span data-test="config-menu-cancel-text">{{ t('cancel') }}</span>
+    </button>
+    } @if (isOpenedFromMatMenu()) {
+    <button data-test="config-menu-cancel-button" mat-stroked-button color="accent" class="config-menu-cancel-btn" (click)="closeMenu()">
+      <mat-icon data-test="config-menu-cancel-icon" class="material-icons">close</mat-icon>
+      <span data-test="config-menu-cancel-text">{{ t('cancel') }}</span>
+    </button>
+    } @if (!isOpenedFromMatMenu()) {
+    <button
+      data-test="config-menu-apply-button"
+      mat-raised-button
+      color="primary"
+      class="config-menu-apply-btn"
+      [mat-dialog-close]="configs"
+      (click)="storeConfig()"
+    >
+      <mat-icon data-test="config-menu-apply-icon" class="material-icons">check</mat-icon>
+      <span data-test="config-menu-apply-text">{{ t('apply') }}</span>
+    </button>
+    } @if (isOpenedFromMatMenu()) {
+    <button data-test="config-menu-apply-button" mat-raised-button color="primary" class="config-menu-apply-btn" (click)="storeConfig()">
+      <mat-icon data-test="config-menu-apply-icon" class="material-icons">check</mat-icon>
+      <span data-test="config-menu-apply-text">{{ t('apply') }}</span>
+    </button>
+    }
+  </div>
+</ng-container>

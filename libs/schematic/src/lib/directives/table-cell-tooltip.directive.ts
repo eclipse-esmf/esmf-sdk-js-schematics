@@ -5,7 +5,7 @@ import {MatTooltip} from '@angular/material/tooltip';
   selector: '[esmfTableCellTooltip]',
   hostDirectives: [MatTooltip],
 })
-export class TableCellTooltipDirective {
+export class EsmfTableCellTooltipDirective {
   value = input.required<string>();
   description = input<string>();
 

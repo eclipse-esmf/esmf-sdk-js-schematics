@@ -9,7 +9,7 @@ interface HighlightRange {
 @Directive({
   selector: '[esmfHighlight]',
 })
-export class HighlightDirective {
+export class EsmfHighlightDirective {
   highlightSource = input<string | null>();
   highlightColor = input<string>();
   highlight = input<string | string[]>();

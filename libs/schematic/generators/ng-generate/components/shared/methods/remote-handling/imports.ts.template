@@ -1,7 +1,7 @@
 <% if (options.customRemoteService) { %>
   import {Custom<%= classify(name) %>Service} from './custom-<%= dasherize(name) %>.service';
 <% } else { %>
-  import {RemoteTableService} from '@esmf/semantic-ui-schematic';
+  import {EsmfRemoteTableService} from '@esmf/semantic-ui-schematic';
 <% } %>
 
 import {<%= options.aspectModel.name %>Response} from './<%= dasherize(options.name) %>.service';
