@@ -5,6 +5,7 @@
   var hasCustomRowActions = options.customRowActions.length > 0;
   var customRowActionNames = options.customRowActions.map(action => `'${action.replace(/\.[^/.]+$/, '')}'`);
   var tableServiceName = options.enableRemoteDataHandling ? (options.customRemoteService ? `Custom${classify(name)}Service` : 'RemoteTableService') : 'StaticTableService';
+  var tableDataSourceName = options.enableRemoteDataHandling ? 'EsmfRemoteTableDataSource' : 'EsmfStaticTableDataSource';
 %>
 import {
     AfterViewInit,
@@ -50,7 +51,7 @@ import {
         , <%= enumProperties %>
     <% } %>
 } from '<%= options.typePath %>';
-import {<%= classify(name) %>DataSource} from './<%= cmpFileName %>-datasource';
+import {<%= tableDataSourceName %>} from '@esmf/semantic-ui-schematic';
 
 <% if (options.isDateQuickFilter) { %>
     import {DateAdapter, MAT_DATE_FORMATS, MatDateFormats} from '@angular/material/core';
@@ -228,7 +229,7 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
 
     totalItems: number = 0;
     selection = new SelectionModel<any>(this.isMultipleSelectionEnabled, []);
-    dataSource: <%= classify(name) %>DataSource;
+    dataSource = new <%= tableDataSourceName %><<%= classify(aspectModelTypeName) %>>();
 
     columnToSort:{sortColumnName: string, sortDirection: SortDirection} = {sortColumnName:'<%= options.defaultSortingCol %>', sortDirection : 'asc'};
     // The list of column names that are displayed in the table, including NON_DATA_COLUMNS
@@ -263,18 +264,9 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
         private requestSubscription: Subscription = new Subscription();
     <% } %>
 
-
-    <% if (options.enableRemoteDataHandling) { %>
-        constructor(<%= commonImports %>) {
-            this.dataSource = new <%= classify(name) %>DataSource();
-            <%= sharedCustomRows %>
-        }
-    <% } else { %>
-        constructor(<%= commonImports %>) {
-            this.dataSource = new <%= classify(name) %>DataSource(this.translateService);
-            <%= sharedCustomRows %>
-        }
-    <% } %>
+    constructor(<%= commonImports %>) {
+        <%= sharedCustomRows %>
+    }
 
     ngOnInit(): void {
         <% if (options.hasSearchBar) { %>
