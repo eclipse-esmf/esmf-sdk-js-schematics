@@ -32,7 +32,6 @@ import {generateStorageService} from './generators/services/storage/index';
 import {generateColumnMenu} from './generators/components/column-menu/index';
 import {generateConfigMenu} from './generators/components/config-menu/index';
 import {generateTableComponent} from './generators/components/table/index';
-import {generateDataSource} from './generators/data-source/index';
 import {TableSchema} from './schema';
 import {LOG_COLOR} from '../../../utils/constants';
 
@@ -65,7 +64,6 @@ export function generateTable(tableSchema: TableSchema): Rule {
 function tableSpecificGeneration(): Array<Rule> {
   return [
     generateTableComponent(options as TableSchema),
-    generateDataSource(options),
     generateStorageService(options), // General
     generateColumnMenu(options), // General
     generateConfigMenu(options), // General
