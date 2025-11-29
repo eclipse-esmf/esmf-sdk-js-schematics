@@ -46,7 +46,7 @@ import {
     <% if (options.isEnumQuickFilter) { %>
         , <%= enumProperties %>
     <% } %>
-} from '<%= options.typePath %>';
+} from './<%= dasherize(options.aspectModelTypeName) %>.types';
 import {<%= tableDataSourceName %>, EsmfPaginatorSelectConfigInjector, EsmfLocalStorageService, Config} from '@esmf/semantic-ui-schematic';
 
 <% if (options.isDateQuickFilter) { %>
