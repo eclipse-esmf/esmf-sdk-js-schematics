@@ -32,7 +32,7 @@ import { MatTable, MatTableModule } from '@angular/material/table';
 
 <% if (options.hasFilters || options.hasSearchBar) { %>
     import {<%= options.filterServiceName %>} from './<%= cmpFileName %>-filter.service';
-    import {EsmfChipListComponent, EsmfTableCellComponent} from '@esmf/semantic-ui-schematic';
+    import {EsmfChipListComponent, EsmfTableCellComponent, FilterEnums} from '@esmf/semantic-ui-schematic';
 <% } %>
 
 <% if (options.addCommandBar) { %>
@@ -391,6 +391,10 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
         this.applyFilters();
     }
 
+    public trackBy = (_index: number, item: Entity): string => {
+      return item.toString() + this.highlightString.join();
+    };
+
     rowClicked(row: any, $event: MouseEvent): boolean {
         if (this.highlightSelectedRow) {
             this.checkboxClicked(row);
@@ -542,9 +546,7 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
 
              <% if (options.hasSearchBar) { %>
                  dataTemp = this.filterService.applyStringSearchFilter(dataTemp);
-                this.highlightString = this.filterService.activeFilters
-                    .filter(elem => elem.type === FilterEnums.Search && elem.filterValue !== undefined)
-                    .map(elem => elem.filterValue as string);
+                 this.updateHighlightString();
              <% } %>
 
              <% if (options.isDateQuickFilter) { %>
@@ -696,5 +698,13 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
 
     private isAvailableDataColumn(column: <%= tableColumnsEnumName %>): boolean {
         return !(Array.isArray(this.hideColumns) && this.hideColumns.includes(column)) && !NON_DATA_COLUMNS.includes(column);
+    }
+
+    private updateHighlightString(): void {
+      this.highlightString = this.filterService.activeFilters
+        .filter(({type, filterValue}) => type === FilterEnums.Search && !!filterValue)
+        .map(filter => {
+          return filter.filterValue;
+        });
     }
 }
