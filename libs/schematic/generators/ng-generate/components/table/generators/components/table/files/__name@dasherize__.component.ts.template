@@ -704,7 +704,7 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
       this.highlightString = this.filterService.activeFilters
         .filter(({type, filterValue}) => type === FilterEnums.Search && !!filterValue)
         .map(filter => {
-          return filter.filterValue;
+          return filter.filterValue as string;
         });
     }
 }
