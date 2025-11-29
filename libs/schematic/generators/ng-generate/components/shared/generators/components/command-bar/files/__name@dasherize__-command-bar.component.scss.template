@@ -8,6 +8,10 @@
     overflow: hidden;
   }
 
+  .mat-mdc-menu-panel {
+    max-width: max-content !important;
+  }
+
   .mat-mdc-form-field {
     padding-top: 20px;
     margin-right: 8px;
@@ -28,5 +32,71 @@
 
   .padding-40 {
     padding:40px;
+  }
+
+  .filter-options-container {
+    overflow-y: auto;
+    min-height: 100px;
+    max-height: 200px;
+  }
+
+  .filter-actions-container {
+    text-align: right;
+    padding: 6px;
+
+    .filter-apply-btn {
+      margin-left: 10px;
+    }
+  }
+
+  ::ng-deep {
+    .advanced-search-option-description {
+      position: relative;
+      float: left;
+      font-size: 10px;
+      line-height: 1;
+      top: -12px;
+      white-space: break-spaces;
+    }
+
+    & .resizing {
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+      cursor: e-resize;
+    }
+
+    & .handle {
+      width: 15px;
+      position: absolute;
+      top: 0;
+      right: 0;
+      height: 100%;
+      cursor: col-resize;
+      opacity: 0;
+      transition: all 0.2s ease-in;
+
+      &:after {
+        content: '';
+        display: block;
+        width: 1px;
+        height: 100%;
+        z-index: 1;
+        background: linear-gradient(0, rgba(255, 255, 255, 1) 0%, rgba(157, 157, 157, 1) 49%, rgba(255, 255, 255, 1) 100%);
+        transition: all 0.5ms ease-in;
+      }
+    }
+
+    .mat-mdc-menu-panel {
+      max-width: max-content !important;
+    }
+
+    .mat-list-item-content {
+      flex-direction: row !important;
+    }
+
+    .mat-pseudo-checkbox {
+      margin-right: 10px;
+    }
   }
 }

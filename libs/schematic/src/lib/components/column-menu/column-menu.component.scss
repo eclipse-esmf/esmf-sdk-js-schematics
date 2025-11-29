@@ -1,0 +1,21 @@
+.esmf-column-menu {
+  .drag-indicator-icon {
+    color: rgba(0, 0, 0, 0.54);
+  }
+
+  .selection-title {
+    padding: 8px 0 16px 16px;
+    margin: 0;
+  }
+
+  .list-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-left: 8px;
+  }
+
+  .spacer {
+    flex: 1 1 auto;
+  }
+}

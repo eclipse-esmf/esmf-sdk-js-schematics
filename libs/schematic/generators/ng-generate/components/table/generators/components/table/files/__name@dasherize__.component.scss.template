@@ -130,4 +130,8 @@ $gray-300: #e0e0e0;
       display: block;
     }
   }
+
+  .bg-transparent {
+    background: initial;
+  }
 }

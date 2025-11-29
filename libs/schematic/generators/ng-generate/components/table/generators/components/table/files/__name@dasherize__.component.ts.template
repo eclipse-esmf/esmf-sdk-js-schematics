@@ -47,7 +47,7 @@ import {
         , <%= enumProperties %>
     <% } %>
 } from './<%= dasherize(options.aspectModelTypeName) %>.types';
-import {<%= tableDataSourceName %>, EsmfPaginatorSelectConfigInjector, EsmfLocalStorageService, EsmfShowDescriptionPipe, EsmfResizeColumnDirective, Config} from '@esmf/semantic-ui-schematic';
+import {<%= tableDataSourceName %>, EsmfPaginatorSelectConfigInjector, EsmfLocalStorageService, EsmfShowDescriptionPipe, EsmfResizeColumnDirective, EsmfColumnMenuComponent, EsmfConfigMenuComponent, Config} from '@esmf/semantic-ui-schematic';
 
 <% if (options.isDateQuickFilter) { %>
     import {DateAdapter, MAT_DATE_FORMATS, MatDateFormats} from '@angular/material/core';
@@ -62,7 +62,6 @@ import {<%= tableDataSourceName %>, EsmfPaginatorSelectConfigInjector, EsmfLocal
 import {DomSanitizer, SafeStyle} from '@angular/platform-browser';
 import {SelectionModel} from '@angular/cdk/collections';
 import {<%= classify(name) %>CommandBarComponent} from "./<%= cmpFileName %>-command-bar.component";
-import {<%= classify(name) %>ColumnMenuComponent} from './<%= cmpFileName %>-column-menu.component';
 
 <% if (options.hasFilters) { %>
     import {debounceTime, filter, map, takeUntil} from 'rxjs/operators'
@@ -80,7 +79,7 @@ import {<% if (options.enableRemoteDataHandling) { %>catchError, finalize, tap, 
 <% } else { %>
     import {EsmfStaticTableService} from '@esmf/semantic-ui-schematic';
 <% } %>
-import {MatMenu, MatMenuTrigger} from '@angular/material/menu';
+import {MatMenu, MatMenuModule} from '@angular/material/menu';
 import {MatIconButton} from '@angular/material/button';
 import {NgClass} from '@angular/common';
 import {MatTooltip} from '@angular/material/tooltip';
@@ -117,8 +116,10 @@ type Entity = <%= classify(options.selectedModelTypeName) %>;
       EsmfChipListComponent,
       EsmfShowDescriptionPipe,
       EsmfResizeColumnDirective,
+      EsmfColumnMenuComponent,
+      EsmfConfigMenuComponent,
       MatPaginator,
-      MatMenu,
+      MatMenuModule,
       MatIconButton,
       MatSortModule,
       NgClass,
@@ -126,7 +127,6 @@ type Entity = <%= classify(options.selectedModelTypeName) %>;
       MatIcon,
       MatTooltip,
       EsmfTableCellComponent,
-      MatMenuTrigger,
       <%= classify(name) %>CommandBarComponent
     ],
     templateUrl: './<%= cmpFileName %>.component.html',
@@ -209,10 +209,9 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
     @ViewChild(MatSort) private sort!: MatSort;
     @ViewChild(MatPaginator) private paginator!: MatPaginator
     @ViewChild(MatTable) private table!: MatTable<Entity>;
-    @ViewChild(<%= classify(name) %>ColumnMenuComponent) private columMenuComponent!: <%= classify(name) %>ColumnMenuComponent;
 
     @ViewChild('searchInput') searchInput!: ElementRef;
-    @ViewChild(<%= classify(name) %>CommandBarComponent) commandBar: <%= classify(name) %>CommandBarComponent;
+    @ViewChild(<%= classify(name) %>CommandBarComponent) commandBar!: <%= classify(name) %>CommandBarComponent;
 
     @HostBinding("attr.style")
     public get valueAsStyle():  SafeStyle | undefined {
@@ -235,6 +234,8 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
     columnToSort:{sortColumnName: string, sortDirection: SortDirection} = {sortColumnName:'<%= options.defaultSortingCol %>', sortDirection : 'asc'};
     // The list of column names that are displayed in the table, including NON_DATA_COLUMNS
     displayedColumns: <%= tableColumnsEnumName %>[] = [];
+    // The list of column names that are displayed in the table, excluding NON_DATA_COLUMNS
+    customizableColumns: <%= tableColumnsEnumName %>[] = [];
     // The list of available columns to select
     columns: Column[] = [];
 
@@ -339,6 +340,7 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
         this.displayedColumns = Object.values(<%= tableColumnsEnumName %>).filter(
             column => !this.hideColumns.includes(column)
         );
+       this.customizableColumns = this.displayedColumns.filter(column => !NON_DATA_COLUMNS.includes(column));
 
         const columnStorage = this.storageService.getItem(this.<%= options.localStorageKeyColumns %>);
 
@@ -630,17 +632,6 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
         }
     <% } %>
 
-    initOpenedColumnMenuDialog(): void {
-        this.columMenuComponent.keyLocalStorage = this.<%= options.localStorageKeyColumns %>;
-        this.columMenuComponent.columnsDefault = [
-            ...Object.values(<%= tableColumnsEnumName %>)
-            .filter(columnName => this.isAvailableDataColumn(columnName))
-            .map(columnName => ({name: columnName, selected: true})),
-        ];
-        this.columMenuComponent.columns.splice(0, this.columMenuComponent.columns.length);
-        this.columMenuComponent.columns.push(...this.columns);
-    }
-
     <% if (options.hasSearchBar) { %>
         setConfiguration(configs: Array<Config>): void {
             this.configs = [...configs];
@@ -664,6 +655,7 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
 
         displayedColumnsTmp.push({name: <%= tableColumnsEnumName %>['COLUMNS_MENU'], selected: true});
 
+        this.storageService.setItem(this.<%= options.localStorageKeyColumns %>, columns)
         this.columns = [...columns];
         this.displayedColumns = displayedColumnsTmp.filter(column => column.selected).map(column => column.name as <%= tableColumnsEnumName %>);
     }
