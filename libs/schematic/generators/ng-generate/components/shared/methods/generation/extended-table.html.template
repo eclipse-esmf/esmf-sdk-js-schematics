@@ -149,7 +149,7 @@
                         class="mat-table-menu-button"
                         [matMenuTriggerFor]="columnMenu"
                         [matTooltip]="'tableActions.openColumnsMenu' | transloco"
-                        (menuOpened)="initOpenedColumnMenuDialog()">
+                        >
                             <mat-icon data-test="mat-table-menu-icon" class="material-icons">settings</mat-icon>
                     </button>
                 </th>
@@ -164,12 +164,12 @@
         </table>
 
         <mat-menu data-test="column-menu" #columnMenu="matMenu" class="column-menu">
-            <<%= dasherize(name) %>-column-menu (columnsChangedEvent)="setDisplayedColumns($event)"></<%= dasherize(name) %>-column-menu>
+            <esmf-column-menu [defaultColumns]="customizableColumns" [columns]="columns" (columnsChangedEvent)="setDisplayedColumns($event)"></esmf-column-menu>
         </mat-menu>
 
         <% if (options.hasSearchBar) { %>
            <mat-menu data-test="column-menu" class="column-menu">
-               <<%= dasherize(name) %>-config-menu (configChangedEvent)="setConfiguration($event)"></<%= dasherize(name) %>-config-menu>
+               <esmf-config-menu (configChangedEvent)="setConfiguration($event)"></esmf-config-menu>
            </mat-menu>
         <% } %>
 

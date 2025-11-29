@@ -1,5 +1,6 @@
 export * from './lib/components/chip-list/chip-list.component';
 export * from './lib/components/config-menu/config-menu.component';
+export * from './lib/components/column-menu/column-menu.component';
 export * from './lib/components/export-table-dialog/export-table-dialog.component';
 export * from './lib/components/table-cell/table-cell.component';
 export * from './lib/components/table-cell-link/table-cell-link.component';

@@ -16,7 +16,6 @@ import {Tree} from '@angular-devkit/schematics/src/tree/interface';
 import {
   formatAllFilesRule,
   generateComponent,
-  generateGeneralFilesRules,
   insertVersionIntoPathRule,
   insertVersionIntoSelectorRule,
   loadAspectModelRule,
@@ -27,12 +26,13 @@ import {
   setCustomActionsAndFiltersRule,
   setTemplateOptionValuesRule,
 } from '../shared/index';
-import {ComponentType} from '../shared/schema';
-import {generateStorageService} from './generators/services/storage/index';
-import {generateColumnMenu} from './generators/components/column-menu/index';
+import {ComponentType, Values} from '../shared/schema';
 import {generateTableComponent} from './generators/components/table/index';
 import {TableSchema} from './schema';
 import {LOG_COLOR} from '../../../utils/constants';
+import {generateCustomService, generateFilterService, generateSemanticExplanation} from '../shared/generators';
+import {generateTranslationFiles} from '../../../utils/aspect-model';
+import {wrapBuildComponentExecution} from '../../../utils/angular';
 
 export default function (tableSchema: TableSchema): Rule {
   return (tree: Tree, context: SchematicContext) => {
@@ -53,17 +53,14 @@ export function generateTable(tableSchema: TableSchema): Rule {
     insertVersionIntoSelectorRule(),
     insertVersionIntoPathRule(),
     setTemplateOptionValuesRule(),
-    ...generateGeneralFilesRules(),
-    ...tableSpecificGeneration(),
+    generateFilterService(options),
+    // TODO remove the method call generateGeneralStyle(options),
+    generateTranslationFiles(options, false),
+    wrapBuildComponentExecution(options),
+    generateCustomService(options),
+    generateSemanticExplanation(options as Values),
+    generateTableComponent(options as TableSchema),
     // TODO check how we can handle it at in standalone app ...addAndUpdateConfigurationFilesRule(),
     formatAllFilesRule(),
   ]);
-}
-
-function tableSpecificGeneration(): Array<Rule> {
-  return [
-    generateTableComponent(options as TableSchema),
-    generateStorageService(options), // General
-    generateColumnMenu(options), // General
-  ];
 }

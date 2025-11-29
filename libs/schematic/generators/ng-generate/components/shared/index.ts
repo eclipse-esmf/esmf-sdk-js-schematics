@@ -233,7 +233,7 @@ export function setTemplateOptionValuesRule(): Rule {
 export function generateGeneralFilesRules(): Array<Rule> {
   return [
     generateFilterService(options),
-    generateGeneralStyle(options),
+    // TODO remove the method call generateGeneralStyle(options),
     generateTranslationFiles(options, false),
     wrapBuildComponentExecution(options),
     generateCustomService(options),

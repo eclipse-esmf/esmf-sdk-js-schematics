@@ -22,4 +22,12 @@
       margin: 0 8px;
     }
   }
+
+  .mat-mdc-menu-panel {
+    max-width: max-content !important;
+  }
+
+  .spacer {
+    flex: 1 1 auto;
+  }
 }
