@@ -31,7 +31,6 @@ import {
   generateCustomService,
   generateFilterService,
   generateGeneralStyle,
-  generateValidateInputDirective,
 } from './generators/index';
 import {APP_SHARED_MODULES, cardModules, formModules, tableModules, updateSharedModule} from '../../../utils/modules';
 import {WIZARD_CONFIG_FILE} from '../../prompter/index';
@@ -238,7 +237,6 @@ export function generateGeneralFilesRules(): Array<Rule> {
     generateTranslationFiles(options, false),
     wrapBuildComponentExecution(options),
     generateCustomService(options),
-    generateValidateInputDirective(options),
     generateSemanticExplanation(options as Values),
   ];
 }
