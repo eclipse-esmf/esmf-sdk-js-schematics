@@ -15,17 +15,17 @@ import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {ComponentRef} from '@angular/core';
 import {MatDialogRef, MAT_DIALOG_DATA} from '@angular/material/dialog';
 import {By} from '@angular/platform-browser';
-import {EsmfConfigMenuComponent, ConfigMenuBase} from './config-menu.component';
+import {Config, EsmfConfigMenuComponent} from './config-menu.component';
 import {EsmfLocalStorageService} from '../../services/storage.service';
 import {getTranslocoTestingModule} from '../../test-utils';
 
 describe('EsmfConfigMenuComponent', () => {
-  let component: EsmfConfigMenuComponent<ConfigMenuBase>;
-  let fixture: ComponentFixture<EsmfConfigMenuComponent<ConfigMenuBase>>;
-  let componentRef: ComponentRef<EsmfConfigMenuComponent<ConfigMenuBase>>;
+  let component: EsmfConfigMenuComponent;
+  let fixture: ComponentFixture<EsmfConfigMenuComponent>;
+  let componentRef: ComponentRef<EsmfConfigMenuComponent>;
   let storageService: jest.Mocked<EsmfLocalStorageService>;
 
-  const createMockConfigs = (): ConfigMenuBase[] => [
+  const createMockConfigs = (): Config[] => [
     {name: 'config.name1', desc: 'config.desc1', selected: true, color: '#ff0000'},
     {name: 'config.name2', desc: 'config.desc2', selected: false, color: '#00ff00'},
     {name: 'config.name3', desc: 'config.desc3', selected: true, color: '#0000ff'},
@@ -37,7 +37,7 @@ describe('EsmfConfigMenuComponent', () => {
       stopPropagation: jest.fn(),
     } as unknown as MouseEvent);
 
-  const setupComponent = async (dialogData?: {configs: ConfigMenuBase[]; keyLocalStorage: string} | null) => {
+  const setupComponent = async (dialogData?: {configs: Config[]; keyLocalStorage: string} | null) => {
     await TestBed.configureTestingModule({
       imports: [EsmfConfigMenuComponent, getTranslocoTestingModule({langs: {en: {}, de: {}}})],
       providers: [
@@ -48,7 +48,7 @@ describe('EsmfConfigMenuComponent', () => {
     }).compileComponents();
 
     storageService = TestBed.inject(EsmfLocalStorageService) as jest.Mocked<EsmfLocalStorageService>;
-    fixture = TestBed.createComponent(EsmfConfigMenuComponent<ConfigMenuBase>);
+    fixture = TestBed.createComponent(EsmfConfigMenuComponent);
     component = fixture.componentInstance;
     componentRef = fixture.componentRef;
   };
