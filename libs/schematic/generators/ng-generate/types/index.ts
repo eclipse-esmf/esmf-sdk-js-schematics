@@ -11,13 +11,12 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-import {dasherize} from '@angular-devkit/core/src/utils/strings';
 import {chain, Rule, SchematicContext} from '@angular-devkit/schematics';
 import ora from 'ora';
 import {loadAspectModel, loadRDF} from '../../utils/aspect-model';
 import {formatGeneratedFiles, loadAndApplyConfigFile} from '../../utils/file';
 import {TemplateHelper} from '../../utils/template-helper';
-import {visitAspectModel} from './aspect-model-type-generator-visitor';
+import {buildTypesFilePath, visitAspectModel} from './aspect-model-type-generator-visitor';
 import {TypesSchema} from './schema';
 import {generateComponent} from '../components/shared/index';
 import {Tree} from '@angular-devkit/schematics/src/tree/interface';
@@ -43,9 +42,7 @@ export default function (options: TypesSchema): Rule {
       formatGeneratedFiles(
         {
           getPath(options: TypesSchema) {
-            return [options.path, dasherize(options.selectedModelElement?.name).toLowerCase(), options.versionedAccessPrefix]
-              .filter(chunk => !!chunk)
-              .join('/');
+            return buildTypesFilePath(options);
           },
         },
         options

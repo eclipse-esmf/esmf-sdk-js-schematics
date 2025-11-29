@@ -41,6 +41,7 @@ export class TemplateHelper {
     options.filterServiceName = `${classify(options.name)}FilterService`;
     options.hasSearchBar = this.hasSearchBar(options);
     options.hasFilters = this.hasFilters(options);
+    // The line bellow is not applied to table component
     options.typePath = this.getTypesPath(options.enableVersionSupport, options.aspectModelVersion, options.aspectModel);
     options.dateProperties = this.getDateProperties(options).filter((property: Property) => this.isDateProperty(property));
     options.dateTimeStampProperties = this.getDateProperties(options).filter((property: Property) =>
