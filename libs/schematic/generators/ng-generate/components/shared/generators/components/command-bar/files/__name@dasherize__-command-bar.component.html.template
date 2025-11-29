@@ -1,14 +1,14 @@
 <mat-toolbar data-test="toolbar" class="toolbar" #componentsContainer>
     <div *ngIf="isMultipleSelectionEnabled" data-test="toolbar-number-of-items" class="command-bar-number-of-items">{{ selection.selected.length > 0 ? (selection.selected.length + ' / ') : '' }}{{ totalItems }}</div>
     <% if (options.hasSearchBar) { %>
-        <mat-form-field data-test="search-form-field-<%= options.componentType %>" *ngIf="!isInCollapsedMenu('search-form-field-<%= options.componentType %>')" appearance="fill" #toolbarComp>
-          <mat-label data-test="search-label">{{ 'search' | transloco }}</mat-label>
+        <mat-form-field class="search-input" data-test="search-form-field-<%= options.componentType %>" *ngIf="!isInCollapsedMenu('search-form-field-<%= options.componentType %>')" appearance="fill" #toolbarComp>
           <input
             #searchInput
             data-test="search-input"
             matInput
             [formControl]="filterService.searchString"
             type="text"
+            placeholder="{{ 'search' | transloco }}"
             (keyup.enter)="triggerReloadFilter()"
             (focus)="searchFocused = true"
             (blur)="searchFocused = false"/>
@@ -36,8 +36,7 @@
         <% if (options.componentType === 'table' && options.hasSearchBar) { %>
             <ng-container *ngIf="hasAdvancedSearch">
               <mat-form-field data-test="form-field-select" *ngIf="!isInCollapsedMenu('form-field-select')"  appearance="fill" #toolbarComp>
-                <mat-label data-test="select-label">{{ 'advancedSearch' | transloco }}</mat-label>
-                <mat-select data-test="select" [formControl]="filterService.selectedStringColumn">
+                <mat-select data-test="select" [formControl]="filterService.selectedStringColumn" placeholder="{{ 'advancedSearch' | transloco }}">
                   <mat-option [value]="filterService.advancedSearchAllValue">{{ 'allTextFields' | transloco }}</mat-option>
                   <mat-option *ngFor="let searchField of filterService.stringColumns" [value]="searchField">
                     <span>{{ '<%= options.translationPath %>' + searchField + '.preferredName' | transloco }}</span>
@@ -243,8 +242,7 @@
         <% if (options.componentType === 'table' && options.hasSearchBar) { %>
             <ng-container *ngIf="hasAdvancedSearch">
               <mat-form-field data-test="form-field-select" id="form-field-select" *ngIf="!isInCollapsedMenu('form-field-select')"  appearance="fill" #toolbarComp>
-                <mat-label data-test="select-label">{{ 'advancedSearch' | transloco }}</mat-label>
-                <mat-select data-test="select" [formControl]="filterService.selectedStringColumn">
+                <mat-select data-test="select" [formControl]="filterService.selectedStringColumn" placeholder="{{ 'advancedSearch' | transloco }}">
                   <mat-option [value]="filterService.advancedSearchAllValue">{{ 'allTextFields' | transloco }}</mat-option>
                   <mat-option *ngFor="let searchField of filterService.stringColumns" [value]="searchField">
                     <span>{{ '<%= options.translationPath %>' + searchField + '.preferredName' | transloco }}</span>
@@ -261,8 +259,7 @@
     <ng-container *ngIf="hasAdvancedSearch">
       <div mat-menu-item  *ngIf="isInCollapsedMenu('form-field-select')">
         <mat-form-field data-test="form-field-select" id="form-field-select" appearance="fill">
-        <mat-label data-test="select-label">{{ 'advancedSearch' | transloco }}</mat-label>
-          <mat-select data-test="select" [formControl]="filterService.selectedStringColumn">
+          <mat-select data-test="select" [formControl]="filterService.selectedStringColumn" placeholder="{{ 'advancedSearch' | transloco }}">
             <mat-option [value]="filterService.advancedSearchAllValue">{{ 'allTextFields' | transloco }}</mat-option>
             <mat-option *ngFor="let searchField of filterService.stringColumns" [value]="searchField">
             <span>{{ '<%= options.translationPath %>' + searchField + '.preferredName' | transloco }}</span>

@@ -45,9 +45,10 @@ private requestData() {
 
     if (this.customOptionsExtension) this.customOptionsExtension.apply(queryOption);
 
+    /*
     const additionalCondition = new Eq('local', <% if (options.chooseLanguageForSearch) { %>'<%= options.chooseLanguageForSearch.toUpperCase() %>'<% } else { %>'EN'<% } %>);
     queryFilter?.queryNode.subNodes.push(additionalCondition);
-
+    */
     const filterRQLQuery = queryFilter ? QueryStringifier.stringify(queryFilter) : '';
     const optionsRQLQuery = QueryStringifier.stringify(queryOption).replace(/&/g, ',');
 
@@ -59,24 +60,6 @@ private requestData() {
     if (optionsRQLQuery.length > 0) {
         rqlStringTemp = `${rqlStringTemp}${rqlStringTemp !== '' ? '&' : ''}option=${optionsRQLQuery}`;
     }
-
-    if (!(QueryStringifier as any)['superParseQueryNode']) {
-        (QueryStringifier as any)['superParseQueryNode'] = QueryStringifier['parseQueryNode'];
-    }
-
-    QueryStringifier['parseQueryNode'] = (node?: AbstractNode): string => {
-        let result = (QueryStringifier as any)['superParseQueryNode'](node);
-        if (node instanceof AbstractArrayNode) {
-            const arrayNode = <AbstractArrayNode>node;
-            const encodedValues = arrayNode.values.map(value => QueryStringifier['withType'](QueryStringifier['withEncoding'](value)));
-
-            // ensure outer brackets are not used. valid query ..in(<name>, "value1", "value2", ...)..
-            result = `${QueryStringifier['withEncoding'](arrayNode.name, {isField: true})}(${QueryStringifier['withEncoding'](arrayNode.field, {
-                isField: true,
-            })}, ${encodedValues.join(',')})`;
-        }
-        return result;
-    };
 
     this.rqlString = rqlStringTemp;
 
