@@ -27,8 +27,8 @@ import {
     <% if (options.changeDetection) { %>ChangeDetectionStrategy,<% } %>
 } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
-import { MatSort, SortDirection } from '@angular/material/sort';
-import { MatTable } from '@angular/material/table';
+import { MatSort, MatSortModule, SortDirection } from '@angular/material/sort';
+import { MatTable, MatTableModule } from '@angular/material/table';
 
 <% if (options.hasFilters || options.hasSearchBar) { %>
     import {<%= options.filterServiceName %>} from './<%= cmpFileName %>-filter.service';
@@ -47,7 +47,7 @@ import {
         , <%= enumProperties %>
     <% } %>
 } from './<%= dasherize(options.aspectModelTypeName) %>.types';
-import {<%= tableDataSourceName %>, EsmfPaginatorSelectConfigInjector, EsmfLocalStorageService, Config} from '@esmf/semantic-ui-schematic';
+import {<%= tableDataSourceName %>, EsmfPaginatorSelectConfigInjector, EsmfLocalStorageService, EsmfShowDescriptionPipe, EsmfResizeColumnDirective, Config} from '@esmf/semantic-ui-schematic';
 
 <% if (options.isDateQuickFilter) { %>
     import {DateAdapter, MAT_DATE_FORMATS, MatDateFormats} from '@angular/material/core';
@@ -115,12 +115,14 @@ type Entity = <%= classify(options.selectedModelTypeName) %>;
     selector: '<%= options.selector %>',
     imports: [
       EsmfChipListComponent,
+      EsmfShowDescriptionPipe,
+      EsmfResizeColumnDirective,
       MatPaginator,
       MatMenu,
       MatIconButton,
-      MatSort,
+      MatSortModule,
       NgClass,
-      MatTable,
+      MatTableModule,
       MatIcon,
       MatTooltip,
       EsmfTableCellComponent,

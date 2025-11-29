@@ -39,7 +39,7 @@
                     let isEmptyValue = `row.${cellPropertyPath} === null || row.${cellPropertyPath} === undefined`;
                     let propertyLocaleKeyPath = `${options.templateHelper.getVersionedAccessPrefix(options)}${options.isAspectSelected ? options.jsonAccessPath : ''}${value.complexPrefix}${value.property.name}`;
                     let datePipe = options.templateHelper.isDateTimeProperty(value.property) ? `| date: ${options.resolveDateTimeFormat(options, value.property)}` : '';
-                    let descriptionPipe = options.templateHelper.isEnumPropertyWithEntityValues(value.property) ? ` | showDescription:get${classify(value.property.name)}Value` : '';
+                    let descriptionPipe = options.templateHelper.isEnumPropertyWithEntityValues(value.property) ? ` | esmfShowDescription:get${classify(value.property.name)}Value` : '';
                     let cellContent = `!(${isEmptyValue}) ? (row.${cellPropertyPath}${descriptionPipe}${language}${datePipe})  : '-'`;
                     let isLink = options.templateHelper.isLinkProperty(value.property)
                 %>
@@ -48,7 +48,7 @@
                 <ng-container data-test="table-column" matColumnDef="<%= cellPropertyPath %>">
                     <th data-test="table-header" mat-header-cell *matHeaderCellDef mat-sort-header="<%= cellPropertyPath %>"
                         <%= options.templateHelper.isNumberProperty(value.property) ? `class="table-header-number"` : '' %>
-                        [resizeColumn]="true" [index]="<%= value.index %>" (dragging)='dragging = $event'
+                        [esmfResizeColumn]="true" (dragging)='dragging = $event'
                     >
                         <span data-test="table-header-text">
                             {{ '<%= propertyLocaleKeyPath %>.preferredName' | transloco }}
@@ -101,7 +101,7 @@
                     <ng-container data-test="custom-column-container" matColumnDef="<%= columnName %>">
                         <% if(options.enableVersionSupport) { %>
                             <th data-test="custom-column-header" mat-header-cell *matHeaderCellDef mat-sort-header
-                                [resizeColumn]="true" [index]="<%= customColumnIndex %>" (dragging)='dragging = $event'>
+                                [esmfResizeColumn]="true" (dragging)='dragging = $event'>
                                 <span data-test="table-header-text">
                                     {{'<%= options.selectedModelTypeName.toLowerCase() %>.v<%= options.formatedAspectModelVersion %>.customColumn.<%= columnName %>' | transloco }}
                                 </span>
@@ -117,7 +117,7 @@
                             </th>
                         <% } else { %>
                             <th data-test="custom-column-header" mat-header-cell *matHeaderCellDef mat-sort-header
-                                [resizeColumn]="true" [index]="<%= customColumnIndex %>" (dragging)='dragging = $event'>
+                                [esmfResizeColumn]="true" (dragging)='dragging = $event'>
                                 <span data-test="table-header-text">
                                     {{ '<%= options.selectedModelTypeName.toLowerCase() %>.customColumn.<%= columnName %>' | transloco }}
                                 </span>

@@ -14,7 +14,6 @@
 export * from './components/index';
 export * from './directives/index';
 export * from './modules/index';
-export * from './pipes/index';
 export * from './constants/index';
 export * from './services/index';
 export * from './styles/index';

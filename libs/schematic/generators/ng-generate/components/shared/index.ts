@@ -31,7 +31,6 @@ import {
   generateCustomService,
   generateFilterService,
   generateGeneralStyle,
-  generateShowDescriptionPipe,
   generateValidateInputDirective,
 } from './generators/index';
 import {APP_SHARED_MODULES, cardModules, formModules, tableModules, updateSharedModule} from '../../../utils/modules';
@@ -240,7 +239,6 @@ export function generateGeneralFilesRules(): Array<Rule> {
     wrapBuildComponentExecution(options),
     generateCustomService(options),
     generateValidateInputDirective(options),
-    generateShowDescriptionPipe(options),
     generateSemanticExplanation(options as Values),
   ];
 }
