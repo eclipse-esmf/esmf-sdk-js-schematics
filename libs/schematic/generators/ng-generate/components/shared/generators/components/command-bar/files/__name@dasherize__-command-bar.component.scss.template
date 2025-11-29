@@ -4,6 +4,10 @@
   align-items: center;
   max-width: unset;
 
+  .command-bar-number-of-items {
+    display: flex;
+  }
+
   mat-toolbar {
     overflow: hidden;
   }

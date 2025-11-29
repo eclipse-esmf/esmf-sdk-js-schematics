@@ -30,14 +30,14 @@ private requestData() {
         const sortProperty = this.filterService.sortedProperty;
         const sortDirection = this.filterService.sortCard === SortCard.ASCENDING ? 1 : -1;
 
-        queryOption.setSort(new Sort({[sortProperty]: sortDirection}));
+        queryOption.setSort(new Sort(<SortOptions>{[sortProperty]: sortDirection}));
       }
     <% } else { %>
         if (this.sort.active) {
           const sortProperty = this.sort.active;
           const sortDirection = this.sort.direction === 'asc' ? 1 : -1;
 
-          queryOption.setSort(new Sort({[sortProperty]: sortDirection}));
+          queryOption.setSort(new Sort(<SortOptions>{[sortProperty]: sortDirection}));
         }
     <% } %>
 
@@ -87,6 +87,8 @@ private requestData() {
     this.requestSubscription = this.tableService.requestData(this.remoteAPI, {query: rqlStringTemp})
         .pipe(
             tap((response: Response<Entity>) => {
+                this.updateHighlightString();
+
                 this.dataLoadError = false;
                 this.totalItems =
                     response.totalItems !== null && response.totalItems !== undefined
