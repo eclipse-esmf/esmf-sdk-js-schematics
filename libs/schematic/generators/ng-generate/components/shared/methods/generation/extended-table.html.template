@@ -5,6 +5,7 @@
             matSort
             matSortDisableClear="true"
             [matSortDisabled]="dragging"
+            [trackBy]="trackBy"
             (matSortChange)="sortData()"
             [matSortActive]="columnToSort.sortColumnName" [matSortDirection]="columnToSort.sortDirection"
             [ngClass]="customTableClass"
