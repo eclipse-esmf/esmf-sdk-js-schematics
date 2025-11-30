@@ -6,7 +6,7 @@
         <button mat-raised-button color="warn" [disabled]="selection.selected.length === -1" (click)="deleteRow()">Delete</button>
     </div>
 
-    <table mat-table class="full-width-table" [dataSource]="dataSource" aria-label="Elements" data-test="table">
+    <table mat-table class="full-width-table" [dataSource]="dataSource" [trackBy]="trackBy" aria-label="Elements" data-test="table">
         <!-- Row shown when there is no matching data that will be provided to the wrapper table. -->
             <tr data-test="no-data-table-row" class="mat-row" *matNoDataRow>
                 <td *ngIf="!dataSource.data.length" class="mat-cell" [colSpan]="displayedColumns.length" data-test="no-data-table-cell">
