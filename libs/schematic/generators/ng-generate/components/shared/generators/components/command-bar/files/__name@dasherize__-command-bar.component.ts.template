@@ -55,6 +55,7 @@ import {MatInput} from '@angular/material/input';
     templateUrl: './<%= dasherize(name) %>-command-bar.component.html',
     styleUrls: ['./<%= dasherize(name) %>-command-bar.component.scss'],
     encapsulation: ViewEncapsulation.None,
+    host: {class: 'js-sdk-command-bar' }
 })
 export class <%= classify(name) %>CommandBarComponent implements AfterViewInit {
     private dialog = inject(MatDialog);
