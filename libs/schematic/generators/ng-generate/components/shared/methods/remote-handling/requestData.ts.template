@@ -30,14 +30,14 @@ private requestData() {
         const sortProperty = this.filterService.sortedProperty;
         const sortDirection = this.filterService.sortCard === SortCard.ASCENDING ? 1 : -1;
 
-        queryOption.setSort(new Sort({[sortProperty]: sortDirection}));
+        queryOption.setSort(new Sort(<SortOptions>{[sortProperty]: sortDirection}));
       }
     <% } else { %>
         if (this.sort.active) {
           const sortProperty = this.sort.active;
           const sortDirection = this.sort.direction === 'asc' ? 1 : -1;
 
-          queryOption.setSort(new Sort({[sortProperty]: sortDirection}));
+          queryOption.setSort(new Sort(<SortOptions>{[sortProperty]: sortDirection}));
         }
     <% } %>
 
@@ -45,9 +45,10 @@ private requestData() {
 
     if (this.customOptionsExtension) this.customOptionsExtension.apply(queryOption);
 
+    /*
     const additionalCondition = new Eq('local', <% if (options.chooseLanguageForSearch) { %>'<%= options.chooseLanguageForSearch.toUpperCase() %>'<% } else { %>'EN'<% } %>);
     queryFilter?.queryNode.subNodes.push(additionalCondition);
-
+    */
     const filterRQLQuery = queryFilter ? QueryStringifier.stringify(queryFilter) : '';
     const optionsRQLQuery = QueryStringifier.stringify(queryOption).replace(/&/g, ',');
 
@@ -60,24 +61,6 @@ private requestData() {
         rqlStringTemp = `${rqlStringTemp}${rqlStringTemp !== '' ? '&' : ''}option=${optionsRQLQuery}`;
     }
 
-    if (!(QueryStringifier as any)['superParseQueryNode']) {
-        (QueryStringifier as any)['superParseQueryNode'] = QueryStringifier['parseQueryNode'];
-    }
-
-    QueryStringifier['parseQueryNode'] = (node?: AbstractNode): string => {
-        let result = (QueryStringifier as any)['superParseQueryNode'](node);
-        if (node instanceof AbstractArrayNode) {
-            const arrayNode = <AbstractArrayNode>node;
-            const encodedValues = arrayNode.values.map(value => QueryStringifier['withType'](QueryStringifier['withEncoding'](value)));
-
-            // ensure outer brackets are not used. valid query ..in(<name>, "value1", "value2", ...)..
-            result = `${QueryStringifier['withEncoding'](arrayNode.name, {isField: true})}(${QueryStringifier['withEncoding'](arrayNode.field, {
-                isField: true,
-            })}, ${encodedValues.join(',')})`;
-        }
-        return result;
-    };
-
     this.rqlString = rqlStringTemp;
 
     if (this.requestSubscription && !this.requestSubscription.closed) {
@@ -87,6 +70,8 @@ private requestData() {
     this.requestSubscription = this.tableService.requestData(this.remoteAPI, {query: rqlStringTemp})
         .pipe(
             tap((response: Response<Entity>) => {
+                this.updateHighlightString();
+
                 this.dataLoadError = false;
                 this.totalItems =
                     response.totalItems !== null && response.totalItems !== undefined

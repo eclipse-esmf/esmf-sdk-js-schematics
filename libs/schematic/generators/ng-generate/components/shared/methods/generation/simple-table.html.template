@@ -6,7 +6,7 @@
         <button mat-raised-button color="warn" [disabled]="selection.selected.length === -1" (click)="deleteRow()">Delete</button>
     </div>
 
-    <table mat-table class="full-width-table" [dataSource]="dataSource" aria-label="Elements" data-test="table">
+    <table mat-table class="full-width-table" [dataSource]="dataSource" [trackBy]="trackBy" aria-label="Elements" data-test="table">
         <!-- Row shown when there is no matching data that will be provided to the wrapper table. -->
             <tr data-test="no-data-table-row" class="mat-row" *matNoDataRow>
                 <td *ngIf="!dataSource.data.length" class="mat-cell" [colSpan]="displayedColumns.length" data-test="no-data-table-cell">
@@ -49,7 +49,7 @@
                     let isEmptyValue = `row.${cellPropertyPath} === null || row.${cellPropertyPath} === undefined`;
                     let propertyLocaleKeyPath = `${options.templateHelper.getVersionedAccessPrefix(options)}${options.isAspectSelected ? options.jsonAccessPath : ''}${value.complexPrefix}${value.property.name}`;
                     let datePipe = options.templateHelper.isDateTimeProperty(value.property) ? `| date: ${options.resolveDateTimeFormat(options, value.property)}` : '';
-                    let descriptionPipe = options.templateHelper.isEnumPropertyWithEntityValues(value.property) ? ` | showDescription:get${classify(value.property.name)}Value` : '';
+                    let descriptionPipe = options.templateHelper.isEnumPropertyWithEntityValues(value.property) ? ` | esmfShowDescription:get${classify(value.property.name)}Value` : '';
                     let cellContent = `!(${isEmptyValue}) ? (row.${cellPropertyPath}${descriptionPipe}${language}${datePipe})  : '-'`;
                 %>
 
@@ -62,7 +62,7 @@
                 <ng-container data-test="table-column" matColumnDef="<%= cellPropertyPath %>">
                     <th data-test="table-header" mat-header-cell *matHeaderCellDef
                         <%= options.templateHelper.isNumberProperty(value.property) ? `class="table-header-number"` : '' %>
-                        [resizeColumn]="true" [index]="<%= value.index %>" (dragging)='dragging = $event'
+                        [esmfResizeColumn]="true" (dragging)='dragging = $event'
                     >
                         <span [matTooltip]=" '<%= propertyLocaleKeyPath %>.description' | transloco"
                               [matTooltipDisabled]="headerTooltipsOff"

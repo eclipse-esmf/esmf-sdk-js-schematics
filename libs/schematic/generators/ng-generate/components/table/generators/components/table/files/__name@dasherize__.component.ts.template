@@ -27,12 +27,12 @@ import {
     <% if (options.changeDetection) { %>ChangeDetectionStrategy,<% } %>
 } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
-import { MatSort, SortDirection } from '@angular/material/sort';
-import { MatTable } from '@angular/material/table';
+import { MatSort, MatSortModule, SortDirection } from '@angular/material/sort';
+import { MatTable, MatTableModule } from '@angular/material/table';
 
 <% if (options.hasFilters || options.hasSearchBar) { %>
     import {<%= options.filterServiceName %>} from './<%= cmpFileName %>-filter.service';
-    import {EsmfChipListComponent, EsmfTableCellComponent} from '@esmf/semantic-ui-schematic';
+    import {EsmfChipListComponent, EsmfTableCellComponent, FilterEnums} from '@esmf/semantic-ui-schematic';
 <% } %>
 
 <% if (options.addCommandBar) { %>
@@ -46,8 +46,8 @@ import {
     <% if (options.isEnumQuickFilter) { %>
         , <%= enumProperties %>
     <% } %>
-} from '<%= options.typePath %>';
-import {<%= tableDataSourceName %>} from '@esmf/semantic-ui-schematic';
+} from './<%= dasherize(options.aspectModelTypeName) %>.types';
+import {<%= tableDataSourceName %>, EsmfPaginatorSelectConfigInjector, EsmfLocalStorageService, EsmfShowDescriptionPipe, EsmfResizeColumnDirective, EsmfColumnMenuComponent, EsmfConfigMenuComponent, Config} from '@esmf/semantic-ui-schematic';
 
 <% if (options.isDateQuickFilter) { %>
     import {DateAdapter, MAT_DATE_FORMATS, MatDateFormats} from '@angular/material/core';
@@ -61,10 +61,7 @@ import {<%= tableDataSourceName %>} from '@esmf/semantic-ui-schematic';
 
 import {DomSanitizer, SafeStyle} from '@angular/platform-browser';
 import {SelectionModel} from '@angular/cdk/collections';
-import {EsmfPaginatorSelectConfigInjector} from '@esmf/semantic-ui-schematic';
-import {EsmfLocalStorageService} from '@esmf/semantic-ui-schematic';
 import {<%= classify(name) %>CommandBarComponent} from "./<%= cmpFileName %>-command-bar.component";
-import {<%= classify(name) %>ColumnMenuComponent} from './<%= cmpFileName %>-column-menu.component';
 
 <% if (options.hasFilters) { %>
     import {debounceTime, filter, map, takeUntil} from 'rxjs/operators'
@@ -82,15 +79,10 @@ import {<% if (options.enableRemoteDataHandling) { %>catchError, finalize, tap, 
 <% } else { %>
     import {EsmfStaticTableService} from '@esmf/semantic-ui-schematic';
 <% } %>
-import {MatMenu, MatMenuTrigger} from '@angular/material/menu';
+import {MatMenu, MatMenuModule} from '@angular/material/menu';
 import {MatIconButton} from '@angular/material/button';
 import {NgClass} from '@angular/common';
 import {MatTooltip} from '@angular/material/tooltip';
-
-<% if (options.hasSearchBar) { %>
-    <%= options.include('/interfaces/config.ts.template') %>
-<% } %>
-
 <%= options.include('/interfaces/column.ts.template') %>
 
 /**
@@ -118,22 +110,24 @@ type Entity = <%= classify(options.selectedModelTypeName) %>;
     export type <%= options.aspectModelTypeName %>ActionsResolvers = Partial<Record<RowAction, (rowData: Entity) => boolean>> | undefined;
 <% } %>
 
-
-
 @Component({
     selector: '<%= options.selector %>',
     imports: [
       EsmfChipListComponent,
+      EsmfShowDescriptionPipe,
+      EsmfResizeColumnDirective,
+      EsmfColumnMenuComponent,
+      EsmfConfigMenuComponent,
       MatPaginator,
-      MatMenu,
+      MatMenuModule,
       MatIconButton,
-      MatSort,
+      MatSortModule,
       NgClass,
-      MatTable,
+      MatTableModule,
       MatIcon,
       MatTooltip,
       EsmfTableCellComponent,
-      MatMenuTrigger
+      <%= classify(name) %>CommandBarComponent
     ],
     templateUrl: './<%= cmpFileName %>.component.html',
     styleUrls: ['./<%= cmpFileName %>.component.<%= options.style %>'],
@@ -141,8 +135,8 @@ type Entity = <%= classify(options.selectedModelTypeName) %>;
       <%= tableServiceName %>,
       EsmfLocalStorageService
     ],
-    <% if (options.changeDetection) { %>changeDetection: ChangeDetectionStrategy.<%= options.changeDetection %>,<% } %>
-    <% if (options.viewEncapsulation) { %>encapsulation: ViewEncapsulation.<%= options.viewEncapsulation %>,<% } else { %>encapsulation: ViewEncapsulation.None,<% } %>
+    encapsulation: ViewEncapsulation.None,
+    <% if (options.changeDetection) { %>changeDetection: ChangeDetectionStrategy.<%= options.changeDetection %><% } %>
 })
 export class <%= classify(name) %>Component implements OnInit, AfterViewInit, AfterViewChecked, OnChanges<% if (options.hasSearchBar || options.enableRemoteDataHandling) { %>, OnDestroy<% } %> {
   <%= injections %>
@@ -215,10 +209,9 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
     @ViewChild(MatSort) private sort!: MatSort;
     @ViewChild(MatPaginator) private paginator!: MatPaginator
     @ViewChild(MatTable) private table!: MatTable<Entity>;
-    @ViewChild(<%= classify(name) %>ColumnMenuComponent) private columMenuComponent!: <%= classify(name) %>ColumnMenuComponent;
 
     @ViewChild('searchInput') searchInput!: ElementRef;
-    @ViewChild(<%= classify(name) %>CommandBarComponent) commandBar: <%= classify(name) %>CommandBarComponent;
+    @ViewChild(<%= classify(name) %>CommandBarComponent) commandBar!: <%= classify(name) %>CommandBarComponent;
 
     @HostBinding("attr.style")
     public get valueAsStyle():  SafeStyle | undefined {
@@ -241,11 +234,13 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
     columnToSort:{sortColumnName: string, sortDirection: SortDirection} = {sortColumnName:'<%= options.defaultSortingCol %>', sortDirection : 'asc'};
     // The list of column names that are displayed in the table, including NON_DATA_COLUMNS
     displayedColumns: <%= tableColumnsEnumName %>[] = [];
+    // The list of column names that are displayed in the table, excluding NON_DATA_COLUMNS
+    customizableColumns: <%= tableColumnsEnumName %>[] = [];
     // The list of available columns to select
-    columns: Array<Column> = [];
+    columns: Column[] = [];
 
     <% if (options.hasSearchBar) { %>
-        configs: Array<Config> = [];
+        configs: Config[] = [];
     <% } %>
 
     filteredData: Entity[] = [];
@@ -295,14 +290,14 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
     }
 
     ngOnChanges(changes: SimpleChanges): void {
-        if (changes.hideColumns && !changes.hideColumns.isFirstChange()) {
+        if (changes['hideColumns'] && !changes['hideColumns'].isFirstChange()) {
             this.initializeColumns();
         }
 
         <% if (options.enableRemoteDataHandling) { %>
             if (
-                (changes?.remoteAPI?.currentValue && !changes.remoteAPI.isFirstChange()) ||
-                (changes?.customFilterExtension?.currentValue && !changes.customFilterExtension.isFirstChange())
+                (changes?.['remoteAPI']?.currentValue && !changes['remoteAPI'].isFirstChange()) ||
+                (changes?.['customFilterExtension']?.currentValue && !changes['customFilterExtension'].isFirstChange())
             ) {
                 if (this.paginator.pageIndex !== 0) {
                     this.paginator.firstPage();
@@ -345,6 +340,7 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
         this.displayedColumns = Object.values(<%= tableColumnsEnumName %>).filter(
             column => !this.hideColumns.includes(column)
         );
+       this.customizableColumns = this.displayedColumns.filter(column => !NON_DATA_COLUMNS.includes(column));
 
         const columnStorage = this.storageService.getItem(this.<%= options.localStorageKeyColumns %>);
 
@@ -394,6 +390,10 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
     sortData(): void {
         this.applyFilters();
     }
+
+    public trackBy = (_index: number, item: Entity): string => {
+      return item.toString() + this.highlightString.join();
+    };
 
     rowClicked(row: any, $event: MouseEvent): boolean {
         if (this.highlightSelectedRow) {
@@ -546,9 +546,7 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
 
              <% if (options.hasSearchBar) { %>
                  dataTemp = this.filterService.applyStringSearchFilter(dataTemp);
-                this.highlightString = this.filterService.activeFilters
-                    .filter(elem => elem.type === FilterEnums.Search && elem.filterValue !== undefined)
-                    .map(elem => elem.filterValue as string);
+                 this.updateHighlightString();
              <% } %>
 
              <% if (options.isDateQuickFilter) { %>
@@ -636,17 +634,6 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
         }
     <% } %>
 
-    initOpenedColumnMenuDialog(): void {
-        this.columMenuComponent.keyLocalStorage = this.<%= options.localStorageKeyColumns %>;
-        this.columMenuComponent.columnsDefault = [
-            ...Object.values(<%= tableColumnsEnumName %>)
-            .filter(columnName => this.isAvailableDataColumn(columnName))
-            .map(columnName => ({name: columnName, selected: true})),
-        ];
-        this.columMenuComponent.columns.splice(0, this.columMenuComponent.columns.length);
-        this.columMenuComponent.columns.push(...this.columns);
-    }
-
     <% if (options.hasSearchBar) { %>
         setConfiguration(configs: Array<Config>): void {
             this.configs = [...configs];
@@ -670,6 +657,7 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
 
         displayedColumnsTmp.push({name: <%= tableColumnsEnumName %>['COLUMNS_MENU'], selected: true});
 
+        this.storageService.setItem(this.<%= options.localStorageKeyColumns %>, columns)
         this.columns = [...columns];
         this.displayedColumns = displayedColumnsTmp.filter(column => column.selected).map(column => column.name as <%= tableColumnsEnumName %>);
     }
@@ -710,5 +698,13 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
 
     private isAvailableDataColumn(column: <%= tableColumnsEnumName %>): boolean {
         return !(Array.isArray(this.hideColumns) && this.hideColumns.includes(column)) && !NON_DATA_COLUMNS.includes(column);
+    }
+
+    private updateHighlightString(): void {
+      this.highlightString = this.filterService.activeFilters
+        .filter(({type, filterValue}) => type === FilterEnums.Search && !!filterValue)
+        .map(filter => {
+          return filter.filterValue as string;
+        });
     }
 }

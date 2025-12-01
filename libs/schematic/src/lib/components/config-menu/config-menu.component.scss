@@ -1,0 +1,33 @@
+.menu-actions-container {
+  display: flex;
+  align-items: center;
+  align-content: space-around;
+  padding: 16px 16px 8px 16px;
+  min-width: 450px;
+
+  .column-menu {
+    &-restore-btn {
+      align-self: flex-start;
+    }
+
+    &-cancel-btn {
+      cursor: pointer;
+      margin: 0 8px;
+    }
+  }
+
+  .config-menu {
+    &-cancel-btn {
+      cursor: pointer;
+      margin: 0 8px;
+    }
+  }
+
+  .mat-mdc-menu-panel {
+    max-width: max-content !important;
+  }
+
+  .spacer {
+    flex: 1 1 auto;
+  }
+}

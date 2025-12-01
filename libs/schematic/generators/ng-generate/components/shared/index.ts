@@ -31,8 +31,6 @@ import {
   generateCustomService,
   generateFilterService,
   generateGeneralStyle,
-  generateShowDescriptionPipe,
-  generateValidateInputDirective,
 } from './generators/index';
 import {APP_SHARED_MODULES, cardModules, formModules, tableModules, updateSharedModule} from '../../../utils/modules';
 import {WIZARD_CONFIG_FILE} from '../../prompter/index';
@@ -235,12 +233,10 @@ export function setTemplateOptionValuesRule(): Rule {
 export function generateGeneralFilesRules(): Array<Rule> {
   return [
     generateFilterService(options),
-    generateGeneralStyle(options),
+    // TODO remove the method call generateGeneralStyle(options),
     generateTranslationFiles(options, false),
     wrapBuildComponentExecution(options),
     generateCustomService(options),
-    generateValidateInputDirective(options),
-    generateShowDescriptionPipe(options),
     generateSemanticExplanation(options as Values),
   ];
 }

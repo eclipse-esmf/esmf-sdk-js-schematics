@@ -1,5 +1,9 @@
 /** <%= options.generationDisclaimerText %> **/
-import {Component, EventEmitter, Input, Output, ViewChild, AfterViewInit, ElementRef, HostListener, QueryList, ViewChildren, TemplateRef} from '@angular/core';
+<%
+  var addConfigMenu = options.componentType === 'table' && options.hasSearchBar;
+%>
+
+import {Component, EventEmitter, Input, Output, ViewChild, AfterViewInit, inject, ElementRef, HostListener, QueryList, ViewChildren, TemplateRef, ViewEncapsulation} from '@angular/core';
 import {SelectionModel} from "@angular/cdk/collections";
 import { MatDialog } from '@angular/material/dialog';
 
@@ -15,32 +19,63 @@ import { MatDialog } from '@angular/material/dialog';
     import {<%= classify(name) %>CardValues} from './<%= dasherize(name) %>.component';
 <% } %>
 
-<% if (options.componentType === 'table' && options.hasSearchBar) { %>
-    import {Config} from "./<%= dasherize(name) %>.component";
-    import {<%= classify(name) %>ConfigMenuComponent} from './<%= dasherize(name) %>-config-menu.component';
+<% if (addConfigMenu) { %>
+    import {Config, EsmfConfigMenuComponent} from '@esmf/semantic-ui-schematic';
 <% } %>
+import {MatToolbar} from '@angular/material/toolbar';
+import {MatError, MatFormField, MatHint} from '@angular/material/form-field';
+import {MatLabel} from '@angular/material/form-field';
+import {ReactiveFormsModule} from '@angular/forms';
+import {MatIcon} from '@angular/material/icon';
+import {MatSelectModule} from '@angular/material/select';
+import {MatTooltip} from '@angular/material/tooltip';
+import {MatMenuModule} from '@angular/material/menu';
+import {MatIconButton} from '@angular/material/button';
+import {MatInput} from '@angular/material/input';
 
 @Component({
     selector: '<%= dasherize(name) %>-command-bar',
+    imports: [
+      <% if (addConfigMenu) { %>
+        EsmfConfigMenuComponent,
+      <% } %>
+      MatToolbar,
+      MatFormField,
+      MatLabel,
+      ReactiveFormsModule,
+      MatError,
+      MatHint,
+      MatIcon,
+      MatSelectModule,
+      MatTooltip,
+      MatMenuModule,
+      MatIconButton,
+      MatInput
+    ],
     templateUrl: './<%= dasherize(name) %>-command-bar.component.html',
     styleUrls: ['./<%= dasherize(name) %>-command-bar.component.scss'],
-    standalone: false
+    encapsulation: ViewEncapsulation.None,
+    host: {class: 'js-sdk-command-bar' }
 })
 export class <%= classify(name) %>CommandBarComponent implements AfterViewInit {
+    private dialog = inject(MatDialog);
+    <% if (options.hasFilters || (options.componentType === 'card' && options.addCommandBar)) { %>
+      public filterService = inject(<%= classify(name) %>FilterService);
+    <% } %>
     @Input() isMultipleSelectionEnabled = true;
     @Input() isToolbarActionsEnabled = true;
     @Input() selection = new SelectionModel<any>(this.isMultipleSelectionEnabled, []);
     @Input() totalItems = 0;
     @Input() searchFocused = false;
-    @Input() allowedCharacters: string = '';
-    @Input() minNumberCharacters: number = 2;
-    @Input() maxNumberCharacters: number = 50;
+    @Input() allowedCharacters = '';
+    @Input() minNumberCharacters = 2;
+    @Input() maxNumberCharacters = 50;
     @Input() searchHint?: string;
-    @Input() <%= options.localStorageKeyConfig %>: string = '';
+    @Input() <%= options.localStorageKeyConfig %> = '';
 
-    <% if (options.componentType === 'table' && options.hasSearchBar) { %>
-        @Input() configs: Array<Config> = [];
-        @Input() hasAdvancedSearch: boolean = this.filterService.stringColumns.length > 1;
+    <% if (addConfigMenu) { %>
+        @Input() configs: Config[] = [];
+        @Input() hasAdvancedSearch = this.filterService.stringColumns.length > 1;
     <% } %>
 
     @Output() applyFilters = new EventEmitter<void>();
@@ -51,9 +86,9 @@ export class <%= classify(name) %>CommandBarComponent implements AfterViewInit {
         @Output() customCommandBarActionEvent = new EventEmitter<any>();
     <% } %>
 
-    <% if (options.componentType === 'table' && options.hasSearchBar) { %>
-        @Output() setConfiguration = new EventEmitter<Array<Config>>();
-        @ViewChild(<%= classify(name) %>ConfigMenuComponent) private configurationComponent!: <%= classify(name) %>ConfigMenuComponent;
+    <% if (addConfigMenu) { %>
+        @Output() setConfiguration = new EventEmitter<Config[]>();
+        @ViewChild(EsmfConfigMenuComponent) private configurationComponent!: EsmfConfigMenuComponent;
     <% } %>
 
     <% if (options.componentType === 'card') { %>
@@ -72,11 +107,11 @@ export class <%= classify(name) %>CommandBarComponent implements AfterViewInit {
     hiddenComponents: any[] = [];
     initialCompWidths : any[]= [];
 
-    constructor(<% if (options.hasFilters || (options.componentType === 'card' && options.addCommandBar)) { %>public filterService: <%= classify(name) %>FilterService,<% } %> public dialog: MatDialog) {
-        <% if (options.componentType === 'card') { %>
-            this.filterService.sortedProperty = this.<%= camelize(name) %>CardValues[0];
-        <% } %>
-    }
+    <% if (options.componentType === 'card') { %>
+      constructor() {
+        this.filterService.sortedProperty = this.<%= camelize(name) %>CardValues[0];
+      }
+    <% } %>
 
     <% for(let property of propValues) { %>
       <% if ((options.isEnumQuickFilter && property.isEnum) || (options.isDateQuickFilter && property.isDate) ) { %>
@@ -111,7 +146,7 @@ export class <%= classify(name) %>CommandBarComponent implements AfterViewInit {
         }
     <% } %>
 
-    <% if (options.componentType === 'table' && options.hasSearchBar) { %>
+    <% if (addConfigMenu) { %>
         triggerInitOpenedConfigurationDialog(): void {
             this.configurationComponent.keyLocalStorage = this.<%= options.localStorageKeyConfig %>;
             this.configurationComponent.configs.splice(0, this.configurationComponent.configs.length);
@@ -175,9 +210,9 @@ export class <%= classify(name) %>CommandBarComponent implements AfterViewInit {
       return this.hiddenComponents.includes(id);
     }
 
-    <% if (options.componentType === 'table' && options.hasSearchBar) { %>
+    <% if (addConfigMenu) { %>
       openSettingsFromCollapsed() {
-        const configMenuDialogRef =  this.dialog.open(<%= classify(name) %>ConfigMenuComponent,{
+        const configMenuDialogRef =  this.dialog.open(EsmfConfigMenuComponent, {
               data: { configs: this.configs, keyLocalStorage: this.<%= options.localStorageKeyConfig %>},
             }
         );
