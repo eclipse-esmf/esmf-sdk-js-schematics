@@ -164,6 +164,8 @@
     "export": "Export",
     "noLink": "No link",
     "toolbar": {
+        "item": "Item",
+        "item.plural": "Items",
         "sorted_tooltip": "Sort data by property",
         "sort_dir_tooltip": "Sort data direction",
         "sort_by": "Sorted by",

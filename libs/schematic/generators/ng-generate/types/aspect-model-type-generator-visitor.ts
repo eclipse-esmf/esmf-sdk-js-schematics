@@ -33,19 +33,16 @@ import {isLangString, processType, resolveJsPropertyType} from '../components/sh
 import {
   MultiLanguageText
 } from '@esmf/aspect-model-loader/dist/instantiator/characteristic/characteristic-instantiator-util';
+import {ComponentType} from '../components/shared/schema';
 
 export function visitAspectModel(options: TypesSchema): Rule {
   return async (tree: Tree) => {
     const visitor = new AspectModelTypeGeneratorVisitor(options);
     const aspect: Aspect = options.aspectModel;
-    const aspectName = dasherize(aspect.name);
-    const aspectModelVersion = 'v' + options.aspectModelVersion.replace(/\./g, '');
 
     visitor.visit(aspect);
     const generatedTypeDefinitions = visitor.getGeneratedTypeDefinitions();
-    const pathToFile = `${options.path}/${aspectName}${
-      options.enableVersionSupport ? '/' + aspectModelVersion : ''
-    }/${aspectName}.types.ts`;
+    const pathToFile = `${buildTypesFilePath(options)}/${buildTypesFileName(options)}`;
 
     if (tree.exists(pathToFile)) {
       tree.overwrite(pathToFile, generatedTypeDefinitions);
@@ -53,6 +50,25 @@ export function visitAspectModel(options: TypesSchema): Rule {
       tree.create(pathToFile, generatedTypeDefinitions);
     }
   };
+}
+
+export function buildTypesFilePath(options: TypesSchema): string {
+  const selectedModel = dasherize(options.selectedModelElement?.name).toLowerCase();
+  const aspectModelVersion = 'v' + options.aspectModelVersion.replace(/\./g, '');
+  const folderName = options.name === ComponentType.TYPES ? selectedModel : `${selectedModel}-${options.name}`;
+
+
+  return [
+    options.path,
+    folderName,
+    options.enableVersionSupport ? aspectModelVersion : null
+  ]
+    .filter(chunk => !!chunk)
+    .join('/');
+}
+
+function buildTypesFileName(options: TypesSchema): string {
+  return `${dasherize(options.aspectModel.name)}.types.ts`;
 }
 
 export class AspectModelTypeGeneratorVisitor extends DefaultAspectModelVisitor<BaseMetaModelElement, void> {

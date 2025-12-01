@@ -6,5 +6,4 @@
 <% } %>
 
 import {AbstractArrayNode, AbstractNode, And, Eq, Limit, Query, QueryStringifier, Sort} from 'rollun-ts-rql';
-// TODO check on working example
-// import {SortOptions} from "rollun-ts-rql/dist/nodes/Sort";
+import {SortOptions} from "rollun-ts-rql/dist/nodes/Sort";

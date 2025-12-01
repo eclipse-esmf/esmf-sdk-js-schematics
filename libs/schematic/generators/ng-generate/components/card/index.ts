@@ -51,12 +51,9 @@ export function generateCard(cardSchema: Schema): Rule {
     insertVersionIntoPathRule(),
     setTemplateOptionValuesRule(),
     ...generateGeneralFilesRules(),
-    ...cardSpecificGeneration(),
+    generateCardComponent(options),
+    generateExportCardDialog(options),
     ...addAndUpdateConfigurationFilesRule(),
     formatAllFilesRule(),
   ]);
-}
-
-function cardSpecificGeneration(): Array<Rule> {
-  return [generateCardComponent(options), generateExportCardDialog(options)];
 }

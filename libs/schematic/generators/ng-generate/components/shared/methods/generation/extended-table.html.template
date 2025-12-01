@@ -5,6 +5,7 @@
             matSort
             matSortDisableClear="true"
             [matSortDisabled]="dragging"
+            [trackBy]="trackBy"
             (matSortChange)="sortData()"
             [matSortActive]="columnToSort.sortColumnName" [matSortDirection]="columnToSort.sortDirection"
             [ngClass]="customTableClass"
@@ -39,7 +40,7 @@
                     let isEmptyValue = `row.${cellPropertyPath} === null || row.${cellPropertyPath} === undefined`;
                     let propertyLocaleKeyPath = `${options.templateHelper.getVersionedAccessPrefix(options)}${options.isAspectSelected ? options.jsonAccessPath : ''}${value.complexPrefix}${value.property.name}`;
                     let datePipe = options.templateHelper.isDateTimeProperty(value.property) ? `| date: ${options.resolveDateTimeFormat(options, value.property)}` : '';
-                    let descriptionPipe = options.templateHelper.isEnumPropertyWithEntityValues(value.property) ? ` | showDescription:get${classify(value.property.name)}Value` : '';
+                    let descriptionPipe = options.templateHelper.isEnumPropertyWithEntityValues(value.property) ? ` | esmfShowDescription:get${classify(value.property.name)}Value` : '';
                     let cellContent = `!(${isEmptyValue}) ? (row.${cellPropertyPath}${descriptionPipe}${language}${datePipe})  : '-'`;
                     let isLink = options.templateHelper.isLinkProperty(value.property)
                 %>
@@ -48,7 +49,7 @@
                 <ng-container data-test="table-column" matColumnDef="<%= cellPropertyPath %>">
                     <th data-test="table-header" mat-header-cell *matHeaderCellDef mat-sort-header="<%= cellPropertyPath %>"
                         <%= options.templateHelper.isNumberProperty(value.property) ? `class="table-header-number"` : '' %>
-                        [resizeColumn]="true" [index]="<%= value.index %>" (dragging)='dragging = $event'
+                        [esmfResizeColumn]="true" (dragging)='dragging = $event'
                     >
                         <span data-test="table-header-text">
                             {{ '<%= propertyLocaleKeyPath %>.preferredName' | transloco }}
@@ -101,7 +102,7 @@
                     <ng-container data-test="custom-column-container" matColumnDef="<%= columnName %>">
                         <% if(options.enableVersionSupport) { %>
                             <th data-test="custom-column-header" mat-header-cell *matHeaderCellDef mat-sort-header
-                                [resizeColumn]="true" [index]="<%= customColumnIndex %>" (dragging)='dragging = $event'>
+                                [esmfResizeColumn]="true" (dragging)='dragging = $event'>
                                 <span data-test="table-header-text">
                                     {{'<%= options.selectedModelTypeName.toLowerCase() %>.v<%= options.formatedAspectModelVersion %>.customColumn.<%= columnName %>' | transloco }}
                                 </span>
@@ -117,7 +118,7 @@
                             </th>
                         <% } else { %>
                             <th data-test="custom-column-header" mat-header-cell *matHeaderCellDef mat-sort-header
-                                [resizeColumn]="true" [index]="<%= customColumnIndex %>" (dragging)='dragging = $event'>
+                                [esmfResizeColumn]="true" (dragging)='dragging = $event'>
                                 <span data-test="table-header-text">
                                     {{ '<%= options.selectedModelTypeName.toLowerCase() %>.customColumn.<%= columnName %>' | transloco }}
                                 </span>
@@ -149,7 +150,7 @@
                         class="mat-table-menu-button"
                         [matMenuTriggerFor]="columnMenu"
                         [matTooltip]="'tableActions.openColumnsMenu' | transloco"
-                        (menuOpened)="initOpenedColumnMenuDialog()">
+                        >
                             <mat-icon data-test="mat-table-menu-icon" class="material-icons">settings</mat-icon>
                     </button>
                 </th>
@@ -164,12 +165,12 @@
         </table>
 
         <mat-menu data-test="column-menu" #columnMenu="matMenu" class="column-menu">
-            <<%= dasherize(name) %>-column-menu (columnsChangedEvent)="setDisplayedColumns($event)"></<%= dasherize(name) %>-column-menu>
+            <esmf-column-menu [defaultColumns]="customizableColumns" [columns]="columns" (columnsChangedEvent)="setDisplayedColumns($event)"></esmf-column-menu>
         </mat-menu>
 
         <% if (options.hasSearchBar) { %>
            <mat-menu data-test="column-menu" class="column-menu">
-               <<%= dasherize(name) %>-config-menu (configChangedEvent)="setConfiguration($event)"></<%= dasherize(name) %>-config-menu>
+               <esmf-config-menu (configChangedEvent)="setConfiguration($event)"></esmf-config-menu>
            </mat-menu>
         <% } %>
 
