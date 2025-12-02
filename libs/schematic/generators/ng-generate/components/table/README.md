@@ -32,7 +32,7 @@ Files which are also automatically generated, but not included in the component'
 2. `highlight.directive.ts` under `src/app/shared/directives`
 3. `horizontal-overflow.ts` under `src/app/shared/directives`
 4. `validate-input.ts` under `src/app/shared/directives`
-5. `storage.service.ts` under `src/app/shared/services`
+5. `local-storage.service.ts` under `src/app/shared/services`
 6. `show-descripiton.ts` under `src/app/shared/pipes`
 7. `general.component.<style-extension>` under `src/assets/scss`
 8. `export-table.dialot.component.ts` under `src/app/shared/export-confirmation-dialog`
