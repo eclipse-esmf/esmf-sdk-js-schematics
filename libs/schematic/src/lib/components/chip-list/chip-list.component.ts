@@ -5,11 +5,12 @@ import {FilterEnums, FilterType} from '../../models/filter.definition';
 import {MatMiniFabButton} from '@angular/material/button';
 import {MatChipListbox, MatChipOption} from '@angular/material/chips';
 import {EsmfHorizontalOverflowDirective} from '../../directives/horizontal-overflow.directive';
+import {TranslocoDirective} from '@jsverse/transloco';
 
 @Component({
   selector: 'esmf-chip-list',
   templateUrl: './chip-list.component.html',
-  imports: [MatIcon, MatTooltip, MatMiniFabButton, MatChipListbox, MatChipOption, EsmfHorizontalOverflowDirective],
+  imports: [MatIcon, MatTooltip, MatMiniFabButton, MatChipListbox, MatChipOption, EsmfHorizontalOverflowDirective, TranslocoDirective],
   styleUrls: ['./chip-list.component.scss'],
   encapsulation: ViewEncapsulation.None,
   host: {class: 'esmf-chip-list'},
