@@ -1,0 +1,36 @@
+import {And, Query} from 'rollun-ts-rql';
+
+/**
+ * Interface of a CustomRQLFilterExtension which will be used to
+ * modify the RQL query before the API service will be called to query
+ * the backend.
+ */
+export interface CustomRQLFilterExtension {
+  /**
+   * Apply modification to the given RQL query
+   */
+  apply(query: And): void;
+}
+
+/**
+ * Interface of a CustomRQLOptionExtension which will be used to
+ * modify the RQL query before the API service will be called to query
+ * the backend.
+ */
+export interface CustomRQLOptionExtension {
+  /**
+   * Apply modification to the given RQL query
+   */
+  apply(query: Query): void;
+}
+
+/**
+ * Interface of ExtendedCsvExporter which will used to export data
+ * from a remote backend.
+ */
+export interface ExtendedCsvExporter {
+  /**
+   * Exports the all data
+   */
+  export(displayedColumns: string[], rqlQuery: string): void;
+}
