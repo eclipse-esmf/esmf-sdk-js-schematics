@@ -46,7 +46,6 @@ import {MatTableDataSource} from "@angular/material/table";
 
 <% if (options.enableRemoteDataHandling) { %>
     <%= options.include('/remote-handling/imports.ts.template') %>
-    <%= options.include('/remote-handling/custom-rql-filter-extensions.ts.template') %>
 <% } else { %>
     import {<%= classify(name) %>Service} from './<%= dasherize(name) %>.service';
 <% } %>
