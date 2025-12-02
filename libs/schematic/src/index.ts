@@ -18,5 +18,6 @@ export * from './lib/services/remote-table-data-source.service';
 export * from './lib/services/static-table-data-source.service';
 
 export * from './lib/models/filter.definition';
+export * from './lib/models/rql-extension.definition';
 
 export * from './lib/pipes/show-description.pipe';

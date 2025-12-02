@@ -1,11 +1,11 @@
 import {CdkDragDrop, moveItemInArray} from '@angular/cdk/drag-drop';
-import {ChangeDetectionStrategy, Component, computed, input, linkedSignal, output, ViewEncapsulation} from '@angular/core';
+import {ChangeDetectionStrategy, Component, input, linkedSignal, output, ViewEncapsulation} from '@angular/core';
 import {MatDivider, MatListOption, MatSelectionList} from '@angular/material/list';
 import {MatButton} from '@angular/material/button';
 import {MatIcon} from '@angular/material/icon';
 import {MatTooltip} from '@angular/material/tooltip';
 import {DragDropModule} from '@angular/cdk/drag-drop';
-import {TranslocoPipe} from '@jsverse/transloco';
+import {TranslocoDirective} from '@jsverse/transloco';
 
 export interface Column {
   name: string;
@@ -22,7 +22,7 @@ function makeAllColumnsSelected(columns: string[]): Column[] {
   selector: 'esmf-column-menu',
   templateUrl: './column-menu.component.html',
   styleUrls: ['./column-menu.component.scss'],
-  imports: [MatSelectionList, MatDivider, MatListOption, MatButton, MatIcon, MatTooltip, DragDropModule, TranslocoPipe],
+  imports: [MatSelectionList, MatDivider, MatListOption, MatButton, MatIcon, MatTooltip, DragDropModule, TranslocoDirective],
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
   host: {class: 'esmf-column-menu'},

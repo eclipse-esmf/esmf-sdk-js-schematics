@@ -29,6 +29,7 @@ import {
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort, MatSortModule, SortDirection } from '@angular/material/sort';
 import { MatTable, MatTableModule } from '@angular/material/table';
+import {TranslocoPipe} from '@jsverse/transloco';
 
 <% if (options.hasFilters || options.hasSearchBar) { %>
     import {<%= options.filterServiceName %>} from './<%= cmpFileName %>-filter.service';
@@ -75,7 +76,6 @@ import {<% if (options.enableRemoteDataHandling) { %>catchError, finalize, tap, 
 
 <% if (options.enableRemoteDataHandling) { %>
     <%= options.include('/remote-handling/imports.ts.template') %>
-    <%= options.include('/remote-handling/custom-rql-filter-extensions.ts.template') %>
 <% } else { %>
     import {EsmfStaticTableService} from '@esmf/semantic-ui-schematic';
 <% } %>
@@ -127,6 +127,7 @@ type Entity = <%= classify(options.selectedModelTypeName) %>;
       MatIcon,
       MatTooltip,
       EsmfTableCellComponent,
+      TranslocoPipe,
       <%= classify(name) %>CommandBarComponent
     ],
     templateUrl: './<%= cmpFileName %>.component.html',
