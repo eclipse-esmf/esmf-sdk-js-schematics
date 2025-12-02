@@ -51,18 +51,14 @@
                         <%= options.templateHelper.isNumberProperty(value.property) ? `class="table-header-number"` : '' %>
                         [esmfResizeColumn]="true" (dragging)='dragging = $event'
                     >
-                        <span data-test="table-header-text">
-                            {{ '<%= propertyLocaleKeyPath %>.preferredName' | transloco }}
-                        </span>
-                        <mat-icon
-                             class="table-header-icon material-icons"
-                             *ngIf="!headerTooltipsOff"
-                             [matTooltip]="'<%= propertyLocaleKeyPath %>.description' | transloco"
-                             (click)="$event.stopPropagation()"
-                             matTooltipClass="table-column-tooltip"
-                             matTooltipPosition="above"
-                             data-test="column-info-icon"
-                        >info_outlined</mat-icon>
+                      <span
+                        [matTooltipDisabled]="headerTooltipsOff"
+                        [matTooltip]="'<%= propertyLocaleKeyPath %>.description' | transloco"
+                        matTooltipPosition="above"
+                        data-test="table-header-text"
+                      >
+                        {{ '<%= propertyLocaleKeyPath %>.preferredName' | transloco }}
+                      </span>
                     </th>
 
                     <td data-test="table-cell"
