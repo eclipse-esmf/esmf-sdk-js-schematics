@@ -44,9 +44,9 @@ async function registerFuzzyPathPrompt(): Promise<any> {
     const inquirerSearchList = await import('inquirer-search-list');
     const inquirer = await loadInquirer();
 
-    inquirer.registerPrompt('fuzzypath', inquirerFuzzyPath);
-    inquirer.registerPrompt('suggest', inquirerPromptSuggest);
-    inquirer.registerPrompt('search-list', inquirerSearchList);
+    (inquirer as any).registerPrompt('fuzzypath', inquirerFuzzyPath);
+    (inquirer as any).registerPrompt('suggest', inquirerPromptSuggest);
+    (inquirer as any).registerPrompt('search-list', inquirerSearchList);
 
     return inquirer;
   } catch (err) {

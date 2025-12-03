@@ -67,7 +67,7 @@ private requestData() {
         this.requestSubscription.unsubscribe();
     }
 
-    this.requestSubscription = this.tableService.requestData(this.remoteAPI, {query: rqlStringTemp})
+    this.requestSubscription = this.tableService.requestData(this.remoteAPI, {...this.requestParams, query: rqlStringTemp})
         .pipe(
             tap((response: Response<Entity>) => {
                 this.updateHighlightString();

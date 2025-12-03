@@ -182,6 +182,7 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
         @Input() customFilterExtension: CustomRQLFilterExtension | undefined;
         @Input() customOptionsExtension: CustomRQLOptionExtension | undefined;
         @Input() extendedCsvExporter: ExtendedCsvExporter | undefined;
+        @Input() requestParams: Record<string, string> = {};
         @Input() remoteAPI = '';
     <% } else { %>
         @Input() maxExportRows = 0;
