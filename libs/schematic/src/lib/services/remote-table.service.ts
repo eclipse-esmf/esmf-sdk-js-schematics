@@ -20,13 +20,6 @@ export class EsmfRemoteTableService<T> {
   private http = inject(HttpClient);
 
   requestData(remoteAPI: string, body: Payload) {
-    const strippedUrlParts: string[] = remoteAPI.split('?');
-    if (strippedUrlParts && strippedUrlParts.length === 2) {
-      const queryParams = new URLSearchParams(strippedUrlParts[1]);
-      queryParams.forEach((value, key) => {
-        body[key] = value;
-      });
-    }
-    return this.http.post<Response<T>>(strippedUrlParts[0], body);
+    return this.http.post<Response<T>>(remoteAPI, body);
   }
 }

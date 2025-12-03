@@ -84,7 +84,6 @@ export class AspectModelTypeGeneratorVisitor extends DefaultAspectModelVisitor<B
 
   getGeneratedTypeDefinitions(): string {
     let typeDefinitionsAsString = '';
-    // @ts-expect-error The this.typeDefinitions.values() return type is incorrectly identified
     for (const lines of this.typeDefinitions.values()) {
       typeDefinitionsAsString = typeDefinitionsAsString.concat(...lines);
     }
