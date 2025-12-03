@@ -29,16 +29,6 @@ $gray-300: #e0e0e0;
     height: 90%;
     overflow-y: auto;
 
-    .table-header-icon {
-      margin-left: 0.5rem;
-      cursor: default;
-      font-size: 20px;
-      min-width: 20px;
-      width: 20px;
-      height: 20px;
-      color: $gray-100;
-    }
-
     .full-width-table {
       min-width: 100%;
 
