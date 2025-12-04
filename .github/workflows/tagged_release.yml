@@ -58,7 +58,7 @@ jobs:
           file_pattern: 'documentation/js-sdk-guide/antora.yml'
 
       - name: Install Dependencies
-        run: npm install
+        run: npm ci --ignore-scripts
 
       - name: Set app version
         run: npm version ${{ github.event.inputs.release_version }} --no-git-tag-version
