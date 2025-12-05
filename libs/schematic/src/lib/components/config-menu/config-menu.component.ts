@@ -1,8 +1,9 @@
-import {ChangeDetectionStrategy, Component, inject, input, output, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject, input, linkedSignal, Optional, output} from '@angular/core';
+import {FormArray, FormControl, FormGroup, ReactiveFormsModule} from '@angular/forms';
 import {EsmfLocalStorageService} from '../../services/local-storage.service';
-import {MAT_DIALOG_DATA, MatDialogClose} from '@angular/material/dialog';
+import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {MatDivider} from '@angular/material/divider';
-import {MatListOption, MatSelectionList} from '@angular/material/list';
+import {MatListOption, MatSelectionList, MatSelectionListChange} from '@angular/material/list';
 import {CdkDrag, CdkDropList} from '@angular/cdk/drag-drop';
 import {TranslocoDirective} from '@jsverse/transloco';
 import {MatButton} from '@angular/material/button';
@@ -19,7 +20,16 @@ export interface Config {
   /** State if the column is selected **/
   selected: boolean;
   /** Color for the highlighted configuration **/
-  color?: string;
+  color: string;
+}
+
+type ConfigFormGroup = {
+  [K in keyof Config]: FormControl<NonNullable<Config[K]>>;
+};
+
+export interface ConfigMenuData {
+  keyLocalStorage: string;
+  configs: Config[];
 }
 
 @Component({
@@ -27,63 +37,51 @@ export interface Config {
   templateUrl: './config-menu.component.html',
   styleUrls: ['./config-menu.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [
-    MatDivider,
-    MatSelectionList,
-    CdkDropList,
-    MatListOption,
-    CdkDrag,
-    MatDialogClose,
-    MatIcon,
-    MatButton,
-    MatIcon,
-    TranslocoDirective,
-  ],
+  imports: [MatDivider, MatSelectionList, CdkDropList, MatListOption, CdkDrag, MatIcon, MatButton, TranslocoDirective, ReactiveFormsModule],
 })
 export class EsmfConfigMenuComponent {
-  isOpenedFromMatMenu = input(false);
-  configChangedEvent = output<Config[]>();
+  private readonly dialogData = inject<ConfigMenuData | null>(MAT_DIALOG_DATA, {optional: true});
+  private readonly dialogRef = inject(MatDialogRef<EsmfConfigMenuComponent, Config[]>, {optional: true});
+  private readonly storageService = inject(EsmfLocalStorageService);
 
-  private readonly storageService: EsmfLocalStorageService = inject(EsmfLocalStorageService);
-  private readonly data = inject<{configs: Config[]; keyLocalStorage: string} | null>(MAT_DIALOG_DATA, {optional: true});
+  keyLocalStorage = input<string>(this.dialogData?.keyLocalStorage ?? '');
+  configs = input<Config[]>(this.dialogData?.configs ?? []);
+  saveData = output<Config[]>();
+  closeMenu = output<void>();
 
-  keyLocalStorage = signal(this.data?.keyLocalStorage ?? '');
-  closeConfigMenu = signal(false);
-  configs = signal<Config[]>(this.data?.configs ?? []);
-  configsDefault = signal<Config[]>(JSON.parse(JSON.stringify(this.data?.configs ?? [])));
+  configsForm = linkedSignal<Config[], FormArray<FormGroup<ConfigFormGroup>>>({
+    source: this.configs,
+    computation: (newOptions, previous) => {
+      previous?.value?.clear();
+      const controls = newOptions.map(config => this.createConfigFormGroup(config));
+      return new FormArray(controls);
+    },
+  });
 
-  closeMenu() {
-    this.configs.set(JSON.parse(JSON.stringify(this.configsDefault())));
-    this.closeConfigMenu.set(true);
+  cancel() {
+    this.configsForm().reset();
+    return this.dialogRef ? this.dialogRef.close() : this.closeMenu.emit();
   }
 
-  stopMenuClosing(event: MouseEvent) {
-    if (this.isOpenedFromMatMenu()) {
-      if (this.closeConfigMenu()) {
-        return;
-      }
-      event.stopPropagation();
-    }
+  save() {
+    const configs: Config[] = this.configsForm().controls.map(group => group.getRawValue());
+    this.storageService.setItem(this.keyLocalStorage(), configs);
+    this.saveData.emit(configs);
+    return this.dialogRef ? this.dialogRef.close(configs) : this.closeMenu.emit();
   }
 
-  configClick(event: MouseEvent, config: Config) {
-    config.selected = !config.selected;
-    event.preventDefault();
-    event.stopPropagation();
+  onSelectionChange(event: MatSelectionListChange) {
+    const index = event.options[0].value as number;
+    const isSelected = event.options[0].selected;
+    this.configsForm().at(index).controls.selected.setValue(isSelected);
   }
 
-  colorChange(event: Event, config: Config) {
-    config.color = (event.target as HTMLInputElement).value;
-    event.preventDefault();
-    event.stopPropagation();
-  }
-
-  /**
-   * Store columns locally and update displayed columns afterward
-   */
-  storeConfig() {
-    this.closeConfigMenu.set(true);
-    this.storageService.setItem(this.keyLocalStorage(), this.configs());
-    this.configChangedEvent.emit(this.configs());
+  private createConfigFormGroup(config: Config) {
+    return new FormGroup<ConfigFormGroup>({
+      name: new FormControl(config.name, {nonNullable: true}),
+      desc: new FormControl(config.desc, {nonNullable: true}),
+      selected: new FormControl(config.selected, {nonNullable: true}),
+      color: new FormControl(config.color, {nonNullable: true}),
+    });
   }
 }

@@ -79,7 +79,7 @@ import {<% if (options.enableRemoteDataHandling) { %>catchError, finalize, tap, 
 <% } else { %>
     import {EsmfStaticTableService} from '@esmf/semantic-ui-schematic';
 <% } %>
-import {MatMenu, MatMenuModule} from '@angular/material/menu';
+import {MatMenu, MatMenuModule, MatMenuTrigger} from '@angular/material/menu';
 import {MatIconButton} from '@angular/material/button';
 import {NgClass} from '@angular/common';
 import {MatTooltip} from '@angular/material/tooltip';
@@ -214,6 +214,7 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
 
     @ViewChild('searchInput') searchInput!: ElementRef;
     @ViewChild(<%= classify(name) %>CommandBarComponent) commandBar!: <%= classify(name) %>CommandBarComponent;
+    @ViewChild(MatMenuTrigger) trigger!: MatMenuTrigger;
 
     @HostBinding("attr.style")
     public get valueAsStyle():  SafeStyle | undefined {
@@ -666,6 +667,10 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
 
     loadCustomTemplate(): TemplateRef<any> | null {
         return this.customTemplate ? this.customTemplate as TemplateRef<any> : null;
+    }
+
+    closeConfigMenu() {
+        this.trigger.closeMenu();
     }
 
     <% if (!options.enableRemoteDataHandling) { %>
