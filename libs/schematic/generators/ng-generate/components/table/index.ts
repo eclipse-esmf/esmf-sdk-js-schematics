@@ -61,6 +61,6 @@ export function generateTable(tableSchema: TableSchema): Rule {
     generateSemanticExplanation(options as Values),
     generateTableComponent(options as TableSchema),
     // TODO check how we can handle it at in standalone app ...addAndUpdateConfigurationFilesRule(),
-    formatAllFilesRule(),
+    formatAllFilesRule(ComponentType.TABLE),
   ]);
 }

@@ -13,12 +13,12 @@
 
 import {Rule, SchematicContext, Tree} from '@angular-devkit/schematics';
 import * as fs from 'fs';
+import * as path from 'path';
 import {DefaultSchema} from '../ng-generate/default-schema';
-
 import * as prettier from 'prettier';
 
 // this resolves the config provided by the schematics lib
-const defaultPrettierConfigPath = require.resolve('../../../../.prettierrc');
+const defaultPrettierConfigPath = path.resolve(__dirname, '../../../../.prettierrc');
 
 export function loadAndApplyConfigFile(configFile: string, options: any): void {
   try {
