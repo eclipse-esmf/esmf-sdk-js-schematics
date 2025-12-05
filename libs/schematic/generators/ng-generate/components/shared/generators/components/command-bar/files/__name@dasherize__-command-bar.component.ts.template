@@ -5,7 +5,7 @@
 
 import {Component, EventEmitter, Input, Output, ViewChild, AfterViewInit, inject, ElementRef, HostListener, QueryList, ViewChildren, TemplateRef, ViewEncapsulation} from '@angular/core';
 import {SelectionModel} from "@angular/cdk/collections";
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 
 <% if (options.hasFilters || (options.componentType === 'card' && options.addCommandBar)) { %>
     import {<%= classify(name) %>FilterService
@@ -29,7 +29,7 @@ import {ReactiveFormsModule} from '@angular/forms';
 import {MatIcon} from '@angular/material/icon';
 import {MatSelectModule} from '@angular/material/select';
 import {MatTooltip} from '@angular/material/tooltip';
-import {MatMenuModule} from '@angular/material/menu';
+import {MatMenuModule, MatMenuTrigger} from '@angular/material/menu';
 import {MatIconButton} from '@angular/material/button';
 import {MatInput} from '@angular/material/input';
 import {TranslocoPipe} from '@jsverse/transloco';
@@ -90,7 +90,9 @@ export class <%= classify(name) %>CommandBarComponent implements AfterViewInit {
 
     <% if (addConfigMenu) { %>
         @Output() setConfiguration = new EventEmitter<Config[]>();
-        @ViewChild(EsmfConfigMenuComponent) private configurationComponent!: EsmfConfigMenuComponent;
+        @ViewChild(EsmfConfigMenuComponent) configMenu!: EsmfConfigMenuComponent;
+        @ViewChild(MatMenuTrigger) trigger!: MatMenuTrigger;
+        configMenuDialogRef: MatDialogRef<EsmfConfigMenuComponent> | null = null;
     <% } %>
 
     <% if (options.componentType === 'card') { %>
@@ -149,12 +151,6 @@ export class <%= classify(name) %>CommandBarComponent implements AfterViewInit {
     <% } %>
 
     <% if (addConfigMenu) { %>
-        triggerInitOpenedConfigurationDialog(): void {
-            this.configurationComponent.keyLocalStorage = this.<%= options.localStorageKeyConfig %>;
-            this.configurationComponent.configs.splice(0, this.configurationComponent.configs.length);
-            this.configurationComponent.configs.push(...this.configs.map(config => ({...config})));
-        }
-
         triggerSetConfiguration(config: Array<Config>): void {
           this.setConfiguration.emit(config);
         }
@@ -213,13 +209,23 @@ export class <%= classify(name) %>CommandBarComponent implements AfterViewInit {
     }
 
     <% if (addConfigMenu) { %>
+      closeConfigMenu() {
+        this.trigger.closeMenu();
+        this.configMenuDialogRef?.close(false);
+        this.configMenuDialogRef = null;
+      }
+
       openSettingsFromCollapsed() {
-        const configMenuDialogRef =  this.dialog.open(EsmfConfigMenuComponent, {
-              data: { configs: this.configs, keyLocalStorage: this.<%= options.localStorageKeyConfig %>},
-            }
-        );
-        configMenuDialogRef.afterClosed().subscribe((result) =>{ if(result){
-          this.triggerSetConfiguration(result)}
+        this.configMenuDialogRef = this.dialog.open(EsmfConfigMenuComponent, {
+          data: {
+            keyLocalStorage: this.<%= options.localStorageKeyConfig %>,
+            configs: this.configs
+          }
+        });
+        this.configMenuDialogRef.afterClosed().subscribe(result => {
+          if (result) {
+            this.triggerSetConfiguration(result);
+          }
         });
       }
     <% } %>

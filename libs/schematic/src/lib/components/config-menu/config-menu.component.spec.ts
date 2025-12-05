@@ -13,7 +13,7 @@
 
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {ComponentRef} from '@angular/core';
-import {MatDialogRef, MAT_DIALOG_DATA} from '@angular/material/dialog';
+import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {By} from '@angular/platform-browser';
 import {EsmfConfigMenuComponent, Config} from './config-menu.component';
 import {EsmfLocalStorageService} from '../../services/local-storage.service';
@@ -37,12 +37,10 @@ describe('EsmfConfigMenuComponent', () => {
       stopPropagation: jest.fn(),
     } as unknown as MouseEvent);
 
-  const setupComponent = async (dialogData?: {configs: Config[]; keyLocalStorage: string} | null) => {
+  const setupComponent = async (configs?: Config[], keyLocalStorage = 'test-key') => {
     await TestBed.configureTestingModule({
       imports: [EsmfConfigMenuComponent, getTranslocoTestingModule({langs: {en: {}, de: {}}})],
       providers: [
-        {provide: MAT_DIALOG_DATA, useValue: dialogData},
-        {provide: MatDialogRef, useValue: {close: jest.fn()}},
         {provide: EsmfLocalStorageService, useValue: {setItem: jest.fn()}},
       ],
     }).compileComponents();
@@ -51,46 +49,81 @@ describe('EsmfConfigMenuComponent', () => {
     fixture = TestBed.createComponent(EsmfConfigMenuComponent);
     component = fixture.componentInstance;
     componentRef = fixture.componentRef;
+
+    if (configs) {
+      componentRef.setInput('configs', configs);
+      componentRef.setInput('keyLocalStorage', keyLocalStorage);
+    }
   };
 
   describe('Component Initialization', () => {
-    describe('with MAT_DIALOG_DATA', () => {
+    describe('with configs input', () => {
       const mockConfigs = createMockConfigs();
-      const mockData = {configs: mockConfigs, keyLocalStorage: 'test-key'};
 
-      beforeEach(async () => await setupComponent(mockData));
+      beforeEach(async () => {
+        await setupComponent(mockConfigs);
+        fixture.detectChanges();
+      });
 
-      it('should initialize with provided configs from dialog data', () => {
+      it('should initialize with provided configs', () => {
         expect(component.configs()).toEqual(mockConfigs);
-        expect(component.configsDefault()).toEqual(mockConfigs);
         expect(component.keyLocalStorage()).toBe('test-key');
       });
 
-      it('should create deep copy of configs for configsDefault', () => {
-        expect(component.configsDefault()).not.toBe(component.configs());
-        expect(component.configsDefault()).toEqual(component.configs());
+      it('should initialize form with correct number of controls', () => {
+        expect(component.configsForm().length).toBe(3);
+      });
+
+      it('should initialize form controls with config values', () => {
+        expect(component.configsForm().at(0).value).toEqual({
+          name: 'config.name1',
+          desc: 'config.desc1',
+          selected: true,
+          color: '#ff0000',
+        });
+        expect(component.configsForm().at(1).value.selected).toBe(false);
+        expect(component.configsForm().at(2).value.selected).toBe(true);
+      });
+
+      it('should reinitialize form when configs input changes', () => {
+        // Initial state
+        expect(component.configsForm().at(0).value.selected).toBe(true);
+        expect(component.configsForm().at(1).value.selected).toBe(false);
+
+        // Simulate config change from parent
+        const updatedConfigs: Config[] = [
+          {name: 'config.name1', desc: 'config.desc1', selected: false, color: '#ff0000'},
+          {name: 'config.name2', desc: 'config.desc2', selected: true, color: '#00ff00'},
+          {name: 'config.name3', desc: 'config.desc3', selected: true, color: '#0000ff'},
+        ];
+
+        componentRef.setInput('configs', updatedConfigs);
+        fixture.detectChanges();
+
+        // Form should reflect new config values
+        expect(component.configsForm().at(0).value.selected).toBe(false);
+        expect(component.configsForm().at(1).value.selected).toBe(true);
+        expect(component.configsForm().at(0).value.color).toBe('#ff0000');
       });
     });
 
-    describe('without MAT_DIALOG_DATA', () => {
+    describe('without configs input', () => {
       beforeEach(async () => {
-        await setupComponent(null);
+        await setupComponent([]);
+        fixture.detectChanges();
       });
 
-      it('should initialize with empty configs when no dialog data provided', () => {
-        expect(component.configs()).toEqual([]);
-        expect(component.configsDefault()).toEqual([]);
-        expect(component.keyLocalStorage()).toBe('');
+      it('should handle empty configs array', () => {
+        expect(component.configsForm().length).toBe(0);
       });
     });
   });
 
   describe('Template Rendering', () => {
     const mockConfigs = createMockConfigs();
-    const mockData = {configs: mockConfigs, keyLocalStorage: 'test-key'};
 
     beforeEach(async () => {
-      await setupComponent(mockData);
+      await setupComponent(mockConfigs);
       fixture.detectChanges();
     });
 
@@ -130,219 +163,132 @@ describe('EsmfConfigMenuComponent', () => {
     });
   });
 
-  describe('configClick', () => {
+  describe('onSelectionChange', () => {
     const mockConfigs = createMockConfigs();
-    const mockData = {configs: mockConfigs, keyLocalStorage: 'test-key'};
 
     beforeEach(async () => {
-      await setupComponent(mockData);
+      await setupComponent(mockConfigs);
       fixture.detectChanges();
     });
 
-    it('should toggle config selection when clicked', () => {
-      const config = component.configs()[0];
-      const initialSelected = config.selected;
-      const mockEvent = createMockEvent();
-      component.configClick(mockEvent, config);
+    it('should update form control when selection changes', () => {
+      const mockEvent = {
+        options: [{value: 0, selected: false}],
+      } as any;
 
-      expect(config.selected).toBe(!initialSelected);
-      expect(mockEvent.preventDefault).toHaveBeenCalled();
-      expect(mockEvent.stopPropagation).toHaveBeenCalled();
+      component.onSelectionChange(mockEvent);
+
+      expect(component.configsForm().at(0).value.selected).toBe(false);
     });
 
-    it('should toggle config from false to true', () => {
-      const config = component.configs()[1];
-      const mockEvent = createMockEvent();
-      expect(config.selected).toBe(false);
-      component.configClick(mockEvent, config);
-      expect(config.selected).toBe(true);
-    });
+    it('should toggle form control from false to true', () => {
+      const mockEvent = {
+        options: [{value: 1, selected: true}],
+      } as any;
 
-    it('should be triggered when clicking list option', () => {
-      const spy = jest.spyOn(component, 'configClick');
-      const listOption = fixture.debugElement.query(By.css('[data-test="configuration-list-option"]'));
-      listOption.nativeElement.click();
-
-      expect(spy).toHaveBeenCalled();
+      expect(component.configsForm().at(1).value.selected).toBe(false);
+      component.onSelectionChange(mockEvent);
+      expect(component.configsForm().at(1).value.selected).toBe(true);
     });
   });
 
-  describe('colorChange', () => {
+  describe('color input formControl binding', () => {
     const mockConfigs = createMockConfigs();
-    const mockData = {configs: mockConfigs, keyLocalStorage: 'test-key'};
 
     beforeEach(async () => {
-      await setupComponent(mockData);
+      await setupComponent(mockConfigs);
       fixture.detectChanges();
     });
 
-    it('should update config color when color picker value changes', () => {
-      const config = component.configs()[0];
+    it('should update form control when color picker value changes', () => {
+      const colorPicker = fixture.debugElement.query(By.css('input[type="color"]'));
       const newColor = '#123456';
 
-      const event = {
-        ...createMockEvent(),
-        target: {value: newColor},
-      } as unknown as MouseEvent;
+      colorPicker.nativeElement.value = newColor;
+      colorPicker.nativeElement.dispatchEvent(new Event('input'));
+      fixture.detectChanges();
 
-      component.colorChange(event, config);
-
-      expect(config.color).toBe(newColor);
-      expect(event.preventDefault).toHaveBeenCalled();
-      expect(event.stopPropagation).toHaveBeenCalled();
+      expect(component.configsForm().at(0).value.color).toBe(newColor);
     });
 
-    it('should be triggered when color picker changes', () => {
-      const spy = jest.spyOn(component, 'colorChange');
+    it('should render color picker with correct initial value', () => {
       const colorPicker = fixture.debugElement.query(By.css('input[type="color"]'));
-
-      colorPicker.nativeElement.value = '#abcdef';
-      colorPicker.nativeElement.dispatchEvent(new Event('change'));
-
-      expect(spy).toHaveBeenCalled();
+      expect(colorPicker.nativeElement.value).toBe('#ff0000');
     });
   });
 
-  describe('closeMenu', () => {
-    const mockData = {configs: createMockConfigs(), keyLocalStorage: 'test-key'};
-
-    beforeEach(async () => {
-      await setupComponent(mockData);
-      fixture.detectChanges();
-    });
-
-    it('should reset configs to default values', () => {
-      component.configs()[0].selected = false;
-      component.configs()[0].color = '#999999';
-      const originalDefaults = component.configsDefault();
-
-      component.closeMenu();
-
-      expect(component.configs()).toEqual(originalDefaults);
-      expect(component.configs()[0].selected).toBe(true);
-      expect(component.configs()[0].color).toBe('#ff0000');
-    });
-
-    it('should set closeConfigMenu flag to true', () => {
-      expect(component.closeConfigMenu()).toBe(false);
-      component.closeMenu();
-      expect(component.closeConfigMenu()).toBe(true);
-    });
-
-    it('should be triggered when cancel button is clicked (non-mat-menu)', () => {
-      const spy = jest.spyOn(component, 'closeMenu');
-      componentRef.setInput('isOpenedFromMatMenu', false);
-      fixture.detectChanges();
-
-      const cancelButton = fixture.debugElement.query(By.css('[data-test="config-menu-cancel-button"]'));
-      cancelButton.nativeElement.click();
-
-      expect(spy).toHaveBeenCalled();
-    });
-
-    it('should be triggered when cancel button is clicked (from mat-menu)', () => {
-      const spy = jest.spyOn(component, 'closeMenu');
-      componentRef.setInput('isOpenedFromMatMenu', true);
-      fixture.detectChanges();
-
-      const cancelButton = fixture.debugElement.query(By.css('[data-test="config-menu-cancel-button"]'));
-      cancelButton.nativeElement.click();
-
-      expect(spy).toHaveBeenCalled();
-    });
-  });
-
-  describe('stopMenuClosing', () => {
+  describe('cancel', () => {
     const mockConfigs = createMockConfigs();
-    const mockData = {configs: mockConfigs, keyLocalStorage: 'test-key'};
 
-    beforeEach(async () => await setupComponent(mockData));
-
-    it('should stop propagation when isOpenedFromMatMenu is true and closeConfigMenu is false', () => {
-      const mockEvent = createMockEvent();
-      componentRef.setInput('isOpenedFromMatMenu', true);
-      component.closeConfigMenu.set(false);
+    beforeEach(async () => {
+      await setupComponent(mockConfigs);
       fixture.detectChanges();
-      component.stopMenuClosing(mockEvent);
-
-      expect(mockEvent.stopPropagation).toHaveBeenCalled();
     });
 
-    it('should not stop propagation when isOpenedFromMatMenu is false', () => {
-      const mockEvent = createMockEvent();
-      componentRef.setInput('isOpenedFromMatMenu', false);
-      component.closeConfigMenu.set(false);
-      fixture.detectChanges();
-      component.stopMenuClosing(mockEvent);
+    it('should reset form to default values', () => {
+      // Change some values
+      component.configsForm().at(0).controls.selected.setValue(false);
+      component.configsForm().at(0).controls.color.setValue('#999999');
 
-      expect(mockEvent.stopPropagation).not.toHaveBeenCalled();
+      component.cancel();
+
+      // Form should be reset to original values
+      expect(component.configsForm().at(0).value.selected).toBe(true);
+      expect(component.configsForm().at(0).value.color).toBe('#ff0000');
     });
 
-    it('should not stop propagation when closeConfigMenu is true', () => {
-      const mockEvent = createMockEvent();
-      componentRef.setInput('isOpenedFromMatMenu', true);
-      component.closeConfigMenu.set(true);
-      fixture.detectChanges();
-      component.stopMenuClosing(mockEvent);
+    it('should emit closeMenu output when not in dialog context', () => {
+      const spy = jest.fn();
+      component.closeMenu.subscribe(spy);
+      component.cancel();
 
-      expect(mockEvent.stopPropagation).not.toHaveBeenCalled();
+      expect(spy).toHaveBeenCalled();
     });
 
-    it('should be triggered when clicking actions container', () => {
-      const spy = jest.spyOn(component, 'stopMenuClosing');
-      componentRef.setInput('isOpenedFromMatMenu', true);
-      fixture.detectChanges();
-
-      const actionsContainer = fixture.debugElement.query(By.css('[data-test="config-menu-actions-container"]'));
-      actionsContainer.nativeElement.click();
+    it('should be triggered when cancel button is clicked', () => {
+      const spy = jest.spyOn(component, 'cancel');
+      const cancelButton = fixture.debugElement.query(By.css('[data-test="config-menu-cancel-button"]'));
+      cancelButton.nativeElement.click();
 
       expect(spy).toHaveBeenCalled();
     });
   });
 
-  describe('storeConfig', () => {
-    const mockData = {configs: createMockConfigs(), keyLocalStorage: 'test-key'};
+
+
+  describe('save', () => {
+    const mockConfigs = createMockConfigs();
 
     beforeEach(async () => {
-      await setupComponent(mockData);
+      await setupComponent(mockConfigs);
       fixture.detectChanges();
     });
 
-    it('should set closeConfigMenu to true', () => {
-      component.closeConfigMenu.set(false);
-      component.storeConfig();
-      expect(component.closeConfigMenu()).toBe(true);
+    it('should call storageService.setItem with form values', () => {
+      component.save();
+      const expectedConfigs = component.configsForm().controls.map(group => group.getRawValue());
+      expect(storageService.setItem).toHaveBeenCalledWith('test-key', expectedConfigs);
     });
 
-    it('should call storageService.setItem with correct parameters', () => {
-      component.storeConfig();
-      expect(storageService.setItem).toHaveBeenCalledWith('test-key', component.configs());
-    });
-
-    it('should emit configChangedEvent with current configs', () => {
+    it('should emit saveData output with form values', () => {
       const spy = jest.fn();
-      component.configChangedEvent.subscribe(spy);
-      component.storeConfig();
+      component.saveData.subscribe(spy);
+      component.save();
 
-      expect(spy).toHaveBeenCalledWith(component.configs());
+      const expectedConfigs = component.configsForm().controls.map(group => group.getRawValue());
+      expect(spy).toHaveBeenCalledWith(expectedConfigs);
     });
 
-    it('should be triggered when apply button is clicked (non-mat-menu)', () => {
-      const spy = jest.spyOn(component, 'storeConfig');
-      componentRef.setInput('isOpenedFromMatMenu', false);
-      fixture.detectChanges();
-
-      const applyButton = fixture.debugElement.query(By.css('[data-test="config-menu-apply-button"]'));
-      applyButton.nativeElement.click();
+    it('should emit closeMenu output when not in dialog context', () => {
+      const spy = jest.fn();
+      component.closeMenu.subscribe(spy);
+      component.save();
 
       expect(spy).toHaveBeenCalled();
     });
 
-    it('should be triggered when apply button is clicked (from mat-menu)', () => {
-      const spy = jest.spyOn(component, 'storeConfig');
-      componentRef.setInput('isOpenedFromMatMenu', true);
-      fixture.detectChanges();
-
+    it('should be triggered when apply button is clicked', () => {
+      const spy = jest.spyOn(component, 'save');
       const applyButton = fixture.debugElement.query(By.css('[data-test="config-menu-apply-button"]'));
       applyButton.nativeElement.click();
 
@@ -352,63 +298,38 @@ describe('EsmfConfigMenuComponent', () => {
 
   describe('Template UI Elements', () => {
     const mockConfigs = createMockConfigs();
-    const mockData = {configs: mockConfigs, keyLocalStorage: 'test-key'};
 
-    describe('when not opened from mat-menu', () => {
-      beforeEach(async () => {
-        await setupComponent(mockData);
-        componentRef.setInput('isOpenedFromMatMenu', false);
-        fixture.detectChanges();
-      });
-
-      it('should render cancel button with mat-dialog-close directive', () => {
-        const cancelButton = fixture.debugElement.query(By.css('[data-test="config-menu-cancel-button"]'));
-        expect(cancelButton).toBeTruthy();
-        expect(cancelButton.nativeElement.getAttribute('data-test')).toBe('config-menu-cancel-button');
-      });
-
-      it('should render apply button with mat-dialog-close directive', () => {
-        const applyButton = fixture.debugElement.query(By.css('[data-test="config-menu-apply-button"]'));
-        expect(applyButton).toBeTruthy();
-      });
-
-      it('should render cancel button with icon and text', () => {
-        const cancelButton = fixture.debugElement.query(By.css('[data-test="config-menu-cancel-button"]'));
-        const icon = cancelButton.query(By.css('[data-test="config-menu-cancel-icon"]'));
-        const text = cancelButton.query(By.css('[data-test="config-menu-cancel-text"]'));
-
-        expect(icon.nativeElement.textContent.trim()).toBe('close');
-        expect(text.nativeElement.textContent.trim()).toBe('cancel');
-      });
-
-      it('should render apply button with icon and text', () => {
-        const applyButton = fixture.debugElement.query(By.css('[data-test="config-menu-apply-button"]'));
-        const icon = applyButton.query(By.css('[data-test="config-menu-apply-icon"]'));
-        const text = applyButton.query(By.css('[data-test="config-menu-apply-text"]'));
-
-        expect(icon.nativeElement.textContent.trim()).toBe('check');
-        expect(text.nativeElement.textContent.trim()).toBe('apply');
-      });
+    beforeEach(async () => {
+      await setupComponent(mockConfigs);
+      fixture.detectChanges();
     });
 
-    describe('when opened from mat-menu', () => {
-      beforeEach(async () => {
-        await setupComponent(mockData);
-        componentRef.setInput('isOpenedFromMatMenu', true);
-        fixture.detectChanges();
-      });
+    it('should render cancel button', () => {
+      const cancelButton = fixture.debugElement.query(By.css('[data-test="config-menu-cancel-button"]'));
+      expect(cancelButton).toBeTruthy();
+    });
 
-      it('should render cancel button without mat-dialog-close directive', () => {
-        const cancelButton = fixture.debugElement.query(By.css('[data-test="config-menu-cancel-button"]'));
-        expect(cancelButton).toBeTruthy();
-        expect(cancelButton.nativeElement.getAttribute('ng-reflect-dialog-result')).toBeNull();
-      });
+    it('should render apply button', () => {
+      const applyButton = fixture.debugElement.query(By.css('[data-test="config-menu-apply-button"]'));
+      expect(applyButton).toBeTruthy();
+    });
 
-      it('should render apply button without mat-dialog-close directive', () => {
-        const applyButton = fixture.debugElement.query(By.css('[data-test="config-menu-apply-button"]'));
-        expect(applyButton).toBeTruthy();
-        expect(applyButton.nativeElement.getAttribute('ng-reflect-dialog-result')).toBeNull();
-      });
+    it('should render cancel button with icon and text', () => {
+      const cancelButton = fixture.debugElement.query(By.css('[data-test="config-menu-cancel-button"]'));
+      const icon = cancelButton.query(By.css('[data-test="config-menu-cancel-icon"]'));
+      const text = cancelButton.query(By.css('[data-test="config-menu-cancel-text"]'));
+
+      expect(icon.nativeElement.textContent.trim()).toBe('close');
+      expect(text.nativeElement.textContent.trim()).toBe('cancel');
+    });
+
+    it('should render apply button with icon and text', () => {
+      const applyButton = fixture.debugElement.query(By.css('[data-test="config-menu-apply-button"]'));
+      const icon = applyButton.query(By.css('[data-test="config-menu-apply-icon"]'));
+      const text = applyButton.query(By.css('[data-test="config-menu-apply-text"]'));
+
+      expect(icon.nativeElement.textContent.trim()).toBe('check');
+      expect(text.nativeElement.textContent.trim()).toBe('apply');
     });
 
     it('should render mat-dividers', () => {
@@ -435,69 +356,183 @@ describe('EsmfConfigMenuComponent', () => {
   });
 
   describe('Integration Tests', () => {
-    const mockData = {configs: createMockConfigs(), keyLocalStorage: 'test-storage-key'};
+    const mockConfigs = createMockConfigs();
 
     beforeEach(async () => {
-      await setupComponent(mockData);
+      await setupComponent(mockConfigs, 'test-storage-key');
       fixture.detectChanges();
     });
 
     it('should handle complete user flow: change selection, color, and save', () => {
       const emitSpy = jest.fn();
-      component.configChangedEvent.subscribe(emitSpy);
+      component.saveData.subscribe(emitSpy);
 
-      // Toggle selection
-      const listOption = fixture.debugElement.query(By.css('[data-test="configuration-list-option"]'));
-      listOption.nativeElement.click();
+      // Change selection via form control
+      component.configsForm().at(0).controls.selected.setValue(false);
       fixture.detectChanges();
 
-      expect(component.configs()[0].selected).toBe(false);
+      expect(component.configsForm().at(0).value.selected).toBe(false);
 
       // Change color
       const colorPicker = fixture.debugElement.query(By.css('input[type="color"]'));
       colorPicker.nativeElement.value = '#abcdef';
-      colorPicker.nativeElement.dispatchEvent(new Event('change'));
+      colorPicker.nativeElement.dispatchEvent(new Event('input'));
       fixture.detectChanges();
 
-      expect(component.configs()[0].color).toBe('#abcdef');
+      expect(component.configsForm().at(0).value.color).toBe('#abcdef');
 
       // Save configuration
       const applyButton = fixture.debugElement.query(By.css('[data-test="config-menu-apply-button"]'));
       applyButton.nativeElement.click();
 
-      expect(storageService.setItem).toHaveBeenCalledWith('test-storage-key', component.configs());
-      expect(emitSpy).toHaveBeenCalledWith(component.configs());
-      expect(component.closeConfigMenu()).toBe(true);
+      const expectedConfigs = component.configsForm().controls.map(g => g.getRawValue());
+      expect(storageService.setItem).toHaveBeenCalledWith('test-storage-key', expectedConfigs);
+      expect(emitSpy).toHaveBeenCalledWith(expectedConfigs);
     });
 
     it('should handle complete user flow: make changes and cancel', () => {
-      const originalConfigs = JSON.parse(JSON.stringify(component.configs()));
+      const originalValues = component.configsForm().controls.map(g => ({...g.getRawValue()}));
 
-      // Toggle selection
-      const listOption = fixture.debugElement.query(By.css('[data-test="configuration-list-option"]'));
-      listOption.nativeElement.click();
+      // Change values
+      component.configsForm().at(0).controls.selected.setValue(false);
+      component.configsForm().at(0).controls.color.setValue('#999999');
       fixture.detectChanges();
 
-      // Change color
-      const colorPicker = fixture.debugElement.query(By.css('input[type="color"]'));
-      colorPicker.nativeElement.value = '#123456';
-      colorPicker.nativeElement.dispatchEvent(new Event('change'));
-      fixture.detectChanges();
+      expect(component.configsForm().at(0).value.selected).toBe(false);
+      expect(component.configsForm().at(0).value.color).toBe('#999999');
 
       // Cancel changes
       const cancelButton = fixture.debugElement.query(By.css('[data-test="config-menu-cancel-button"]'));
       cancelButton.nativeElement.click();
 
-      expect(component.configs()).toEqual(originalConfigs);
-      expect(storageService.setItem).not.toHaveBeenCalled();
+      // Form should be reset
+      expect(component.configsForm().at(0).value.selected).toBe(originalValues[0].selected);
+      expect(component.configsForm().at(0).value.color).toBe(originalValues[0].color);
     });
 
     it('should prevent color picker clicks from propagating to list option', () => {
-      const configClickSpy = jest.spyOn(component, 'configClick');
       const colorPicker = fixture.debugElement.query(By.css('input[type="color"]'));
-      colorPicker.nativeElement.click();
+      const listOption = fixture.debugElement.query(By.css('[data-test="configuration-list-option"]'));
+      
+      // Click color picker
+      const clickEvent = new MouseEvent('click', {bubbles: true, cancelable: true});
+      Object.defineProperty(clickEvent, 'target', {value: colorPicker.nativeElement, enumerable: true});
+      colorPicker.nativeElement.dispatchEvent(clickEvent);
+      
+      // Selection should not change
+      expect(component.configsForm().at(0).value.selected).toBe(true);
+    });
 
-      expect(configClickSpy).not.toHaveBeenCalled();
+    it('should synchronize multiple component instances when config changes', () => {
+      // Simulate a second instance that shares the same config
+      const instance2Fixture = TestBed.createComponent(EsmfConfigMenuComponent);
+      const instance2 = instance2Fixture.componentInstance;
+      const instance2Ref = instance2Fixture.componentRef;
+
+      // Initialize both instances with same config
+      const sharedConfig = createMockConfigs();
+      instance2Ref.setInput('configs', sharedConfig);
+      instance2Ref.setInput('keyLocalStorage', 'test-storage-key');
+      instance2Fixture.detectChanges();
+
+      // Verify initial state is same
+      expect(component.configsForm().at(0).value.selected).toBe(true);
+      expect(instance2.configsForm().at(0).value.selected).toBe(true);
+
+      // Modify config in first instance
+      component.configsForm().at(0).controls.selected.setValue(false);
+      component.configsForm().at(0).controls.color.setValue('#abcdef');
+
+      // Save configuration - this would emit to parent
+      const savedConfigs = component.configsForm().controls.map(g => g.getRawValue());
+
+      // Simulate parent updating the config input for the second instance
+      instance2Ref.setInput('configs', savedConfigs);
+      instance2Fixture.detectChanges();
+
+      // Second instance should now reflect the changes
+      expect(instance2.configsForm().at(0).value.selected).toBe(false);
+      expect(instance2.configsForm().at(0).value.color).toBe('#abcdef');
+    });
+  });
+
+  describe('Dialog Context', () => {
+    let mockDialogRef: jest.Mocked<MatDialogRef<EsmfConfigMenuComponent, Config[]>>;
+    const mockConfigs = createMockConfigs();
+
+    beforeEach(async () => {
+      mockDialogRef = {close: jest.fn()} as any;
+
+      await TestBed.configureTestingModule({
+        imports: [EsmfConfigMenuComponent, getTranslocoTestingModule({langs: {en: {}, de: {}}})],
+        providers: [
+          {provide: MatDialogRef, useValue: mockDialogRef},
+          {provide: MAT_DIALOG_DATA, useValue: {keyLocalStorage: 'dialog-storage-key', configs: mockConfigs}},
+          {provide: EsmfLocalStorageService, useValue: {setItem: jest.fn()}},
+        ],
+      }).compileComponents();
+
+      storageService = TestBed.inject(EsmfLocalStorageService) as jest.Mocked<EsmfLocalStorageService>;
+      fixture = TestBed.createComponent(EsmfConfigMenuComponent);
+      component = fixture.componentInstance;
+      componentRef = fixture.componentRef;
+      fixture.detectChanges();
+    });
+
+    it('should initialize with data from MAT_DIALOG_DATA', () => {
+      expect(component.keyLocalStorage()).toBe('dialog-storage-key');
+      expect(component.configs()).toEqual(mockConfigs);
+    });
+
+    it('should initialize form from dialog data', () => {
+      expect(component.configsForm().length).toBe(3);
+      expect(component.configsForm().at(0).value.name).toBe('config.name1');
+    });
+
+    it('should close dialog when cancel() is called', () => {
+      component.cancel();
+      expect(mockDialogRef.close).toHaveBeenCalledWith();
+    });
+
+    it('should not emit closeMenu output when in dialog context', () => {
+      const closeMenuSpy = jest.fn();
+      component.closeMenu.subscribe(closeMenuSpy);
+      component.cancel();
+
+      expect(mockDialogRef.close).toHaveBeenCalled();
+      expect(closeMenuSpy).not.toHaveBeenCalled();
+    });
+
+    it('should close dialog with configs when save() is called', () => {
+      component.save();
+      const expectedConfigs = component.configsForm().controls.map(g => g.getRawValue());
+      expect(mockDialogRef.close).toHaveBeenCalledWith(expectedConfigs);
+    });
+
+    it('should not emit closeMenu output when save() is called in dialog context', () => {
+      const closeMenuSpy = jest.fn();
+      component.closeMenu.subscribe(closeMenuSpy);
+      component.save();
+
+      expect(mockDialogRef.close).toHaveBeenCalled();
+      expect(closeMenuSpy).not.toHaveBeenCalled();
+    });
+
+    it('should still emit saveData output when save() is called in dialog context', () => {
+      const saveSpy = jest.fn();
+      component.saveData.subscribe(saveSpy);
+      component.save();
+
+      const expectedConfigs = component.configsForm().controls.map(g => g.getRawValue());
+      expect(saveSpy).toHaveBeenCalledWith(expectedConfigs);
+    });
+
+    it('should store configs to localStorage in dialog context', () => {
+      component.configsForm().at(0).controls.selected.setValue(false);
+      component.save();
+
+      const expectedConfigs = component.configsForm().controls.map(g => g.getRawValue());
+      expect(storageService.setItem).toHaveBeenCalledWith('dialog-storage-key', expectedConfigs);
     });
   });
 });

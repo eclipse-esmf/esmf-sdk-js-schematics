@@ -175,7 +175,7 @@
     </button>
 
     <% if (options.componentType === 'table' && options.hasSearchBar) { %>
-        <button data-test="open-configuration" data-resp="open-configuration-button" *ngIf="!isInCollapsedMenu('open-configuration-button')" #toolbarComp mat-icon-button aria-label="Open configuration" [matMenuTriggerFor]="configurationMenu" [disabled]="!isToolbarActionsEnabled" (menuOpened)="triggerInitOpenedConfigurationDialog()"
+        <button data-test="open-configuration" data-resp="open-configuration-button" *ngIf="!isInCollapsedMenu('open-configuration-button')" #toolbarComp mat-icon-button aria-label="Open configuration" [matMenuTriggerFor]="configurationMenu" [disabled]="!isToolbarActionsEnabled"
             [matTooltip]="'tableActions.openConfig' | transloco">
             <mat-icon data-test="open-configuration-icon" class="material-icons">settings </mat-icon>
         </button>
@@ -189,9 +189,11 @@
 <% if (options.componentType === 'table' && options.hasSearchBar) { %>
     <mat-menu data-test="column-menu" #configurationMenu="matMenu" class="column-menu">
       <esmf-config-menu
-        [isOpenedFromMatMenu]="true"
+        [keyLocalStorage]="<%= options.localStorageKeyConfig %>"
+        [configs]="configs"
         #configurationMenuComponent
-        (configChangedEvent)="triggerSetConfiguration($event)"
+        (saveData)="triggerSetConfiguration($event)"
+        (closeMenu)="closeConfigMenu()"
       ></esmf-config-menu>
     </mat-menu>
 <% } %>
