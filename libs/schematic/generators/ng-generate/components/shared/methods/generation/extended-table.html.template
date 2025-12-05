@@ -166,7 +166,12 @@
 
         <% if (options.hasSearchBar) { %>
            <mat-menu data-test="column-menu" class="column-menu">
-               <esmf-config-menu (configChangedEvent)="setConfiguration($event)"></esmf-config-menu>
+               <esmf-config-menu
+                   [keyLocalStorage]="<%= options.localStorageKeyConfig %>"
+                   [configs]="configs"
+                   (saveData)="setConfiguration($event)"
+                   (closeMenu)="closeConfigMenu()"
+               ></esmf-config-menu>
            </mat-menu>
         <% } %>
 
