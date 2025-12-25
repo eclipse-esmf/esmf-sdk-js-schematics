@@ -579,9 +579,6 @@ export class TemplateHelper {
    * @returns {string} The path to the types file.
    */
   private getTypesPath(aspectModelVersionSupport: boolean, version: string, aspectModel: Aspect): string {
-    if (aspectModelVersionSupport) {
-      return `../../../types/${dasherize(aspectModel.name)}/v${version.split('.').join('')}/${dasherize(aspectModel.name)}.types`;
-    }
-    return `../../types/${dasherize(aspectModel.name)}/${dasherize(aspectModel.name)}.types`;
+    return `./${dasherize(aspectModel.name)}.types`;
   }
 }

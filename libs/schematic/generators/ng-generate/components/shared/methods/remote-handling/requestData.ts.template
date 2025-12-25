@@ -91,7 +91,7 @@ private requestData() {
                 this.dataSource.paginator = this.paginator;
                 this.<% if (options.componentType === 'card') { %>card<% } else { %>table<% } %>UpdateFinishedEvent.emit();
             }),
-            catchError((error: any) => {
+            catchError((error: Error) => {
                 this.dataLoadError = false;
                 <% if (options.componentType === 'card') { %>
                     this.dataSource.setData([]);

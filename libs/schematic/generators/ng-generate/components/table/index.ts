@@ -56,7 +56,7 @@ export function generateTable(tableSchema: TableSchema): Rule {
     generateFilterService(options),
     // TODO remove the method call generateGeneralStyle(options),
     generateTranslationFiles(options, false),
-    wrapBuildComponentExecution(options),
+    // wrapBuildComponentExecution(options),
     generateCustomService(options),
     generateSemanticExplanation(options as Values),
     generateTableComponent(options as TableSchema),

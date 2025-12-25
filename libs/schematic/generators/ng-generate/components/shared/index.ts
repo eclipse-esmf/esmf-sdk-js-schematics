@@ -15,23 +15,24 @@ import {dasherize} from '@angular-devkit/core/src/utils/strings';
 import {chain, Rule, SchematicContext, Tree} from '@angular-devkit/schematics';
 import {NodePackageInstallTask, RunSchematicTask} from '@angular-devkit/schematics/tasks';
 import {JSONFile} from '@schematics/angular/utility/json-file';
-import {addToAppModule, addToAppSharedModule, addToComponentModule, wrapBuildComponentExecution} from '../../../utils/angular';
+import {
+  addToAppModule,
+  addToAppSharedModule,
+  addToComponentModule,
+  wrapBuildComponentExecution
+} from '../../../utils/angular';
 import {generateTranslationFiles, loadAspectModel, loadRDF, validateUrns} from '../../../utils/aspect-model';
 import {formatGeneratedFiles, loadAndApplyConfigFile} from '../../../utils/file';
 import {
   addPackageJsonDependencies,
   DATE_QUICK_FILTER_DEPENDENCIES,
   DEFAULT_DEPENDENCIES,
-  REMOTE_HANDLING_DEPENDENCIES,
+  REMOTE_HANDLING_DEPENDENCIES
 } from '../../../utils/package-json';
 import {TemplateHelper} from '../../../utils/template-helper';
 import {ComponentType, Schema, Values} from './schema';
 import ora from 'ora';
-import {
-  generateCustomService,
-  generateFilterService,
-  generateGeneralStyle,
-} from './generators/index';
+import {generateCustomService, generateFilterService} from './generators/index';
 import {APP_SHARED_MODULES, cardModules, formModules, tableModules, updateSharedModule} from '../../../utils/modules';
 import {WIZARD_CONFIG_FILE} from '../../prompter/index';
 import {generateSemanticExplanation} from './generators/constants/index';
@@ -408,22 +409,36 @@ function loadDependencies() {
  *
  * @returns {Rule} - The rule for formatting all files.
  */
-export function formatAllFilesRule(): Rule {
-  const optionsPath = options.path || '';
-  const paths = [
-    optionsPath,
-    optionsPath.replace('app', 'assets/i18n'),
-    'src/app/shared/directives',
-    'src/app/shared/pipes',
-    'src/app/shared/constants',
-    'src/app/shared/services',
-    `src/app/shared/components/${options.name}`,
-    'src/assets/scss',
-    'src/app/shared',
-  ];
+export function formatAllFilesRule(component = ComponentType.FORM): Rule {
+  console.log('Formatting generated files...');
 
-  const rules = paths.map(path => formatGeneratedFiles({getPath: () => path}, options));
-  rules.push(formatGeneratedFiles({getPath: () => 'src/app/shared'}, options, ['app-shared.module.ts']));
+  if (component === ComponentType.TABLE) {
+    console.log('## Formatting Table component files...');
+    console.log(`${options.path}`);
 
-  return chain(rules);
+    const rules = [
+      formatGeneratedFiles({getPath: () => `${options.path}`}, options)
+    ];
+
+    return chain(rules);
+  } else {
+    const optionsPath = options.path || '';
+    const paths = [
+      optionsPath,
+      optionsPath.replace('app', 'assets/i18n'),
+      'src/app/shared/directives',
+      'src/app/shared/pipes',
+      'src/app/shared/constants',
+      'src/app/shared/services',
+      `src/app/shared/components/${options.name}`,
+      'src/assets/scss',
+      'src/app/shared',
+    ];
+
+    const rules = paths.map(path => formatGeneratedFiles({getPath: () => path}, options));
+    rules.push(formatGeneratedFiles({getPath: () => 'src/app/shared'}, options, ['app-shared.module.ts']));
+    return chain(rules);
+  }
+
+
 }

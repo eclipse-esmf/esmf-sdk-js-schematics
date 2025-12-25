@@ -3,7 +3,7 @@
   var addConfigMenu = options.componentType === 'table' && options.hasSearchBar;
 %>
 
-import {Component, EventEmitter, Input, Output, ViewChild, AfterViewInit, inject, ElementRef, HostListener, QueryList, ViewChildren, TemplateRef, ViewEncapsulation} from '@angular/core';
+import {Component, EventEmitter, Input, Output, ViewChild, AfterViewInit, inject, ElementRef, HostListener, QueryList, ViewChildren, ViewEncapsulation} from '@angular/core';
 import {SelectionModel} from "@angular/cdk/collections";
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 
@@ -33,6 +33,8 @@ import {MatMenuModule, MatMenuTrigger} from '@angular/material/menu';
 import {MatIconButton} from '@angular/material/button';
 import {MatInput} from '@angular/material/input';
 import {TranslocoPipe} from '@jsverse/transloco';
+
+type InitialComponentWidth = {width: number; id: string | null};
 
 @Component({
     selector: '<%= dasherize(name) %>-command-bar',
@@ -105,11 +107,11 @@ export class <%= classify(name) %>CommandBarComponent implements AfterViewInit {
     @ViewChild('componentsContainer', { read: ElementRef, static: false })
     componentsContainer!: ElementRef;
     @ViewChildren('toolbarComp', { read: ElementRef })
-    components!: QueryList<ElementRef>;
+    components!: QueryList<ElementRef<HTMLElement>>;
     @ViewChild('projectedToolbarActions', {read: ElementRef, static: false})
     projectedToolbarActions!: ElementRef;
-    hiddenComponents: any[] = [];
-    initialCompWidths : any[]= [];
+    hiddenComponents: (string | null)[] = [];
+    initialCompWidths : InitialComponentWidth[]= [];
 
     <% if (options.componentType === 'card') { %>
       constructor() {
@@ -164,12 +166,12 @@ export class <%= classify(name) %>CommandBarComponent implements AfterViewInit {
 
     ngAfterViewInit(): void {
       const children = Array.from<HTMLElement>(this.projectedToolbarActions.nativeElement.children);
-      const projectedCompWidths: any[] = children.map(comp => ({
+      const projectedCompWidths = children.map(comp => ({
         width: comp.clientWidth,
         id: comp.getAttribute('data-resp')
       }));
 
-      const compWidths: any[] = this.components
+      const compWidths = this.components
         .toArray()
         .map((comp) => ({width: comp.nativeElement.clientWidth, id: comp.nativeElement.getAttribute('data-resp')}));
 
