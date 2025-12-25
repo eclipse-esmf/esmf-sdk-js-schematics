@@ -3,9 +3,9 @@
   "compilerOptions": {
     "target": "es2022",
     "moduleResolution": "bundler",
-    "strict": false,
-    "noImplicitOverride": false,
-    "noImplicitAny": false,
+    "strict": true,
+    "noImplicitOverride": true,
+    "noImplicitAny": true,
     "noPropertyAccessFromIndexSignature": true,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
