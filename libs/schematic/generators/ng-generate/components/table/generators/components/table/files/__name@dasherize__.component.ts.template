@@ -232,7 +232,7 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
     <% } %>
 
     totalItems = 0;
-    selection = new SelectionModel<any>(this.isMultipleSelectionEnabled, []);
+    selection = new SelectionModel<Entity>(this.isMultipleSelectionEnabled, []);
     dataSource = new <%= tableDataSourceName %><Entity>();
 
     columnToSort:{sortColumnName: string, sortDirection: SortDirection} = {sortColumnName:'<%= options.defaultSortingCol %>', sortDirection : 'asc'};
