@@ -71,7 +71,7 @@ function generateComplexEnumDef(options: Schema, property: Property): string {
   return complexProps.properties
     .map((complexProp: Property) => {
       const propKey = generateKey(`${complexProps.complexProp}_${complexProp.name}`);
-      return `${propKey} = '${complexProps.complexProp}.${complexProp.name}',`;
+      return `${propKey}: '${complexProps.complexProp}.${complexProp.name}',`;
     })
     .join('');
 }
@@ -85,7 +85,7 @@ function generateComplexEnumDef(options: Schema, property: Property): string {
  */
 function generateSimpleEnumDef(options: Schema, property: Property): string {
   const propKey = generateKey(property.name);
-  return `${propKey} = '${options.jsonAccessPath}${property.name.trim()}',`;
+  return `${propKey}: '${property.name.trim()}',`;
 }
 
 /**
@@ -162,9 +162,9 @@ export function resolveDateTimeFormat(options: Schema, property: Property): stri
 export function getCustomRowActions(options: any): string {
   return options.customRowActions.length > 0
     ? `  <ng-container data-test="custom-row-actions" matColumnDef="customRowActions" [stickyEnd]="setStickRowActions">
-      <th data-test="custom-actions-header" 
-          mat-header-cell 
-          *matHeaderCellDef 
+      <th data-test="custom-actions-header"
+          mat-header-cell
+          *matHeaderCellDef
           [style.min-width.px]="customRowActionsLength <= visibleRowActionsIcons ? ${options.customRowActions.length * 30 + 15} : 80">
             {{ '${options.templateHelper.getVersionedAccessPrefix(options)}customRowActions.preferredName' | transloco}}
       </th>
@@ -189,8 +189,8 @@ export function getCustomRowActions(options: any): string {
         .join('')}
       </ng-container>
       <ng-template #customActionsButton data-test="custom-actions-button-container">
-        <button data-test="custom-actions-button" 
-                mat-icon-button [matMenuTriggerFor]="customActionsMenu" 
+        <button data-test="custom-actions-button"
+                mat-icon-button [matMenuTriggerFor]="customActionsMenu"
                 aria-label="Context menu for custom actions"
                 (click)="$event.preventDefault(); $event.stopPropagation()">
                 <mat-icon class="material-icons">more_vert</mat-icon>
@@ -210,13 +210,13 @@ export function getCustomRowActions(options: any): string {
                       ? `<mat-icon data-test="custom-action-icon" ${commonParts} class="material-icons">${formattedAction}</mat-icon>`
                       : `<mat-icon data-test="custom-action-icon" svgIcon="${formattedAction}" ${commonParts}></mat-icon>`;
                   return `
-                      <button 
+                      <button
                           *ngIf="is${classifiedAction}Visible"
                           [disabled]="!isAvailableRowAction('${formattedActionKebab}', row)"
                           [matTooltipDisabled]="isAvailableRowAction('${formattedActionKebab}', row)"
                           [matTooltip]="'${versionPrefix}customRowAction.${formattedActionKebab}.notAvailable' | transloco"
                           (click)="executeCustomAction($event, '${formattedActionKebab}', row)"
-                          mat-menu-item 
+                          mat-menu-item
                           data-test="custom-action-button">
                           ${iconTemplate}
                           <span data-test="custom-action-text" style="vertical-align: middle">{{ '${rowActionTextKey}' | transloco}}</span>

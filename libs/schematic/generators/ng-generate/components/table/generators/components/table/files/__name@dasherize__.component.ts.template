@@ -33,7 +33,7 @@ import {TranslocoPipe} from '@jsverse/transloco';
 
 <% if (options.hasFilters || options.hasSearchBar) { %>
     import {<%= options.filterServiceName %>} from './<%= cmpFileName %>-filter.service';
-    import {EsmfChipListComponent, EsmfTableCellComponent, FilterEnums} from '@esmf/semantic-ui-schematic';
+    import {EsmfChipListComponent, EsmfTableCellComponent, FilterEnums, FilterType} from '@esmf/semantic-ui-schematic';
 <% } %>
 
 <% if (options.addCommandBar) { %>
@@ -86,15 +86,16 @@ import {MatTooltip} from '@angular/material/tooltip';
 <%= options.include('/interfaces/column.ts.template') %>
 
 /**
- * Enumeration of all available columns which can be shown/hide in the table.
+ * Predefined set of all available columns which can be shown/hide in the table.
  */
-export enum <%= tableColumnsEnumName %> {
-    <% if (options.addRowCheckboxes) { %>CHECKBOX = 'checkboxes',<% } %>
+export const <%= tableColumnsEnumName %> = {
+    <% if (options.addRowCheckboxes) { %>CHECKBOX: 'checkboxes',<% } %>
     <%= enumPropertyDefinitions %>
     <%= enumCustomColumns %>
-    <% if (hasCustomRowActions) { %>CUSTOM_ROW_ACTIONS = 'customRowActions',<% } %>
-    COLUMNS_MENU = 'columnsMenu'
-}
+    <% if (hasCustomRowActions) { %>CUSTOM_ROW_ACTIONS: 'customRowActions',<% } %>
+    COLUMNS_MENU: 'columnsMenu'
+} as const;
+export type <%= tableColumnsEnumName %> = (typeof <%= tableColumnsEnumName %>)[keyof typeof <%= tableColumnsEnumName %>];
 
 export const NON_DATA_COLUMNS: <%= tableColumnsEnumName %>[] = [
     <% if (hasCustomRowActions) { %>
@@ -106,7 +107,7 @@ export const NON_DATA_COLUMNS: <%= tableColumnsEnumName %>[] = [
 type Entity = <%= classify(options.selectedModelTypeName) %>;
 
 <% if (hasCustomRowActions) { %>
-    type RowAction = <%= customRowActionNames.join(' | ') %>;
+    export type RowAction = <%= customRowActionNames.join(' | ') %>;
     export type <%= options.aspectModelTypeName %>ActionsResolvers = Partial<Record<RowAction, (rowData: Entity) => boolean>> | undefined;
 <% } %>
 
@@ -345,7 +346,7 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
         );
        this.customizableColumns = this.displayedColumns.filter(column => !NON_DATA_COLUMNS.includes(column));
 
-        const columnStorage = this.storageService.getItem(this.<%= options.localStorageKeyColumns %>);
+        const columnStorage = this.storageService.getItem<Column[]>(this.<%= options.localStorageKeyColumns %>);
 
         if (columnStorage?.length > 0) {
             columnStorage
@@ -398,7 +399,7 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
       return item.toString() + this.highlightString.join();
     };
 
-    rowClicked(row: any, $event: MouseEvent): boolean {
+    rowClicked(row: Entity, $event: MouseEvent): boolean {
         if (this.highlightSelectedRow) {
             this.checkboxClicked(row);
         }
@@ -422,15 +423,15 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
         return false;
     }
 
-    rowDblClicked(row: any, $event: MouseEvent): void {
+    rowDblClicked(row: Entity, $event: MouseEvent): void {
         this.rowDblClickEvent.emit({data: row});
     }
 
-    copyToClipboard(value: any): void {
+    copyToClipboard(value: string): void {
         this.copyToClipboardEvent.emit(value);
     }
 
-    checkboxClicked(row: any): void {
+    checkboxClicked(row: Entity): void {
         if(!this.isMultipleSelectionEnabled) {
             this.selection.clear();
         }
@@ -487,7 +488,7 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
     <% } %>
 
     <% if (options.hasFilters) { %>
-        removeFilter(filterData: any) {
+        removeFilter(filterData: FilterType) {
             <% if (options.hasFilters) { %>
                 this.filterService.removeFilter(filterData);
             <% } %>
@@ -693,7 +694,7 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
 
     <% if (options.hasSearchBar) { %>
         private initializeHighlightConfig(): void {
-            const configStorage = this.storageService.getItem(this.<%= options.localStorageKeyConfig %>);
+            const configStorage = this.storageService.getItem<Config[]>(this.<%= options.localStorageKeyConfig %>);
 
             if (configStorage?.length > 0) {
                 configStorage.forEach((config: Config) => this.configs.push(config));

@@ -23,7 +23,7 @@
 <% } %>
 
 import {AbstractControl, FormControl, ValidationErrors, ValidatorFn} from '@angular/forms';
-import {Injectable<% if (options.isDateQuickFilter) { %>, Inject<% } %>} from '@angular/core';
+import {inject, Injectable<% if (options.isDateQuickFilter) { %>, Inject<% } %>} from '@angular/core';
 
 <% if (options.isDateQuickFilter) { %>
     import {FormBuilder, Validators} from '@angular/forms';
@@ -115,6 +115,9 @@ import {<%= classify(options.selectedModelTypeName) %>
     providedIn: 'root'
 })
 export class <%= classify(name) %>FilterService {
+    <% if (options.isDateQuickFilter || options.hasSearchBar) { %>
+        private translateService = inject(TranslocoService);
+    <% } %>
 
     <% if (options.hasSearchBar || options.isEnumQuickFilter || options.isDateQuickFilter) { %>
         /** Array of active filters */
@@ -139,20 +142,15 @@ export class <%= classify(name) %>FilterService {
         sortedProperty = '';
     <% } %>
 
-    constructor(
-        <% if (options.isDateQuickFilter) { %>
-            @Inject(MAT_DATE_FORMATS) private dateFormats: MatDateFormats,
-            private dateAdapter: DateAdapter<any>,
-            private fb: FormBuilder,
-        <% } %>
-        <% if (options.isDateQuickFilter || options.hasSearchBar) { %>
-            private translateService: TranslocoService
-        <% } %>
-    ){
-        <% if (options.isDateQuickFilter) { %>
-            <%= setDateQuickFilters %>
-        <% } %>
-    }
+    <% if (options.isDateQuickFilter) { %>
+      constructor(
+          @Inject(MAT_DATE_FORMATS) private dateFormats: MatDateFormats,
+          private dateAdapter: DateAdapter<any>,
+          private fb: FormBuilder,
+      ){
+          <%= setDateQuickFilters %>
+      }
+    <% } %>
 
     <% if (options.hasSearchBar) { %>
         searchStringInit(initialValue: string, regexValidator: string, minCharNo: number, maxCharNo: number) {
@@ -173,11 +171,12 @@ export class <%= classify(name) %>FilterService {
         removeFilter(filter:FilterType) {
             switch(filter.type) {
                 <% if (options.hasSearchBar) { %>
-                    case FilterEnums.Search:
+                    case FilterEnums.Search: {
                         const removedFilter = this.activeFilters.findIndex(elem => elem.filterValue === filter.filterValue && elem.prop === filter.prop);
                         this.activeFilters.splice(removedFilter, 1);
                         this.searchString.setValue('');
                         break;
+                    }
                 <% } %>
 
                 <% if (options.isEnumQuickFilter) { %>
@@ -192,21 +191,20 @@ export class <%= classify(name) %>FilterService {
     <% } %>
 
     <% if (options.hasSearchBar) { %>
-        /**
-        * Get a value using a dot access path
-        * @param accessPath access path e.g. object.attrL1.attrL2
-        * @param object value behind the path or '' if not found/doesn't exist
-        */
-        getValueByAccessPath(accessPath: string, object: any) {
-            try {
-                return accessPath.split('.').reduce((a, b) => a[b], object);
-            } catch (error) {
-
-            return '';
-            }
-        }
-
         <% if (!options.enableRemoteDataHandling) { %>
+            /**
+            * Get a value using a dot access path
+            * @param accessPath access path e.g. object.attrL1.attrL2
+            * @param object value behind the path or '' if not found/doesn't exist
+            */
+            getValueByAccessPath(accessPath: string, object: any) {
+                try {
+                    return accessPath.split('.').reduce((a, b) => a[b], object);
+                } catch {
+                return '';
+                }
+            }
+
             applyStringSearchFilter(data: Array<<%= classify(options.aspectModelTypeName) %>>): Array<<%= classify(options.aspectModelTypeName) %>> {
                 this.isSearchStringValidAndUnique() && this.activeFilters.push(this.createNewFilter());
                 const searchFilters = this.activeFilters.filter(elem => elem.type === FilterEnums.Search);
