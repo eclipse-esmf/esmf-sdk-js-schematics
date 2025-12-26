@@ -47,7 +47,7 @@ export class EsmfExportTableDialogComponent implements AfterViewInit {
     const isExportAllPagesChecked = this.exportAllPages().checked;
     const isExportAllColumnsChecked = this.exportAllColumns()?.checked;
 
-    const translationKey = this.getTranslationKey(isExportAllPagesChecked, isExportAllColumnsChecked, displayedColumns);
+    const translationKey = this.getTranslationKey(isExportAllPagesChecked, !!isExportAllColumnsChecked, displayedColumns);
     this.dialogDescription.set(this.translateService.translate(translationKey, {maxExportRows, allColumns, displayedColumns}));
   }
 

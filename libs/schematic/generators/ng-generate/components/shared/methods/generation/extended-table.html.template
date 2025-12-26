@@ -161,7 +161,7 @@
         </table>
 
         <mat-menu data-test="column-menu" #columnMenu="matMenu" class="column-menu">
-            <esmf-column-menu [defaultColumns]="customizableColumns" [columns]="columns" (columnsChangedEvent)="setDisplayedColumns($event)"></esmf-column-menu>
+            <esmf-column-menu [i18nPrefix]="'<%= ${options.templateHelper.getVersionedAccessPrefix(options)}${options.isAspectSelected ? options.jsonAccessPath : ''}${value.complexPrefix} %>" [defaultColumns]="customizableColumns" [columns]="columns" (columnsChangedEvent)="setDisplayedColumns($event)"></esmf-column-menu>
         </mat-menu>
 
         <% if (options.hasSearchBar) { %>

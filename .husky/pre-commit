@@ -1,0 +1,1 @@
+sh ./.husky/run-transloco-scoped-lib.sh

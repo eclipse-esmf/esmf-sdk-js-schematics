@@ -1,0 +1,14 @@
+{
+  "esmf.schematic.chipList": {
+    "scroll": {
+      "left": "Nach links scrollen",
+      "right": "Nach rechts scrollen"
+    }
+  },
+  "esmf.schematic.columnMenu": {
+    "columns": "Spalten",
+    "restoreDefaults": "Standardeinstellungen wiederherstellen",
+    "cancel": "Abbrechen",
+    "apply": "Anwenden"
+  }
+}

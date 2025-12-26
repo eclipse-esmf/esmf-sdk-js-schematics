@@ -193,17 +193,17 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
         @Input() actionResolvers: <%= options.aspectModelTypeName %>ActionsResolvers = {};
     <% } %>
 
-    @Output() rowClickEvent = new EventEmitter<any>();
-    @Output() rowDblClickEvent = new EventEmitter<any>();
-    @Output() rowRightClickEvent = new EventEmitter<any>();
-    @Output() tableUpdateStartEvent = new EventEmitter<any>();
+    @Output() rowClickEvent = new EventEmitter<{ data: Entity }>();
+    @Output() rowDblClickEvent = new EventEmitter<{ data: Entity }>();
+    @Output() rowRightClickEvent = new EventEmitter<{ data: Entity, mousePosition: {x: string, y: string} }>();
+    @Output() tableUpdateStartEvent = new EventEmitter<void>();
     @Output() tableUpdateFinishedEvent = new EventEmitter<any>();
-    @Output() copyToClipboardEvent = new EventEmitter<any>();
+    @Output() copyToClipboardEvent = new EventEmitter<string>();
     @Output() downloadEvent = new EventEmitter<{error: boolean, success: boolean, inProgress: boolean}>();
-    @Output() rowSelectionEvent = new EventEmitter<any>();
+    @Output() rowSelectionEvent = new EventEmitter<Entity[]>();
 
     <% if (hasCustomRowActions) { %>
-        @Output() customActionEvent = new EventEmitter<any>();
+        @Output() customActionEvent = new EventEmitter<{action: string, data: Entity}>();
     <% } %>
     <% if (options.customCommandBarActions.length > 0) { %>
         @Output() customCommandBarActionEvent = new EventEmitter<any>();
@@ -472,7 +472,7 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
     <% } %>
 
     <% if (hasCustomRowActions) { %>
-        executeCustomAction($event: MouseEvent, action: string, row:any): void{
+        executeCustomAction($event: MouseEvent, action: string, row: Entity): void{
             if(this.customRowActionsLength <= this.visibleRowActionsIcons) {
                    $event.stopPropagation();
             }

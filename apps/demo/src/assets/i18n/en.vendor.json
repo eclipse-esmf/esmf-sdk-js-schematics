@@ -1,0 +1,14 @@
+{
+  "esmf.schematic.chipList": {
+    "scroll": {
+      "left": "Scroll left",
+      "right": "Scroll right"
+    }
+  },
+  "esmf.schematic.columnMenu": {
+    "columns": "Columns",
+    "restoreDefaults": "Restore Defaults",
+    "cancel": "Cancel",
+    "apply": "Apply"
+  }
+}
