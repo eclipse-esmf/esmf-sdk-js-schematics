@@ -4,7 +4,7 @@ import {Injectable} from '@angular/core';
  * Manage user settings based on the local storage of the browser.
  */
 export abstract class BrowserStorage {
-  abstract getItem<T>(key: string): T;
+  abstract getItem<T>(key: string): T | undefined;
   abstract removeItem(key: string): void;
   abstract setItem<T>(key: string, item: T): void;
 }
@@ -18,7 +18,7 @@ export class EsmfLocalStorageService extends BrowserStorage {
    */
   readonly KEY_PREFIX = 'JSSDK_';
 
-  getItem<T>(key: string): T {
+  getItem<T>(key: string): T | undefined {
     const item = localStorage.getItem(this.buildKey(key));
     return item ? JSON.parse(item) : undefined;
   }

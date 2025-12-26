@@ -23,5 +23,17 @@
   "nx-migrations": {
     "collection": "./generators/collection.json"
   },
-  "schematics": "./generators/collection.json"
+  "schematics": "./generators/collection.json",
+  "i18n": [
+    {
+      "scope": "esmf.schematic.chipList",
+      "path": "./src/lib/components/chip-list/assets/i18n",
+      "strategy": "join"
+    },
+    {
+      "scope": "esmf.schematic.columnMenu",
+      "path": "./src/lib/components/column-menu/assets/i18n",
+      "strategy": "join"
+    }
+  ]
 }
