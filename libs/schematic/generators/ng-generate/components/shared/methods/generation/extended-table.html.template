@@ -1,3 +1,6 @@
+<%
+    let propertyLocaleKeyPrefix = `${options.templateHelper.getVersionedAccessPrefix(options)}${options.isAspectSelected ? options.jsonAccessPath : ''}`;
+%>
 <div class="js-sdk-component-container--inner" [hidden]="!!customTemplate && !dataSource.data.length">
 
     <div data-test="table-container" class="mat-table-container">
@@ -13,9 +16,11 @@
 
             <!-- Row shown when there is no matching data that will be provided to the wrapper table. -->
             <tr data-test="no-data-table-row" class="mat-row" *matNoDataRow>
-              <td *ngIf="!dataSource.data.length" class="mat-cell" [colSpan]="displayedColumns.length" data-test="no-data-table-cell">
-                <span data-test="no-data-message">{{noDataMessage || 'No data'}}</span>
-              </td>
+              @if(!dataSource.data.length) {
+                <td class="mat-cell" [colSpan]="displayedColumns.length" data-test="no-data-table-cell">
+                  <span data-test="no-data-message">{{noDataMessage || 'No data'}}</span>
+                </td>
+              }
             </tr>
 
             <% if (options.addRowCheckboxes) { %>
@@ -36,9 +41,9 @@
                     let propertyName = options.templateHelper.isEnumPropertyWithEntityValues(value.property)
                         ? value.property.name + '?.' + options.templateHelper.getEnumEntityInstancePayloadKey(value.property)
                         : value.property.name;
-                    let cellPropertyPath = `${options.jsonAccessPath}${value.complexPrefix}${propertyName}`;
+                    let cellPropertyPath = `${value.complexPrefix}${propertyName}`;
                     let isEmptyValue = `row.${cellPropertyPath} === null || row.${cellPropertyPath} === undefined`;
-                    let propertyLocaleKeyPath = `${options.templateHelper.getVersionedAccessPrefix(options)}${options.isAspectSelected ? options.jsonAccessPath : ''}${value.complexPrefix}${value.property.name}`;
+                    let propertyLocaleKeyPath = `${propertyLocaleKeyPrefix}${value.complexPrefix}${value.property.name}`;
                     let datePipe = options.templateHelper.isDateTimeProperty(value.property) ? `| date: ${options.resolveDateTimeFormat(options, value.property)}` : '';
                     let descriptionPipe = options.templateHelper.isEnumPropertyWithEntityValues(value.property) ? ` | esmfShowDescription:get${classify(value.property.name)}Value` : '';
                     let cellContent = `!(${isEmptyValue}) ? (row.${cellPropertyPath}${descriptionPipe}${language}${datePipe})  : '-'`;
@@ -102,15 +107,16 @@
                                 <span data-test="table-header-text">
                                     {{'<%= options.selectedModelTypeName.toLowerCase() %>.v<%= options.formatedAspectModelVersion %>.customColumn.<%= columnName %>' | transloco }}
                                 </span>
-                                <mat-icon
-                                    class="table-header-icon material-icons"
-                                    *ngIf="!headerTooltipsOff"
-                                    [matTooltip]="'<%= options.selectedModelTypeName.toLowerCase() %>.v<%= options.formatedAspectModelVersion %>.<%= columnName %>.description' | transloco"
-                                    (click)="$event.stopPropagation()"
-                                    matTooltipClass="table-column-tooltip"
-                                    matTooltipPosition="above"
-                                    data-test="column-info-icon"
-                                >info_outlined</mat-icon>
+                                @if(!headerTooltipsOff) {
+                                  <mat-icon
+                                      class="table-header-icon material-icons"
+                                      [matTooltip]="'<%= options.selectedModelTypeName.toLowerCase() %>.v<%= options.formatedAspectModelVersion %>.<%= columnName %>.description' | transloco"
+                                      (click)="$event.stopPropagation()"
+                                      matTooltipClass="table-column-tooltip"
+                                      matTooltipPosition="above"
+                                      data-test="column-info-icon"
+                                  >info_outlined</mat-icon>
+                                }
                             </th>
                         <% } else { %>
                             <th data-test="custom-column-header" mat-header-cell *matHeaderCellDef mat-sort-header
@@ -118,15 +124,17 @@
                                 <span data-test="table-header-text">
                                     {{ '<%= options.selectedModelTypeName.toLowerCase() %>.customColumn.<%= columnName %>' | transloco }}
                                 </span>
-                                <mat-icon
-                                    class="table-header-icon material-icons"
-                                    *ngIf="!headerTooltipsOff"
-                                    [matTooltip]="'<%= options.selectedModelTypeName.toLowerCase() %>.<%= columnName %>.description' | transloco"
-                                    (click)="$event.stopPropagation()"
-                                    matTooltipClass="table-column-tooltip"
-                                    matTooltipPosition="above"
-                                    data-test="column-info-icon"
-                                >info_outlined</mat-icon>
+                                @if(!headerTooltipsOff) {
+                                  <mat-icon
+                                      class="table-header-icon material-icons"
+                                      [matTooltip]="'<%= options.selectedModelTypeName.toLowerCase() %>.<%= columnName %>.description' | transloco"
+                                      (click)="$event.stopPropagation()"
+                                      matTooltipClass="table-column-tooltip"
+                                      matTooltipPosition="above"
+                                      data-test="column-info-icon"
+                                  >info_outlined</mat-icon>
+                                }
+
                             </th>
                         <% } %>
                         <td data-test="custom-column-cell" mat-cell *matCellDef="let row">
@@ -161,7 +169,9 @@
         </table>
 
         <mat-menu data-test="column-menu" #columnMenu="matMenu" class="column-menu">
-            <esmf-column-menu [i18nPrefix]="'<%= ${options.templateHelper.getVersionedAccessPrefix(options)}${options.isAspectSelected ? options.jsonAccessPath : ''}${value.complexPrefix} %>" [defaultColumns]="customizableColumns" [columns]="columns" (columnsChangedEvent)="setDisplayedColumns($event)"></esmf-column-menu>
+            <esmf-column-menu
+            [i18nPrefix]="'<%= propertyLocaleKeyPrefix %>'"
+            [defaultColumns]="customizableColumns" [columns]="columns" (columnsChangedEvent)="setDisplayedColumns($event)"></esmf-column-menu>
         </mat-menu>
 
         <% if (options.hasSearchBar) { %>

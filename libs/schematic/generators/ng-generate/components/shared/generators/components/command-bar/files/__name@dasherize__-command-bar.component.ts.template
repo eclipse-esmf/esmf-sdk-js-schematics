@@ -185,7 +185,7 @@ export class <%= classify(name) %>CommandBarComponent implements AfterViewInit {
       this.updateToolbarComponentsVisibility();
     }
 
-    @HostListener('window:resize', ['$event'])
+    @HostListener('window:resize')
     onResize() {
        this.updateToolbarComponentsVisibility();
     }
