@@ -169,33 +169,30 @@ export function getCustomRowActions(options: any): string {
             {{ '${options.templateHelper.getVersionedAccessPrefix(options)}customRowActions.preferredName' | transloco}}
       </th>
       <td data-test="custom-actions-row" mat-cell *matCellDef="let row">
-      <ng-container data-test="custom-actions-container" *ngIf="customRowActionsLength <= visibleRowActionsIcons; else customActionsButton">
-      ${options.customRowActions
-        .map((action: string) => {
-          const formattedAction = action.replace(/\.[^/.]+$/, '');
-          const formattedActionKebab = formattedAction.replace(/\s+/g, '-').toLowerCase();
-          const commonParts = `data-test="custom-action-icon" *ngIf="is${classify(
-            formattedActionKebab
-          )}Visible" (click)="executeCustomAction($event, '${formattedActionKebab}', row)" style="cursor: pointer;" matTooltip="{{ '${options.templateHelper.getVersionedAccessPrefix(
-            options
-          )}${formattedActionKebab}.customRowAction' | transloco }}" aria-hidden="false" attr.aria-label="{{ '${options.templateHelper.getVersionedAccessPrefix(
-            options
-          )}${formattedActionKebab}.customRowAction' | transloco }}"`;
-          return `${action.lastIndexOf('.') > -1 ? `<mat-icon svgIcon="${formattedAction}" ${commonParts}></mat-icon>` : ''}${
-            action.lastIndexOf('.') === -1 ? `<mat-icon ${commonParts} class="material-icons">${action}</mat-icon>` : ''
-          }
-            `;
-        })
-        .join('')}
-      </ng-container>
-      <ng-template #customActionsButton data-test="custom-actions-button-container">
+      @if(customRowActionsLength <= visibleRowActionsIcons) {
+        ${options.customRowActions
+          .map((action: string) => {
+            const formattedAction = action.replace(/\.[^/.]+$/, '');
+            const formattedActionKebab = formattedAction.replace(/\s+/g, '-').toLowerCase();
+            const commonParts = `data-test="custom-action-icon" (click)="executeCustomAction($event, '${formattedActionKebab}', row)" style="cursor: pointer;" matTooltip="{{ '${options.templateHelper.getVersionedAccessPrefix(
+              options,
+            )}${formattedActionKebab}.customRowAction' | transloco }}" aria-hidden="false" attr.aria-label="{{ '${options.templateHelper.getVersionedAccessPrefix(
+              options,
+            )}${formattedActionKebab}.customRowAction' | transloco }}"`;
+            return `@if(is${classify(formattedActionKebab,)}Visible){
+              ${action.lastIndexOf('.') > -1 ? `<mat-icon svgIcon="${formattedAction}" ${commonParts}></mat-icon>` : ''}
+              ${action.lastIndexOf('.') === -1 ? `<mat-icon ${commonParts} class="material-icons">${action}</mat-icon>` : ''}
+            }`;
+          })
+          .join('')}
+      } @else {
         <button data-test="custom-actions-button"
                 mat-icon-button [matMenuTriggerFor]="customActionsMenu"
                 aria-label="Context menu for custom actions"
                 (click)="$event.preventDefault(); $event.stopPropagation()">
                 <mat-icon class="material-icons">more_vert</mat-icon>
         </button>
-      </ng-template>
+      }
       <mat-menu #customActionsMenu data-test="custom-actions-menu">
               ${options.customRowActions
                 .map((action: string): string => {
@@ -210,18 +207,18 @@ export function getCustomRowActions(options: any): string {
                       ? `<mat-icon data-test="custom-action-icon" ${commonParts} class="material-icons">${formattedAction}</mat-icon>`
                       : `<mat-icon data-test="custom-action-icon" svgIcon="${formattedAction}" ${commonParts}></mat-icon>`;
                   return `
-                      <button
-                          *ngIf="is${classifiedAction}Visible"
-                          [disabled]="!isAvailableRowAction('${formattedActionKebab}', row)"
-                          [matTooltipDisabled]="isAvailableRowAction('${formattedActionKebab}', row)"
-                          [matTooltip]="'${versionPrefix}customRowAction.${formattedActionKebab}.notAvailable' | transloco"
-                          (click)="executeCustomAction($event, '${formattedActionKebab}', row)"
-                          mat-menu-item
-                          data-test="custom-action-button">
-                          ${iconTemplate}
-                          <span data-test="custom-action-text" style="vertical-align: middle">{{ '${rowActionTextKey}' | transloco}}</span>
-                      </button>
-                     `;
+                      @if(is${classifiedAction}Visible) {
+                        <button
+                            [disabled]="!isAvailableRowAction('${formattedActionKebab}', row)"
+                            [matTooltipDisabled]="isAvailableRowAction('${formattedActionKebab}', row)"
+                            [matTooltip]="'${versionPrefix}customRowAction.${formattedActionKebab}.notAvailable' | transloco"
+                            (click)="executeCustomAction($event, '${formattedActionKebab}', row)"
+                            mat-menu-item
+                            data-test="custom-action-button">
+                            ${iconTemplate}
+                            <span data-test="custom-action-text" style="vertical-align: middle">{{ '${rowActionTextKey}' | transloco}}</span>
+                        </button>
+                     }`;
                 })
                 .join('')}
       </mat-menu>

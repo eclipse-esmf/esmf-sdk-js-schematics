@@ -9,7 +9,7 @@ export interface Response<T> {
   totalPages: number;
 }
 
-interface Payload {
+export interface Payload {
   query: string;
 
   [key: string]: string | number | boolean;

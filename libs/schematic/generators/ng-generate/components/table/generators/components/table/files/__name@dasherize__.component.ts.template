@@ -37,8 +37,10 @@ import {TranslocoPipe} from '@jsverse/transloco';
 <% } %>
 
 <% if (options.addCommandBar) { %>
+  <% if (!options.enableRemoteDataHandling) { %>
     import {unparse} from 'papaparse';
-    import {Actions, Action, EsmfExportTableDialogComponent} from '@esmf/semantic-ui-schematic';
+  <% } %>
+  import {Actions, Action, EsmfExportTableDialogComponent} from '@esmf/semantic-ui-schematic';
 <% } %>
 
 import {MatDialog} from '@angular/material/dialog';
@@ -81,7 +83,7 @@ import {<% if (options.enableRemoteDataHandling) { %>catchError, finalize, tap, 
 <% } %>
 import {MatMenu, MatMenuModule, MatMenuTrigger} from '@angular/material/menu';
 import {MatIconButton} from '@angular/material/button';
-import {NgClass} from '@angular/common';
+import {NgClass, NgTemplateOutlet} from '@angular/common';
 import {MatTooltip} from '@angular/material/tooltip';
 <%= options.include('/interfaces/column.ts.template') %>
 
@@ -129,6 +131,7 @@ type Entity = <%= classify(options.selectedModelTypeName) %>;
       MatTooltip,
       EsmfTableCellComponent,
       TranslocoPipe,
+      NgTemplateOutlet,
       <%= classify(name) %>CommandBarComponent
     ],
     templateUrl: './<%= cmpFileName %>.component.html',
@@ -348,7 +351,7 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
 
         const columnStorage = this.storageService.getItem<Column[]>(this.<%= options.localStorageKeyColumns %>);
 
-        if (columnStorage?.length > 0) {
+        if (Array.isArray(columnStorage) && columnStorage.length > 0) {
             columnStorage
                 .filter(
                 (column: Column) =>
@@ -696,7 +699,7 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
         private initializeHighlightConfig(): void {
             const configStorage = this.storageService.getItem<Config[]>(this.<%= options.localStorageKeyConfig %>);
 
-            if (configStorage?.length > 0) {
+            if (Array.isArray(configStorage) && configStorage.length > 0) {
                 configStorage.forEach((config: Config) => this.configs.push(config));
             } else {
                 this.configs.push({name: 'settings.highlight.name', desc: 'settings.highlight.desc', selected: false, color: '#FFFF00'});
