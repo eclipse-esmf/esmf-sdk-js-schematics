@@ -10,5 +10,125 @@
     "restoreDefaults": "Standardeinstellungen wiederherstellen",
     "cancel": "Abbrechen",
     "apply": "Anwenden"
+  },
+  "esmf.schematic.configMenu": {
+    "title": "Einstellungen",
+    "highlight.name": "Hervorhebung",
+    "highlight.desc": "Der Suchbegriff wird hervorgehoben",
+    "cancel": "Abbrechen",
+    "apply": "Anwenden"
+  },
+  "esmf.schematic.table": {
+    "openColumnsMenu": "Spaltenmenü öffnen",
+    "noLink": "Kein Link",
+    "noData": "Keine Daten",
+    "customRowActions": {
+      "title": "Aktionen"
+    }
+  },
+  "esmf.schematic.toolbar": {
+    "search": "Suchen",
+    "allTextFields": "Alle Textfelder",
+    "advancedSearch": "Erweiterte Suche",
+    "item": "Artikel",
+    "item.plural": "Artikel",
+    "sorted_tooltip": "Daten nach Eigenschaft sortieren",
+    "sort_dir_tooltip": "Sortierrichtung",
+    "sort_by": "Sortiert nach",
+    "sort_asc": "Aufsteigend",
+    "sort_desc": "Absteigend",
+    "actions": {
+      "refreshData": "Daten aktualisieren",
+      "exportData": "Daten exportieren",
+      "openConfig": "Konfiguration öffnen",
+      "cancel": "Abbrechen",
+      "apply": "Anwenden"
+    },
+    "date": {
+      "from": "Von",
+      "to": "Bis"
+    },
+    "validation": {
+      "date": {
+        "fromError": "Von-Datum darf nicht größer als Bis-Datum sein",
+        "toError": "Bis-Datum darf nicht kleiner als Start-Datum sein",
+        "fromRequired": "Von-Datum ist erforderlich",
+        "toRequired": "Bis-Datum ist erforderlich"
+      },
+      "invalidInput": "Die Eingabe darf nur Folgendes enthalten:",
+      "blankSpace": "Die Eingabe darf nur Leerzeichen zwischen den Zeichen enthalten.",
+      "empty_string_columns_array": "Sie müssen mindestens eine Spalte für die Suche auswählen.",
+      "min_char_no": "Mindestanzahl an Zeichen:",
+      "max_char_no": "Maximalanzahl an Zeichen:",
+      "any_URI": "Der Wert muss den Validierungsregeln für den Datentyp \"anyURI\", entsprechen.",
+      "base64_binary": "Value has to match validation rules for \"base64Binary\" data type",
+      "byte": "Value has to match validation rules for \"byte\" data type",
+      "curie": "Value has to match validation rules for \"curie\" data type",
+      "day_time_duration": "Value has to match validation rules for \"dayTimeDuration\" data type",
+      "decimal": "Value has to match validation rules for \"decimal\" data type",
+      "default": "Field is not valid",
+      "double": "Value has to match validation rules for \"double\" data type",
+      "duration": "Value has to match validation rules for \"duration\" data type",
+      "encoding": "Value has to be in \"{{encoding}}\" encoding",
+      "fixed_point_integer": "Integer part has to be {{integerLength}} digits long",
+      "fixed_point_parts": "Value has to consist of 2 parts separated by a dot",
+      "fixed_point_scale": "Scale part has to be {{scaleLength}} digits long",
+      "float": "Value has to match validation rules for \"float\" data type",
+      "g_day": "Value has to match validation rules for \"gDay\" data type",
+      "g_month": "Value has to match validation rules for \"gMonth\" data type",
+      "g_month_day": "Value has to match validation rules for \"gMonthDay\" data type",
+      "g_year": "Value has to match validation rules for \"gYear\" data type",
+      "g_year_month": "Value has to match validation rules for \"gYearMonth\" data type",
+      "group_unique_values": "Each value has to be unique",
+      "hex_binary": "Value has to match validation rules for \"hexBinary\" data type",
+      "int": "Value has to match validation rules for \"int\" data type",
+      "integer": "Value has to match validation rules for \"integer\" data type",
+      "lang_string": "Value has to match validation rules for \"langString\" data type",
+      "length_max": "Value has to have a maximum length of {{max}} characters",
+      "length_min": "Value has to be at least {{min}} characters long",
+      "list_length_max": "The list has to have a maximum length of {{max}} items",
+      "list_length_min": "The list has to have at least {{min}} items",
+      "long": "Value has to match validation rules for \"long\" data type",
+      "negative_integer": "Value has to match validation rules for \"negativeInteger\" data type",
+      "non_negative_integer": "Value has to match validation rules for \"nonNegativeInteger\" data type",
+      "non_positive_integer": "Value has to match validation rules for \"nonPositiveInteger\" data type",
+      "number": "Value has to be a valid number",
+      "positive_integer": "Value has to match validation rules for \"positiveInteger\" data type",
+      "range_max_inclusive": "Value has to be less than or equal to {{max}}",
+      "range_max": "Value has to be less than {{max}}",
+      "range_min_inclusive": "Value has to be greater than or equal to {{min}}",
+      "range_min": "Value has to be greater than {{min}}",
+      "regular_expression": "Value has to match the following pattern: {{pattern}}",
+      "required": "Field is required",
+      "short": "Value has to match validation rules for \"short\" data type",
+      "time": "Value has to match validation rules for \"time\" data type",
+      "unsigned_byte": "Value has to match validation rules for \"unsignedByte\" data type",
+      "unsigned_int": "Value has to match validation rules for \"unsignedInt\" data type",
+      "unsigned_long": "Value has to match validation rules for \"unsignedLong\" data type",
+      "unsigned_short": "Value has to match validation rules for \"unsignedShort\" data type",
+      "year_month_duration": "Value has to match validation rules for \"yearMonthDuration\" data type"
+    }
+  },
+  "esmf.schematic.exportDialog": {
+    "title": "Daten exportieren",
+    "export": "Exportieren",
+    "cancel": "Abbrechen",
+    "description": {
+      "exportOnlyFirstPage": "Nur die erste Datenseite exportieren.",
+      "caseOne": "Maximal {{maxExportRows}} Zeilen aus allen {{allColumns}} Spalten exportieren.",
+      "caseTwo": {
+        "singular": "Maximal {{maxExportRows}} Zeilen aus der angezeigten {{displayedColumns}} Spalte exportieren.",
+        "plural": "Maximal {{maxExportRows}} Zeilen aus den angezeigten {{displayedColumns}} Spalten exportieren."
+      },
+      "caseThree": {
+        "singular": "Alle Daten aus der ausgewählten {{displayedColumns}} Spalte der aktuellen Seite exportieren.",
+        "plural": "Alle Daten aus den ausgewählten {{displayedColumns}} Spalten der aktuellen Seite exportieren."
+      },
+      "caseFour": "Exportiert alle Daten aus allen {{allColumns}} Spalten der aktuellen Seite.",
+      "default": "Exportiert die gesamte Datenquelle.",
+      "exportAllPages": "Exportiert maximal {{maxExportRows}} Zeilen.",
+      "exportAllColumns": "Exportiert alle Daten aus allen {{allColumns}} Spalten.",
+      "exportFirstPage": "Exportiert die erste Datenseite."
+    }
   }
 }

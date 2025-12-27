@@ -24,7 +24,6 @@ import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 <% } %>
 import {MatToolbar} from '@angular/material/toolbar';
 import {MatError, MatFormField, MatHint} from '@angular/material/form-field';
-import {MatLabel} from '@angular/material/form-field';
 import {ReactiveFormsModule} from '@angular/forms';
 import {MatIcon} from '@angular/material/icon';
 import {MatSelectModule} from '@angular/material/select';
@@ -32,7 +31,7 @@ import {MatTooltip} from '@angular/material/tooltip';
 import {MatMenuModule, MatMenuTrigger} from '@angular/material/menu';
 import {MatIconButton} from '@angular/material/button';
 import {MatInput} from '@angular/material/input';
-import {TranslocoPipe} from '@jsverse/transloco';
+import {TranslocoDirective, TranslocoPipe} from '@jsverse/transloco';
 
 type InitialComponentWidth = {width: number; id: string | null};
 
@@ -44,7 +43,6 @@ type InitialComponentWidth = {width: number; id: string | null};
       <% } %>
       MatToolbar,
       MatFormField,
-      MatLabel,
       ReactiveFormsModule,
       MatError,
       MatHint,
@@ -54,6 +52,7 @@ type InitialComponentWidth = {width: number; id: string | null};
       MatMenuModule,
       MatIconButton,
       MatInput,
+      TranslocoDirective,
       TranslocoPipe
     ],
     templateUrl: './<%= dasherize(name) %>-command-bar.component.html',
