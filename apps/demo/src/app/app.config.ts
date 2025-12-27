@@ -1,14 +1,17 @@
 import {ApplicationConfig, isDevMode, provideBrowserGlobalErrorListeners, provideZoneChangeDetection} from '@angular/core';
-import { provideRouter } from '@angular/router';
-import { appRoutes } from './app.routes';
+import {provideRouter} from '@angular/router';
+import {appRoutes} from './app.routes';
 import {provideTransloco} from '@jsverse/transloco';
 import {TranslocoHttpLoader} from './transloco-http-loader.service';
+import {provideHttpClient} from '@angular/common/http';
+import {EsmfPaginatorSelectConfigProvider} from '@esmf/semantic-ui-schematic';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideZoneChangeDetection({eventCoalescing: true}),
     provideRouter(appRoutes),
+    provideHttpClient(),
     provideTransloco({
       config: {
         availableLangs: ['en', 'de'], // Example languages
@@ -17,11 +20,12 @@ export const appConfig: ApplicationConfig = {
         // reRenderOnLangChange: true,
         prodMode: !isDevMode(),
         missingHandler: {
-          logMissingKey: false,
+          logMissingKey: true,
         },
         fallbackLang: 'en',
       },
       loader: TranslocoHttpLoader,
     }),
+    EsmfPaginatorSelectConfigProvider,
   ],
 };
