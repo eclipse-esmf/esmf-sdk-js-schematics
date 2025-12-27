@@ -524,7 +524,10 @@ export class TemplateHelper {
    * @returns {string} The translation path.
    */
   private getTranslationPath(options: Schema): string {
-    const translationPath = `${this.getVersionedAccessPrefix(options)}${this.isAspectSelected(options) ? options.jsonAccessPath : ''}`;
+    const translationPath = options.enableVersionSupport
+      ? `${this.getVersionedAccessPrefix(options)}${this.isAspectSelected(options) ? options.jsonAccessPath : ''}`
+      : `${options.selectedModelElement.name.toLowerCase()}.`;
+
     return `${translationPath.length ? translationPath : ''}`;
   }
 

@@ -1,6 +1,6 @@
 <!--  <%= options.generationDisclaimerText %> -->
 
-<div class="js-sdk-component-container">
+<div class="js-sdk-component-container"  *transloco="let t; prefix: '<%= options.selectedModelTypeName.toLowerCase() %>'">
   <% if (options.addCommandBar) { %>
     <<%= dasherize(name) %>-command-bar
         [isMultipleSelectionEnabled]="isMultipleSelectionEnabled"

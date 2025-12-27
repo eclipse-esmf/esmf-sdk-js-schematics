@@ -54,7 +54,16 @@
       }
     }
 
+      .advanced-search-option-title {
+        text-transform: capitalize;
+      }
+
+
     ::ng-deep {
+      .advanced-search-option-title {
+        text-transform: capitalize;
+      }
+
       .advanced-search-option-description {
         position: relative;
         float: left;

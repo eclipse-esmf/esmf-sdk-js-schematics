@@ -29,7 +29,7 @@ import {
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort, MatSortModule, SortDirection } from '@angular/material/sort';
 import { MatTable, MatTableModule } from '@angular/material/table';
-import {TranslocoPipe} from '@jsverse/transloco';
+import {provideTranslocoScope, TranslocoDirective, TranslocoPipe} from '@jsverse/transloco';
 
 <% if (options.hasFilters || options.hasSearchBar) { %>
     import {<%= options.filterServiceName %>} from './<%= cmpFileName %>-filter.service';
@@ -130,6 +130,7 @@ type Entity = <%= classify(options.selectedModelTypeName) %>;
       MatIcon,
       MatTooltip,
       EsmfTableCellComponent,
+      TranslocoDirective,
       TranslocoPipe,
       NgTemplateOutlet,
       <%= classify(name) %>CommandBarComponent
@@ -138,7 +139,14 @@ type Entity = <%= classify(options.selectedModelTypeName) %>;
     styleUrls: ['./<%= cmpFileName %>.component.<%= options.style %>'],
     providers: [
       <%= tableServiceName %>,
-      EsmfLocalStorageService
+      EsmfLocalStorageService,
+      provideTranslocoScope({
+        scope: '<%= options.selectedModelTypeName.toLowerCase() %>',
+        loader: {
+          en: () => import('./en.<%= cmpFileName %>.translation.json'),
+          de: () => import('./de.<%= cmpFileName %>.translation.json'),
+        },
+      }),
     ],
     encapsulation: ViewEncapsulation.None,
     <% if (options.changeDetection) { %>changeDetection: ChangeDetectionStrategy.<%= options.changeDetection %><% } %>
@@ -702,7 +710,7 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
             if (Array.isArray(configStorage) && configStorage.length > 0) {
                 configStorage.forEach((config: Config) => this.configs.push(config));
             } else {
-                this.configs.push({name: 'settings.highlight.name', desc: 'settings.highlight.desc', selected: false, color: '#FFFF00'});
+                this.configs.push({name: 'highlight.name', desc: 'highlight.desc', selected: false, color: '#FFFF00'});
             }
         }
     <% } %>

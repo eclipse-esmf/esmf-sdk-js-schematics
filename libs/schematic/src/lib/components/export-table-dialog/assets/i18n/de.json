@@ -1,0 +1,22 @@
+{
+  "title": "Daten exportieren",
+  "export": "Exportieren",
+  "cancel": "Abbrechen",
+  "description": {
+    "exportOnlyFirstPage": "Nur die erste Datenseite exportieren.",
+    "caseOne": "Maximal {{maxExportRows}} Zeilen aus allen {{allColumns}} Spalten exportieren.",
+    "caseTwo": {
+      "singular": "Maximal {{maxExportRows}} Zeilen aus der angezeigten {{displayedColumns}} Spalte exportieren.",
+      "plural": "Maximal {{maxExportRows}} Zeilen aus den angezeigten {{displayedColumns}} Spalten exportieren."
+    },
+    "caseThree": {
+      "singular": "Alle Daten aus der ausgewählten {{displayedColumns}} Spalte der aktuellen Seite exportieren.",
+      "plural": "Alle Daten aus den ausgewählten {{displayedColumns}} Spalten der aktuellen Seite exportieren."
+    },
+    "caseFour": "Exportiert alle Daten aus allen {{allColumns}} Spalten der aktuellen Seite.",
+    "default": "Exportiert die gesamte Datenquelle.",
+    "exportAllPages": "Exportiert maximal {{maxExportRows}} Zeilen.",
+    "exportAllColumns": "Exportiert alle Daten aus allen {{allColumns}} Spalten.",
+    "exportFirstPage": "Exportiert die erste Datenseite."
+  }
+}

@@ -1,6 +1,6 @@
-<ng-container *transloco="let t">
+<ng-container *transloco="let t; prefix: 'esmf.schematic.configMenu'">
   <div tabindex="0" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
-    <div class="mat-h3 selection-title" role="button" tabindex="0" (click)="$event.stopPropagation()">{{ t('settings.title') }}</div>
+    <div class="mat-h3 selection-title" role="button" tabindex="0" (click)="$event.stopPropagation()">{{ t('title') }}</div>
 
     <mat-divider></mat-divider>
     <mat-selection-list cdkDropList data-test="config-selection-list" class="selection-list" (selectionChange)="onSelectionChange($event)">
