@@ -26,7 +26,7 @@ import {
   configFileName,
   createOrImport,
   importConfigFile,
-  requestPath,
+  requestPath
 } from './prompts-questions/shared/prompt-simple-questions';
 import {tablePrompterQuestions} from './prompts-questions/table/prompt-questions';
 import {pathDecision, requestAspectModelWithAspect} from './prompts-questions/shared/prompt-complex-questions';
@@ -56,6 +56,19 @@ async function registerFuzzyPathPrompt(): Promise<any> {
 
 export let WIZARD_CONFIG_FILE = 'wizard.config.json';
 
+type ImportConfig = {
+  createOrImport: false;
+  importConfigFile: string;
+};
+
+type CreateConfig = {
+  createOrImport: true;
+  pathToSource: string;
+  configFileName: string;
+  configFile: string;
+  paths: string;
+};
+
 let generationType: ComponentType;
 
 let fromImport = false;
@@ -75,11 +88,11 @@ export let aspect: Aspect;
  *
  * @throws {Error} - Will throw an error if an error occurs during execution.
  */
-export async function generate(subscriber: Subscriber<Tree>, tree: Tree, options: Schema, type: string) {
+export async function generate(subscriber: Subscriber<Tree>, tree: Tree, options: Schema, type: ComponentType) {
   console.log(LOG_COLOR, 'Welcome to the TTL schematic UI generator, answer some questions to get you started:');
 
   inquirer = await registerFuzzyPathPrompt();
-  generationType = type as ComponentType;
+  generationType = type;
   initAnswers();
 
   runPrompts(subscriber, tree, new TemplateHelper(), options).finally(() => {
@@ -105,6 +118,10 @@ export async function generate(subscriber: Subscriber<Tree>, tree: Tree, options
  *
  */
 function initAnswers() {
+  //TODO this should be a combination of
+  //  answerConfigurationFileConfig props &
+  //  answerAspectModelWithMainAspect props &
+  //  Generation specific props
   allAnswers = {
     aspectModelTFiles: [],
     excludedProperties: [],
@@ -129,9 +146,10 @@ async function runPrompts(subscriber: Subscriber<Tree>, tree: Tree, templateHelp
   try {
     const answerConfigurationFileConfig = await getConfigurationFileConfig(subscriber, tree);
 
-    if (!answerConfigurationFileConfig.importConfigFile) {
+    if (answerConfigurationFileConfig.createOrImport === true) {
       const answerAspectModelWithMainAspect = await getAspectModelWithMainAspect();
-      aspect = await loadAspectModel(answerAspectModelWithMainAspect.aspectModelUrnToLoad, tree);
+      aspect = await loadAspectModel(tree);
+
       switch (generationType) {
         case ComponentType.TABLE:
           return tablePrompterQuestions(
@@ -141,7 +159,7 @@ async function runPrompts(subscriber: Subscriber<Tree>, tree: Tree, templateHelp
             options,
             aspect,
             combineAnswers,
-            allAnswers
+            allAnswers,
           );
         case ComponentType.FORM:
           return formPrompterQuestions(
@@ -151,7 +169,7 @@ async function runPrompts(subscriber: Subscriber<Tree>, tree: Tree, templateHelp
             options,
             aspect,
             combineAnswers,
-            allAnswers
+            allAnswers,
           );
         case ComponentType.CARD:
           return cardPrompterQuestions(
@@ -161,7 +179,7 @@ async function runPrompts(subscriber: Subscriber<Tree>, tree: Tree, templateHelp
             options,
             aspect,
             combineAnswers,
-            allAnswers
+            allAnswers,
           );
         case ComponentType.TYPES:
           return typesPrompterQuestions(answerConfigurationFileConfig, answerAspectModelWithMainAspect, combineAnswers);
@@ -190,14 +208,18 @@ async function runPrompts(subscriber: Subscriber<Tree>, tree: Tree, templateHelp
  * @returns {Promise<Object>} A promise that resolves to the answers from the user.
  */
 async function getConfigurationFileConfig(subscriber: Subscriber<Tree>, tree: Tree) {
-  const answerGeneralConfig = await inquirer.prompt([createOrImport, requestPath, configFileName, importConfigFile, pathDecision(WIZARD_CONFIG_FILE)]);
+  const answerGeneralConfig: ImportConfig | CreateConfig = await inquirer.prompt([
+    createOrImport,
+    requestPath,
+    configFileName,
+    importConfigFile,
+    pathDecision(WIZARD_CONFIG_FILE),
+  ]);
 
-  if (answerGeneralConfig.importConfigFile) {
+  if (answerGeneralConfig.createOrImport === false) {
     importFileConfig(answerGeneralConfig.importConfigFile, subscriber, tree);
-  }
-
-  if (answerGeneralConfig.paths) {
-    addFileToConfig(answerGeneralConfig.paths, allAnswers);
+  } else {
+    addFileToConfig(answerGeneralConfig.paths, allAnswers); // allAnswers['aspectModelTFiles'] is mutated by the method
     await askAnotherFile();
   }
   return answerGeneralConfig;
@@ -277,17 +299,22 @@ async function askAnotherFile() {
 /**
  * Asynchronously prompts the user for input and retrieves an aspect model along with its main aspect.
  *
- * @returns {Promise<any>} A promise that resolves with the user's input data as an object.
+ * @returns {Promise<{aspectModelUrnToLoad?: string}>} A promise that resolves with the user's input a list of required Aspect Models.
  *
  */
-async function getAspectModelWithMainAspect(): Promise<any> {
-  return await inquirer.prompt([requestAspectModelWithAspect(allAnswers)]);
+async function getAspectModelWithMainAspect(): Promise<{aspectModelUrnToLoad?: string}> {
+  const answer: {aspectModelUrnToLoad?: string} = await inquirer.prompt([requestAspectModelWithAspect(allAnswers)]);
+
+  if (answer.aspectModelUrnToLoad) {
+    allAnswers.aspectModelTFiles = reorderAspectModelUrnToLoad(allAnswers.aspectModelTFiles, answer.aspectModelUrnToLoad);
+  }
+
+  return answer;
 }
 
 /**
  * Loads the aspect model.
  *
- * @param {string} pathToAspectModelWithMainAspect - The path of the Aspect Model with main Aspect to load.
  * @param {Tree} tree - The tree of files.
  *
  * @returns {Promise<Aspect>} Returns a Promise that resolves to an Aspect.
@@ -297,10 +324,8 @@ async function getAspectModelWithMainAspect(): Promise<any> {
  *
  * @throws Will throw an error if loading the aspect model fails.
  */
-async function loadAspectModel(pathToAspectModelWithMainAspect: string, tree: Tree): Promise<Aspect> {
+async function loadAspectModel(tree: Tree): Promise<Aspect> {
   if (aspect) return aspect;
-
-  allAnswers.aspectModelTFiles = reorderAspectModelUrnToLoad(allAnswers.aspectModelTFiles, pathToAspectModelWithMainAspect);
 
   try {
     const ttlFileContents: string[] = allAnswers.aspectModelTFiles
@@ -312,7 +337,7 @@ async function loadAspectModel(pathToAspectModelWithMainAspect: string, tree: Tr
       });
 
     if (ttlFileContents.length > 1) {
-      return await lastValueFrom<Aspect>(loader.load('', ...ttlFileContents));
+      return await lastValueFrom(loader.load('', ...ttlFileContents));
     }
 
     return await lastValueFrom(loader.loadSelfContainedModel(ttlFileContents[0]));
