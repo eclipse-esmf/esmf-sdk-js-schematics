@@ -1,6 +1,6 @@
 import {EsmfAbstractTableDataSource} from './abstract-table-data-source.service';
 
-export class EsmfStaticTableDataSource<T> extends EsmfAbstractTableDataSource<T> {
+export class EsmfStaticTableDataSource<T extends object> extends EsmfAbstractTableDataSource<T> {
   addData(data: T[]) {
     this.setDataSubject(this.getPagedData(this.sortData(data)));
   }
@@ -12,9 +12,9 @@ export class EsmfStaticTableDataSource<T> extends EsmfAbstractTableDataSource<T>
 
     return data.sort((a: T, b: T): number => {
       const isSortingAsc = this.sort?.direction === 'asc';
-      const sortProp = this.sort?.active.trim();
+      const sortProp = this.sort?.active.trim() as keyof T;
 
-      if(Object.prototype.hasOwnProperty.call(a, sortProp) && Object.prototype.hasOwnProperty.call(b, sortProp)) {
+      if (sortProp && Object.prototype.hasOwnProperty.call(a, sortProp) && Object.prototype.hasOwnProperty.call(b, sortProp)) {
         return this.compare(a[sortProp], b[sortProp], isSortingAsc);
       } else {
         return 0;
@@ -31,13 +31,13 @@ export class EsmfStaticTableDataSource<T> extends EsmfAbstractTableDataSource<T>
     }
   }
 
-  private compare(
-    a: string | number | boolean | Date | undefined,
-    b: string | number | boolean | Date | undefined,
-    isSortingAsc: boolean
-  ): number {
+  private compare(a: unknown, b: unknown, isSortingAsc: boolean): number {
     if (a === undefined || b === undefined) {
       return (a === undefined ? -1 : 1) * (isSortingAsc ? 1 : -1);
+    }
+
+    if (a === null || b === null) {
+      return (a === null ? -1 : 1) * (isSortingAsc ? 1 : -1);
     }
 
     if (typeof a === 'boolean') {

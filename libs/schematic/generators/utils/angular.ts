@@ -138,7 +138,7 @@ export async function addToExportsArray(
 // add options for module and flat to ensure correct import path
 export function wrapBuildComponentExecution(options: Schema): Rule {
   return async () => {
-    options.module = options.module || 'app.module';
+    options.standalone = true;
     options.flat = true;
     return buildComponent(Object.assign({}, options));
   };

@@ -1,6 +1,6 @@
 <!--  <%= options.generationDisclaimerText %> -->
 
-<div class="js-sdk-component-container">
+<div class="js-sdk-component-container"  *transloco="let t; prefix: '<%= options.selectedModelTypeName.toLowerCase() %>'">
   <% if (options.addCommandBar) { %>
     <<%= dasherize(name) %>-command-bar
         [isMultipleSelectionEnabled]="isMultipleSelectionEnabled"
@@ -31,9 +31,9 @@
       </ng-container>
     </<%= dasherize(name) %>-command-bar>
   <% } %>
-  <ng-container *ngIf="!!customTemplate && !dataSource.data.length">
+  @if(!!customTemplate && !dataSource.data.length) {
     <ng-container *ngTemplateOutlet="loadCustomTemplate()"></ng-container>
-  </ng-container>
+  }
   <% if (options.hasFilters) { %>
     <esmf-chip-list [activeFilters]="filterService.activeFilters" (removeFilter)="removeFilter($event)"></esmf-chip-list>
   <% } %>

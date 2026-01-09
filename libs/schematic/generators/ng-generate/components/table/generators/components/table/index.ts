@@ -26,6 +26,7 @@ import {
 import {templateInclude} from '../../../../shared/include';
 import {Schema} from '../../../../shared/schema';
 import {TableSchema} from '../../../schema';
+import {extractActionIconName} from '../../../../../../utils/config-helper';
 
 let sharedOptions: any = {};
 
@@ -127,7 +128,8 @@ function hasCustomActions(): boolean {
 }
 
 function getCustomIconsRegistration(): string {
-  return hasCustomActions() ? `
+  return hasCustomActions()
+    ? `
       const iconRegistry = inject(MatIconRegistry);
       const sanitizer = inject(DomSanitizer);
       ${[...sharedOptions.customRowActions, ...sharedOptions.customCommandBarActions]
@@ -137,13 +139,14 @@ function getCustomIconsRegistration(): string {
               customRowActions.lastIndexOf('.') > -1
                 ? `iconRegistry.addSvgIcon('${customRowActions.replace(
                     /\.[^/.]+$/,
-                    ''
-                  )}', sanitizer.bypassSecurityTrustResourceUrl('./assets/icons/${customRowActions}'));`
+                    '',
+                  )}', sanitizer.bypassSecurityTrustResourceUrl('./assets/icons/${extractActionIconName(customRowActions)}'));`
                 : ``
-            }`
+            }`,
         )
         .join('')}
-  ` : '';
+  `
+    : '';
 }
 
 function getInjections(): string {

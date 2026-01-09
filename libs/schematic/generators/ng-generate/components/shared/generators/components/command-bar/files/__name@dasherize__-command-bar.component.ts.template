@@ -3,7 +3,7 @@
   var addConfigMenu = options.componentType === 'table' && options.hasSearchBar;
 %>
 
-import {Component, EventEmitter, Input, Output, ViewChild, AfterViewInit, inject, ElementRef, HostListener, QueryList, ViewChildren, TemplateRef, ViewEncapsulation} from '@angular/core';
+import {Component, EventEmitter, Input, Output, ViewChild, AfterViewInit, inject, ElementRef, HostListener, QueryList, ViewChildren, ViewEncapsulation} from '@angular/core';
 import {SelectionModel} from "@angular/cdk/collections";
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 
@@ -24,7 +24,6 @@ import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 <% } %>
 import {MatToolbar} from '@angular/material/toolbar';
 import {MatError, MatFormField, MatHint} from '@angular/material/form-field';
-import {MatLabel} from '@angular/material/form-field';
 import {ReactiveFormsModule} from '@angular/forms';
 import {MatIcon} from '@angular/material/icon';
 import {MatSelectModule} from '@angular/material/select';
@@ -32,7 +31,9 @@ import {MatTooltip} from '@angular/material/tooltip';
 import {MatMenuModule, MatMenuTrigger} from '@angular/material/menu';
 import {MatIconButton} from '@angular/material/button';
 import {MatInput} from '@angular/material/input';
-import {TranslocoPipe} from '@jsverse/transloco';
+import {TranslocoDirective, TranslocoPipe} from '@jsverse/transloco';
+
+type InitialComponentWidth = {width: number; id: string | null};
 
 @Component({
     selector: '<%= dasherize(name) %>-command-bar',
@@ -42,7 +43,6 @@ import {TranslocoPipe} from '@jsverse/transloco';
       <% } %>
       MatToolbar,
       MatFormField,
-      MatLabel,
       ReactiveFormsModule,
       MatError,
       MatHint,
@@ -52,6 +52,7 @@ import {TranslocoPipe} from '@jsverse/transloco';
       MatMenuModule,
       MatIconButton,
       MatInput,
+      TranslocoDirective,
       TranslocoPipe
     ],
     templateUrl: './<%= dasherize(name) %>-command-bar.component.html',
@@ -105,11 +106,11 @@ export class <%= classify(name) %>CommandBarComponent implements AfterViewInit {
     @ViewChild('componentsContainer', { read: ElementRef, static: false })
     componentsContainer!: ElementRef;
     @ViewChildren('toolbarComp', { read: ElementRef })
-    components!: QueryList<ElementRef>;
+    components!: QueryList<ElementRef<HTMLElement>>;
     @ViewChild('projectedToolbarActions', {read: ElementRef, static: false})
     projectedToolbarActions!: ElementRef;
-    hiddenComponents: any[] = [];
-    initialCompWidths : any[]= [];
+    hiddenComponents: (string | null)[] = [];
+    initialCompWidths : InitialComponentWidth[]= [];
 
     <% if (options.componentType === 'card') { %>
       constructor() {
@@ -164,12 +165,12 @@ export class <%= classify(name) %>CommandBarComponent implements AfterViewInit {
 
     ngAfterViewInit(): void {
       const children = Array.from<HTMLElement>(this.projectedToolbarActions.nativeElement.children);
-      const projectedCompWidths: any[] = children.map(comp => ({
+      const projectedCompWidths = children.map(comp => ({
         width: comp.clientWidth,
         id: comp.getAttribute('data-resp')
       }));
 
-      const compWidths: any[] = this.components
+      const compWidths = this.components
         .toArray()
         .map((comp) => ({width: comp.nativeElement.clientWidth, id: comp.nativeElement.getAttribute('data-resp')}));
 
@@ -183,7 +184,7 @@ export class <%= classify(name) %>CommandBarComponent implements AfterViewInit {
       this.updateToolbarComponentsVisibility();
     }
 
-    @HostListener('window:resize', ['$event'])
+    @HostListener('window:resize')
     onResize() {
        this.updateToolbarComponentsVisibility();
     }

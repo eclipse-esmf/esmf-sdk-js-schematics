@@ -15,6 +15,8 @@ import {apply, applyTemplates, MergeStrategy, mergeWith, move, Rule, SchematicCo
 import {strings} from '@angular-devkit/core';
 import {DefaultEntityInstance, DefaultEnumeration, Property} from '@esmf/aspect-model-loader';
 import {dasherize} from '@angular-devkit/core/src/utils/strings';
+import {isArrayOfStrings} from '../../../../../utils/type-guards';
+import {normalizeActionName} from '../../../../../utils/config-helper';
 
 let sharedOptions: any = {};
 
@@ -35,12 +37,12 @@ export function generateLanguageTranslationAsset(options: any, assetsPath: strin
           description: sharedOptions.aspectModel.getDescription(language),
           properties: getProperties(language),
           blockTransCustomColumns: getBlockTransCustomColumns(),
-          blockTransRowActions: getBlockTransRowActions(),
+          blockTransRowActions: getBlockTransRowActions(options.customRowActions),
           blockCustomCommandBarActions: getBlockCustomCommandBarActions(),
         }),
         move(assetsPath),
       ]),
-      options.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error
+      options.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error,
     );
   };
 }
@@ -99,59 +101,72 @@ function getBlockEntityInstance(property: Property, lang: string, parentProperty
 function getBlockTransCustomColumns(): string {
   const customColumns = sharedOptions.customColumns?.map((cc: string) => `"customColumn.${cc}": "${cc}"`).join(', ');
 
-  return customColumns?.length > 0 ? `${customColumns},` : '';
+  return customColumns?.length > 0 ? `${customColumns}` : '';
 }
 
-function getBlockTransRowActions(): string {
-  if (!sharedOptions.customRowActions || sharedOptions.customRowActions.length === 0) {
+/**
+ * The method transforms array of custom row actions into translation keys and values.
+ * @param {string} customRowActions - Array of custom row actions in the format 'action.svg' or 'action.svg: Custom Title'.
+ * @returns {string} Translation file block with the list of custom row actions.
+ * @example
+ * const customRowActions = ['forward-right.svg'];
+ * const customRowActionsWithTitle = ['forward-right.svg: View Movement Details'];
+ * const b = 20;
+ *
+ * const actionBlocks = getBlockTransRowActions(customRowAction);
+ * console.log(actionBlocks);
+ * // Logs: `
+ *   "customRowAction": {
+ *     "forward-right": {
+ *       "title": "forward-right",
+ *       "notAvailable": "The action is not available"
+ *     }
+ *   }
+ *
+ * const actionsBlockWithTitle = getBlockTransRowActions(customRowActionsWithTitle);
+ * console.log(actionsBlockWithTitle);
+ * // Logs: `
+ *   "customRowAction": {
+ *     "forward-right": {
+ *       "title": "View Movement Details",
+ *       "notAvailable": "The action is not available"
+ *     }
+ *   }
+ */
+function getBlockTransRowActions(customRowActions: unknown): string {
+  if (!isArrayOfStrings(customRowActions) || customRowActions.length === 0) {
     return '';
   }
 
-  const actions: string[] = sharedOptions.customRowActions.map((action: string) =>
-    action
-      .replace(/\.[^/.]+$/, '')
-      .replace(/\s+/g, '-')
-      .toLowerCase()
-  );
-
-  const actionTitles = actions.map(action => `"${action}.customRowAction": "${action}"`).join(', ');
-  const actionNotAvailableTitles = actions.map(action => `"${action}.notAvailable": ""`).join(', ');
+  const actionTranslations = customRowActions
+    .map(action => action.split(':'))
+    .map(([action, title]) => buildActionTranslationBlock(action, title));
 
   return `
-        ${actionTitles},
         "customRowAction": {
-            ${actionNotAvailableTitles}
-        },
+          ${actionTranslations.join(',')}
+        }
     `;
-
-  /*const customRowActions = sharedOptions.customRowActions
-        ?.map((cr: string, i: number, arr: string[]) => {
-            const crReplaced = cr
-                .replace(/\.[^/.]+$/, '')
-                .replace(/\s+/g, '-')
-                .toLowerCase();
-            return `"${crReplaced}.customRowAction": "${crReplaced}"`;
-        })
-        .join(', ');
-
-    return customRowActions?.length > 0 ? `${customRowActions},` : '';*/
 }
 
 function getBlockCustomCommandBarActions(): string {
-  const transformActionName = (action: string) => {
-    return action
-      .replace(/\.[^/.]+$/, '')
-      .replace(/\s+/g, '-')
-      .toLowerCase();
-  };
-
-  const actions = sharedOptions.customCommandBarActions.map(transformActionName);
+  const actions = sharedOptions.customCommandBarActions.map(normalizeActionName);
 
   const actionStrings = actions.map((action: string) => `"${action}.customCommandBarAction": "${action}"`);
 
-  return actionStrings.length > 0 ? `${actionStrings},` : '';
+  return actionStrings.length > 0 ? `${actionStrings}` : '';
 }
 
-function replaceIncorrectSymbols(str: string = ''): string {
+function replaceIncorrectSymbols(str = ''): string {
   return str.replace(/[\n\r\t]+/g, ' ');
+}
+
+function buildActionTranslationBlock(action:string, title:string): string {
+  action = normalizeActionName(action);
+  return `
+        "${action}": {
+          "title": "${title || action}",
+          "notAvailable": "The action is not available"
+        }
+    `;
 }

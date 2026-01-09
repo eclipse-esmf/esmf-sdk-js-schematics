@@ -23,6 +23,11 @@
       "input": "./.tmp-generators",
       "glob": "**/*",
       "output": "./generators"
+    },
+    {
+      "input": "./src/assets/i18n",
+      "glob": "**/*",
+      "output": "./assets/i18n"
     }
   ]
 }

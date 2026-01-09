@@ -50,9 +50,10 @@ import {MatTableDataSource} from "@angular/material/table";
     import {<%= classify(name) %>Service} from './<%= dasherize(name) %>.service';
 <% } %>
 
-export enum <%= classify(name) %>CardValues {
+export const <%= classify(name) %>CardValues = {
     <%= enumPropertyDefinitions %>
-}
+} as const;
+export type <%= classify(name) %>CardValues = (typeof <%= classify(name) %>CardValues)[keyof typeof <%= classify(name) %>CardValues];
 
 @Component({
     selector: '<%= options.selector %>',

@@ -13,15 +13,48 @@ describe('EsmfColumnMenuComponent', () => {
     { name: 'column3', selected: true }
   ];
 
+  const translocoLangs = {
+    en: {
+      esmf: {
+        schematic: {
+          columnMenu: {
+            columns: 'Columns',
+            restoreDefaults: 'Restore defaults',
+            cancel: 'Cancel',
+            apply: 'Apply',
+          },
+        },
+      },
+      test: {
+        prefix: {
+          column1: {
+            preferredName: 'Column 1 Preferred',
+            description: 'Column 1 Description',
+          },
+          column2: {
+            preferredName: 'Column 2 Preferred',
+            description: 'Column 2 Description',
+          },
+          column3: {
+            preferredName: 'Column 3 Preferred',
+            description: 'Column 3 Description',
+          },
+        },
+      },
+    },
+    de: {},
+  };
+
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [getTranslocoTestingModule({langs: {en: {}, de: {}}}), EsmfColumnMenuComponent]
+      imports: [getTranslocoTestingModule({langs: translocoLangs}), EsmfColumnMenuComponent]
     }).compileComponents();
 
     fixture = TestBed.createComponent(EsmfColumnMenuComponent);
     component = fixture.componentInstance;
     fixture.componentRef.setInput('defaultColumns', ['column1', 'column2', 'column3']);
     fixture.componentRef.setInput('columns', mockColumns);
+    fixture.componentRef.setInput('i18nPrefix', 'test.prefix');
     fixture.detectChanges();
   });
 
@@ -154,6 +187,52 @@ describe('EsmfColumnMenuComponent', () => {
       const columns = component.columnsToDisplay();
       expect(columns[0]).toEqual({ name: 'column2', selected: false });
       expect(columns[2]).toEqual({ name: 'column1', selected: true });
+    });
+  });
+
+  describe('translations', () => {
+    it('should render preferred name translations using the provided prefix', () => {
+      fixture.detectChanges();
+      const preferredNameElements = Array.from<Element>(
+        fixture.nativeElement.querySelectorAll('[data-test="column-option-preferred-name"]')
+      );
+      const preferredNames = preferredNameElements.map((element: Element) => (element.textContent ?? '').trim());
+
+      expect(preferredNames).toEqual([
+        'Column 2 Preferred',
+        'Column 3 Preferred',
+        'Column 1 Preferred'
+      ]);
+    });
+
+    it('should render description translations using the provided prefix', () => {
+      fixture.detectChanges();
+      const descriptionElements = Array.from<Element>(fixture.nativeElement.querySelectorAll('[data-test="column-option-description"]'));
+      const descriptions = descriptionElements.map((element: Element) => (element.textContent ?? '').trim());
+
+      expect(descriptions).toEqual([
+        'Column 2 Description',
+        'Column 3 Description',
+        'Column 1 Description'
+      ]);
+    });
+
+    it('should render the section title translation using the default prefix', () => {
+      fixture.detectChanges();
+      const titleElement = fixture.nativeElement.querySelector('.selection-title');
+
+      expect(titleElement?.textContent?.trim()).toBe('Columns');
+    });
+
+    it('should render the action button translations using the default prefix', () => {
+      fixture.detectChanges();
+      const restoreText = fixture.nativeElement.querySelector('[data-test="restore-to-defaults-text"]');
+      const cancelText = fixture.nativeElement.querySelector('[data-test="column-menu-cancel-text"]');
+      const applyText = fixture.nativeElement.querySelector('[data-test="column-menu-apply-text"]');
+
+      expect(restoreText?.textContent?.trim()).toBe('Restore defaults');
+      expect(cancelText?.textContent?.trim()).toBe('Cancel');
+      expect(applyText?.textContent?.trim()).toBe('Apply');
     });
   });
 });
