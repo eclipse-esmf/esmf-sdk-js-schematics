@@ -1,8 +1,9 @@
-export enum FilterEnums {
-  Date,
-  Search,
-  Enum,
-}
+export const FilterEnums = {
+  Date: 'Date',
+  Search: 'Search',
+  Enum: 'Enum',
+} as const;
+export type FilterEnums = (typeof FilterEnums)[keyof typeof FilterEnums];
 
 export type FilterType = {
   type: FilterEnums;

@@ -524,7 +524,10 @@ export class TemplateHelper {
    * @returns {string} The translation path.
    */
   private getTranslationPath(options: Schema): string {
-    const translationPath = `${this.getVersionedAccessPrefix(options)}${this.isAspectSelected(options) ? options.jsonAccessPath : ''}`;
+    const translationPath = options.enableVersionSupport
+      ? `${this.getVersionedAccessPrefix(options)}${this.isAspectSelected(options) ? options.jsonAccessPath : ''}`
+      : `${options.selectedModelElement.name.toLowerCase()}.`;
+
     return `${translationPath.length ? translationPath : ''}`;
   }
 
@@ -579,9 +582,6 @@ export class TemplateHelper {
    * @returns {string} The path to the types file.
    */
   private getTypesPath(aspectModelVersionSupport: boolean, version: string, aspectModel: Aspect): string {
-    if (aspectModelVersionSupport) {
-      return `../../../types/${dasherize(aspectModel.name)}/v${version.split('.').join('')}/${dasherize(aspectModel.name)}.types`;
-    }
-    return `../../types/${dasherize(aspectModel.name)}/${dasherize(aspectModel.name)}.types`;
+    return `./${dasherize(aspectModel.name)}.types`;
   }
 }

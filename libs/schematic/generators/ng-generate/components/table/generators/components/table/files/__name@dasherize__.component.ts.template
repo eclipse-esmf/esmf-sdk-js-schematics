@@ -29,16 +29,18 @@ import {
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort, MatSortModule, SortDirection } from '@angular/material/sort';
 import { MatTable, MatTableModule } from '@angular/material/table';
-import {TranslocoPipe} from '@jsverse/transloco';
+import {provideTranslocoScope, TranslocoDirective, TranslocoPipe} from '@jsverse/transloco';
 
 <% if (options.hasFilters || options.hasSearchBar) { %>
     import {<%= options.filterServiceName %>} from './<%= cmpFileName %>-filter.service';
-    import {EsmfChipListComponent, EsmfTableCellComponent, FilterEnums} from '@esmf/semantic-ui-schematic';
+    import {EsmfChipListComponent, EsmfTableCellComponent, FilterEnums, FilterType} from '@esmf/semantic-ui-schematic';
 <% } %>
 
 <% if (options.addCommandBar) { %>
+  <% if (!options.enableRemoteDataHandling) { %>
     import {unparse} from 'papaparse';
-    import {Actions, Action, EsmfExportTableDialogComponent} from '@esmf/semantic-ui-schematic';
+  <% } %>
+  import {Actions, Action, EsmfExportTableDialogComponent} from '@esmf/semantic-ui-schematic';
 <% } %>
 
 import {MatDialog} from '@angular/material/dialog';
@@ -81,20 +83,21 @@ import {<% if (options.enableRemoteDataHandling) { %>catchError, finalize, tap, 
 <% } %>
 import {MatMenu, MatMenuModule, MatMenuTrigger} from '@angular/material/menu';
 import {MatIconButton} from '@angular/material/button';
-import {NgClass} from '@angular/common';
+import {NgClass, NgTemplateOutlet} from '@angular/common';
 import {MatTooltip} from '@angular/material/tooltip';
 <%= options.include('/interfaces/column.ts.template') %>
 
 /**
- * Enumeration of all available columns which can be shown/hide in the table.
+ * Predefined set of all available columns which can be shown/hide in the table.
  */
-export enum <%= tableColumnsEnumName %> {
-    <% if (options.addRowCheckboxes) { %>CHECKBOX = 'checkboxes',<% } %>
+export const <%= tableColumnsEnumName %> = {
+    <% if (options.addRowCheckboxes) { %>CHECKBOX: 'checkboxes',<% } %>
     <%= enumPropertyDefinitions %>
     <%= enumCustomColumns %>
-    <% if (hasCustomRowActions) { %>CUSTOM_ROW_ACTIONS = 'customRowActions',<% } %>
-    COLUMNS_MENU = 'columnsMenu'
-}
+    <% if (hasCustomRowActions) { %>CUSTOM_ROW_ACTIONS: 'customRowActions',<% } %>
+    COLUMNS_MENU: 'columnsMenu'
+} as const;
+export type <%= tableColumnsEnumName %> = (typeof <%= tableColumnsEnumName %>)[keyof typeof <%= tableColumnsEnumName %>];
 
 export const NON_DATA_COLUMNS: <%= tableColumnsEnumName %>[] = [
     <% if (hasCustomRowActions) { %>
@@ -106,7 +109,7 @@ export const NON_DATA_COLUMNS: <%= tableColumnsEnumName %>[] = [
 type Entity = <%= classify(options.selectedModelTypeName) %>;
 
 <% if (hasCustomRowActions) { %>
-    type RowAction = <%= customRowActionNames.join(' | ') %>;
+    export type RowAction = <%= customRowActionNames.join(' | ') %>;
     export type <%= options.aspectModelTypeName %>ActionsResolvers = Partial<Record<RowAction, (rowData: Entity) => boolean>> | undefined;
 <% } %>
 
@@ -127,14 +130,23 @@ type Entity = <%= classify(options.selectedModelTypeName) %>;
       MatIcon,
       MatTooltip,
       EsmfTableCellComponent,
+      TranslocoDirective,
       TranslocoPipe,
+      NgTemplateOutlet,
       <%= classify(name) %>CommandBarComponent
     ],
     templateUrl: './<%= cmpFileName %>.component.html',
     styleUrls: ['./<%= cmpFileName %>.component.<%= options.style %>'],
     providers: [
       <%= tableServiceName %>,
-      EsmfLocalStorageService
+      EsmfLocalStorageService,
+      provideTranslocoScope({
+        scope: '<%= options.selectedModelTypeName.toLowerCase() %>',
+        loader: {
+          en: () => import('./en.<%= cmpFileName %>.translation.json'),
+          de: () => import('./de.<%= cmpFileName %>.translation.json'),
+        },
+      }),
     ],
     encapsulation: ViewEncapsulation.None,
     <% if (options.changeDetection) { %>changeDetection: ChangeDetectionStrategy.<%= options.changeDetection %><% } %>
@@ -192,17 +204,17 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
         @Input() actionResolvers: <%= options.aspectModelTypeName %>ActionsResolvers = {};
     <% } %>
 
-    @Output() rowClickEvent = new EventEmitter<any>();
-    @Output() rowDblClickEvent = new EventEmitter<any>();
-    @Output() rowRightClickEvent = new EventEmitter<any>();
-    @Output() tableUpdateStartEvent = new EventEmitter<any>();
+    @Output() rowClickEvent = new EventEmitter<{ data: Entity }>();
+    @Output() rowDblClickEvent = new EventEmitter<{ data: Entity }>();
+    @Output() rowRightClickEvent = new EventEmitter<{ data: Entity, mousePosition: {x: string, y: string} }>();
+    @Output() tableUpdateStartEvent = new EventEmitter<void>();
     @Output() tableUpdateFinishedEvent = new EventEmitter<any>();
-    @Output() copyToClipboardEvent = new EventEmitter<any>();
+    @Output() copyToClipboardEvent = new EventEmitter<string>();
     @Output() downloadEvent = new EventEmitter<{error: boolean, success: boolean, inProgress: boolean}>();
-    @Output() rowSelectionEvent = new EventEmitter<any>();
+    @Output() rowSelectionEvent = new EventEmitter<Entity[]>();
 
     <% if (hasCustomRowActions) { %>
-        @Output() customActionEvent = new EventEmitter<any>();
+        @Output() customActionEvent = new EventEmitter<{action: string, data: Entity}>();
     <% } %>
     <% if (options.customCommandBarActions.length > 0) { %>
         @Output() customCommandBarActionEvent = new EventEmitter<any>();
@@ -231,7 +243,7 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
     <% } %>
 
     totalItems = 0;
-    selection = new SelectionModel<any>(this.isMultipleSelectionEnabled, []);
+    selection = new SelectionModel<Entity>(this.isMultipleSelectionEnabled, []);
     dataSource = new <%= tableDataSourceName %><Entity>();
 
     columnToSort:{sortColumnName: string, sortDirection: SortDirection} = {sortColumnName:'<%= options.defaultSortingCol %>', sortDirection : 'asc'};
@@ -345,9 +357,9 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
         );
        this.customizableColumns = this.displayedColumns.filter(column => !NON_DATA_COLUMNS.includes(column));
 
-        const columnStorage = this.storageService.getItem(this.<%= options.localStorageKeyColumns %>);
+        const columnStorage = this.storageService.getItem<Column[]>(this.<%= options.localStorageKeyColumns %>);
 
-        if (columnStorage?.length > 0) {
+        if (Array.isArray(columnStorage) && columnStorage.length > 0) {
             columnStorage
                 .filter(
                 (column: Column) =>
@@ -398,7 +410,7 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
       return item.toString() + this.highlightString.join();
     };
 
-    rowClicked(row: any, $event: MouseEvent): boolean {
+    rowClicked(row: Entity, $event: MouseEvent): boolean {
         if (this.highlightSelectedRow) {
             this.checkboxClicked(row);
         }
@@ -422,15 +434,15 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
         return false;
     }
 
-    rowDblClicked(row: any, $event: MouseEvent): void {
+    rowDblClicked(row: Entity, $event: MouseEvent): void {
         this.rowDblClickEvent.emit({data: row});
     }
 
-    copyToClipboard(value: any): void {
+    copyToClipboard(value: string): void {
         this.copyToClipboardEvent.emit(value);
     }
 
-    checkboxClicked(row: any): void {
+    checkboxClicked(row: Entity): void {
         if(!this.isMultipleSelectionEnabled) {
             this.selection.clear();
         }
@@ -471,7 +483,7 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
     <% } %>
 
     <% if (hasCustomRowActions) { %>
-        executeCustomAction($event: MouseEvent, action: string, row:any): void{
+        executeCustomAction($event: MouseEvent, action: string, row: Entity): void{
             if(this.customRowActionsLength <= this.visibleRowActionsIcons) {
                    $event.stopPropagation();
             }
@@ -487,7 +499,7 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
     <% } %>
 
     <% if (options.hasFilters) { %>
-        removeFilter(filterData: any) {
+        removeFilter(filterData: FilterType) {
             <% if (options.hasFilters) { %>
                 this.filterService.removeFilter(filterData);
             <% } %>
@@ -693,12 +705,12 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
 
     <% if (options.hasSearchBar) { %>
         private initializeHighlightConfig(): void {
-            const configStorage = this.storageService.getItem(this.<%= options.localStorageKeyConfig %>);
+            const configStorage = this.storageService.getItem<Config[]>(this.<%= options.localStorageKeyConfig %>);
 
-            if (configStorage?.length > 0) {
+            if (Array.isArray(configStorage) && configStorage.length > 0) {
                 configStorage.forEach((config: Config) => this.configs.push(config));
             } else {
-                this.configs.push({name: 'settings.highlight.name', desc: 'settings.highlight.desc', selected: false, color: '#FFFF00'});
+                this.configs.push({name: 'highlight.name', desc: 'highlight.desc', selected: false, color: '#FFFF00'});
             }
         }
     <% } %>

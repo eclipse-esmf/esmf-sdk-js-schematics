@@ -1,7 +1,7 @@
 import {MAT_DIALOG_DATA, MatDialogActions, MatDialogClose, MatDialogContent, MatDialogRef, MatDialogTitle} from '@angular/material/dialog';
 import {AfterViewInit, ChangeDetectionStrategy, Component, computed, inject, signal, viewChild} from '@angular/core';
 import {MatCheckbox} from '@angular/material/checkbox';
-import {TranslocoPipe, TranslocoService} from '@jsverse/transloco';
+import {TranslocoDirective, TranslocoService} from '@jsverse/transloco';
 import {MatButton} from '@angular/material/button';
 import {MatIcon} from '@angular/material/icon';
 
@@ -22,21 +22,18 @@ export interface ExportTableDialogComponentData {
   selector: 'esmf-export-table-dialog',
   templateUrl: './export-table-dialog.component.html',
   styleUrls: ['./export-table-dialog.component.scss'],
-  imports: [MatIcon, MatDialogTitle, MatDialogClose, MatDialogContent, MatCheckbox, MatDialogActions, MatButton, TranslocoPipe],
+  imports: [MatIcon, MatDialogTitle, MatDialogClose, MatDialogContent, MatCheckbox, MatDialogActions, MatButton, TranslocoDirective],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EsmfExportTableDialogComponent implements AfterViewInit {
-  private readonly translateService = inject(TranslocoService);
-
   readonly dialogRef = inject<MatDialogRef<EsmfExportTableDialogComponent>>(MatDialogRef);
   readonly data = inject<ExportTableDialogComponentData>(MAT_DIALOG_DATA);
-
   readonly exportAllPages = viewChild.required<MatCheckbox>('exportAllPages');
   readonly exportAllColumns = viewChild<MatCheckbox>('exportAllColumns');
-
   readonly Actions = Actions;
   readonly dialogDescription = signal('');
   readonly showAllColumnsBox = computed(() => this.data.displayedColumns === this.data.allColumns);
+  private readonly translateService = inject(TranslocoService);
 
   ngAfterViewInit() {
     this.setDialogDescription();
@@ -47,7 +44,7 @@ export class EsmfExportTableDialogComponent implements AfterViewInit {
     const isExportAllPagesChecked = this.exportAllPages().checked;
     const isExportAllColumnsChecked = this.exportAllColumns()?.checked;
 
-    const translationKey = this.getTranslationKey(isExportAllPagesChecked, isExportAllColumnsChecked, displayedColumns);
+    const translationKey = this.getTranslationKey(isExportAllPagesChecked, !!isExportAllColumnsChecked, displayedColumns);
     this.dialogDescription.set(this.translateService.translate(translationKey, {maxExportRows, allColumns, displayedColumns}));
   }
 
@@ -64,21 +61,25 @@ export class EsmfExportTableDialogComponent implements AfterViewInit {
 
   private getTranslationKey(isExportAllPagesChecked: boolean, isExportAllColumnsChecked: boolean, displayedColumns: number): string {
     if (isExportAllPagesChecked && isExportAllColumnsChecked) {
-      return 'exportData.description.caseOne';
+      return 'esmf.schematic.exportDialog.description.caseOne';
     }
 
     if (isExportAllPagesChecked) {
-      return displayedColumns > 1 ? 'exportData.description.caseTwo.plural' : 'exportData.description.caseTwo.singular';
+      return displayedColumns > 1
+        ? 'esmf.schematic.exportDialog.description.caseTwo.plural'
+        : 'esmf.schematic.exportDialog.description.caseTwo.singular';
     }
 
     if (!isExportAllColumnsChecked) {
-      return displayedColumns > 1 ? 'exportData.description.caseThree.plural' : 'exportData.description.caseThree.singular';
+      return displayedColumns > 1
+        ? 'esmf.schematic.exportDialog.description.caseThree.plural'
+        : 'esmf.schematic.exportDialog.description.caseThree.singular';
     }
 
     if (isExportAllColumnsChecked) {
-      return 'exportData.description.caseFour';
+      return 'esmf.schematic.exportDialog.description.caseFour';
     }
 
-    return 'exportData.description.default';
+    return 'esmf.schematic.exportDialog.description.default';
   }
 }

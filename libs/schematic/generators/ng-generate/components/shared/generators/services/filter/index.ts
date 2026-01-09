@@ -145,7 +145,7 @@ function setEnumRemoveFilter(values: PropValue[]) {
     'this.activeFilters = this.activeFilters.filter(af => af.filterValue !== filter.filterValue && af.label !== filter.label );';
   const endStatement = 'break;';
 
-  return `case FilterEnums.Enum: ${filterStatements} ${filterRemovalStatement} ${endStatement}`;
+  return `case FilterEnums.Enum: {${filterStatements} ${filterRemovalStatement} ${endStatement}}`;
 }
 
 function setDateFormGroups(values: PropValue[]) {
@@ -178,15 +178,17 @@ function setDateQuickFilters(values: PropValue[]) {
 function setDataRemoveFilter(values: PropValue[]) {
   const template = (value: any) =>
     `if(filter.prop === '${value.propertyValue}') {
-            this.${value.propertyName}Group.reset();  
+            this.${value.propertyName}Group.reset();
         }`;
 
   const filtersLogic = values.map(template).join('');
 
-  return `case FilterEnums.Date: 
+  return `case FilterEnums.Date: {
         ${filtersLogic}
         this.activeFilters = this.activeFilters.filter(af => af.filterValue !== filter.filterValue && af.label !== filter.label);
-        break;`;
+        break;
+     }`;
+
 }
 
 function getEnumFilterRemote(values: PropValue[]) {
@@ -194,11 +196,11 @@ function getEnumFilterRemote(values: PropValue[]) {
         if (this.${value.propertyName}Selected.length > 0) {
             query.addNode(new In('${sharedOptions.jsonAccessPath}${value.propertyValue}', this.${value.propertyName}Selected));
         }
-        
+
         this.${value.propertyName}Selected.forEach(selected => {
             const filterProp = '${sharedOptions.jsonAccessPath}${value.propertyValue}';
             const filterVal = selected;
-            
+
             if(!this.activeFilters.filter(af => af.prop === filterProp).map(af=> af.filterValue).includes(filterVal)) {
                 this.activeFilters.push(<FilterType>{
                     removable: true,
@@ -234,10 +236,10 @@ function getEnumFilterNotRemote(values: PropValue[]) {
 }
 
 const generateFilterCode = (value: any) => `
-filteredData = this.${value.propertyName}Selected.length === 0 ? filteredData : 
+filteredData = this.${value.propertyName}Selected.length === 0 ? filteredData :
                 filteredData.filter((item:${classify(sharedOptions.selectedModelElement.name)}): boolean =>
                     (this.${value.propertyName}Selected.includes(item.${sharedOptions.jsonAccessPath}${value.propertyValue})));
-                
+
 this.${value.propertyName}Selected.forEach(selected=> {
     const filterProp = '${sharedOptions.jsonAccessPath}${value.propertyValue}';
     const filterVal = selected;
@@ -248,7 +250,7 @@ this.${value.propertyName}Selected.forEach(selected=> {
             type: FilterEnums.Enum,
             label: ${getChipLabelEnum(value)},
             prop: filterProp,
-            filterValue : filterVal 
+            filterValue : filterVal
         })
     }
 });
@@ -272,7 +274,7 @@ const getChipLabelEnum = (filterProp: PropValue) => {
 };
 
 function getDateRemote(values: PropValue[]): string {
-  const template = (value: any) => ` 
+  const template = (value: any) => `
         if(this.${value.propertyName}Group.valid) {
             const {fromControl, toControl} = this.${value.propertyName}Group.value;
             this.applySingleDateFilter(query, fromControl, toControl, '${value.propertyName}');
@@ -285,18 +287,18 @@ function getDateRemote(values: PropValue[]): string {
         applyDateFilter(query: AbstractLogicalNode): void {
             ${activeFilters}
         }
-        
+
         private applySingleDateFilter(query: AbstractLogicalNode, from: number, to: number, filterPropName: string): void {
             const conditions = [];
-    
+
             const fromDateUTC: string | null = from ? this.createDateAsUTC(new Date(from)).toISOString() : null;
             let toDateUTC: string | null = null;
             let toDate: Date | null = to ? this.createDateAsUTC(new Date(to)) : null;
-        
+
             if (toDate) {
                 toDateUTC = this.createDateAsUTC(new Date(toDate.setHours(23, 59, 59, 999))).toISOString();
             }
-        
+
             if (fromDateUTC) {
                 conditions.push(new Ge(filterPropName, fromDateUTC));
             }
@@ -306,13 +308,13 @@ function getDateRemote(values: PropValue[]): string {
             if (conditions.length > 0) {
                 query.addNode(conditions.length > 1 ? new And(conditions) : conditions[0]);
             }
-        
+
             // DCV-SPECIFIC: wrap the rest of the code in if condition to avoid chip list not updating or removing
             if (fromDateUTC || toDateUTC) {
                 const filterIndex = this.activeFilters.findIndex(af => af.prop === filterPropName);
-        
+
                 let label = this.translateService.translate('batch.v030.' + filterPropName + '.preferredName');
-        
+
                 if (fromDateUTC && toDateUTC) {
                     label += ' ' + this.getFormattedDate(fromDateUTC) + ' - ' + this.getFormattedDate(toDate.toISOString());
                 } else if (toDateUTC) {
@@ -320,7 +322,7 @@ function getDateRemote(values: PropValue[]): string {
                 } else if (fromDateUTC) {
                     label += ' from ' + this.getFormattedDate(fromDateUTC);
                 }
-        
+
                 if (filterIndex === -1) {
                     this.activeFilters.push({
                         removable: true,
@@ -350,7 +352,7 @@ function getDateNotRemote(values: PropValue[]): string {
     if (${value.propertyName}EndDate) {
         ${value.propertyName}EndDate = new Date(${value.propertyName}EndDate.setHours(23, 59, 59, 999));
     }
- 
+
     ${filteredData(values, index)}.filter(item => {
         const itemDate = new Date(item.${value.propertyValue});
         return (!${value.propertyName}StartDate || itemDate >= ${value.propertyName}StartDate) && (!${
@@ -377,7 +379,7 @@ function getDateNotRemote(values: PropValue[]): string {
           ${values.map(dateFilterLogic).join('')}
           return filteredData;
         }
-        
+
         private dateInformation (prop: string, label: string) {
         }
 
@@ -387,8 +389,8 @@ function getDateNotRemote(values: PropValue[]): string {
             this.activeFilters.push(<FilterType>{
               removable: true,
               type: FilterEnums.Date,
-              label: label, 
-              prop: prop 
+              label: label,
+              prop: prop
             });
           } else {
             filter.label = label;

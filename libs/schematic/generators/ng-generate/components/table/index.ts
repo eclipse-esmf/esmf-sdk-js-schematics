@@ -32,7 +32,6 @@ import {TableSchema} from './schema';
 import {LOG_COLOR} from '../../../utils/constants';
 import {generateCustomService, generateFilterService, generateSemanticExplanation} from '../shared/generators';
 import {generateTranslationFiles} from '../../../utils/aspect-model';
-import {wrapBuildComponentExecution} from '../../../utils/angular';
 
 export default function (tableSchema: TableSchema): Rule {
   return (tree: Tree, context: SchematicContext) => {
@@ -56,7 +55,6 @@ export function generateTable(tableSchema: TableSchema): Rule {
     generateFilterService(options),
     // TODO remove the method call generateGeneralStyle(options),
     generateTranslationFiles(options, false),
-    wrapBuildComponentExecution(options),
     generateCustomService(options),
     generateSemanticExplanation(options as Values),
     generateTableComponent(options as TableSchema),

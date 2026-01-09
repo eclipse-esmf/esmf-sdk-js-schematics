@@ -16,11 +16,12 @@ import {Tree} from '@angular-devkit/schematics/src/tree/interface';
 import {Observable, Subscriber} from 'rxjs';
 import {generate} from '../index';
 import {TypesSchema} from '../../types/schema';
+import {ComponentType} from '../../components/shared/schema';
 
 export default function (options: TypesSchema) {
   return (tree: Tree, context: SchematicContext) => {
     return new Observable<Tree>((subscriber: Subscriber<Tree>) => {
-      generate(subscriber, tree, options, 'types');
+      generate(subscriber, tree, options, ComponentType.TYPES);
     });
   };
 }

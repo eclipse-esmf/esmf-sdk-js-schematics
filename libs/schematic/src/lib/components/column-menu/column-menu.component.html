@@ -1,4 +1,4 @@
-<ng-container *transloco="let t;">
+<ng-container *transloco="let t; prefix: 'esmf.schematic.columnMenu'">
   <!-- eslint-disable-next-line @angular-eslint/template/click-events-have-key-events,@angular-eslint/template/interactive-supports-focus -->
   <div class="mat-h2 selection-title" (click)="$event.stopPropagation()">{{ t('columns') }}</div>
 
@@ -14,9 +14,9 @@
       >
         <div class="list-content">
           <div>
-            <div data-test="column-option-preferred-name">{{ t('plantentity.v110.' + column.name + '.preferredName') }}</div>
+            <div data-test="column-option-preferred-name">{{ i18nPrefix() + column.name + '.preferredName' | transloco }}</div>
             <div class="mat-small" data-test="column-option-description">
-              {{ t('plantentity.v110.' + column.name + '.description') }}
+              {{ i18nPrefix() + column.name + '.description' | transloco }}
             </div>
           </div>
           <mat-icon class="material-icons drag-indicator-icon" data-test="drag-indicator-icon" matTooltip="Draggable row"

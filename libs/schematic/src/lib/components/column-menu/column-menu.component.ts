@@ -1,11 +1,10 @@
-import {CdkDragDrop, moveItemInArray} from '@angular/cdk/drag-drop';
+import {CdkDragDrop, DragDropModule, moveItemInArray} from '@angular/cdk/drag-drop';
 import {ChangeDetectionStrategy, Component, input, linkedSignal, output, ViewEncapsulation} from '@angular/core';
 import {MatDivider, MatListOption, MatSelectionList} from '@angular/material/list';
 import {MatButton} from '@angular/material/button';
 import {MatIcon} from '@angular/material/icon';
 import {MatTooltip} from '@angular/material/tooltip';
-import {DragDropModule} from '@angular/cdk/drag-drop';
-import {TranslocoDirective} from '@jsverse/transloco';
+import {TranslocoDirective, TranslocoPipe} from '@jsverse/transloco';
 
 export interface Column {
   name: string;
@@ -18,16 +17,25 @@ function makeAllColumnsSelected(columns: string[]): Column[] {
   return columnsSource.map(column => ({name: column, selected: true}));
 }
 
+function addDotToTheEnd(prefix: string): string {
+  if (prefix === '' || prefix.endsWith('.')) {
+    return prefix;
+  }
+
+  return `${prefix}.`;
+}
+
 @Component({
   selector: 'esmf-column-menu',
   templateUrl: './column-menu.component.html',
   styleUrls: ['./column-menu.component.scss'],
-  imports: [MatSelectionList, MatDivider, MatListOption, MatButton, MatIcon, MatTooltip, DragDropModule, TranslocoDirective],
+  imports: [MatSelectionList, MatDivider, MatListOption, MatButton, MatIcon, MatTooltip, DragDropModule, TranslocoDirective, TranslocoPipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
   host: {class: 'esmf-column-menu'},
 })
 export class EsmfColumnMenuComponent {
+  i18nPrefix = input.required<string, string>({transform: addDotToTheEnd});
   defaultColumns = input.required<Column[], string[]>({transform: makeAllColumnsSelected});
   columns = input.required<Column[]>();
 
