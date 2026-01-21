@@ -21,6 +21,7 @@
     - [The _form_ schematics](#the-form-schematics)
         - [Features provided by the schematics form](#features-provided-by-the-schematics-form)
         - [Howto generate a form component with the schematics command](#howto-generate-a-form-component-with-the-schematics-command)
+- [Local Development](#local-development)
 - [Documentation](#documentation)
 - [License](#license)
 
@@ -332,6 +333,26 @@ The form schematics can be used for form generation.
 
 ---
 
+## Local Development
+- Install dependencies:
+  ```bash 
+  npm ci
+  ```
+2 processes should be run in parallel to develop the schematic locally:
+- Start the project in watch mode:
+  - Build generator compilation in watch mode:
+    ```bash
+    tsc -p libs/schematic/tsconfig.generators.json -- watch
+    ```
+  - Build the schematic library in watch mode:
+    ```bash
+    nx build schematic --watch
+    ```
+- In another terminal, run the schematic generation in the demo project:
+  ```bash
+  npx nx g @esmf/semantic-ui-schematic:table --dry-run=false --skip-install --name=table --project=demo 
+  ```
+  
 ## Documentation
 
 Further documentation and howto's are provided in the
