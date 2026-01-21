@@ -14,7 +14,6 @@
 import {Tree} from '@angular-devkit/schematics/src/tree/interface';
 import {Aspect} from '@esmf/aspect-model-loader';
 import * as fs from 'fs';
-import * as path from 'path';
 import {lastValueFrom, Subscriber} from 'rxjs';
 import {TemplateHelper} from '../../utils/template-helper';
 import {ComponentType, Schema} from '../components/shared/schema';
@@ -35,6 +34,7 @@ import {
 import {tablePrompterQuestions} from './prompts-questions/table/prompt-questions';
 import {typesPrompterQuestions} from './prompts-questions/types/prompt-questions';
 import {loader, reorderAspectModelUrnToLoad, writeConfigAndExit} from './utils';
+import {basename} from 'path';
 
 // Function to dynamically load inquirer-fuzzy-path and register the prompt
 async function registerFuzzyPathPrompt(): Promise<any> {
@@ -266,7 +266,7 @@ async function importFileConfig(configFilePath: string, subscriber: Subscriber<T
   try {
     const data = fs.readFileSync(configFilePath, 'utf8');
 
-    WIZARD_CONFIG_FILE = path.basename(configFilePath);
+    WIZARD_CONFIG_FILE = basename(configFilePath);
     fromImport = true;
 
     await writeConfigAndExit(subscriber, tree, JSON.parse(data), true);
