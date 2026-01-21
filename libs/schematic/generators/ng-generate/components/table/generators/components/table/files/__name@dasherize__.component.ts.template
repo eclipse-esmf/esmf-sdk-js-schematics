@@ -475,7 +475,7 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
     <% } %>
 
     <% if (hasCustomRowActions) { %>
-        executeCustomAction($event: MouseEvent, action: string, row: Entity): void{
+        executeCustomAction($event: MouseEvent, action: RowAction, row: Entity): void{
             if(this.customRowActionsLength <= this.visibleRowActionsIcons) {
                    $event.stopPropagation();
             }
