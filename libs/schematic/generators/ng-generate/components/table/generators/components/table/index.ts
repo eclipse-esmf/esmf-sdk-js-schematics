@@ -26,7 +26,6 @@ import {
 import {templateInclude} from '../../../../shared/include';
 import {Schema} from '../../../../shared/schema';
 import {TableSchema} from '../../../schema';
-import {extractActionIconName} from '../../../../../../utils/config-helper';
 
 let sharedOptions: any = {};
 
@@ -76,7 +75,6 @@ function applyTemplate(): Rule {
     byValueFunction: getByValueFunction(),
     injections: getInjections(),
     hasCustomActions: hasCustomActions(),
-    registerCustomIcons: getCustomIconsRegistration(),
     customColumn: getCustomColumn(),
     columnTransKeyPrefix: getColumnTransKeyPrefix(),
   });
@@ -125,28 +123,6 @@ function getByValueFunction(): string {
 
 function hasCustomActions(): boolean {
   return [...sharedOptions.customRowActions, ...sharedOptions.customCommandBarActions].findIndex(element => element.includes('.')) !== -1;
-}
-
-function getCustomIconsRegistration(): string {
-  return hasCustomActions()
-    ? `
-      const iconRegistry = inject(MatIconRegistry);
-      const sanitizer = inject(DomSanitizer);
-      ${[...sharedOptions.customRowActions, ...sharedOptions.customCommandBarActions]
-        .map(
-          (customRowActions: string) =>
-            `${
-              customRowActions.lastIndexOf('.') > -1
-                ? `iconRegistry.addSvgIcon('${customRowActions.replace(
-                    /\.[^/.]+$/,
-                    '',
-                  )}', sanitizer.bypassSecurityTrustResourceUrl('./assets/icons/${extractActionIconName(customRowActions)}'));`
-                : ``
-            }`,
-        )
-        .join('')}
-  `
-    : '';
 }
 
 function getInjections(): string {
