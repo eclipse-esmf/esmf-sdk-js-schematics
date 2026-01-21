@@ -233,7 +233,7 @@ export class <%= classify(name) %>FilterService {
 
             private getFilterContext(): string {
                 return this.selectedStringColumn.value === this.advancedSearchAllValue
-                    ? this.translateService.translate('allTextFields')
+                    ? this.translateService.translate('esmf.schematic.toolbar.allTextFields')
                     : this.translateService.translate(`<%= options.translationPath %>` + this.selectedStringColumn.value + '.preferredName');
             }
 
@@ -255,7 +255,7 @@ export class <%= classify(name) %>FilterService {
             applyStringSearchFilter(query: AbstractLogicalNode): void {
                 if (this.searchString.value && this.searchString.value !== '' && !this.activeFilters.find(elem => elem.prop === this.selectedStringColumn.value && elem.filterValue === this.searchString.value)) {
                     const label = ` in ${ this.selectedStringColumn.value === this.advancedSearchAllValue ?
-                    this.translateService.translate('allTextFields') :
+                    this.translateService.translate('esmf.schematic.toolbar.allTextFields') :
                         this.translateService.translate(`<%= options.translationPath %>` + this.selectedStringColumn.value + '.preferredName')}`;
                          this.activeFilters.push(<FilterType> {
                             removable: true,
