@@ -1,4 +1,4 @@
-import {Directive, ElementRef, SecurityContext, inject, input, effect, computed} from '@angular/core';
+import {computed, Directive, effect, ElementRef, inject, input, SecurityContext} from '@angular/core';
 import {DomSanitizer} from '@angular/platform-browser';
 
 interface HighlightRange {

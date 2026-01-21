@@ -11,17 +11,29 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-import {Characteristic, Property} from '@esmf/aspect-model-loader';
-import {FormFieldStrategy} from '../fields/FormFieldStrategy';
-import {apply, applyTemplates, MergeStrategy, mergeWith, move, Rule, SchematicContext, url} from '@angular-devkit/schematics';
-import {templateInclude} from '../../../../shared/include';
 import {strings} from '@angular-devkit/core';
+import {
+  apply,
+  applyTemplates,
+  MergeStrategy,
+  mergeWith,
+  move,
+  Rule,
+  SchematicContext,
+  url
+} from '@angular-devkit/schematics';
+import {Characteristic, Property} from '@esmf/aspect-model-loader';
+import {templateInclude} from '../../../../shared/include';
+import {FormFieldStrategy} from '../fields/FormFieldStrategy';
 import {getFormFieldStrategy} from '../fields/index';
 
 export class RootFormField {
   options: any;
 
-  constructor(options: any, public context: SchematicContext) {
+  constructor(
+    options: any,
+    public context: SchematicContext,
+  ) {
     this.options = {...options};
   }
 
@@ -34,7 +46,7 @@ export class RootFormField {
           templateInclude(this.context, this.applyTemplate(), this.options, '../shared/methods'),
           move(this.options.path),
         ]),
-        this.options.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error
+        this.options.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error,
       ),
       ...this.getChildStrategies().map(strategy => strategy.generate()),
     ];

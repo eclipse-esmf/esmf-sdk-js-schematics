@@ -13,10 +13,6 @@
       overflow: hidden;
     }
 
-    .mat-mdc-select-value {
-      text-transform: capitalize;
-    }
-
     .mat-mdc-menu-panel {
       max-width: max-content !important;
     }
@@ -58,8 +54,25 @@
       }
     }
 
+      .advanced-search-option-title {
+        text-transform: capitalize;
+      }
+
 
     ::ng-deep {
+      .advanced-search-option-title {
+        text-transform: capitalize;
+      }
+
+      .advanced-search-option-description {
+        position: relative;
+        float: left;
+        font-size: 10px;
+        line-height: 1;
+        top: -12px;
+        white-space: break-spaces;
+      }
+
       & .resizing {
         -moz-user-select: none;
         -ms-user-select: none;
@@ -99,25 +112,6 @@
       .mat-pseudo-checkbox {
         margin-right: 10px;
       }
-    }
-  }
-}
-
-//modal control adjustments
-.js-sdk-advanced-search {
-  .mdc-list-item__primary-text {
-    display: flex;
-    flex-direction: column;
-
-    .advanced-search-option-title {
-      text-transform: capitalize;
-      font-size: 1rem;
-      line-height: 1.5rem;
-    }
-
-    .advanced-search-option-description {
-      font-size: 0.75rem;
-      line-height: 1.5rem;
     }
   }
 }

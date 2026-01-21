@@ -12,8 +12,8 @@
  */
 
 import {Characteristic} from '@esmf/aspect-model-loader';
-import {FormFieldConfig, FormFieldStrategy} from '../FormFieldStrategy';
 import {DataType, DataTypeValidator, ValidatorConfig} from '../../validators/validatorsTypes';
+import {FormFieldConfig, FormFieldStrategy} from '../FormFieldStrategy';
 
 export class TextAreaFormFieldStrategy extends FormFieldStrategy {
   pathToFiles = './generators/components/fields/textArea/files';

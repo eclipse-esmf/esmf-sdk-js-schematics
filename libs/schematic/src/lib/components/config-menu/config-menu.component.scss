@@ -1,25 +1,42 @@
-.menu-actions-container {
-  display: flex;
-  align-items: center;
-  align-content: space-around;
-  padding: 16px 16px 8px 16px;
+.esmf-config-menu {
   min-width: 450px;
+  flex-direction: column;
+  display: flex;
 
-  .column-menu {
-    &-restore-btn {
-      align-self: flex-start;
-    }
-
-    &-cancel-btn {
-      cursor: pointer;
-      margin: 0 8px;
-    }
+  .selection-title {
+    font-weight: 700;
+    font-size: 1rem;
+    line-height: 1.75rem;
+    padding: 1rem;
+    margin: 0;
   }
 
-  .config-menu {
-    &-cancel-btn {
-      cursor: pointer;
-      margin: 0 8px;
+  .list-content {
+    display: flex;
+    justify-content: space-between;
+    flex: 1;
+
+    .title {
+      text-transform: capitalize;
+      font-size: 1rem;
+      line-height: 1.5rem;
+    }
+
+    .description {
+      min-width: 0;
+      font-size: 0.75rem;
+      line-height: 1.25rem;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .color-selector {
+      margin: auto 0;
+
+      input {
+        height: 1.75rem;
+      }
     }
   }
 
@@ -29,5 +46,14 @@
 
   .spacer {
     flex: 1 1 auto;
+  }
+
+  .menu-actions-container {
+    display: flex;
+    align-items: center;
+    align-content: space-around;
+    padding: 16px 16px 8px 16px;
+    gap: 0.5rem;
+    min-width: 450px;
   }
 }

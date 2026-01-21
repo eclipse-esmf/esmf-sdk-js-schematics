@@ -29,14 +29,14 @@ import {
   DefaultStructuredValue,
   DefaultTrait,
   Entity,
-  Property,
+  Property
 } from '@esmf/aspect-model-loader';
 
-import {ComponentType, Schema} from '../../../components/shared/schema';
-import {TemplateHelper} from '../../../../utils/template-helper';
 import * as locale from 'locale-codes';
-import {handleComplexPropList, loader} from '../../utils';
 import {loadInquirer} from '../../../../utils/angular';
+import {TemplateHelper} from '../../../../utils/template-helper';
+import {ComponentType, Schema} from '../../../components/shared/schema';
+import {handleComplexPropList, loader} from '../../utils';
 
 export const requestOverwriteFiles = (options: Schema) => ({
   type: 'confirm',
@@ -277,7 +277,7 @@ export const requestExcludedConstraints = (type: string, allAnswers: any, templa
 export const requestSelectedModelElement = (
   type: ComponentType,
   aspect: Aspect,
-  conditionFunction: (aspect: Aspect, loader: AspectModelLoader) => any
+  conditionFunction: (aspect: Aspect, loader: AspectModelLoader) => any,
 ) => ({
   type: 'list',
   name: 'selectedModelElementUrn',
@@ -380,7 +380,7 @@ export function extractComplexPropertyDetails(
   templateHelper: TemplateHelper,
   answers: any,
   allAnswers: any,
-  aspect: Aspect
+  aspect: Aspect,
 ): Array<Property> {
   allAnswers.selectedModelElementUrn = answers.selectedModelElementUrn || templateHelper.resolveType(aspect).aspectModelUrn;
 
@@ -445,7 +445,7 @@ function getConstraintsFromComplexElement(characteristic: Characteristic): Const
         element instanceof DefaultPropertyInstanceDefinition
           ? [...acc, ...getConstraintsFromElement(element.wrappedProperty.characteristic)]
           : acc,
-      []
+      [],
     );
   }
 
@@ -518,7 +518,7 @@ function getFilterProperties(
   allAnswers: any,
   answers: any,
   aspect: Aspect,
-  enabledCommandBarFunctions?: any[]
+  enabledCommandBarFunctions?: any[],
 ): string[] {
   const hasEnumFilter = enabledCommandBarFunctions ? enabledCommandBarFunctions.includes('addEnumQuickFilters') : false;
   const hasDateFilter = enabledCommandBarFunctions ? enabledCommandBarFunctions.includes('addDateQuickFilters') : false;
@@ -555,7 +555,7 @@ export async function getCommandBarFilterOrder(
   answers: any,
   aspect: Aspect,
   options: Schema,
-  enabledCommandBarFunctions: any[]
+  enabledCommandBarFunctions: any[],
 ): Promise<any> {
   const choices = getFilterProperties(templateHelper, allAnswers, answers, aspect, enabledCommandBarFunctions);
   if (

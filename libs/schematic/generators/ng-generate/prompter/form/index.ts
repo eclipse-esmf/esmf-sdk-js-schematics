@@ -11,12 +11,12 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-import {FormSchema} from '../../components/form/schema';
-import {Rule, SchematicContext} from '@angular-devkit/schematics';
+import {SchematicContext} from '@angular-devkit/schematics';
 import {Tree} from '@angular-devkit/schematics/src/tree/interface';
 import {Observable, Subscriber} from 'rxjs';
-import {generate} from '../index';
+import {FormSchema} from '../../components/form/schema';
 import {ComponentType} from '../../components/shared/schema';
+import {generate} from '../index';
 
 export default function (options: FormSchema) {
   return (tree: Tree, context: SchematicContext) => {

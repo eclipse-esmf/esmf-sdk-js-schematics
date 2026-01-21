@@ -21,7 +21,7 @@ private requestData() {
 
     if (this.customFilterExtension) this.customFilterExtension.apply(query);
 
-    const queryFilter = query.subNodes.length === 0 ? null : new Query({query: query});
+    const queryFilter = new Query({query: query});
 
     const queryOption = new Query();
 
@@ -33,15 +33,15 @@ private requestData() {
         queryOption.setSort(new Sort(<SortOptions>{[sortProperty]: sortDirection}));
       }
     <% } else { %>
-      const sortProperty = this.sort?.active || this.columnToSort.sortColumnName;
-      const sortDirection = (this.sort?.direction || this.columnToSort.sortDirection) === 'asc' ? 1 : -1;
+        if (this.sort.active) {
+          const sortProperty = this.sort.active;
+          const sortDirection = this.sort.direction === 'asc' ? 1 : -1;
 
-      queryOption.setSort(new Sort(<SortOptions>{[sortProperty]: sortDirection}));
+          queryOption.setSort(new Sort(<SortOptions>{[sortProperty]: sortDirection}));
+        }
     <% } %>
 
-    const pageIndex = this.paginator?.pageIndex || 0;
-    const pageSize = this.paginator?.pageSize || this.pageSize;
-    queryOption.setLimit(new Limit(pageIndex * pageSize, pageSize));
+    queryOption.setLimit(new Limit(this.paginator.pageIndex * this.paginator.pageSize, this.paginator.pageSize));
 
     if (this.customOptionsExtension) this.customOptionsExtension.apply(queryOption);
 

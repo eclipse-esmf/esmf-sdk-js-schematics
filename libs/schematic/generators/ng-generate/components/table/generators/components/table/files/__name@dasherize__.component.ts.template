@@ -56,7 +56,11 @@ import {<%= tableDataSourceName %>, EsmfPaginatorSelectConfigInjector, EsmfLocal
     import {DateAdapter, MAT_DATE_FORMATS, MatDateFormats} from '@angular/material/core';
 <% } %>
 
-import {MatIcon} from '@angular/material/icon';
+<% if (hasCustomActions) { %>
+  import {MatIcon, MatIconRegistry} from '@angular/material/icon';
+<% } else { %>
+  import {MatIcon} from '@angular/material/icon';
+<% } %>
 
 import {DomSanitizer, SafeStyle} from '@angular/platform-browser';
 import {SelectionModel} from '@angular/cdk/collections';
@@ -210,7 +214,7 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
     @Output() rowSelectionEvent = new EventEmitter<Entity[]>();
 
     <% if (hasCustomRowActions) { %>
-        @Output() customActionEvent = new EventEmitter<{action: RowAction, data: Entity}>();
+        @Output() customActionEvent = new EventEmitter<{action: string, data: Entity}>();
     <% } %>
     <% if (options.customCommandBarActions.length > 0) { %>
         @Output() customCommandBarActionEvent = new EventEmitter<any>();
@@ -275,6 +279,10 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
     <% if (options.enableRemoteDataHandling) { %>
         private requestSubscription = new Subscription();
     <% } %>
+
+    constructor(){
+      <%= registerCustomIcons %>
+    }
 
     ngOnInit(): void {
         <% if (options.hasSearchBar) { %>
@@ -475,7 +483,7 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
     <% } %>
 
     <% if (hasCustomRowActions) { %>
-        executeCustomAction($event: MouseEvent, action: RowAction, row: Entity): void{
+        executeCustomAction($event: MouseEvent, action: string, row: Entity): void{
             if(this.customRowActionsLength <= this.visibleRowActionsIcons) {
                    $event.stopPropagation();
             }

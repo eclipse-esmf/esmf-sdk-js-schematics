@@ -11,15 +11,25 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-import {Characteristic, Constraint, DefaultConstraint, DefaultTrait, Property} from '@esmf/aspect-model-loader';
-import {apply, applyTemplates, chain, MergeStrategy, mergeWith, move, Rule, SchematicContext, url} from '@angular-devkit/schematics';
 import {strings} from '@angular-devkit/core';
-import {templateInclude} from '../../../../shared/include';
+import {
+  apply,
+  applyTemplates,
+  chain,
+  MergeStrategy,
+  mergeWith,
+  move,
+  Rule,
+  SchematicContext,
+  url
+} from '@angular-devkit/schematics';
+import {Characteristic, Constraint, DefaultConstraint, DefaultTrait, Property} from '@esmf/aspect-model-loader';
 import {addToComponentModule} from '../../../../../../utils/angular';
-import {getFormFieldStrategy} from './index';
-import {getConstraintValidatorStrategy} from '../validators/constraint/index';
+import {templateInclude} from '../../../../shared/include';
 import {ConstraintValidatorStrategyClass} from '../validators/constraint/constraint-validator-strategies';
+import {getConstraintValidatorStrategy} from '../validators/constraint/index';
 import {DataType, GenericValidator, ValidatorConfig} from '../validators/validatorsTypes';
+import {getFormFieldStrategy} from './index';
 
 export interface BaseFormFieldConfig {
   name: string;
@@ -52,7 +62,7 @@ export abstract class FormFieldStrategy {
     public parent: Property,
     public child: Characteristic,
     public fieldName: string,
-    public constraints: Constraint[]
+    public constraints: Constraint[],
   ) {
     this.options = {...options};
   }
@@ -97,7 +107,7 @@ export abstract class FormFieldStrategy {
         // Check that it's not excluded explicitly
         !this.options.excludedConstraints.includes(constraint.aspectModelUrn) &&
         // It's not a direct instance of "DefaultConstraint" (it contains no validation rules)
-        constraint.constructor !== DefaultConstraint
+        constraint.constructor !== DefaultConstraint,
     );
 
     return applicableConstraints.reduce((acc, constraint) => {
@@ -164,11 +174,11 @@ export abstract class FormFieldStrategy {
               ...this.options,
               name: this.fieldName,
             },
-            '../shared/methods'
+            '../shared/methods',
           ),
           move(this.options.path + `/${fieldConfig.nameDasherized}`),
         ]),
-        this.options.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error
+        this.options.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error,
       ),
       addToComponentModule(this.options.skipImport, this.options, modules),
     ];
@@ -194,7 +204,7 @@ export abstract class FormFieldStrategy {
       this.context,
       this.parent,
       child,
-      child instanceof DefaultTrait ? child.baseCharacteristic.name : child.name
+      child instanceof DefaultTrait ? child.baseCharacteristic.name : child.name,
     );
   }
 }

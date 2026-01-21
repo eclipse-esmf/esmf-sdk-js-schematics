@@ -13,6 +13,7 @@
 
 import {virtualFs} from '@angular-devkit/core';
 import {classify, dasherize} from '@angular-devkit/core/src/utils/strings';
+import {FileBuffer} from '@angular-devkit/core/src/virtual-fs/host';
 import {chain, Rule, SchematicContext, SchematicsException, Tree} from '@angular-devkit/schematics';
 import {
   Aspect,
@@ -21,12 +22,11 @@ import {
   DefaultEntity,
   DefaultSingleEntity,
   Entity,
-  Property,
+  Property
 } from '@esmf/aspect-model-loader';
 import {Observable, Subscriber} from 'rxjs';
-import {Schema} from '../ng-generate/components/shared/schema';
 import {generateLanguageTranslationAsset} from '../ng-generate/components/shared/generators/language/index';
-import {FileBuffer} from '@angular-devkit/core/src/virtual-fs/host';
+import {Schema} from '../ng-generate/components/shared/schema';
 
 export type PropValue = {
   propertyValue: string;
@@ -59,7 +59,7 @@ export function loadRDF(options: Schema): Rule {
 
     if (!aspectModelTFiles.length) {
       throw new SchematicsException(
-        `No ttl files provided, please provide the ttl files you want to load using the cli param 'aspectModelTFilesString=ttl-file1,ttl-file2'.`
+        `No ttl files provided, please provide the ttl files you want to load using the cli param 'aspectModelTFilesString=ttl-file1,ttl-file2'.`,
       );
     }
 
@@ -72,7 +72,7 @@ export function loadRDF(options: Schema): Rule {
       }
 
       options.spinner.succeed(
-        `Loaded RDF ${aspectModelTFiles.length > 1 ? index + 1 + '/' + aspectModelTFiles.length : ''} from "${path}"`
+        `Loaded RDF ${aspectModelTFiles.length > 1 ? index + 1 + '/' + aspectModelTFiles.length : ''} from "${path}"`,
       );
 
       return virtualFs.fileBufferToString(data as unknown as FileBuffer);
@@ -154,7 +154,7 @@ export function generateTranslationFiles(options: Schema, formsPathCompatibility
 
     const aspectModelPath = `/${dasherize(options.name).toLowerCase()}`;
     const versionPath = options.enableVersionSupport ? `/v${options.aspectModelVersion.replace(/\./g, '')}` : '';
-    const assetsPath =  formsPathCompatibility ?`${baseAssetsPath}${aspectModelPath}${versionPath}` : options.path;
+    const assetsPath = formsPathCompatibility ? `${baseAssetsPath}${aspectModelPath}${versionPath}` : options.path;
 
     const translationRules = Array.from(languages, language => generateLanguageTranslationAsset(options, assetsPath, language));
 
@@ -171,7 +171,7 @@ export function getAllEnumProps(options: any): PropValue[] {
         if (
           options.templateHelper.isEnumProperty(complexProp) &&
           !options.excludedProperties.find(
-            (excludedProperty: any) => excludedProperty.propToExcludeAspectModelUrn === complexProp.aspectModelUrn
+            (excludedProperty: any) => excludedProperty.propToExcludeAspectModelUrn === complexProp.aspectModelUrn,
           )
         ) {
           const propertyName = `${complexPropObj.complexProp}${classify(complexProp.name)}`;

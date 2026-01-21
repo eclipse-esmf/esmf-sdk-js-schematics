@@ -1,8 +1,8 @@
 /** Generated from ESMF JS SDK Angular Schematics - PLEASE DO NOT CHANGE IT **/
 import {AfterContentInit, Directive, ElementRef, HostListener, inject, Input, NgZone, OnDestroy} from '@angular/core';
+import {MatChipListbox} from '@angular/material/chips';
 import {Subject} from 'rxjs';
 import {take, takeUntil} from 'rxjs/operators';
-import {MatChipListbox} from '@angular/material/chips';
 
 @Directive({
   selector: '[esmfHorizontalOverflow]',
@@ -33,7 +33,7 @@ export class EsmfHorizontalOverflowDirective implements AfterContentInit, OnDest
         .pipe(take(1))
         .subscribe(() => {
           this.adjustValues();
-        })
+        }),
     );
   }
 

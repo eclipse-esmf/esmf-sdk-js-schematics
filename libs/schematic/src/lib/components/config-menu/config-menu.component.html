@@ -1,40 +1,43 @@
 <ng-container *transloco="let t; prefix: 'esmf.schematic.configMenu'">
-  <div tabindex="0" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
-    <div class="mat-h3 selection-title" role="button" tabindex="0" (click)="$event.stopPropagation()">{{ t('title') }}</div>
+  <div (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()" tabindex="0">
+    <div class="selection-title" (click)="$event.stopPropagation()" role="button" tabindex="0">{{ t('title') }}</div>
 
     <mat-divider></mat-divider>
-    <mat-selection-list cdkDropList data-test="config-selection-list" class="selection-list" (selectionChange)="onSelectionChange($event)">
+    <mat-selection-list class="selection-list" (selectionChange)="onSelectionChange($event)" cdkDropList
+                        data-test="config-selection-list">
       @for (fg of configsForm().controls; track fg.controls.name.value; let i = $index) {
-      <mat-list-option
-        cdkDrag
-        data-test="configuration-list-option"
-        togglePosition="before"
-        [value]="i"
-        [selected]="fg.controls.selected.value"
-      >
-        <div class="list-content">
-          <div class="list-text">
-            <div data-test="config-option-name">{{ t(fg.controls.name.value) }}</div>
-            <div class="mat-small" data-test="config-option-desc">{{ t(fg.controls.desc.value) }}</div>
+        <mat-list-option
+          [value]="i"
+          [selected]="fg.controls.selected.value"
+          cdkDrag
+          data-test="configuration-list-option"
+          togglePosition="before"
+        >
+          <div class="list-content">
+            <div class="list-text">
+              <div class="title" data-test="config-option-name">{{ t(fg.controls.name.value) }}</div>
+              <div class="description" data-test="config-option-desc">{{ t(fg.controls.desc.value) }}</div>
+            </div>
+            <div class="color-selector">
+              <input [formControl]="fg.controls.color" (click)="$event.stopPropagation()" type="color" />
+            </div>
           </div>
-          <div class="list-text">
-            <input type="color" [formControl]="fg.controls.color" (click)="$event.stopPropagation()" />
-          </div>
-        </div>
-      </mat-list-option>
+        </mat-list-option>
       }
     </mat-selection-list>
 
     <mat-divider></mat-divider>
-    <div data-test="config-menu-actions-container" class="menu-actions-container" role="button" tabindex="0">
+    <div class="menu-actions-container" data-test="config-menu-actions-container" role="button" tabindex="0">
       <span class="spacer"></span>
-      <button data-test="config-menu-cancel-button" mat-stroked-button color="accent" class="config-menu-cancel-btn" (click)="cancel()">
-        <mat-icon data-test="config-menu-cancel-icon" class="material-icons">close</mat-icon>
+      <button class="config-menu-cancel-btn" (click)="cancel()" data-test="config-menu-cancel-button" mat-stroked-button
+              color="accent">
+        <mat-icon class="material-icons" data-test="config-menu-cancel-icon">close</mat-icon>
         <span data-test="config-menu-cancel-text">{{ t('cancel') }}</span>
       </button>
 
-      <button data-test="config-menu-apply-button" mat-raised-button color="primary" class="config-menu-apply-btn" (click)="save()">
-        <mat-icon data-test="config-menu-apply-icon" class="material-icons">check</mat-icon>
+      <button class="config-menu-apply-btn" (click)="save()" data-test="config-menu-apply-button" mat-raised-button
+              color="primary">
+        <mat-icon class="material-icons" data-test="config-menu-apply-icon">check</mat-icon>
         <span data-test="config-menu-apply-text">{{ t('apply') }}</span>
       </button>
     </div>

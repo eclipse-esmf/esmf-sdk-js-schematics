@@ -11,13 +11,13 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {ComponentRef} from '@angular/core';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {By} from '@angular/platform-browser';
-import {EsmfConfigMenuComponent, Config} from './config-menu.component';
 import {EsmfLocalStorageService} from '../../services/local-storage.service';
 import {getTranslocoTestingModule} from '../../test-utils';
+import {Config, EsmfConfigMenuComponent} from './config-menu.component';
 
 describe('EsmfConfigMenuComponent', () => {
   let component: EsmfConfigMenuComponent;
@@ -35,14 +35,12 @@ describe('EsmfConfigMenuComponent', () => {
     ({
       preventDefault: jest.fn(),
       stopPropagation: jest.fn(),
-    } as unknown as MouseEvent);
+    }) as unknown as MouseEvent;
 
   const setupComponent = async (configs?: Config[], keyLocalStorage = 'test-key') => {
     await TestBed.configureTestingModule({
       imports: [EsmfConfigMenuComponent, getTranslocoTestingModule({langs: {en: {}, de: {}}})],
-      providers: [
-        {provide: EsmfLocalStorageService, useValue: {setItem: jest.fn()}},
-      ],
+      providers: [{provide: EsmfLocalStorageService, useValue: {setItem: jest.fn()}}],
     }).compileComponents();
 
     storageService = TestBed.inject(EsmfLocalStorageService) as jest.Mocked<EsmfLocalStorageService>;
@@ -130,7 +128,7 @@ describe('EsmfConfigMenuComponent', () => {
     it('should render the settings title', () => {
       const titleElement = fixture.debugElement.query(By.css('.selection-title'));
       expect(titleElement).toBeTruthy();
-      expect(titleElement.nativeElement.textContent.trim()).toBe('settings.title');
+      expect(titleElement.nativeElement.textContent.trim()).toBe('esmf.schematic.configMenu.title');
     });
 
     it('should render all config items in the list', () => {
@@ -143,8 +141,8 @@ describe('EsmfConfigMenuComponent', () => {
       const name = firstOption.query(By.css('[data-test="config-option-name"]'));
       const desc = firstOption.query(By.css('[data-test="config-option-desc"]'));
 
-      expect(name.nativeElement.textContent.trim()).toBe('config.name1');
-      expect(desc.nativeElement.textContent.trim()).toBe('config.desc1');
+      expect(name.nativeElement.textContent.trim()).toBe('esmf.schematic.configMenu.config.name1');
+      expect(desc.nativeElement.textContent.trim()).toBe('esmf.schematic.configMenu.config.desc1');
     });
 
     it('should render color picker with correct value for each config', () => {
@@ -254,8 +252,6 @@ describe('EsmfConfigMenuComponent', () => {
     });
   });
 
-
-
   describe('save', () => {
     const mockConfigs = createMockConfigs();
 
@@ -320,7 +316,7 @@ describe('EsmfConfigMenuComponent', () => {
       const text = cancelButton.query(By.css('[data-test="config-menu-cancel-text"]'));
 
       expect(icon.nativeElement.textContent.trim()).toBe('close');
-      expect(text.nativeElement.textContent.trim()).toBe('cancel');
+      expect(text.nativeElement.textContent.trim()).toBe('esmf.schematic.configMenu.cancel');
     });
 
     it('should render apply button with icon and text', () => {
@@ -329,7 +325,7 @@ describe('EsmfConfigMenuComponent', () => {
       const text = applyButton.query(By.css('[data-test="config-menu-apply-text"]'));
 
       expect(icon.nativeElement.textContent.trim()).toBe('check');
-      expect(text.nativeElement.textContent.trim()).toBe('apply');
+      expect(text.nativeElement.textContent.trim()).toBe('esmf.schematic.configMenu.apply');
     });
 
     it('should render mat-dividers', () => {
@@ -413,12 +409,12 @@ describe('EsmfConfigMenuComponent', () => {
     it('should prevent color picker clicks from propagating to list option', () => {
       const colorPicker = fixture.debugElement.query(By.css('input[type="color"]'));
       const listOption = fixture.debugElement.query(By.css('[data-test="configuration-list-option"]'));
-      
+
       // Click color picker
       const clickEvent = new MouseEvent('click', {bubbles: true, cancelable: true});
       Object.defineProperty(clickEvent, 'target', {value: colorPicker.nativeElement, enumerable: true});
       colorPicker.nativeElement.dispatchEvent(clickEvent);
-      
+
       // Selection should not change
       expect(component.configsForm().at(0).value.selected).toBe(true);
     });

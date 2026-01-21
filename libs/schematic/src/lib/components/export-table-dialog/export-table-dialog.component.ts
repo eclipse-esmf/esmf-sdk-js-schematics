@@ -1,9 +1,9 @@
-import {MAT_DIALOG_DATA, MatDialogActions, MatDialogClose, MatDialogContent, MatDialogRef, MatDialogTitle} from '@angular/material/dialog';
 import {AfterViewInit, ChangeDetectionStrategy, Component, computed, inject, signal, viewChild} from '@angular/core';
-import {MatCheckbox} from '@angular/material/checkbox';
-import {TranslocoDirective, TranslocoService} from '@jsverse/transloco';
 import {MatButton} from '@angular/material/button';
+import {MatCheckbox} from '@angular/material/checkbox';
+import {MAT_DIALOG_DATA, MatDialogActions, MatDialogClose, MatDialogContent, MatDialogRef, MatDialogTitle} from '@angular/material/dialog';
 import {MatIcon} from '@angular/material/icon';
+import {TranslocoDirective, TranslocoService} from '@jsverse/transloco';
 
 export const Actions = {
   Export: 'export',
@@ -42,7 +42,7 @@ export class EsmfExportTableDialogComponent implements AfterViewInit {
   setDialogDescription() {
     const {maxExportRows, allColumns, displayedColumns} = this.data;
     const isExportAllPagesChecked = this.exportAllPages().checked;
-    const isExportAllColumnsChecked = this.exportAllColumns()?.checked;
+    const isExportAllColumnsChecked = this.exportAllColumns()?.checked || false;
 
     const translationKey = this.getTranslationKey(isExportAllPagesChecked, !!isExportAllColumnsChecked, displayedColumns);
     this.dialogDescription.set(this.translateService.translate(translationKey, {maxExportRows, allColumns, displayedColumns}));
@@ -55,7 +55,7 @@ export class EsmfExportTableDialogComponent implements AfterViewInit {
     this.dialogRef.close({
       action: Actions.Export,
       exportAllPages: exportAllPagesCheckbox.checked,
-      exportAllColumns: exportAllColumnsCheckbox?.checked,
+      exportAllColumns: exportAllColumnsCheckbox?.checked || false,
     });
   }
 

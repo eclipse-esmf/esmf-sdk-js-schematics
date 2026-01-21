@@ -19,8 +19,12 @@ import {lastValueFrom, Subscriber} from 'rxjs';
 import {TemplateHelper} from '../../utils/template-helper';
 import {ComponentType, Schema} from '../components/shared/schema';
 
-import {loader, reorderAspectModelUrnToLoad, writeConfigAndExit} from './utils';
 import {virtualFs} from '@angular-devkit/core';
+import {loadInquirer} from '../../utils/angular';
+import {LOG_COLOR} from '../../utils/constants';
+import {cardPrompterQuestions} from './prompts-questions/card/prompt-questions';
+import {formPrompterQuestions} from './prompts-questions/form/prompt-questions';
+import {pathDecision, requestAspectModelWithAspect} from './prompts-questions/shared/prompt-complex-questions';
 import {
   anotherFile,
   configFileName,
@@ -29,12 +33,8 @@ import {
   requestPath
 } from './prompts-questions/shared/prompt-simple-questions';
 import {tablePrompterQuestions} from './prompts-questions/table/prompt-questions';
-import {pathDecision, requestAspectModelWithAspect} from './prompts-questions/shared/prompt-complex-questions';
-import {formPrompterQuestions} from './prompts-questions/form/prompt-questions';
-import {cardPrompterQuestions} from './prompts-questions/card/prompt-questions';
 import {typesPrompterQuestions} from './prompts-questions/types/prompt-questions';
-import {loadInquirer} from '../../utils/angular';
-import {LOG_COLOR} from '../../utils/constants';
+import {loader, reorderAspectModelUrnToLoad, writeConfigAndExit} from './utils';
 
 // Function to dynamically load inquirer-fuzzy-path and register the prompt
 async function registerFuzzyPathPrompt(): Promise<any> {

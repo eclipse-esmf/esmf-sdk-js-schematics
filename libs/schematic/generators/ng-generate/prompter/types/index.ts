@@ -11,12 +11,12 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-import {Rule, SchematicContext} from '@angular-devkit/schematics';
+import {SchematicContext} from '@angular-devkit/schematics';
 import {Tree} from '@angular-devkit/schematics/src/tree/interface';
 import {Observable, Subscriber} from 'rxjs';
-import {generate} from '../index';
-import {TypesSchema} from '../../types/schema';
 import {ComponentType} from '../../components/shared/schema';
+import {TypesSchema} from '../../types/schema';
+import {generate} from '../index';
 
 export default function (options: TypesSchema) {
   return (tree: Tree, context: SchematicContext) => {

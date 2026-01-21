@@ -11,8 +11,13 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-import {ComponentType, Schema} from '../../../components/shared/schema';
+import {Aspect, BaseMetaModelElement, DefaultEntity} from '@esmf/aspect-model-loader';
+import {BaseModelLoader} from '@esmf/aspect-model-loader/dist/base-model-loader';
+import {loadInquirer} from '../../../../utils/angular';
 import {TemplateHelper} from '../../../../utils/template-helper';
+import {CardDefaultsSchema} from '../../../components/card/schema';
+import {ComponentType, Schema} from '../../../components/shared/schema';
+import {ConfigurationDefaultsSchema} from '../../../components/table/schema';
 import {
   chooseLanguageForSearch,
   customCommandBarActions,
@@ -27,7 +32,7 @@ import {
   requestOptionalMaterialTheme,
   requestOverwriteFiles,
   requestSelectedModelElement,
-  selectedAspectModelJsonPath,
+  selectedAspectModelJsonPath
 } from '../shared/prompt-complex-questions';
 import {
   requestAddCommandBar,
@@ -35,13 +40,8 @@ import {
   requestCustomService,
   requestCustomStyleImports,
   requestEnableRemoteDataHandling,
-  requestSetViewEncapsulation,
+  requestSetViewEncapsulation
 } from '../shared/prompt-simple-questions';
-import {Aspect, BaseMetaModelElement, DefaultEntity} from '@esmf/aspect-model-loader';
-import {ConfigurationDefaultsSchema} from '../../../components/table/schema';
-import {CardDefaultsSchema} from '../../../components/card/schema';
-import {BaseModelLoader} from '@esmf/aspect-model-loader/dist/base-model-loader';
-import {loadInquirer} from '../../../../utils/angular';
 
 /**
  * Asynchronously prompts the user with a series of questions related to card configurations,
@@ -63,7 +63,7 @@ export async function cardPrompterQuestions(
   options: Schema,
   aspect: Aspect,
   combineAnswers: (...answers: any[]) => any,
-  allAnswers: any
+  allAnswers: any,
 ): Promise<void> {
   const defaultConfiguration: ConfigurationDefaultsSchema = new CardDefaultsSchema();
 
@@ -75,8 +75,8 @@ export async function cardPrompterQuestions(
       options,
       aspect,
       allAnswers,
-      Object.keys(defaultConfiguration).length > 0 ? defaultConfiguration : {}
-    )
+      Object.keys(defaultConfiguration).length > 0 ? defaultConfiguration : {},
+    ),
   );
 }
 
@@ -85,7 +85,7 @@ async function fetchUserSpecificCardConfigurations(
   options: Schema,
   aspect: Aspect,
   allAnswers: any,
-  defaultConfiguration?: ConfigurationDefaultsSchema
+  defaultConfiguration?: ConfigurationDefaultsSchema,
 ): Promise<object> {
   const inquirer = await loadInquirer();
   const gatherInitialModelElement = await inquirer.prompt([
@@ -117,7 +117,7 @@ async function fetchUserSpecificCardConfigurations(
     gatherInitialModelElement,
     aspect,
     options,
-    commandbarFunctionalityAnswers.enabledCommandBarFunctions
+    commandbarFunctionalityAnswers.enabledCommandBarFunctions,
   );
 
   const enableRemoteDataHandlingAnswers = await inquirer.prompt([requestEnableRemoteDataHandling, requestCustomService]);

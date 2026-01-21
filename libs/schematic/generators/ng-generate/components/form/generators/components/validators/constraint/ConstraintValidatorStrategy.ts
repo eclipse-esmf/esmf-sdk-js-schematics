@@ -19,12 +19,15 @@ import {
   DefaultList,
   DefaultSet,
   DefaultSortedSet,
-  DefaultStructuredValue,
+  DefaultStructuredValue
 } from '@esmf/aspect-model-loader';
 import {ValidatorConfig} from '../validatorsTypes';
 
 export abstract class ConstraintValidatorStrategy {
-  constructor(public constraint: Constraint, public characteristic: Characteristic) {}
+  constructor(
+    public constraint: Constraint,
+    public characteristic: Characteristic,
+  ) {}
 
   static isTargetStrategy(constraint: Constraint): boolean {
     throw new Error('An implementation of the method has to be provided by a derived class');

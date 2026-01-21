@@ -12,8 +12,8 @@
  */
 
 import {Rule, SchematicContext, Tree} from '@angular-devkit/schematics';
-import {JSONFile} from '@schematics/angular/utility/json-file';
 import {addPackageJsonDependency, NodeDependency, NodeDependencyType} from '@schematics/angular/utility/dependencies';
+import {JSONFile} from '@schematics/angular/utility/json-file';
 import {Ora} from 'ora';
 
 interface NodeScript {

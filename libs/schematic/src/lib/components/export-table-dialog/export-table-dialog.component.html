@@ -1,20 +1,20 @@
 <ng-container *transloco="let t; prefix: 'esmf.schematic.exportDialog'">
-  <div mat-dialog-title class="dialog-title">
+  <div class="dialog-title" mat-dialog-title>
     {{ t('title') }}
     <mat-icon class="close-dialog-icon" [mat-dialog-close]="{action: Actions.Cancel}">close</mat-icon>
   </div>
 
   <div mat-dialog-content>
-    <section data-test="dialogDescription" class="dialog-description">{{ dialogDescription() }}</section>
+    <section class="dialog-description" data-test="dialogDescription">{{ dialogDescription() }}</section>
     <section>
       <div class="checkbox-container">
-        <mat-checkbox data-test="exportAllPages" #exportAllPages (change)="setDialogDescription()">
+        <mat-checkbox #exportAllPages (change)="setDialogDescription()" data-test="exportAllPages">
           {{ t('exportAllPages', {maxExportRows: data.maxExportRows}) }}
         </mat-checkbox>
       </div>
       <div class="checkbox-container">
         @if (!showAllColumnsBox()) {
-          <mat-checkbox data-test="exportAllColumns" #exportAllColumns (change)="setDialogDescription()">
+          <mat-checkbox #exportAllColumns (change)="setDialogDescription()" data-test="exportAllColumns">
             {{ t('exportAllColumns', {allColumns: data.allColumns}) }}
           </mat-checkbox>
         }
@@ -22,10 +22,10 @@
     </section>
   </div>
 
-  <div mat-dialog-actions class="dialog-button-container">
-    <button mat-button data-test="closeDialog" [mat-dialog-close]="{action: Actions.Cancel}">{{ t('cancel') }}</button>
-    <button mat-button data-test="exportData" mat-raised-button class="mat-primary export-button"
-            (click)="exportData()">
+  <div class="dialog-button-container" mat-dialog-actions>
+    <button [mat-dialog-close]="{action: Actions.Cancel}" mat-button data-test="closeDialog">{{ t('cancel') }}</button>
+    <button class="mat-primary export-button" (click)="exportData()" mat-button data-test="exportData"
+            mat-raised-button>
       <span>{{ t('export') }}</span>
     </button>
   </div>

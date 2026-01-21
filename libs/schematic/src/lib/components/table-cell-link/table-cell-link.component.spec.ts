@@ -1,7 +1,7 @@
-import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {EsmfTableCellLinkComponent} from './table-cell-link.component';
-import {By} from '@angular/platform-browser';
 import {ComponentRef} from '@angular/core';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {By} from '@angular/platform-browser';
+import {EsmfTableCellLinkComponent} from './table-cell-link.component';
 
 describe('EsmfTableCellLinkComponent', () => {
   let component: EsmfTableCellLinkComponent;

@@ -11,7 +11,6 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-import {CardSchema} from './schema';
 import {chain, Rule, SchematicContext} from '@angular-devkit/schematics';
 import {Tree} from '@angular-devkit/schematics/src/tree/interface';
 import {
@@ -27,11 +26,12 @@ import {
   prepareOptions,
   setComponentNameRule,
   setCustomActionsAndFiltersRule,
-  setTemplateOptionValuesRule,
+  setTemplateOptionValuesRule
 } from '../shared/index';
 import {ComponentType, Schema} from '../shared/schema';
 import {generateCardComponent} from './generators/components/card/index';
 import {generateExportCardDialog} from './generators/components/export-dialog/index';
+import {CardSchema} from './schema';
 
 export default function (cardSchema: CardSchema): Rule {
   return (tree: Tree, context: SchematicContext) => {

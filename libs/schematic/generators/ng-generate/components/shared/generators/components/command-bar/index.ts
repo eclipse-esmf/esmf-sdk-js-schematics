@@ -11,10 +11,20 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-import {apply, applyTemplates, MergeStrategy, mergeWith, move, Rule, SchematicContext, Tree, url} from '@angular-devkit/schematics';
 import {strings} from '@angular-devkit/core';
-import {DefaultSingleEntity, Property} from '@esmf/aspect-model-loader';
 import {classify} from '@angular-devkit/core/src/utils/strings';
+import {
+  apply,
+  applyTemplates,
+  MergeStrategy,
+  mergeWith,
+  move,
+  Rule,
+  SchematicContext,
+  Tree,
+  url
+} from '@angular-devkit/schematics';
+import {DefaultSingleEntity, Property} from '@esmf/aspect-model-loader';
 import {DatePicker} from '../../../../../../utils/aspect-model';
 
 type PropValue = {
@@ -43,7 +53,7 @@ export function generateCommandBar(options: any, allProps: Array<Property>): Rul
         }),
         move(options.path),
       ]),
-      options.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error
+      options.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error,
     );
   };
 }

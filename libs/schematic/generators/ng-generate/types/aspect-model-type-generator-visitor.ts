@@ -28,12 +28,12 @@ import {
   Enumeration,
   Property
 } from '@esmf/aspect-model-loader';
-import {TypesSchema} from './schema';
-import {isLangString, processType, resolveJsPropertyType} from '../components/shared/utils';
 import {
   MultiLanguageText
 } from '@esmf/aspect-model-loader/dist/instantiator/characteristic/characteristic-instantiator-util';
 import {ComponentType} from '../components/shared/schema';
+import {isLangString, processType, resolveJsPropertyType} from '../components/shared/utils';
+import {TypesSchema} from './schema';
 
 export function visitAspectModel(options: TypesSchema): Rule {
   return async (tree: Tree) => {
@@ -57,14 +57,7 @@ export function buildTypesFilePath(options: TypesSchema): string {
   const aspectModelVersion = 'v' + options.aspectModelVersion.replace(/\./g, '');
   const folderName = options.name === ComponentType.TYPES ? selectedModel : `${selectedModel}-${options.name}`;
 
-
-  return [
-    options.path,
-    folderName,
-    options.enableVersionSupport ? aspectModelVersion : null
-  ]
-    .filter(chunk => !!chunk)
-    .join('/');
+  return [options.path, folderName, options.enableVersionSupport ? aspectModelVersion : null].filter(chunk => !!chunk).join('/');
 }
 
 function buildTypesFileName(options: TypesSchema): string {
@@ -202,7 +195,7 @@ export class AspectModelTypeGeneratorVisitor extends DefaultAspectModelVisitor<B
                   values += `'${item.value}', `;
                 }
               }
-            }
+            },
           );
 
           values = values.replace(/,([^,]*)$/, '$1');
@@ -246,7 +239,7 @@ export class AspectModelTypeGeneratorVisitor extends DefaultAspectModelVisitor<B
                            (instance: DefaultEntityInstance) =>
                              `{${instanceProps
                                .map((prop: any) => `${prop.name}: ${classify(enumeration.name)}.${classify(instance.name)}.${prop.name}`)
-                               .join(',')}}`
+                               .join(',')}}`,
                          )
                          .join(',')}
                     ]
@@ -257,7 +250,7 @@ export class AspectModelTypeGeneratorVisitor extends DefaultAspectModelVisitor<B
                     ${enumeration.values
                       .map(
                         (instance: DefaultEntityInstance) =>
-                          `if(value === '${instance.value}') return ${classify(enumeration.name)}.${classify(instance.name)}`
+                          `if(value === '${instance.value}') return ${classify(enumeration.name)}.${classify(instance.name)}`,
                       )
                       .join('; ')}
 
@@ -361,7 +354,7 @@ export class AspectModelTypeGeneratorVisitor extends DefaultAspectModelVisitor<B
       name: string;
       characteristic: Characteristic;
       dataType: string | undefined;
-    }>
+    }>,
   ): Array<{
     value: string | MultiLanguageText | Array<MultiLanguageText>;
     name: string;

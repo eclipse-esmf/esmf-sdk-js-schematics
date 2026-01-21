@@ -11,13 +11,13 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-import {AspectModelLoader, DefaultEntity, Property} from '@esmf/aspect-model-loader';
 import {Tree} from '@angular-devkit/schematics/src/tree/interface';
-import {Subscriber} from 'rxjs';
+import {AspectModelLoader, DefaultEntity, Property} from '@esmf/aspect-model-loader';
 import * as fs from 'fs';
+import {Subscriber} from 'rxjs';
 import * as util from 'util';
-import {WIZARD_CONFIG_FILE} from './index';
 import {LOG_COLOR} from '../../utils/constants';
+import {WIZARD_CONFIG_FILE} from './index';
 
 interface PropertyDetail {
   name: string;
@@ -91,7 +91,7 @@ export async function writeConfigAndExit(subscriber: Subscriber<Tree>, tree: Tre
     LOG_COLOR,
     fromImport
       ? `The import was successful, the config used for your generation can be found here: ${WIZARD_CONFIG_FILE}`
-      : `New config file was generated based on your choices, it can be found here: ${WIZARD_CONFIG_FILE}`
+      : `New config file was generated based on your choices, it can be found here: ${WIZARD_CONFIG_FILE}`,
   );
 
   subscriber.next(tree);

@@ -11,13 +11,24 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-import {apply, applyTemplates, chain, MergeStrategy, mergeWith, move, Rule, SchematicContext, Tree, url} from '@angular-devkit/schematics';
 import {strings} from '@angular-devkit/core';
+import {
+  apply,
+  applyTemplates,
+  chain,
+  MergeStrategy,
+  mergeWith,
+  move,
+  Rule,
+  SchematicContext,
+  Tree,
+  url
+} from '@angular-devkit/schematics';
 import {Property} from '@esmf/aspect-model-loader';
 import {generateCommandBar} from '../../../../shared/generators/index';
-import {getEnumProperties, getEnumPropertyDefinitions} from '../../../../shared/utils';
-import {Schema} from '../../../../shared/schema';
 import {templateInclude} from '../../../../shared/include';
+import {Schema} from '../../../../shared/schema';
+import {getEnumProperties, getEnumPropertyDefinitions} from '../../../../shared/utils';
 
 let sharedOptions: any = {};
 let allProps: Array<Property> = [];
@@ -26,10 +37,10 @@ export function generateCardComponent(options: any): Rule {
   return (tree: Tree, _context: SchematicContext) => {
     allProps = options.listAllProperties;
 
-    return chain([
-      ...(options.addCommandBar ? [generateCommandBar(options, allProps)] : []),
-      generateCard(options, _context),
-    ])(tree, _context);
+    return chain([...(options.addCommandBar ? [generateCommandBar(options, allProps)] : []), generateCard(options, _context)])(
+      tree,
+      _context,
+    );
   };
 }
 
@@ -41,7 +52,7 @@ function generateCard(options: Schema, _context: SchematicContext): Rule {
       templateInclude(_context, applyTemplate, options, '../shared/methods'),
       move(sharedOptions.path),
     ]),
-    sharedOptions.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error
+    sharedOptions.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error,
   );
 }
 

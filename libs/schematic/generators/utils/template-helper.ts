@@ -11,6 +11,7 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
+import {classify, dasherize, underscore} from '@angular-devkit/core/src/utils/strings';
 import {
   Aspect,
   Characteristic,
@@ -24,12 +25,11 @@ import {
   DefaultScalar,
   DefaultSingleEntity,
   Entity,
-  Property,
+  Property
 } from '@esmf/aspect-model-loader';
-import {classify, dasherize, underscore} from '@angular-devkit/core/src/utils/strings';
 // TODO change this ...
-import {ExcludedProperty, Schema, Values} from '../ng-generate/components/shared/schema';
 import * as locale from 'locale-codes';
+import {ExcludedProperty, Schema, Values} from '../ng-generate/components/shared/schema';
 
 export class TemplateHelper {
   /**
@@ -45,7 +45,7 @@ export class TemplateHelper {
     options.typePath = this.getTypesPath(options.enableVersionSupport, options.aspectModelVersion, options.aspectModel);
     options.dateProperties = this.getDateProperties(options).filter((property: Property) => this.isDateProperty(property));
     options.dateTimeStampProperties = this.getDateProperties(options).filter((property: Property) =>
-      this.isDateTimestampProperty(property)
+      this.isDateTimestampProperty(property),
     );
     options.timeProperties = this.getDateProperties(options).filter((property: Property) => this.isTimeProperty(property));
     options.isDateQuickFilter = this.isAddDateQuickFilters(options.enabledCommandBarFunctions);
@@ -248,8 +248,8 @@ export class TemplateHelper {
       property =>
         this.isEnumProperty(property) &&
         !options.excludedProperties.find(
-          (excludedProp: ExcludedProperty) => excludedProp.propToExcludeAspectModelUrn === property.aspectModelUrn
-        )
+          (excludedProp: ExcludedProperty) => excludedProp.propToExcludeAspectModelUrn === property.aspectModelUrn,
+        ),
     );
   }
 
@@ -274,8 +274,8 @@ export class TemplateHelper {
       property =>
         this.isStringProperty(property) &&
         !options.excludedProperties.find(
-          (excludedProp: ExcludedProperty) => excludedProp.propToExcludeAspectModelUrn === property.aspectModelUrn
-        )
+          (excludedProp: ExcludedProperty) => excludedProp.propToExcludeAspectModelUrn === property.aspectModelUrn,
+        ),
     );
   }
 
@@ -290,8 +290,8 @@ export class TemplateHelper {
       property =>
         this.isDateTimeProperty(property) &&
         !options.excludedProperties.find(
-          (excludedProp: ExcludedProperty) => excludedProp.propToExcludeAspectModelUrn === property.aspectModelUrn
-        )
+          (excludedProp: ExcludedProperty) => excludedProp.propToExcludeAspectModelUrn === property.aspectModelUrn,
+        ),
     );
   }
 
@@ -321,8 +321,8 @@ export class TemplateHelper {
       return this.resolveType(options.selectedModelElement).properties.filter(
         (prop: Property) =>
           !options.excludedProperties.find(
-            (excludedProp: ExcludedProperty) => excludedProp.propToExcludeAspectModelUrn === prop.aspectModelUrn
-          )
+            (excludedProp: ExcludedProperty) => excludedProp.propToExcludeAspectModelUrn === prop.aspectModelUrn,
+          ),
       );
     }
     return this.resolveType(options.selectedModelElement).properties;

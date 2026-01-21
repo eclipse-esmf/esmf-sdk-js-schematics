@@ -1,16 +1,16 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { CdkDragDrop } from '@angular/cdk/drag-drop';
-import { EsmfColumnMenuComponent, Column } from './column-menu.component';
+import {CdkDragDrop} from '@angular/cdk/drag-drop';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {getTranslocoTestingModule} from '../../test-utils';
+import {Column, EsmfColumnMenuComponent} from './column-menu.component';
 
 describe('EsmfColumnMenuComponent', () => {
   let component: EsmfColumnMenuComponent;
   let fixture: ComponentFixture<EsmfColumnMenuComponent>;
 
   const mockColumns: Column[] = [
-    { name: 'column1', selected: true },
-    { name: 'column2', selected: false },
-    { name: 'column3', selected: true }
+    {name: 'column1', selected: true},
+    {name: 'column2', selected: false},
+    {name: 'column3', selected: true},
   ];
 
   const translocoLangs = {
@@ -47,7 +47,7 @@ describe('EsmfColumnMenuComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [getTranslocoTestingModule({langs: translocoLangs}), EsmfColumnMenuComponent]
+      imports: [getTranslocoTestingModule({langs: translocoLangs}), EsmfColumnMenuComponent],
     }).compileComponents();
 
     fixture = TestBed.createComponent(EsmfColumnMenuComponent);
@@ -69,9 +69,9 @@ describe('EsmfColumnMenuComponent', () => {
   it('should transform defaultColumns input to Column array', () => {
     const defaultColumns = component.defaultColumns();
     expect(defaultColumns).toEqual([
-      { name: 'column1', selected: true },
-      { name: 'column2', selected: true },
-      { name: 'column3', selected: true }
+      {name: 'column1', selected: true},
+      {name: 'column2', selected: true},
+      {name: 'column3', selected: true},
     ]);
   });
 
@@ -113,7 +113,7 @@ describe('EsmfColumnMenuComponent', () => {
   describe('columnClick', () => {
     it('should toggle column selected state', () => {
       const event = new MouseEvent('click');
-      const column = { name: 'test', selected: true };
+      const column = {name: 'test', selected: true};
       jest.spyOn(event, 'preventDefault');
       jest.spyOn(event, 'stopPropagation');
 
@@ -126,7 +126,7 @@ describe('EsmfColumnMenuComponent', () => {
 
     it('should set closeColumnMenu to false', () => {
       const event = new MouseEvent('click');
-      const column = { name: 'test', selected: true };
+      const column = {name: 'test', selected: true};
       component.closeColumnMenu = true;
 
       component.columnClick(event, column);
@@ -138,7 +138,7 @@ describe('EsmfColumnMenuComponent', () => {
   describe('resetToDefault', () => {
     it('should reset columns to default', () => {
       const defaultColumns = component.defaultColumns();
-      component.columnsToDisplay.set([{ name: 'modified', selected: false }]);
+      component.columnsToDisplay.set([{name: 'modified', selected: false}]);
 
       component.resetToDefault();
 
@@ -179,14 +179,14 @@ describe('EsmfColumnMenuComponent', () => {
     it('should reorder columns', () => {
       const event = {
         previousIndex: 0,
-        currentIndex: 2
+        currentIndex: 2,
       } as CdkDragDrop<string[]>;
 
       component.columnDrop(event);
 
       const columns = component.columnsToDisplay();
-      expect(columns[0]).toEqual({ name: 'column2', selected: false });
-      expect(columns[2]).toEqual({ name: 'column1', selected: true });
+      expect(columns[0]).toEqual({name: 'column2', selected: false});
+      expect(columns[2]).toEqual({name: 'column1', selected: true});
     });
   });
 
@@ -194,15 +194,11 @@ describe('EsmfColumnMenuComponent', () => {
     it('should render preferred name translations using the provided prefix', () => {
       fixture.detectChanges();
       const preferredNameElements = Array.from<Element>(
-        fixture.nativeElement.querySelectorAll('[data-test="column-option-preferred-name"]')
+        fixture.nativeElement.querySelectorAll('[data-test="column-option-preferred-name"]'),
       );
       const preferredNames = preferredNameElements.map((element: Element) => (element.textContent ?? '').trim());
 
-      expect(preferredNames).toEqual([
-        'Column 2 Preferred',
-        'Column 3 Preferred',
-        'Column 1 Preferred'
-      ]);
+      expect(preferredNames).toEqual(['Column 2 Preferred', 'Column 3 Preferred', 'Column 1 Preferred']);
     });
 
     it('should render description translations using the provided prefix', () => {
@@ -210,11 +206,7 @@ describe('EsmfColumnMenuComponent', () => {
       const descriptionElements = Array.from<Element>(fixture.nativeElement.querySelectorAll('[data-test="column-option-description"]'));
       const descriptions = descriptionElements.map((element: Element) => (element.textContent ?? '').trim());
 
-      expect(descriptions).toEqual([
-        'Column 2 Description',
-        'Column 3 Description',
-        'Column 1 Description'
-      ]);
+      expect(descriptions).toEqual(['Column 2 Description', 'Column 3 Description', 'Column 1 Description']);
     });
 
     it('should render the section title translation using the default prefix', () => {

@@ -11,8 +11,18 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-import {apply, applyTemplates, MergeStrategy, mergeWith, move, Rule, SchematicContext, Tree, url} from '@angular-devkit/schematics';
 import {strings} from '@angular-devkit/core';
+import {
+  apply,
+  applyTemplates,
+  MergeStrategy,
+  mergeWith,
+  move,
+  Rule,
+  SchematicContext,
+  Tree,
+  url
+} from '@angular-devkit/schematics';
 import {Values} from '../../../schema';
 import {getTableColumValues} from '../../../utils';
 
@@ -31,7 +41,7 @@ export function generateSemanticExplanation(options: Values): Rule {
         }),
         move(options.path),
       ]),
-      options.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error
+      options.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error,
     );
   };
 }

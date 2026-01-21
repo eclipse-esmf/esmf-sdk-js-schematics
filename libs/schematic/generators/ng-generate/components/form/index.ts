@@ -11,9 +11,22 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-import {FormSchema} from './schema';
 import {chain, Rule, SchematicContext} from '@angular-devkit/schematics';
 import {Tree} from '@angular-devkit/schematics/src/tree/interface';
+import {NodeDependencyType} from '@schematics/angular/utility/dependencies';
+import {wrapBuildComponentExecution} from '../../../utils/angular';
+import {generateTranslationFiles} from '../../../utils/aspect-model';
+import {addPackageJsonDependencies} from '../../../utils/package-json';
+import {
+  generateDestroyedSubject,
+  generateFormControlReusable,
+  generateFormGroupReusable,
+  generateFormValidators,
+  generateGeneralStyle,
+  generateSharedModule,
+  generateTranslationModule
+} from '../shared/generators/index';
+import {generateFormArrayReusable} from '../shared/generators/utils/form-array-reusable/index';
 import {
   addAndUpdateConfigurationFilesRule,
   formatAllFilesRule,
@@ -26,24 +39,11 @@ import {
   prepareOptions,
   setComponentNameRule,
   setCustomActionsAndFiltersRule,
-  setTemplateOptionValuesRule,
+  setTemplateOptionValuesRule
 } from '../shared/index';
 import {ComponentType, Schema} from '../shared/schema';
 import {generateFormComponent} from './generators/components/form/index';
-import {addPackageJsonDependencies} from '../../../utils/package-json';
-import {NodeDependencyType} from '@schematics/angular/utility/dependencies';
-import {
-  generateDestroyedSubject,
-  generateFormControlReusable,
-  generateFormGroupReusable,
-  generateFormValidators,
-  generateGeneralStyle,
-  generateSharedModule,
-  generateTranslationModule,
-} from '../shared/generators/index';
-import {generateFormArrayReusable} from '../shared/generators/utils/form-array-reusable/index';
-import {wrapBuildComponentExecution} from '../../../utils/angular';
-import {generateTranslationFiles} from '../../../utils/aspect-model';
+import {FormSchema} from './schema';
 
 export default function (formSchema: FormSchema): Rule {
   return (tree: Tree, context: SchematicContext) => {

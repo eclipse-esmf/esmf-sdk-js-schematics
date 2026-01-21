@@ -12,8 +12,8 @@
  */
 
 import {chain, Rule, SchematicContext, Tree} from '@angular-devkit/schematics';
-import {addPackageJsonDependencies, DEFAULT_DEPENDENCIES} from '../utils/package-json';
 import {NodePackageInstallTask} from '@angular-devkit/schematics/tasks';
+import {addPackageJsonDependencies, DEFAULT_DEPENDENCIES} from '../utils/package-json';
 
 export function add(options: any): Rule {
   return (tree: Tree, context: SchematicContext) => {

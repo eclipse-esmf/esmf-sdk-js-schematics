@@ -11,12 +11,22 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-import {apply, applyTemplates, MergeStrategy, mergeWith, move, Rule, SchematicContext, Tree, url} from '@angular-devkit/schematics';
 import {strings} from '@angular-devkit/core';
-import {DefaultEntityInstance, DefaultEnumeration, Property} from '@esmf/aspect-model-loader';
 import {dasherize} from '@angular-devkit/core/src/utils/strings';
-import {isArrayOfStrings} from '../../../../../utils/type-guards';
+import {
+  apply,
+  applyTemplates,
+  MergeStrategy,
+  mergeWith,
+  move,
+  Rule,
+  SchematicContext,
+  Tree,
+  url
+} from '@angular-devkit/schematics';
+import {DefaultEntityInstance, DefaultEnumeration, Property} from '@esmf/aspect-model-loader';
 import {normalizeActionName} from '../../../../../utils/config-helper';
+import {isArrayOfStrings} from '../../../../../utils/type-guards';
 
 let sharedOptions: any = {};
 
@@ -161,7 +171,7 @@ function replaceIncorrectSymbols(str = ''): string {
   return str.replace(/[\n\r\t]+/g, ' ');
 }
 
-function buildActionTranslationBlock(action:string, title:string): string {
+function buildActionTranslationBlock(action: string, title: string): string {
   action = normalizeActionName(action);
   return `
         "${action}": {

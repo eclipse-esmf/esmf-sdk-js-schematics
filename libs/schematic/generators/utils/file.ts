@@ -14,8 +14,8 @@
 import {Rule, SchematicContext, Tree} from '@angular-devkit/schematics';
 import * as fs from 'fs';
 import * as path from 'path';
-import {DefaultSchema} from '../ng-generate/default-schema';
 import * as prettier from 'prettier';
+import {DefaultSchema} from '../ng-generate/default-schema';
 
 // this resolves the config provided by the schematics lib
 const defaultPrettierConfigPath = path.resolve(__dirname, '../../../../.prettierrc');

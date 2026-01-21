@@ -12,8 +12,8 @@
  */
 
 import {Characteristic} from '@esmf/aspect-model-loader';
-import {FormFieldConfig, FormFieldStrategy} from '../FormFieldStrategy';
 import {DataType} from '../../validators/validatorsTypes';
+import {FormFieldConfig, FormFieldStrategy} from '../FormFieldStrategy';
 
 export class BooleanFormFieldStrategy extends FormFieldStrategy {
   pathToFiles = './generators/components/fields/boolean/files';

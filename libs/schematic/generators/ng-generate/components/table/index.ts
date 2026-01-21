@@ -13,6 +13,9 @@
 
 import {chain, Rule, SchematicContext} from '@angular-devkit/schematics';
 import {Tree} from '@angular-devkit/schematics/src/tree/interface';
+import {generateTranslationFiles} from '../../../utils/aspect-model';
+import {LOG_COLOR} from '../../../utils/constants';
+import {generateCustomService, generateFilterService, generateSemanticExplanation} from '../shared/generators';
 import {
   formatAllFilesRule,
   generateComponent,
@@ -24,14 +27,11 @@ import {
   prepareOptions,
   setComponentNameRule,
   setCustomActionsAndFiltersRule,
-  setTemplateOptionValuesRule,
+  setTemplateOptionValuesRule
 } from '../shared/index';
 import {ComponentType, Values} from '../shared/schema';
 import {generateTableComponent} from './generators/components/table/index';
 import {TableSchema} from './schema';
-import {LOG_COLOR} from '../../../utils/constants';
-import {generateCustomService, generateFilterService, generateSemanticExplanation} from '../shared/generators';
-import {generateTranslationFiles} from '../../../utils/aspect-model';
 
 export default function (tableSchema: TableSchema): Rule {
   return (tree: Tree, context: SchematicContext) => {

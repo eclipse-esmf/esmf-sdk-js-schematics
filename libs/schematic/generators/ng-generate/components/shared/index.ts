@@ -15,6 +15,7 @@ import {dasherize} from '@angular-devkit/core/src/utils/strings';
 import {chain, Rule, SchematicContext, Tree} from '@angular-devkit/schematics';
 import {NodePackageInstallTask, RunSchematicTask} from '@angular-devkit/schematics/tasks';
 import {JSONFile} from '@schematics/angular/utility/json-file';
+import ora from 'ora';
 import {
   addToAppModule,
   addToAppSharedModule,
@@ -23,6 +24,7 @@ import {
 } from '../../../utils/angular';
 import {generateTranslationFiles, loadAspectModel, loadRDF, validateUrns} from '../../../utils/aspect-model';
 import {formatGeneratedFiles, loadAndApplyConfigFile} from '../../../utils/file';
+import {APP_SHARED_MODULES, cardModules, formModules, tableModules, updateSharedModule} from '../../../utils/modules';
 import {
   addPackageJsonDependencies,
   DATE_QUICK_FILTER_DEPENDENCIES,
@@ -30,12 +32,10 @@ import {
   REMOTE_HANDLING_DEPENDENCIES
 } from '../../../utils/package-json';
 import {TemplateHelper} from '../../../utils/template-helper';
-import {ComponentType, Schema, Values} from './schema';
-import ora from 'ora';
-import {generateCustomService, generateFilterService} from './generators/index';
-import {APP_SHARED_MODULES, cardModules, formModules, tableModules, updateSharedModule} from '../../../utils/modules';
 import {WIZARD_CONFIG_FILE} from '../../prompter/index';
 import {generateSemanticExplanation} from './generators/constants/index';
+import {generateCustomService, generateFilterService} from './generators/index';
+import {ComponentType, Schema, Values} from './schema';
 
 export let options: Schema;
 
@@ -152,7 +152,7 @@ export function setCustomActionsAndFiltersRule(): Rule {
     ];
 
     options.enabledCommandBarFunctions = options.enabledCommandBarFunctions.filter(func =>
-      propertiesCheck.some(item => item.function === func && item.properties.length > 0)
+      propertiesCheck.some(item => item.function === func && item.properties.length > 0),
     );
 
     if (options.templateHelper.haveCustomCommandbarActions(options)) {
@@ -252,10 +252,10 @@ export function addAndUpdateConfigurationFilesRule(): Rule[] {
     options.componentType === ComponentType.TABLE
       ? addToComponentModule(options.skipImport, options, tableModules(options))
       : options.componentType === ComponentType.CARD
-      ? addToComponentModule(options.skipImport, options, cardModules(options))
-      : options.componentType === ComponentType.FORM
-      ? addToComponentModule(options.skipImport, options, formModules(options))
-      : ({} as Rule);
+        ? addToComponentModule(options.skipImport, options, cardModules(options))
+        : options.componentType === ComponentType.FORM
+          ? addToComponentModule(options.skipImport, options, formModules(options))
+          : ({} as Rule);
 
   return [
     addPackageJsonDependencies(options.skipImport, options.spinner, loadDependencies()),
@@ -416,9 +416,7 @@ export function formatAllFilesRule(component = ComponentType.FORM): Rule {
     console.log('## Formatting Table component files...');
     console.log(`${options.path}`);
 
-    const rules = [
-      formatGeneratedFiles({getPath: () => `${options.path}`}, options)
-    ];
+    const rules = [formatGeneratedFiles({getPath: () => `${options.path}`}, options)];
 
     return chain(rules);
   } else {
@@ -439,6 +437,4 @@ export function formatAllFilesRule(component = ComponentType.FORM): Rule {
     rules.push(formatGeneratedFiles({getPath: () => 'src/app/shared'}, options, ['app-shared.module.ts']));
     return chain(rules);
   }
-
-
 }

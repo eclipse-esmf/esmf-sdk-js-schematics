@@ -11,11 +11,11 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-import {SchematicContext, Tree} from '@angular-devkit/schematics';
 import {classify, dasherize} from '@angular-devkit/core/src/utils/strings';
+import {SchematicContext, Tree} from '@angular-devkit/schematics';
 import {ComponentType, Schema} from '../ng-generate/components/shared/schema';
-import {addToDeclarationsArray, addToExportsArray} from './angular';
 import {TableSchema} from '../ng-generate/components/table/schema';
+import {addToDeclarationsArray, addToExportsArray} from './angular';
 
 const generalComponentsModules = (options: Schema) => [
   {name: 'MatPaginatorModule', fromLib: '@angular/material/paginator'},

@@ -11,11 +11,16 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-import {Characteristic, DefaultPropertyInstanceDefinition, DefaultStructuredValue, Property} from '@esmf/aspect-model-loader';
-import {FormFieldConfig, FormFieldStrategy} from '../FormFieldStrategy';
-import {getFormFieldStrategy} from '../index';
+import {
+  Characteristic,
+  DefaultPropertyInstanceDefinition,
+  DefaultStructuredValue,
+  Property
+} from '@esmf/aspect-model-loader';
 import {DefaultProperty} from '@esmf/aspect-model-loader/dist/aspect-meta-model/default-property';
 import {GenericValidator, ValidatorConfig} from '../../validators/validatorsTypes';
+import {FormFieldConfig, FormFieldStrategy} from '../FormFieldStrategy';
+import {getFormFieldStrategy} from '../index';
 
 export class StructuredValueFormFieldStrategy extends FormFieldStrategy {
   pathToFiles = './generators/components/fields/structuredValue/files';
@@ -42,7 +47,7 @@ export class StructuredValueFormFieldStrategy extends FormFieldStrategy {
 
   getChildStrategies(): FormFieldStrategy[] {
     const instantiatedElements = this.child.elements.filter(
-      element => element instanceof DefaultPropertyInstanceDefinition
+      element => element instanceof DefaultPropertyInstanceDefinition,
     ) as DefaultPropertyInstanceDefinition[];
     return instantiatedElements.map(element => this.getChildStrategy(element, element.characteristic));
   }

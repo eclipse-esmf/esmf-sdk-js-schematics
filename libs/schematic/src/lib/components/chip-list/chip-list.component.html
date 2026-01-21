@@ -3,39 +3,32 @@
     <div class="scrollable-chips-container">
       @if (chipsScrollEl.scrollable) {
         <button
-          data-test="scroll-left-button"
-          mat-mini-fab
           class="mat-elevation-z0"
           [disabled]="chipsScrollEl.disableLeftBtn"
           (click)="chipsScrollEl.scrollChipList('left')"
+          data-test="scroll-left-button"
+          mat-mini-fab
         >
-          <mat-icon data-test="scroll-left-icon" class="material-icons" [matTooltip]="t('scroll.left')">
-            chevron_left
+          <mat-icon class="material-icons" [matTooltip]="t('scroll.left')" data-test="scroll-left-icon"> chevron_left
           </mat-icon>
         </button>
       }
       <div
         class="chip-list-container"
-        data-test="chip-list-container"
-        esmfHorizontalOverflow
         #chipsScrollEl="horizontalOverflow"
         #chipList
         [chipsObj]="chips"
+        data-test="chip-list-container"
+        esmfHorizontalOverflow
       >
-        <mat-chip-listbox data-test="chip-list" #chips>
+        <mat-chip-listbox #chips data-test="chip-list">
           @for (filter of activeFilters(); track filter) {
-            <mat-chip-option
-              data-test="chip"
-              [removable]="filter.removable"
-              (removed)="triggerRemoveFilter(filter)"
-            >
-              <div data-test="chip-text" class="chip-text" matTooltip="{{ chipListValue(filter) }}">
+            <mat-chip-option [removable]="filter.removable" (removed)="triggerRemoveFilter(filter)" data-test="chip">
+              <div class="chip-text" data-test="chip-text" matTooltip="{{ chipListValue(filter) }}">
                 {{ chipListValue(filter) }}
               </div>
               @if (filter.removable) {
-                <button matChipRemove data-test="mat-chip-remove">
-                  <mat-icon class="material-icons" data-test="remove-chip">cancel</mat-icon>
-                </button>
+                <mat-icon class="material-icons" matChipRemove data-test="remove-chip">cancel</mat-icon>
               }
             </mat-chip-option>
           }
@@ -43,13 +36,13 @@
       </div>
       @if (chipsScrollEl.scrollable) {
         <button
-          data-test="scroll-right-button"
-          mat-mini-fab
           class="mat-elevation-z0"
           [disabled]="chipsScrollEl.disableRightBtn"
           (click)="chipsScrollEl.scrollChipList('right')"
+          data-test="scroll-right-button"
+          mat-mini-fab
         >
-          <mat-icon data-test="scroll-right-icon" class="material-icons" [matTooltip]="t('scroll.left')">
+          <mat-icon class="material-icons" [matTooltip]="t('scroll.left')" data-test="scroll-right-icon">
             chevron_right
           </mat-icon>
         </button>

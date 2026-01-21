@@ -11,12 +11,12 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-import {TableSchema} from '../../components/table/schema';
-import {Rule, SchematicContext} from '@angular-devkit/schematics';
+import {SchematicContext} from '@angular-devkit/schematics';
 import {Tree} from '@angular-devkit/schematics/src/tree/interface';
 import {Observable, Subscriber} from 'rxjs';
-import {generate} from '../index';
 import {ComponentType} from '../../components/shared/schema';
+import {TableSchema} from '../../components/table/schema';
+import {generate} from '../index';
 
 export default function (options: TableSchema) {
   return (tree: Tree, context: SchematicContext) => {
