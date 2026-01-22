@@ -1,7 +1,7 @@
-import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {EsmfTableCellComponent} from './table-cell.component';
 import {Clipboard} from '@angular/cdk/clipboard';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
+import {EsmfTableCellComponent} from './table-cell.component';
 
 describe('EsmfTableCellComponent', () => {
   let component: EsmfTableCellComponent;

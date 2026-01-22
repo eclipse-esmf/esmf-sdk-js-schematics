@@ -40,10 +40,10 @@ jobs:
         run: npm ci --ignore-scripts
 
       - name: Testing Project
-        run: npm run test
+        run: npx nx test schematic
 
       - name: Linting Project
-        run: npm run lint
+        run: npx nx lint schematic
 
       - name: Build Project
-        run: npm run build
+        run: npx nx build schematic

@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, Component, computed, input} from '@angular/core';
-import {MatTooltipModule} from '@angular/material/tooltip';
-import {MatIconModule} from '@angular/material/icon';
 import {MatIconButton} from '@angular/material/button';
+import {MatIconModule} from '@angular/material/icon';
+import {MatTooltipModule} from '@angular/material/tooltip';
 
 @Component({
   selector: 'esmf-table-cell-link',

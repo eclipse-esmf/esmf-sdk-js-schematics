@@ -11,6 +11,7 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
+import {dasherize} from '@angular-devkit/core/src/utils/strings';
 import {Rule, Tree} from '@angular-devkit/schematics';
 import {
   addDeclarationToModule,
@@ -18,13 +19,12 @@ import {
   addModuleImportToModule,
   buildComponent,
   findModuleFromOptions,
-  parseSourceFile,
+  parseSourceFile
 } from '@angular/cdk/schematics';
-import {MODULE_EXT} from '@schematics/angular/utility/find-module';
-import {Schema} from '../ng-generate/components/shared/schema';
-import {dasherize} from '@angular-devkit/core/src/utils/strings';
 import {InsertChange} from '@schematics/angular/utility/change';
+import {MODULE_EXT} from '@schematics/angular/utility/find-module';
 import {PromptModule} from 'inquirer';
+import {Schema} from '../ng-generate/components/shared/schema';
 
 declare interface ModuleDefinition {
   name: string;
@@ -93,7 +93,7 @@ export async function addToDeclarationsArray(
   tree: Tree,
   declarationName: string,
   declarationPath: string,
-  modulePath?: string
+  modulePath?: string,
 ): Promise<Tree> {
   modulePath = modulePath || (await findModuleFromOptions(tree, options)) || '';
   const sourceFile = parseSourceFile(tree, modulePath);
@@ -115,7 +115,7 @@ export async function addToExportsArray(
   tree: Tree,
   exportName: string,
   exportPath: string,
-  modulePath?: string
+  modulePath?: string,
 ): Promise<Tree> {
   modulePath = modulePath || (await findModuleFromOptions(tree, options)) || '';
   const sourceFile = parseSourceFile(tree, modulePath);
@@ -145,8 +145,8 @@ export function wrapBuildComponentExecution(options: Schema): Rule {
 }
 
 // Dynamic import for the inquirer
-export async function loadInquirer(): Promise<{prompt: PromptModule, registerPrompt: PromptModule['registerPrompt']}> {
+export async function loadInquirer(): Promise<{prompt: PromptModule; registerPrompt: PromptModule['registerPrompt']}> {
   const inquirer = await import('inquirer');
 
-  return inquirer as unknown as {prompt: PromptModule, registerPrompt: PromptModule['registerPrompt']};
+  return inquirer as unknown as {prompt: PromptModule; registerPrompt: PromptModule['registerPrompt']};
 }

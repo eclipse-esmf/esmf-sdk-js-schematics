@@ -11,8 +11,8 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-import {Question} from 'inquirer';
 import {ViewEncapsulation} from '@schematics/angular/component/schema';
+import {Question} from 'inquirer';
 
 interface FuzzyPathQuestion extends Question {
   excludeFilter?: (nodePath: string) => boolean;
@@ -112,4 +112,3 @@ export const requestPath = {
   default: 'src/app/shared',
   when: answer => answer['createOrImport'],
 };
-

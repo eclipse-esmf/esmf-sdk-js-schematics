@@ -11,6 +11,7 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
+import {strings} from '@angular-devkit/core';
 import {
   apply,
   applyTemplates,
@@ -22,11 +23,10 @@ import {
   Rule,
   SchematicContext,
   Tree,
-  url,
+  url
 } from '@angular-devkit/schematics';
-import {strings} from '@angular-devkit/core';
-import {Schema} from '../../../schema';
 import {parseSourceFile} from '@angular/cdk/schematics';
+import {Schema} from '../../../schema';
 
 export function generateTranslationModule(options: any): Rule {
   return (tree: Tree, _context: SchematicContext) => {
@@ -54,7 +54,7 @@ function generateModuleDefinition(options: Schema, _context: SchematicContext): 
       }),
       move('src/app/shared'),
     ]),
-    options.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error
+    options.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error,
   );
 }
 
@@ -69,7 +69,7 @@ function generateProviderDefinition(options: Schema, _context: SchematicContext)
       }),
       move('src/app/shared'),
     ]),
-    options.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error
+    options.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error,
   );
 }
 

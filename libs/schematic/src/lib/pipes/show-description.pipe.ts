@@ -9,7 +9,7 @@ export class EsmfShowDescriptionPipe implements PipeTransform {
 
     const description = getByValueFn(valueStr)?.description;
     const resultParts: string[] = valueStr && !onlyDesc ? [valueStr] : [];
-    if(description) {
+    if (description) {
       resultParts.push(description);
     }
 

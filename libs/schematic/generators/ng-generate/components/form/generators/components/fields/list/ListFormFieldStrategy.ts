@@ -11,7 +11,14 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-import {Characteristic, DefaultCollection, DefaultEntity, DefaultList, DefaultSet, DefaultSortedSet} from '@esmf/aspect-model-loader';
+import {
+  Characteristic,
+  DefaultCollection,
+  DefaultEntity,
+  DefaultList,
+  DefaultSet,
+  DefaultSortedSet
+} from '@esmf/aspect-model-loader';
 import {FormFieldConfig, FormFieldStrategy} from '../FormFieldStrategy';
 
 export class ListFormFieldStrategy extends FormFieldStrategy {
@@ -41,8 +48,8 @@ export class ListFormFieldStrategy extends FormFieldStrategy {
     return this.child.dataType instanceof DefaultEntity
       ? this.child.dataType.properties.map(property => this.getChildStrategy(property, property.characteristic))
       : this.isScalarChild()
-      ? [this.getChildStrategy(this.parent, this.child.elementCharacteristic!)]
-      : [];
+        ? [this.getChildStrategy(this.parent, this.child.elementCharacteristic!)]
+        : [];
   }
 
   private isScalarChild(): boolean {

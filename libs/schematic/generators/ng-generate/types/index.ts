@@ -12,16 +12,16 @@
  */
 
 import {chain, Rule, SchematicContext} from '@angular-devkit/schematics';
+import {Tree} from '@angular-devkit/schematics/src/tree/interface';
 import ora from 'ora';
 import {loadAspectModel, loadRDF} from '../../utils/aspect-model';
+import {LOG_COLOR} from '../../utils/constants';
 import {formatGeneratedFiles, loadAndApplyConfigFile} from '../../utils/file';
 import {TemplateHelper} from '../../utils/template-helper';
+import {generateComponent} from '../components/shared/index';
+import {ComponentType} from '../components/shared/schema';
 import {buildTypesFilePath, visitAspectModel} from './aspect-model-type-generator-visitor';
 import {TypesSchema} from './schema';
-import {generateComponent} from '../components/shared/index';
-import {Tree} from '@angular-devkit/schematics/src/tree/interface';
-import {ComponentType} from '../components/shared/schema';
-import {LOG_COLOR} from '../../utils/constants';
 
 export default function (options: TypesSchema): Rule {
   if (options && options.configFile !== undefined) {
@@ -45,7 +45,7 @@ export default function (options: TypesSchema): Rule {
             return buildTypesFilePath(options);
           },
         },
-        options
+        options,
       ),
     ]);
   } else {

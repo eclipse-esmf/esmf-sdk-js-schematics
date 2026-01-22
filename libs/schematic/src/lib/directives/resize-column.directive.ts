@@ -1,5 +1,5 @@
-import {Directive, effect, ElementRef, inject, input, output, Renderer2, signal} from '@angular/core';
 import {DOCUMENT} from '@angular/common';
+import {Directive, effect, ElementRef, inject, input, output, Renderer2, signal} from '@angular/core';
 
 @Directive({
   selector: '[esmfResizeColumn]',

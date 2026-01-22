@@ -11,7 +11,7 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
+export * from './destroyed-subject/index';
 export * from './form-control-reusable/index';
 export * from './form-group-reusable/index';
 export * from './form-validators/index';
-export * from './destroyed-subject/index';

@@ -11,9 +11,20 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-import {apply, applyTemplates, MergeStrategy, mergeWith, move, noop, Rule, SchematicContext, Tree, url} from '@angular-devkit/schematics';
 import {strings} from '@angular-devkit/core';
 import {dasherize} from '@angular-devkit/core/src/utils/strings';
+import {
+  apply,
+  applyTemplates,
+  MergeStrategy,
+  mergeWith,
+  move,
+  noop,
+  Rule,
+  SchematicContext,
+  Tree,
+  url
+} from '@angular-devkit/schematics';
 
 export function generateCustomService(options: any): Rule {
   return (tree: Tree, _context: SchematicContext) => {
@@ -33,7 +44,7 @@ export function generateCustomService(options: any): Rule {
         }),
         move(options.path),
       ]),
-      options.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error
+      options.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error,
     );
   };
 }

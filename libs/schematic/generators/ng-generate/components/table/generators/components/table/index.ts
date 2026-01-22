@@ -11,22 +11,33 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-import {apply, applyTemplates, chain, MergeStrategy, mergeWith, move, Rule, SchematicContext, Tree, url} from '@angular-devkit/schematics';
 import {strings} from '@angular-devkit/core';
 import {camelize, classify, dasherize} from '@angular-devkit/core/src/utils/strings';
+import {
+  apply,
+  applyTemplates,
+  chain,
+  MergeStrategy,
+  mergeWith,
+  move,
+  Rule,
+  SchematicContext,
+  Tree,
+  url
+} from '@angular-devkit/schematics';
 import {getAllEnumProps} from '../../../../../../utils/aspect-model';
+import {extractActionIconName} from '../../../../../../utils/config-helper';
 import {generateCommandBar} from '../../../../shared/generators/index';
+import {templateInclude} from '../../../../shared/include';
+import {Schema} from '../../../../shared/schema';
 import {
   getCustomRowActions,
   getEnumProperties,
   getEnumPropertyDefinitions,
   getTableColumValues,
-  resolveDateTimeFormat,
+  resolveDateTimeFormat
 } from '../../../../shared/utils';
-import {templateInclude} from '../../../../shared/include';
-import {Schema} from '../../../../shared/schema';
 import {TableSchema} from '../../../schema';
-import {extractActionIconName} from '../../../../../../utils/config-helper';
 
 let sharedOptions: any = {};
 
@@ -52,7 +63,7 @@ function generateHtml(options: Schema, _context: SchematicContext): Rule {
       templateInclude(_context, applyTemplate, sharedOptions, '../shared/methods'),
       move(sharedOptions.path),
     ]),
-    sharedOptions.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error
+    sharedOptions.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error,
   );
 }
 
@@ -157,19 +168,19 @@ function getInjections(): string {
             public paginatorSelectConfig = inject(EsmfPaginatorSelectConfigInjector);
             ${sharedOptions.hasFilters ? `public filterService = inject( ${sharedOptions.filterServiceName});` : ''}
             ${
-    sharedOptions.isDateQuickFilter
-      ? `
+              sharedOptions.isDateQuickFilter
+                ? `
                     private dateAdapter = inject(DateAdapter<any>);
                     private dateFormats = inject(MAT_DATE_FORMATS);
                   `
-      : ''
-  }`;
+                : ''
+            }`;
 }
 
 function getColumnTransKeyPrefix(): string {
   return sharedOptions.enableVersionSupport
     ? `${sharedOptions.selectedModelElement.name.toLowerCase()}.v${sharedOptions.templateHelper.formatAspectModelVersion(
-        sharedOptions.aspectModelVersion
+        sharedOptions.aspectModelVersion,
       )}.`
     : ``;
 }

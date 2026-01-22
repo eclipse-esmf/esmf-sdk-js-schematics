@@ -12,8 +12,8 @@
  */
 
 import {Characteristic, DefaultEither} from '@esmf/aspect-model-loader';
-import {FormFieldConfig, FormFieldStrategy} from '../FormFieldStrategy';
 import {GenericValidator, ValidatorConfig} from '../../validators/validatorsTypes';
+import {FormFieldConfig, FormFieldStrategy} from '../FormFieldStrategy';
 
 export class EitherFormFieldStrategy extends FormFieldStrategy {
   pathToFiles = './generators/components/fields/either/files';

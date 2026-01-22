@@ -12,9 +12,9 @@
  */
 
 import {Characteristic} from '@esmf/aspect-model-loader';
-import {FormFieldConfig, FormFieldStrategy} from '../FormFieldStrategy';
 import {ConstraintValidatorRangeStrategy} from '../../validators/constraint/ConstraintValidatorRangeStrategy';
 import {DataType, DataTypeValidator, ValidatorConfig} from '../../validators/validatorsTypes';
+import {FormFieldConfig, FormFieldStrategy} from '../FormFieldStrategy';
 
 const typesConfigs = [
   {
@@ -67,21 +67,21 @@ export class DurationFormFieldStrategy extends FormFieldStrategy {
           },
         ]
       : type === DataType.DayTimeDuration
-      ? [
-          {
-            name: DataTypeValidator.DayTimeDuration,
-            definition: 'FormValidators.dayTimeDurationValidator()',
-            isDirectGroupValidator: false,
-          },
-        ]
-      : type === DataType.YearMonthDuration
-      ? [
-          {
-            name: DataTypeValidator.YearMonthDuration,
-            definition: 'FormValidators.yearMonthDurationValidator()',
-            isDirectGroupValidator: false,
-          },
-        ]
-      : [];
+        ? [
+            {
+              name: DataTypeValidator.DayTimeDuration,
+              definition: 'FormValidators.dayTimeDurationValidator()',
+              isDirectGroupValidator: false,
+            },
+          ]
+        : type === DataType.YearMonthDuration
+          ? [
+              {
+                name: DataTypeValidator.YearMonthDuration,
+                definition: 'FormValidators.yearMonthDurationValidator()',
+                isDirectGroupValidator: false,
+              },
+            ]
+          : [];
   }
 }

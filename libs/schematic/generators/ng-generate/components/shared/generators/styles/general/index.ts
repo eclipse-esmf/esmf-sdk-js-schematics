@@ -11,8 +11,19 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-import {apply, applyTemplates, MergeStrategy, mergeWith, move, noop, Rule, SchematicContext, Tree, url} from '@angular-devkit/schematics';
 import {strings} from '@angular-devkit/core';
+import {
+  apply,
+  applyTemplates,
+  MergeStrategy,
+  mergeWith,
+  move,
+  noop,
+  Rule,
+  SchematicContext,
+  Tree,
+  url
+} from '@angular-devkit/schematics';
 
 export function generateGeneralStyle(options: any): Rule {
   return (tree: Tree, _context: SchematicContext) => {
@@ -41,7 +52,7 @@ export function generateGeneralStyle(options: any): Rule {
         }),
         move('src/assets/scss'),
       ]),
-      options.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error
+      options.overwrite ? MergeStrategy.Overwrite : MergeStrategy.Error,
     );
   };
 }

@@ -1,5 +1,5 @@
-import {TestBed} from '@angular/core/testing';
 import {FactoryProvider} from '@angular/core';
+import {TestBed} from '@angular/core/testing';
 import {MatPaginatorSelectConfig} from '@angular/material/paginator';
 import {EsmfPaginatorSelectConfigInjector, EsmfPaginatorSelectConfigProvider} from './paginator-select-config.provider';
 

@@ -1,13 +1,13 @@
-import {ChangeDetectionStrategy, Component, inject, input, linkedSignal, Optional, output} from '@angular/core';
+import {CdkDrag, CdkDropList} from '@angular/cdk/drag-drop';
+import {ChangeDetectionStrategy, Component, inject, input, linkedSignal, output, ViewEncapsulation} from '@angular/core';
 import {FormArray, FormControl, FormGroup, ReactiveFormsModule} from '@angular/forms';
-import {EsmfLocalStorageService} from '../../services/local-storage.service';
+import {MatButton} from '@angular/material/button';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {MatDivider} from '@angular/material/divider';
-import {MatListOption, MatSelectionList, MatSelectionListChange} from '@angular/material/list';
-import {CdkDrag, CdkDropList} from '@angular/cdk/drag-drop';
-import {TranslocoDirective} from '@jsverse/transloco';
-import {MatButton} from '@angular/material/button';
 import {MatIcon} from '@angular/material/icon';
+import {MatListOption, MatSelectionList, MatSelectionListChange} from '@angular/material/list';
+import {TranslocoDirective} from '@jsverse/transloco';
+import {EsmfLocalStorageService} from '../../services/local-storage.service';
 
 /**
  * A base config for ConfigMenuComponent
@@ -34,10 +34,12 @@ export interface ConfigMenuData {
 
 @Component({
   selector: 'esmf-config-menu',
+  imports: [MatDivider, MatSelectionList, CdkDropList, MatListOption, CdkDrag, MatIcon, MatButton, TranslocoDirective, ReactiveFormsModule],
   templateUrl: './config-menu.component.html',
   styleUrls: ['./config-menu.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [MatDivider, MatSelectionList, CdkDropList, MatListOption, CdkDrag, MatIcon, MatButton, TranslocoDirective, ReactiveFormsModule],
+  encapsulation: ViewEncapsulation.None,
+  host: {class: 'esmf-config-menu'},
 })
 export class EsmfConfigMenuComponent {
   private readonly dialogData = inject<ConfigMenuData | null>(MAT_DIALOG_DATA, {optional: true});

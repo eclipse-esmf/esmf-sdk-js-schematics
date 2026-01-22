@@ -61,7 +61,7 @@ this will be the result in the generated component .ts file
 @Component({
   selector: 'esmf-sdk-ui-movement-table',
   templateUrl: './movement-table.component.html',
-  styleUrls: ['./movement-table.component.scss'],
+  styleUrls: ['./movement-table.component.scss']
 })
 export class MovementTableComponent {}
 ```
@@ -79,7 +79,7 @@ selector.
 @Component({
   selector: 'esmf-sdk-ui-custom-table', // <- provided name reflected in the selector name
   templateUrl: './custom-table.component.html', // <- provided name reflected in the component path
-  styleUrls: ['./custom-table.component.scss'], // <- provided name reflected in the component files
+  styleUrls: ['./custom-table.component.scss'] // <- provided name reflected in the component files
 })
 export class CustomTableComponent {} // <- provided name reflected in the component class name
 ```
@@ -206,24 +206,22 @@ toolbar.
 By pressing it, a modal dialog window will appear with multiple options.
 
 1. If the data is handled on the client side, the following options will appear:
-
-   1. Export all pages (by default)
-      Pressing this button will result into a full data export to a csv file.
-   2. Export selected rows (only if there are any rows selected)
-      If this option appears, this will lead to a csv file being exported including only the selected rows from the
-      table. If the table included checkboxes with the header checkbox selected (option for selecting all rows present
-      in the table) will lead to a csv exported including only the page that you are currently seing on screen and not
-      all the data in the table. This can be used to download a paginated set of data.
+  1. Export all pages (by default)
+     Pressing this button will result into a full data export to a csv file.
+  2. Export selected rows (only if there are any rows selected)
+     If this option appears, this will lead to a csv file being exported including only the selected rows from the
+     table. If the table included checkboxes with the header checkbox selected (option for selecting all rows present
+     in the table) will lead to a csv exported including only the page that you are currently seing on screen and not
+     all the data in the table. This can be used to download a paginated set of data.
 
 2. If the data is handled remotely, the following options will be visible:
-
-   1. Export all rows (by default) - option which exports a csv containing the set of data which can be visible on that
-      page.
-   2. Export selected rows (only if there are any rows selected) - will result in exporting a csv containing only the
-      selected rows.
-   3. Export all pages (only if an ExtendedCsvExporter function is passed to the table through bindings) - will result
-      in exporting the data by calling an external function passed to the generated component through binding by using
-      the `extendedCsvExporter` attribute.
+  1. Export all rows (by default) - option which exports a csv containing the set of data which can be visible on that
+     page.
+  2. Export selected rows (only if there are any rows selected) - will result in exporting a csv containing only the
+     selected rows.
+  3. Export all pages (only if an ExtendedCsvExporter function is passed to the table through bindings) - will result
+     in exporting the data by calling an external function passed to the generated component through binding by using
+     the `extendedCsvExporter` attribute.
 
    ```html
    <esmf-sdk-ui-movement-table-v321 [extendedCsvExporter]="csvExporter"></esmf-sdk-ui-movement-table-v321>

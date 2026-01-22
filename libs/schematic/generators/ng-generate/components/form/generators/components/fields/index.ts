@@ -12,16 +12,16 @@
  */
 
 import {SchematicContext} from '@angular-devkit/schematics';
-import {FormFieldStrategy} from './FormFieldStrategy';
 import {Characteristic, Constraint, DefaultTrait, Property, Trait} from '@esmf/aspect-model-loader';
 import {FORM_FIELD_DEFAULT_STRATEGY, FORM_FIELD_STRATEGIES} from './form-field-strategies';
+import {FormFieldStrategy} from './FormFieldStrategy';
 
 export function getFormFieldStrategy(
   options: any,
   context: SchematicContext,
   parent: Property,
   child: Characteristic | Trait,
-  fieldName: string
+  fieldName: string,
 ): FormFieldStrategy {
   const {characteristic, constraints} = getChildData(child);
   const strategy = FORM_FIELD_STRATEGIES.find(strategy => strategy.isTargetStrategy(characteristic)) ?? FORM_FIELD_DEFAULT_STRATEGY;

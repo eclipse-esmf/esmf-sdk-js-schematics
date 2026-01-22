@@ -11,9 +11,9 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
+import {Property} from '@esmf/aspect-model-loader';
 import {Schema as ComponentSchema} from '@schematics/angular/component/schema';
 import {DefaultSchema} from '../../default-schema';
-import {Property} from '@esmf/aspect-model-loader';
 
 export enum ComponentType {
   TABLE = 'table',

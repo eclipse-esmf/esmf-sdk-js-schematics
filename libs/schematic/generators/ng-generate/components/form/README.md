@@ -89,7 +89,7 @@ selector.
 @Component({
   selector: 'esmf-sdk-ui-custom-form', // <- provided name reflected in the selector name
   templateUrl: './custom-form.component.html', // <- provided name reflected in the component path
-  styleUrls: ['./custom-form.component.scss'], // <- provided name reflected in the component files
+  styleUrls: ['./custom-form.component.scss'] // <- provided name reflected in the component files
 })
 export class CustomFormComponent {} // <- provided name reflected in the component class name
 ```
@@ -514,10 +514,10 @@ export class AppComponent implements OnInit {
       position: {
         latitude: 1,
         longitude: 2,
-        altitude: 3,
+        altitude: 3
       },
       speed: 100,
-      speedLimitWarning: TrafficLight.Yellow,
+      speedLimitWarning: TrafficLight.Yellow
     });
     MovementForm.get('isMoving')?.addValidators([Validators.required]);
   }
@@ -545,7 +545,7 @@ Usage example:
 ```typescript
 import {
   listPropertyEvents,
-  listPropertyFormControl,
+  listPropertyFormControl
 } from './shared/components/complex-list-types-form/v100/list-property/list-property.component';
 
 // ...
@@ -557,7 +557,7 @@ export class AppComponent implements OnInit {
         new FormControl({
           CharacteristicX: 1,
           CharacteristicY: 2,
-          CharacteristicZ: 3,
+          CharacteristicZ: 3
         })
       );
     });
@@ -568,7 +568,7 @@ export class AppComponent implements OnInit {
         const newValue = {
           CharacteristicX: 1,
           CharacteristicY: 2,
-          CharacteristicZ: 3,
+          CharacteristicZ: 3
         };
         control.patchValue(newValue);
       });

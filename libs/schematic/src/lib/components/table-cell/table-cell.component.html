@@ -2,25 +2,22 @@
 
 <div
   class="cell-content"
-  esmfHighlight
-  esmfTableCellTooltip
   [highlight]="highlightString()"
   [highlightSource]="val"
   [highlightColor]="color()"
   [selected]="selected()"
   [value]="val"
   [description]="description()"
+  esmfHighlight
+  esmfTableCellTooltip
 >
   {{ val === null ? '-' : val }}
 </div>
 
 @if (hasValue()) {
   <div>
-    <mat-icon
-      class="material-icons copy-to-clipboard"
-      data-test="copy-to-clipboard-icon"
-      (click)="copyToClipboard(val, $event)"
-    >
+    <mat-icon class="material-icons copy-to-clipboard" (click)="copyToClipboard(val, $event)"
+              data-test="copy-to-clipboard-icon">
       content_copy
     </mat-icon>
   </div>

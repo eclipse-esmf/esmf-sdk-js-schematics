@@ -1,57 +1,61 @@
 {
   "name": "@esmf/semantic-ui-schematic",
-  "version": "0.0.1",
+  "version": "1.0.0",
+  "main": "./fesm2022/esmf-semantic-ui-schematic.mjs",
+  "schematics": "./generators/collection.json",
+  "files": [
+    "**"
+  ],
   "dependencies": {
     "@esmf/aspect-model-loader": "https://github.com/eclipse-esmf/esmf-sdk-js-aspect-model-loader/releases/download/v2.3.3/esmf-aspect-model-loader-2.3.3.tgz",
     "inquirer": "8.2.5",
     "inquirer-fuzzy-path": "2.3.0",
     "inquirer-prompt-suggest": "0.1.0",
-    "inquirer-search-list": "^1.2.6",
-    "path": "^0.12.7"
+    "inquirer-search-list": "^1.2.6"
   },
   "peerDependencies": {
+    "@angular/platform-browser": "^20.3.0",
+    "@angular-devkit/schematics": "^20.3.0",
+    "@angular-devkit/core": "^20.3.0",
     "@angular/common": "^20.3.0",
     "@angular/core": "^20.3.0",
-    "@angular/cdk": "^20.3.0",
+    "@schematics/angular": "^20.3.0",
+    "@angular/cdk": "^20.2.0",
     "@angular/forms": "^20.3.0",
     "@angular/material": "^20.2.0",
     "@jsverse/transloco": "^8.2.0",
-    "@jsverse/transloco-locale": "^8.2.0",
-    "rollun-ts-rql": "^0.10.0"
+    "rollun-ts-rql": "^0.10.0",
+    "rxjs": "^7.8.2"
   },
   "sideEffects": false,
-  "nx-migrations": {
-    "collection": "./generators/collection.json"
-  },
-  "schematics": "./generators/collection.json",
   "i18n": [
     {
-      "scope": "esmf.schematic.chipList",
+      "scope": "chipList",
       "path": "./src/lib/components/chip-list/assets/i18n",
       "strategy": "join"
     },
     {
-      "scope": "esmf.schematic.columnMenu",
+      "scope": "columnMenu",
       "path": "./src/lib/components/column-menu/assets/i18n",
       "strategy": "join"
     },
     {
-      "scope": "esmf.schematic.configMenu",
+      "scope": "configMenu",
       "path": "./src/lib/components/config-menu/assets/i18n",
       "strategy": "join"
     },
     {
-      "scope": "esmf.schematic.exportDialog",
+      "scope": "exportDialog",
       "path": "./src/lib/components/export-table-dialog/assets/i18n",
       "strategy": "join"
     },
     {
-      "scope": "esmf.schematic.table",
+      "scope": "table",
       "path": "./src/lib/components/table/assets/i18n",
       "strategy": "join"
     },
     {
-      "scope": "esmf.schematic.toolbar",
+      "scope": "toolbar",
       "path": "./src/lib/components/toolbar/assets/i18n",
       "strategy": "join"
     }

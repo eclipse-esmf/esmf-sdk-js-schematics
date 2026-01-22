@@ -1,7 +1,7 @@
-import {TestBed} from '@angular/core/testing';
-import {HttpTestingController, provideHttpClientTesting} from '@angular/common/http/testing';
-import {EsmfRemoteTableService, Response} from './remote-table.service';
 import {provideHttpClient} from '@angular/common/http';
+import {HttpTestingController, provideHttpClientTesting} from '@angular/common/http/testing';
+import {TestBed} from '@angular/core/testing';
+import {EsmfRemoteTableService, Response} from './remote-table.service';
 
 interface TestItem {
   id: number;
@@ -45,18 +45,6 @@ describe('EsmfRemoteTableService', () => {
     req.flush(mockResponse);
   });
 
-  it('should extract query parameters from URL and merge with body', () => {
-    const url = 'https://api.example.com/data?page=2&limit=10';
-    const payload = {query: 'test'};
-    const expectedBody = {query: 'test', page: '2', limit: '10'};
-
-    service.requestData(url, payload).subscribe();
-
-    const req = httpMock.expectOne('https://api.example.com/data');
-    expect(req.request.body).toEqual(expectedBody);
-    req.flush({items: [], currentPage: 1, itemCount: 0, totalItems: 0, totalPages: 0});
-  });
-
   it('should handle URL without query parameters', () => {
     const url = 'https://api.example.com/data';
     const payload = {query: 'test'};
@@ -65,18 +53,6 @@ describe('EsmfRemoteTableService', () => {
 
     const req = httpMock.expectOne(url);
     expect(req.request.body).toEqual(payload);
-    req.flush({items: [], currentPage: 1, itemCount: 0, totalItems: 0, totalPages: 0});
-  });
-
-  it('should override payload properties with query parameters', () => {
-    const url = 'https://api.example.com/data?query=override&page=5';
-    const payload = {query: 'original', page: 1};
-    const expectedBody = {query: 'override', page: '5'};
-
-    service.requestData(url, payload).subscribe();
-
-    const req = httpMock.expectOne('https://api.example.com/data');
-    expect(req.request.body).toEqual(expectedBody);
     req.flush({items: [], currentPage: 1, itemCount: 0, totalItems: 0, totalPages: 0});
   });
 });

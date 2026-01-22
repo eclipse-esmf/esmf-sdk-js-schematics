@@ -11,18 +11,18 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-import {ComponentType, Schema} from '../../../components/shared/schema';
+import {Aspect, DefaultCollection, DefaultEntity} from '@esmf/aspect-model-loader';
+import {loadInquirer} from '../../../../utils/angular';
 import {TemplateHelper} from '../../../../utils/template-helper';
+import {ComponentType, Schema} from '../../../components/shared/schema';
 import {
   excludedProperties,
   requestExcludedConstraints,
   requestOptionalMaterialTheme,
   requestOverwriteFiles,
-  requestSelectedModelElement,
+  requestSelectedModelElement
 } from '../shared/prompt-complex-questions';
 import {requestAspectModelVersionSupport, requestSetViewEncapsulation} from '../shared/prompt-simple-questions';
-import {Aspect, DefaultCollection, DefaultEntity} from '@esmf/aspect-model-loader';
-import {loadInquirer} from '../../../../utils/angular';
 
 export const requestReadOnlyForm = (options: Schema) => ({
   type: 'confirm',
@@ -39,12 +39,12 @@ export async function formPrompterQuestions(
   options: Schema,
   aspect: Aspect,
   combineAnswers: (...answers: any[]) => any,
-  allAnswers: any
+  allAnswers: any,
 ) {
   combineAnswers(
     answerConfigurationFileConfig,
     answerAspectModel,
-    await getUserSpecificFormConfigs(templateHelper, options, allAnswers, aspect)
+    await getUserSpecificFormConfigs(templateHelper, options, allAnswers, aspect),
   );
 }
 

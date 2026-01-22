@@ -11,6 +11,7 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
+import {classify, dasherize} from '@angular-devkit/core/src/utils/strings';
 import {
   Characteristic,
   DefaultCollection,
@@ -22,12 +23,11 @@ import {
   Entity,
   Property,
   Samm,
-  Type,
+  Type
 } from '@esmf/aspect-model-loader';
-import {classify, dasherize} from '@angular-devkit/core/src/utils/strings';
-import {Schema} from './schema';
-import {isArrayOfStrings} from '../../../utils/type-guards';
 import {normalizeActionName} from '../../../utils/config-helper';
+import {isArrayOfStrings} from '../../../utils/type-guards';
+import {Schema} from './schema';
 
 /**
  * Gets enum properties from provided options and converts them into a string.
@@ -109,7 +109,7 @@ function generateKey(name: string): string {
  */
 export function getTableColumValues(
   allProps: Array<Property>,
-  options: Schema
+  options: Schema,
 ): Array<{
   property: Property;
   index: number;
@@ -170,7 +170,7 @@ function buildRowActionIconTemplate(isCustomIcon: boolean, action: string, attri
 export function getCustomRowActions(options: any): string {
   const customRowActions = options.customRowActions;
 
-  if(!isArrayOfStrings(customRowActions) || customRowActions.length === 0) {
+  if (!isArrayOfStrings(customRowActions) || customRowActions.length === 0) {
     return '';
   }
 
@@ -278,7 +278,7 @@ export function resolveJsPropertyType(property: Property): string {
     if (property.characteristic.elementCharacteristic) {
       return resolveJsCharacteristicType(
         property.characteristic.elementCharacteristic,
-        property.characteristic.elementCharacteristic.dataType
+        property.characteristic.elementCharacteristic.dataType,
       );
     }
 

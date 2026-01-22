@@ -52,12 +52,14 @@ ng generate @esmf/semantic-ui-schematics:card --dry-run=false
 this will be the result in the generated component .ts file
 
 ```typescript
+
 @Component({
   selector: 'esmf-sdk-ui-movement-card',
   templateUrl: './movement-card.component.html',
-  styleUrls: ['./movement-card.component.scss'],
+  styleUrls: ['./movement-card.component.scss']
 })
-export class MovementCardComponent {}
+export class MovementCardComponent {
+}
 ```
 
 By running the command with the '--name' flag
@@ -70,12 +72,14 @@ the name of the component will be changed. This will be reflected under folder s
 selector.
 
 ```typescript
+
 @Component({
   selector: 'esmf-sdk-ui-custom-card', // <- provided name reflected in the selector name
   templateUrl: './custom-card.component.html', // <- provided name reflected in the component path
-  styleUrls: ['./custom-card.component.scss'], // <- provided name reflected in the component files
+  styleUrls: ['./custom-card.component.scss'] // <- provided name reflected in the component files
 })
-export class CustomCardComponent {} // <- provided name reflected in the component class name
+export class CustomCardComponent {
+} // <- provided name reflected in the component class name
 ```
 
 ---
@@ -166,6 +170,7 @@ This naming convention can also be directly observed within the child component 
 Without versioning:
 
 ```html
+
 <esmf-sdk-ui-movement-card-v100>
   <ng-template
     #cardTemplate
@@ -184,6 +189,7 @@ Without versioning:
 With versioning:
 
 ```html
+
 <esmf-sdk-ui-movement-card-v100>
   <ng-template
     #cardTemplate
@@ -222,38 +228,36 @@ toolbar.
 By pressing it, a modal dialog window will appear with multiple options.
 
 1. If the data is handled on the client side, the following options will appear:
-
-   1. Export all pages (by default)
-      Pressing this button will result into a full data export to a csv file.
-   2. Export only first page
-      If this option appears, this will lead to a csv file being exported including only the first page from the view.
+1. Export all pages (by default)
+   Pressing this button will result into a full data export to a csv file.
+2. Export only first page
+   If this option appears, this will lead to a csv file being exported including only the first page from the view.
 
 2. If the data is handled remotely, the following options will be visible:
+1. Export all pages (by default) - option which exports a csv containing the set of data which can be visible on
+   that
+   page.
+2. Export only first page
+   If this option appears, this will lead to a csv file being exported including only the first page from the view.
+3. Export all pages (only if an ExtendedCsvExporter function is passed to the card through bindings) - will result
+   in exporting the data by calling an external function passed to the generated component through binding by using
+   the `extendedCsvExporter` attribute.
 
-   1. Export all pages (by default) - option which exports a csv containing the set of data which can be visible on
-      that
-      page.
-   2. Export only first page
-      If this option appears, this will lead to a csv file being exported including only the first page from the view.
-   3. Export all pages (only if an ExtendedCsvExporter function is passed to the card through bindings) - will result
-      in exporting the data by calling an external function passed to the generated component through binding by using
-      the `extendedCsvExporter` attribute.
+```html
+<esmf-sdk-ui-movement-card-v321 [extendedCsvExporter]="csvExporter"></esmf-sdk-ui-movement-card-v321>
+```
 
-   ```html
-   <esmf-sdk-ui-movement-card-v321 [extendedCsvExporter]="csvExporter"></esmf-sdk-ui-movement-card-v321>
-   ```
+The `csvExporter` function will have a type `ExtendedCsvExporter` exported in the component's service file, and it
+will need to implement a function with 2 arguments, the displayed columns and the RQL query which will query the data
+from the backend.
 
-   The `csvExporter` function will have a type `ExtendedCsvExporter` exported in the component's service file, and it
-   will need to implement a function with 2 arguments, the displayed columns and the RQL query which will query the data
-   from the backend.
+```typescript
+export interface ExtendedCsvExporter {
+  export(displayedColumns: string[], rqlQuery: string): void;
+}
+```
 
-   ```typescript
-   export interface ExtendedCsvExporter {
-     export(displayedColumns: string[], rqlQuery: string): void;
-   }
-   ```
-
-   If this function is not exposed to the component, this option will not appear in the export dialog window.
+If this function is not exposed to the component, this option will not appear in the export dialog window.
 
 ### Custom icons for the command bar
 
@@ -293,22 +297,37 @@ Example of configuration file:
 
 ```json
 {
-  "aspectModelTFiles": ["FOLDER\\Movement.ttl"],
+  "aspectModelTFiles": [
+    "FOLDER\\Movement.ttl"
+  ],
   "excludedProperties": [],
   "configFile": "wizard.config.json",
   "complexProps": [
     {
       "prop": "position",
-      "propsToShow": ["x", "y", "z"]
+      "propsToShow": [
+        "x",
+        "y",
+        "z"
+      ]
     }
   ],
   "selectedModelElementUrn": "urn:samm:org.eclipse.esmf.test:1.0.0#Movement",
   "jsonAccessPath": "",
   "defaultSortingCol": "moving",
-  "customRowActions": ["schedule"],
+  "customRowActions": [
+    "schedule"
+  ],
   "addCommandBar": true,
-  "enabledCommandBarFunctions": ["addCustomCommandBarActions", "addSearchBar", "addEnumQuickFilters", "addDateQuickFilters"],
-  "customCommandBarActions": ["edit.svg"],
+  "enabledCommandBarFunctions": [
+    "addCustomCommandBarActions",
+    "addSearchBar",
+    "addEnumQuickFilters",
+    "addDateQuickFilters"
+  ],
+  "customCommandBarActions": [
+    "edit.svg"
+  ],
   "enableRemoteDataHandling": true,
   "enableVersionSupport": true,
   "overwrite": true,

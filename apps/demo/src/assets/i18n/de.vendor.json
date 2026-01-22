@@ -1,24 +1,24 @@
 {
-  "esmf.schematic.chipList": {
+  "chipList": {
     "scroll": {
       "left": "Nach links scrollen",
       "right": "Nach rechts scrollen"
     }
   },
-  "esmf.schematic.columnMenu": {
+  "columnMenu": {
     "columns": "Spalten",
     "restoreDefaults": "Standardeinstellungen wiederherstellen",
     "cancel": "Abbrechen",
     "apply": "Anwenden"
   },
-  "esmf.schematic.configMenu": {
+  "configMenu": {
     "title": "Einstellungen",
     "highlight.name": "Hervorhebung",
     "highlight.desc": "Der Suchbegriff wird hervorgehoben",
     "cancel": "Abbrechen",
     "apply": "Anwenden"
   },
-  "esmf.schematic.table": {
+  "table": {
     "openColumnsMenu": "Spaltenmenü öffnen",
     "noLink": "Kein Link",
     "noData": "Keine Daten",
@@ -26,7 +26,7 @@
       "title": "Aktionen"
     }
   },
-  "esmf.schematic.toolbar": {
+  "toolbar": {
     "search": "Suchen",
     "allTextFields": "Alle Textfelder",
     "advancedSearch": "Erweiterte Suche",
@@ -109,7 +109,7 @@
       "year_month_duration": "Value has to match validation rules for \"yearMonthDuration\" data type"
     }
   },
-  "esmf.schematic.exportDialog": {
+  "exportDialog": {
     "title": "Daten exportieren",
     "export": "Exportieren",
     "cancel": "Abbrechen",

@@ -1,8 +1,8 @@
 import {CdkDragDrop, DragDropModule, moveItemInArray} from '@angular/cdk/drag-drop';
 import {ChangeDetectionStrategy, Component, input, linkedSignal, output, ViewEncapsulation} from '@angular/core';
-import {MatDivider, MatListOption, MatSelectionList} from '@angular/material/list';
 import {MatButton} from '@angular/material/button';
 import {MatIcon} from '@angular/material/icon';
+import {MatDivider, MatListOption, MatSelectionList} from '@angular/material/list';
 import {MatTooltip} from '@angular/material/tooltip';
 import {TranslocoDirective, TranslocoPipe} from '@jsverse/transloco';
 

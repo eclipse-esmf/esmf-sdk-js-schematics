@@ -7,11 +7,11 @@ import {EsmfHighlightDirective} from './highlight.directive';
   template: `
     <div
       id="testEl"
-      esmfHighlight
       [highlight]="highlight"
       [highlightSource]="highlightSource"
       [highlightColor]="highlightColor"
       [selected]="selected"
+      esmfHighlight
     >
       {{ highlightSource }}
     </div>

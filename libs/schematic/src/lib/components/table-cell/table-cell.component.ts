@@ -1,8 +1,8 @@
-import {ChangeDetectionStrategy, Component, computed, inject, input, output} from '@angular/core';
 import {Clipboard} from '@angular/cdk/clipboard';
+import {ChangeDetectionStrategy, Component, computed, inject, input, output} from '@angular/core';
 import {MatIcon} from '@angular/material/icon';
-import {EsmfTableCellTooltipDirective} from '../../directives/table-cell-tooltip.directive';
 import {EsmfHighlightDirective} from '../../directives/highlight.directive';
+import {EsmfTableCellTooltipDirective} from '../../directives/table-cell-tooltip.directive';
 
 interface Config {
   /** Column name **/
