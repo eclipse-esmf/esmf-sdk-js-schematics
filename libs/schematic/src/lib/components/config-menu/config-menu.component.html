@@ -1,0 +1,45 @@
+<ng-container *transloco="let t; prefix: 'esmf.schematic.configMenu'">
+  <div (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()" tabindex="0">
+    <div class="selection-title" (click)="$event.stopPropagation()" role="button" tabindex="0">{{ t('title') }}</div>
+
+    <mat-divider></mat-divider>
+    <mat-selection-list class="selection-list" (selectionChange)="onSelectionChange($event)" cdkDropList
+                        data-test="config-selection-list">
+      @for (fg of configsForm().controls; track fg.controls.name.value; let i = $index) {
+        <mat-list-option
+          [value]="i"
+          [selected]="fg.controls.selected.value"
+          cdkDrag
+          data-test="configuration-list-option"
+          togglePosition="before"
+        >
+          <div class="list-content">
+            <div class="list-text">
+              <div class="title" data-test="config-option-name">{{ t(fg.controls.name.value) }}</div>
+              <div class="description" data-test="config-option-desc">{{ t(fg.controls.desc.value) }}</div>
+            </div>
+            <div class="color-selector">
+              <input [formControl]="fg.controls.color" (click)="$event.stopPropagation()" type="color" />
+            </div>
+          </div>
+        </mat-list-option>
+      }
+    </mat-selection-list>
+
+    <mat-divider></mat-divider>
+    <div class="menu-actions-container" data-test="config-menu-actions-container" role="button" tabindex="0">
+      <span class="spacer"></span>
+      <button class="config-menu-cancel-btn" (click)="cancel()" data-test="config-menu-cancel-button" mat-stroked-button
+              color="accent">
+        <mat-icon class="material-icons" data-test="config-menu-cancel-icon">close</mat-icon>
+        <span data-test="config-menu-cancel-text">{{ t('cancel') }}</span>
+      </button>
+
+      <button class="config-menu-apply-btn" (click)="save()" data-test="config-menu-apply-button" mat-raised-button
+              color="primary">
+        <mat-icon class="material-icons" data-test="config-menu-apply-icon">check</mat-icon>
+        <span data-test="config-menu-apply-text">{{ t('apply') }}</span>
+      </button>
+    </div>
+  </div>
+</ng-container>

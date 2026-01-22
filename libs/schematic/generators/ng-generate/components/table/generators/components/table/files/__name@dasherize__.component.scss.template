@@ -1,0 +1,131 @@
+/** <%= options.generationDisclaimerText %> **/
+$gray-100: #f5f5f5;
+$gray-300: #e0e0e0;
+
+// Required for resizing functionality
+.resizing {
+  .js-sdk-component-container {
+    // Ignore columns with active sorting
+    .mat-sort-header[aria-sort]:not([aria-sort='ascending']):not([aria-sort='descending']) {
+      .mat-sort-header-container::after {
+        // Compensate the empty space when sorting indicator is hidden for a resizable column
+        content: '';
+        display: block;
+        height: 100%;
+        min-width: 18px;
+        max-width: 18px;
+      }
+    }
+  }
+}
+
+.js-sdk-component-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+
+  .mat-table-container {
+    position: relative;
+    height: 90%;
+    overflow-y: auto;
+
+    .full-width-table {
+      min-width: 100%;
+
+      .mat-mdc-row:not([data-test='no-data-table-row']):not(.selected-row):hover {
+        background: $gray-100;
+      }
+
+      .selected-row {
+        background: var(--selected-row-highlight-color, $gray-300);
+      }
+
+      .mat-mdc-cell {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 100px;
+        white-space: nowrap;
+        font-size: inherit;
+        padding-right: 30px;
+        position: relative;
+
+        &:hover {
+          .copy-to-clipboard {
+            opacity: 1;
+            transition: all 0.2s ease-in;
+          }
+        }
+      }
+
+      .mat-mdc-header-cell {
+        position: relative;
+
+        &.table-header-number {
+          ::ng-deep .mat-sort-header-container {
+            justify-content: flex-end;
+            padding-right: 15px;
+          }
+        }
+
+        span {
+          text-transform: capitalize;
+        }
+      }
+
+      .table-cell-number {
+        text-align: right;
+      }
+
+      .mat-column-customRowActions {
+        padding-right: 0;
+        padding-left: 8px;
+      }
+
+      .mat-column-columnsMenu {
+        width: 35px;
+        padding-right: 0;
+
+        .mat-mdc-table-menu-button {
+          height: 40px;
+          width: 35px;
+        }
+      }
+
+      .mat-column-checkboxes {
+        max-width: 50px;
+        padding-right: 8px;
+      }
+    }
+  }
+
+  .copy-to-clipboard {
+    cursor: pointer;
+    font-size: 15px;
+    opacity: 0;
+    transition: all 0.2s ease-in;
+
+    &:hover {
+      opacity: 1;
+    }
+  }
+
+  .chip-text {
+    max-width: 200px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .table-cell-tooltip,
+  .table-column-tooltip {
+    max-height: none;
+
+    .mat-mdc-tooltip-surface.mdc-tooltip__surface {
+      display: block;
+    }
+  }
+
+  .bg-transparent {
+    background: initial;
+  }
+}

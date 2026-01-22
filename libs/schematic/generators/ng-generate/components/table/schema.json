@@ -1,0 +1,167 @@
+{
+  "$schema": "http://json-schema.org/schema",
+  "$id": "esmf-table-schematic",
+  "title": "Table Options Schema",
+  "type": "object",
+  "properties": {
+    "path": {
+      "type": "string",
+      "format": "path",
+      "description": "The path to create the component.",
+      "$default": {
+        "$source": "workingDirectory"
+      },
+      "visible": false
+    },
+    "name": {
+      "type": "string",
+      "description": "The name of the Component.",
+      "default": "table",
+      "x-prompt": "Component name"
+    },
+    "project": {
+      "type": "string",
+      "description": "The name of the project.",
+      "$default": {
+        "$source": "projectName"
+      }
+    },
+    "viewEncapsulation": {
+      "description": "Specifies the view encapsulation strategy.",
+      "enum": ["Emulated", "None", "ShadowDom"],
+      "type": "string",
+      "default": "None",
+      "alias": "v"
+    },
+    "changeDetection": {
+      "description": "Specifies the change detection strategy.",
+      "enum": ["Default", "OnPush"],
+      "type": "string",
+      "alias": "c"
+    },
+    "prefix": {
+      "type": "string",
+      "format": "html-selector",
+      "description": "The prefix to apply to generated selectors.",
+      "default": "esmf-ui",
+      "alias": "p"
+    },
+    "style": {
+      "description": "The file extension to be used for style files.",
+      "type": "string",
+      "default": "scss"
+    },
+    "flat": {
+      "type": "boolean",
+      "description": "Flag to indicate if a dir is created.",
+      "default": false
+    },
+    "skipImport": {
+      "type": "boolean",
+      "description": "Flag to skip the module import.",
+      "default": false
+    },
+    "selector": {
+      "type": "string",
+      "format": "html-selector",
+      "description": "The selector to use for the component."
+    },
+    "module": {
+      "type": "string",
+      "description": "Allows specification of the declaring module.",
+      "alias": "m"
+    },
+    "export": {
+      "type": "boolean",
+      "default": false,
+      "description": "Specifies if declaring module exports the component."
+    },
+    "aspectModelUrnToLoad": {
+      "type": "string",
+      "default": ""
+    },
+    "selectedModelElementUrn": {
+      "type": "string",
+      "default": ""
+    },
+    "jsonAccessPath": {
+      "type": "string",
+      "default": ""
+    },
+    "enableVersionSupport": {
+      "type": "boolean",
+      "default": true
+    },
+    "addRowCheckboxes": {
+      "type": "boolean",
+      "default": false
+    },
+    "addCommandBar": {
+      "type": "boolean",
+      "default": false
+    },
+    "enabledCommandBarFunctions": {
+      "type": "array",
+      "default": []
+    },
+    "excludedProperties": {
+      "type": "array",
+      "default": []
+    },
+    "getExcludedPropLabels": {
+      "type": "boolean",
+      "default": false
+    },
+    "customRowActions": {
+      "type": "array",
+      "default": []
+    },
+    "customCommandBarActions": {
+      "type": "array",
+      "default": []
+    },
+    "customColumns": {
+      "type": "array",
+      "default": []
+    },
+    "customStyleImports": {
+      "type": "array",
+      "default": []
+    },
+    "aspectModel": {
+      "type": "object"
+    },
+    "enableRemoteDataHandling": {
+      "type": "boolean",
+      "default": false
+    },
+    "customRemoteService": {
+      "type": "boolean",
+      "default": true
+    },
+    "overwrite": {
+      "type": "boolean",
+      "default": false
+    },
+    "ttl": {
+      "type": "string"
+    },
+    "configFile": {
+      "description": "Used for pre-loading the config file from the command line(when set, config wizard is disabled).",
+      "type": "string"
+    },
+    "skipInstall": {
+      "type": "boolean",
+      "default": false,
+      "description": "Weather or not to install dependencies at the end of the generation process."
+    },
+    "getOptionalMaterialTheme": {
+      "type": "boolean",
+      "default": false
+    },
+    "commandBarFilterOrder": {
+      "type": "array",
+      "default": []
+    }
+  }
+}

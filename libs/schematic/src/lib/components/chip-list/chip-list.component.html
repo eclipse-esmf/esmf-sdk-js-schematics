@@ -1,0 +1,52 @@
+<ng-container *transloco="let t; prefix: 'esmf.schematic.chipList'">
+  @if (activeFilters().length) {
+    <div class="scrollable-chips-container">
+      @if (chipsScrollEl.scrollable) {
+        <button
+          class="mat-elevation-z0"
+          [disabled]="chipsScrollEl.disableLeftBtn"
+          (click)="chipsScrollEl.scrollChipList('left')"
+          data-test="scroll-left-button"
+          mat-mini-fab
+        >
+          <mat-icon class="material-icons" [matTooltip]="t('scroll.left')" data-test="scroll-left-icon"> chevron_left
+          </mat-icon>
+        </button>
+      }
+      <div
+        class="chip-list-container"
+        #chipsScrollEl="horizontalOverflow"
+        #chipList
+        [chipsObj]="chips"
+        data-test="chip-list-container"
+        esmfHorizontalOverflow
+      >
+        <mat-chip-listbox #chips data-test="chip-list">
+          @for (filter of activeFilters(); track filter) {
+            <mat-chip-option [removable]="filter.removable" (removed)="triggerRemoveFilter(filter)" data-test="chip">
+              <div class="chip-text" data-test="chip-text" matTooltip="{{ chipListValue(filter) }}">
+                {{ chipListValue(filter) }}
+              </div>
+              @if (filter.removable) {
+                <mat-icon class="material-icons" matChipRemove data-test="remove-chip">cancel</mat-icon>
+              }
+            </mat-chip-option>
+          }
+        </mat-chip-listbox>
+      </div>
+      @if (chipsScrollEl.scrollable) {
+        <button
+          class="mat-elevation-z0"
+          [disabled]="chipsScrollEl.disableRightBtn"
+          (click)="chipsScrollEl.scrollChipList('right')"
+          data-test="scroll-right-button"
+          mat-mini-fab
+        >
+          <mat-icon class="material-icons" [matTooltip]="t('scroll.left')" data-test="scroll-right-icon">
+            chevron_right
+          </mat-icon>
+        </button>
+      }
+    </div>
+  }
+</ng-container>

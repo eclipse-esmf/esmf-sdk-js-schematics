@@ -1,0 +1,23 @@
+<mat-form-field class="form-field">
+    <mat-label><%= options.fieldConfig.name %></mat-label>
+    <input
+        type="text"
+        matInput
+        placeholder="<%= options.fieldConfig.placeholder %>"
+        [formControl]="formControl"
+        (ngModelChange)="value = $event"
+        data-test="<%= options.fieldConfig.name %>-time"
+    />
+    <% if (options.fieldConfig.unitName) {
+        %><span matTextSuffix>unit:<%= options.fieldConfig.unitName %></span>
+    <% } %>
+    <% if (options.fieldConfig.exampleValue) {
+       %><mat-hint align="start">exampleValue: <%= options.fieldConfig.exampleValue %></mat-hint>
+    <% } %>
+
+    <mat-error *ngIf="formControl.invalid">
+        <ng-container *ngIf="error as err">
+            {{ err.translationKey | transloco: err.translationParams }}
+        </ng-container>
+    </mat-error>
+</mat-form-field>

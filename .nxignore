@@ -1,0 +1,2 @@
+# Ignore the legacy workspace so Nx plugins don't attempt to process it
+_legacy/**

@@ -1,0 +1,30 @@
+{
+    <% if (!options.isAspectSelected) { %>
+        <% if (options.enableVersionSupport) { %>
+            "<%= aspectModelName.toLowerCase() %>.v<%= options.formatedAspectModelVersion %>": {
+        <% } %>
+
+        "preferredName": "<%= preferredName %>",
+        "description": "<%= description %>",
+
+        <% if (options.enableVersionSupport) { %>
+            },
+        <% } %>
+    <% } %>
+
+    <% if (options.enableVersionSupport) { %>
+        "<%= selectedModelElementName.toLowerCase() %>.v<%= options.formatedAspectModelVersion %>": {
+    <% } %>
+
+    <%= properties %>
+    <%= [blockTransCustomColumns, blockTransRowActions, blockCustomCommandBarActions].filter(str => !!str).join(',') %>
+
+    <% if (options.isAspectSelected) { %>
+        "preferredName": "<%= preferredName %>",
+        "description": "<%= description %>"
+    <% } %>
+
+    <% if (options.enableVersionSupport) { %>
+        }
+    <% } %>
+}

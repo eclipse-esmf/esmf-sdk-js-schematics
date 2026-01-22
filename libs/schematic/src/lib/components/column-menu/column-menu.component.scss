@@ -1,0 +1,61 @@
+.esmf-column-menu {
+  .drag-indicator-icon {
+    color: rgba(0, 0, 0, 0.54);
+  }
+
+  .selection-title {
+    font-weight: 700;
+    font-size: 1rem;
+    line-height: 1.75rem;
+    padding: 1rem;
+    margin: 0;
+  }
+
+  .selection-list {
+    max-width: 650px;
+  }
+
+  .list-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-left: 8px;
+    flex: 1;
+    min-width: 0;
+
+    .body-container {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      min-width: 0;
+
+      .title {
+        text-transform: capitalize;
+        font-size: 1rem;
+        line-height: 1.5rem;
+      }
+
+      .description {
+        min-width: 0;
+        font-size: 0.75rem;
+        line-height: 1.25rem;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+    }
+  }
+
+  .spacer {
+    flex: 1 1 auto;
+  }
+
+  .menu-actions-container {
+    display: flex;
+    align-items: center;
+    align-content: space-around;
+    padding: 16px 16px 8px 16px;
+    gap: 0.5rem;
+    min-width: 450px;
+  }
+}

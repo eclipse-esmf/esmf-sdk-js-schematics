@@ -1,0 +1,23 @@
+{
+  "title": "Export Data",
+  "export": "Export",
+  "cancel": "Cancel",
+  "description": {
+    "exportOnlyFirstPage": "Export only the first page of data.",
+    "caseOne": "Export the maximum of {{maxExportRows}} rows from all {{allColumns}} columns.",
+    "caseTwo": {
+      "singular": "Export the maximum of {{maxExportRows}} rows from the displayed {{displayedColumns}} column.",
+      "plural": "Export the maximum of {{maxExportRows}} rows from the displayed {{displayedColumns}} columns."
+    },
+    "caseThree": {
+      "singular": "Export all data from the selected {{displayedColumns}} column of the current page.",
+      "plural": "Export all data from the selected {{displayedColumns}} columns of the current page."
+    },
+    "caseFour": "Export all data from all {{allColumns}} columns of the current page.",
+    "default": "Export entire datasource."
+  },
+
+  "exportAllPages": "Export the maximum of {{maxExportRows}} rows",
+  "exportAllColumns": "Export all data from all {{allColumns}} columns",
+  "exportFirstPage": "Export the first page of data"
+}

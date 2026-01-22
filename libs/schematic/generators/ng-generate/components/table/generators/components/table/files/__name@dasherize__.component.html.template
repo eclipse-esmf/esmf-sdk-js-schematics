@@ -1,0 +1,42 @@
+<!--  <%= options.generationDisclaimerText %> -->
+
+<div class="js-sdk-component-container"  *transloco="let t; prefix: '<%= options.selectedModelTypeName.toLowerCase() %>'">
+  <% if (options.addCommandBar) { %>
+    <<%= dasherize(name) %>-command-bar
+        [isMultipleSelectionEnabled]="isMultipleSelectionEnabled"
+        [selection]="selection"
+        [totalItems]="totalItems"
+        [searchFocused]="searchFocused"
+        [allowedCharacters]="allowedCharacters"
+        [minNumberCharacters]="minNumberCharacters"
+        [maxNumberCharacters]="maxNumberCharacters"
+        [searchHint]="searchHint"
+        <% if (options.hasSearchBar) { %>
+            [configs]="configs"
+            [<%= options.localStorageKeyConfig %>]="<%= options.localStorageKeyConfig %>"
+            (setConfiguration)="setConfiguration($event)"
+        <% } %>
+        (applyFilters)="applyFilters()"
+        (reloadFilter)="reloadFilter()"
+        (exportToCsv)="exportToCsv()"
+        <% if (options.customCommandBarActions.length > 0) { %>
+            (customCommandBarActionEvent)="handleCustomCommandBarActionEvent($event.action)"
+        <% } %>
+    >
+      <ng-container toolbarActions>
+        <ng-content select="[customToolbarActions]"></ng-content>
+      </ng-container>
+      <ng-container toolbarCollapsedActions>
+        <ng-content select="[customToolbarCollapsedActions]"></ng-content>
+      </ng-container>
+    </<%= dasherize(name) %>-command-bar>
+  <% } %>
+  @if(!!customTemplate && !dataSource.data.length) {
+    <ng-container *ngTemplateOutlet="loadCustomTemplate()"></ng-container>
+  }
+  <% if (options.hasFilters) { %>
+    <esmf-chip-list [activeFilters]="filterService.activeFilters" (removeFilter)="removeFilter($event)"></esmf-chip-list>
+  <% } %>
+
+  <%= options.include('/generation/extended-table.html.template') %>
+</div>

@@ -6,7 +6,7 @@ on:
   pull_request:
     branches: [ '**' ]
     paths-ignore:
-      - 'documentation/decisions/**'
+      - '../../_legacy/documentation/decisions/**'
 
 jobs:
   build:
@@ -37,13 +37,13 @@ jobs:
           cache-dependency-path: '**/package-lock.json'
 
       - name: Install Dependencies
-        run: npm install
+        run: npm ci --ignore-scripts
 
       - name: Testing Project
-        run: npm run test
+        run: npx nx test schematic
 
       - name: Linting Project
-        run: npm run lint
+        run: npx nx lint schematic
 
       - name: Build Project
-        run: npm run build
+        run: npx nx build schematic

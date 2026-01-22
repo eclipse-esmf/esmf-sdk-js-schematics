@@ -1,0 +1,33 @@
+{
+  "$schema": "../../node_modules/ng-packagr/ng-package.schema.json",
+  "dest": "../../dist/libs/schematic",
+  "lib": {
+    "entryFile": "src/index.ts"
+  },
+  "allowedNonPeerDependencies": [
+    "@esmf/aspect-model-loader",
+    "inquirer",
+    "inquirer-fuzzy-path",
+    "inquirer-prompt-suggest",
+    "inquirer-search-list",
+    "path"
+  ],
+  "assets": [
+    {
+      "input": "./generators",
+      "glob": "**/*",
+      "ignore": ["**/*.ts"],
+      "output": "./generators"
+    },
+    {
+      "input": "./.tmp-generators",
+      "glob": "**/*",
+      "output": "./generators"
+    },
+    {
+      "input": "./src/assets/i18n",
+      "glob": "**/*",
+      "output": "./assets/i18n"
+    }
+  ]
+}

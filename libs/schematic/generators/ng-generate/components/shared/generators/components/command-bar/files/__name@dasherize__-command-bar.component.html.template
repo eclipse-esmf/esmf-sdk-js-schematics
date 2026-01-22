@@ -1,0 +1,499 @@
+<ng-container *transloco="let t; prefix: 'esmf.schematic.toolbar'">
+  <mat-toolbar data-test="toolbar" class="toolbar" #componentsContainer>
+      @if (isMultipleSelectionEnabled) {
+        <div data-test="toolbar-number-of-items" class="command-bar-number-of-items">{{ selection.selected.length > 0 ? (selection.selected.length + ' / ') : '' }}{{ totalItems }}</div>
+      }
+      <% if (options.hasSearchBar) { %>
+        @if (!isInCollapsedMenu('search-form-field-<%= options.componentType %>')) {
+          <mat-form-field class="search-input" data-test="search-form-field-<%= options.componentType %>" appearance="fill" #toolbarComp>
+            <input
+              #searchInput
+              data-test="search-input"
+              matInput
+              [formControl]="filterService.searchString"
+              type="text"
+              placeholder="{{ t('search') }}"
+              (keyup.enter)="triggerReloadFilter()"
+              (focus)="searchFocused = true"
+              (blur)="searchFocused = false"/>
+            @if (filterService.searchString.errors && filterService.searchString.errors['blankSpace']) {
+              <mat-error>
+                {{ t('validation.blankSpace') }}
+              </mat-error>
+            }
+            @if (filterService.searchString.errors && filterService.searchString.errors['invalidInput']) {
+              <mat-error>
+                {{ t('validation.invalidInput') }} {{ allowedCharacters }}
+              </mat-error>
+            }
+            @if (!filterService.stringColumns || !filterService.stringColumns.length) {
+              <mat-error>
+                {{ t('validation.empty_string_columns_array') }}
+              </mat-error>
+            }
+            @if (filterService.searchString.errors && filterService.searchString.errors['minCharNo']) {
+              <mat-error>
+                {{t('validation.min_char_no') }} {{ minNumberCharacters }}
+              </mat-error>
+            }
+            @if (filterService.searchString.errors && filterService.searchString.errors['maxCharNo']) {
+              <mat-error>
+                {{ t('validation.max_char_no') }} {{ maxNumberCharacters }}
+              </mat-error>
+            }
+            @if (!searchFocused && !!searchHint) {
+              <mat-hint>{{ searchHint }}</mat-hint>
+            }
+            <button data-test="search-button" mat-icon-button matSuffix aria-label="search" (click)="triggerReloadFilter()">
+              <mat-icon data-test="search-icon" class="material-icons">search</mat-icon>
+            </button>
+          </mat-form-field>
+        }
+          <% if (options.componentType === 'table' && options.hasSearchBar) { %>
+              @if (hasAdvancedSearch && !isInCollapsedMenu('form-field-select')) {
+                <mat-form-field data-test="form-field-select" appearance="fill" #toolbarComp>
+                  <mat-select data-test="select" [formControl]="filterService.selectedStringColumn" placeholder="{{ t('advancedSearch') }}">
+                    <mat-option [value]="filterService.advancedSearchAllValue">{{ t('allTextFields') }}</mat-option>
+                    @for (searchField of filterService.stringColumns; track searchField) {
+                      <mat-option [value]="searchField">
+                        <span class="advanced-search-option-title">{{ '<%= options.translationPath %>' + searchField + '.preferredName' | transloco }}</span>
+                        <span class="advanced-search-option-description">{{ '<%= options.translationPath %>' + searchField + '.description' | transloco }}</span>
+                      </mat-option>
+                    }
+                  </mat-select>
+                </mat-form-field>
+              }
+          <% } %>
+      <% } %>
+
+      <% for(let property of propValues) { %>
+          <% if (options.isDateQuickFilter && property.isDate) { %>
+              <% if ((datePickerType(options.datePickers, property) === "startAndEndDatePicker") || (datePickerType(options.datePickers, property) === "startOrEndDatePicker")) { %>
+                  @if (!isInCollapsedMenu('start-end-<%= property.propertyName %>')) {
+                    <mat-form-field data-test="form-field-date-time" data-resp="start-end-<%= property.propertyName %>" appearance="fill" #toolbarComp>
+                        <mat-label data-test="date-time-label">{{ '<%= options.versionedAccessPrefix %><%= property.propertyValue %>.preferredName' | transloco }}</mat-label>
+                        <mat-date-range-input data-test="date-range-input" [rangePicker]="<%= property.propertyName %>Picker" [formGroup]="filterService.<%= property.propertyName %>Group">
+                            <input data-test="start-date-input" matStartDate [placeholder]="t('date.from')" formControlName="fromControl"
+                                <% if (datePickerType(options.datePickers, property) === "startOrEndDatePicker") { %>
+                                    (dateChange)="triggerReloadFilter()"
+                                <% } %>
+                            >
+                            <input data-test="end-date-input" matEndDate [placeholder]="t('date.to')" formControlName="toControl" (dateChange)="triggerReloadFilter()">
+                        </mat-date-range-input>
+                        <mat-datepicker-toggle data-test="datepicker-toggle" matSuffix [for]="<%= property.propertyName %>Picker"></mat-datepicker-toggle>
+                            <mat-date-range-picker data-test="date-range-picker" #<%= property.propertyName %>Picker>
+                                <mat-date-range-picker-actions data-test="date-range-picker-actions">
+                                <button data-test="date-picker-cancel-button" mat-button matDateRangePickerCancel>{{ t('actions.cancel') }}</button>
+                                <button data-test="date-picker-apply-button" mat-raised-button color="primary" matDateRangePickerApply>{{ t('actions.apply') }}</button>
+                            </mat-date-range-picker-actions>
+                        </mat-date-range-picker>
+                        @if (filterService.<%= property.propertyName %>Group.get('fromControl')?.hasError('matStartDateInvalid')) {
+                          <mat-error>{{ t('validation.date.fromError') }}</mat-error>
+                        }
+                        @if (filterService.<%= property.propertyName %>Group.get('toControl')?.hasError('matEndDateInvalid')) {
+                          <mat-error>{{ t('validation.date.toError') }}</mat-error>
+                        }
+                        <% if (datePickerType(options.datePickers, property) === "startAndEndDatePicker") { %>
+                          @if (filterService.<%= property.propertyName %>Group.get('fromControl')?.hasError('required')) {
+                            <mat-error>{{ t('validation.date.fromRequired') }}</mat-error>
+                          }
+                          @if (filterService.<%= property.propertyName %>Group.get('toControl')?.hasError('required')) {
+                            <mat-error>{{ t('validation.date.toRequired') }}</mat-error>
+                          }
+                        <% } %>
+                    </mat-form-field>
+                  }
+              <% } else if (datePickerType(options.datePickers, property) === "singleDatePicker") { %>
+                @if (!isInCollapsedMenu('single-date-<%= property.propertyName %>')) {
+                  <mat-form-field data-test="form-field-date-time" data-resp="single-date-<%= property.propertyName %>" appearance="fill" #toolbarComp [formGroup]="filterService.<%= property.propertyName %>Group">
+                      <mat-label data-test="date-time-label">{{ '<%= options.versionedAccessPrefix %><%= property.propertyValue %>.preferredName' | transloco }}</mat-label>
+                      <input matInput [matDatepicker]="<%= property.propertyName %>Picker" [placeholder]="t('date.from')" formControlName="fromControl" (dateChange)="triggerReloadFilter()">
+                      <mat-datepicker-toggle data-test="datepicker-toggle" matIconSuffix [for]="<%= property.propertyName %>Picker"></mat-datepicker-toggle>
+                      <mat-datepicker data-test="date-range-picker" #<%= property.propertyName %>Picker>
+                          <mat-datepicker-actions data-test="date-range-picker-actions">
+                              <button data-test="date-picker-cancel-button" mat-button matDatepickerCancel>{{ t('actions.cancel') }}</button>
+                              <button data-test="date-picker-apply-button" mat-raised-button color="primary" matDatepickerApply>
+                                  {{ t('actions.apply') }}
+                              </button>
+                          </mat-datepicker-actions>
+                      </mat-datepicker>
+                  </mat-form-field>
+                }
+              <% } %>
+          <% } %>
+          <% if (options.isEnumQuickFilter && property.isEnum) { %>
+            @if (!isInCollapsedMenu('form-field-select-<%= property.propertyName %>')) {
+              <mat-form-field data-test="form-field-select" data-resp="form-field-select-<%= property.propertyName %>" appearance="fill" #toolbarComp>
+                  <mat-label data-test="select-label">{{ '<%= options.versionedAccessPrefix %><%= property.propertyValue %>.preferredName' | transloco }}</mat-label>
+                      <mat-select data-test="select" [(value)]="filterService.<%= property.propertyName %>Selected" #<%= property.propertyName %>Select multiple>
+                          <div class="filter-options-container">
+                          <% if (property.enumWithEntities) { %>
+                            @for(<%= property.propertyName %>Option of filterService.<%= property.propertyName %>Options; track <%= property.propertyName %>Option.value) {
+                              <mat-option data-test="select-option" [value]="<%= property.propertyName %>Option.value">
+                                  {{ <%= property.propertyName %>Option.value }} - {{ <%= property.propertyName %>Option.translationKey | transloco }}
+                              </mat-option>
+                            }
+                          <% } else { %>
+                            @for(<%= property.propertyName %>Option of filterService.<%= property.propertyName %>Options; track <%= property.propertyName %>Option) {
+                              <mat-option data-test="select-option" [value]="<%= property.propertyName %>Option">
+                                  {{<%= property.propertyName %>Option}}
+                              </mat-option>
+                            }
+                          <% } %>
+                  </div>
+                  <div data-test="filter-actions-container" class="filter-actions-container">
+
+                    <button data-test="filter-cancel-button" mat-button (click)="<%= property.propertyName %>Select.close()">
+                      <span data-test="filter-cancel-text">{{ t('actions.cancel') }}</span>
+                    </button>
+
+                    <button
+                      data-test="filter-apply-button"
+                      mat-raised-button
+                      color="primary"
+                      class="filter-apply-btn"
+                      (click)="triggerReloadFilter(); <%= property.propertyName %>Select.close();">
+                      <span data-test="filter-apply-text">{{ t('actions.apply') }}</span>
+                    </button>
+                  </div>
+                  </mat-select>
+              </mat-form-field>
+            }
+          <% } %>
+      <% } %>
+
+      <% if (options.componentType === 'card' && options.addCommandBar) { %>
+          <div class="sorting-content" [matTooltip]="t('sorted_tooltip')" matTooltipPosition="above" [matMenuTriggerFor]="sortBy">
+              <button data-test="sort-data-by-button" mat-icon-button>
+                  <mat-icon data-test="sort-data-by-icon">sort_by_alpha</mat-icon>
+              </button>
+              <span>{{ t('sort_by') }} {{ filterService.sortedProperty }}</span>
+          </div>
+
+          <div class="sorting-content" [matTooltip]="t('sort_dir_tooltip')" matTooltipPosition="above" (click)="setSortingDir()">
+              <button data-test="sort-data-button" mat-icon-button>
+                  <mat-icon data-test="sort-data-icon" fontIcon="{{ filterService.sortCard === SortCard.ASCENDING ? 'arrow_upward' : 'arrow_downward' }}"></mat-icon>
+              </button>
+              <span>{{ filterService.sortCard === SortCard.ASCENDING ? (t('sort_asc')) : (t('sort_desc')) }}</span>
+          </div>
+      <% } %>
+
+      <span data-test="spacer" class="spacer"></span>
+
+      <span #projectedToolbarActions>
+          <ng-content select="[toolbarActions]"></ng-content>
+      </span>
+
+      <% if (options.customCommandBarActions.length > 0) { %>
+          <% for(let action of options.customCommandBarActions) { %>
+            @if (!isInCollapsedMenu('custom-action-<%= action %>')) {
+              <button data-test="toolbar-custom-action-button" data-resp="custom-action-<%= action %>" mat-icon-button #toolbarComp (click)="executeCustomCommandBarAction('<%= spinalCaseFunc(action) %>')" attr.aria-label="{{ '<%= options.versionedAccessPrefix %><%= spinalCaseFunc(action) %>.customCommandBarAction' | transloco }}">
+                  <mat-icon data-test="toolbar-custom-action-icon" matTooltip="{{'<%= options.versionedAccessPrefix %><%= spinalCaseFunc(action) %>.customCommandBarAction' | transloco }}" aria-hidden="false"
+                      <% if (action.lastIndexOf(".") > -1) { %>
+                          svgIcon="<%= spinalCaseFunc(action) %>
+                      <% } %>
+                      <% if (action.lastIndexOf(".") === -1) { %>
+                          class='material-icons'>
+                          <%= action %>
+                      <% } %>
+                  </mat-icon>
+              </button>
+            }
+          <% } %>
+      <% } %>
+
+      @if (!isInCollapsedMenu('refresh-data-button')) {
+        <button data-test="refresh-data-button-<%= options.componentType %>" mat-icon-button data-resp="refresh-data-button" #toolbarComp aria-label="Refresh table" [disabled]="!isToolbarActionsEnabled" (click)="triggerReloadFilter()"
+            [matTooltip]="t('actions.refreshData')">
+          <mat-icon data-test="refresh-data-icon" class="material-icons">autorenew</mat-icon>
+        </button>
+      }
+
+      @if (!isInCollapsedMenu('export-data-button')) {
+        <button data-test="export-data-button-<%= options.componentType %>" mat-icon-button data-resp="export-data-button" #toolbarComp aria-label="Download data as CSV" [disabled]="!isToolbarActionsEnabled" (click)="triggerExportToCsv()"
+            [matTooltip]="t('actions.exportData')">
+          <mat-icon data-test="export-data-icon" class="material-icons">file_download</mat-icon>
+        </button>
+      }
+      <% if (options.componentType === 'table' && options.hasSearchBar) { %>
+        @if (!isInCollapsedMenu('open-configuration-button')) {
+          <button data-test="open-configuration" data-resp="open-configuration-button" #toolbarComp mat-icon-button aria-label="Open configuration" [matMenuTriggerFor]="configurationMenu" [disabled]="!isToolbarActionsEnabled"
+              [matTooltip]="t('actions.openConfig')">
+              <mat-icon data-test="open-configuration-icon" class="material-icons">settings </mat-icon>
+          </button>
+        }
+      <% } %>
+
+      @if (hiddenComponents.length>0) {
+        <button  mat-icon-button [matMenuTriggerFor]="collapsedMenu">
+          <mat-icon class="material-icons">more_vert</mat-icon>
+        </button>
+      }
+  </mat-toolbar>
+
+  <% if (options.componentType === 'table' && options.hasSearchBar) { %>
+      <mat-menu data-test="column-menu" #configurationMenu="matMenu" class="column-menu">
+        <esmf-config-menu
+          [keyLocalStorage]="<%= options.localStorageKeyConfig %>"
+          [configs]="configs"
+          #configurationMenuComponent
+          (saveData)="triggerSetConfiguration($event)"
+          (closeMenu)="closeConfigMenu()"
+        ></esmf-config-menu>
+      </mat-menu>
+  <% } %>
+
+  <% if (options.componentType === 'card' && options.addCommandBar) { %>
+      <mat-menu #sortBy="matMenu">
+        @for(value of <%= camelize(name) %>CardValues; track value) {
+          <button mat-menu-item (click)="setSortingProperty(value)">
+            {{ value }}
+          </button>
+        }
+      </mat-menu>
+  <% } %>
+
+  <mat-menu #collapsedMenu="matMenu">
+      <% if (options.hasSearchBar) { %>
+        @if(isInCollapsedMenu('search-form-field-<%= options.componentType %>')) {
+          <div mat-menu-item>
+            <mat-form-field data-test="search-form-field-<%= options.componentType %>" appearance="fill">
+              <input
+                #searchInput
+                data-test="search-input"
+                matInput
+                [formControl]="filterService.searchString"
+                type="text"
+                placeholder="{{ t('search') }}"
+                (keyup.enter)="triggerReloadFilter()"
+                (focus)="searchFocused = true"
+                (blur)="searchFocused = false"/>
+              @if (filterService.searchString.errors && filterService.searchString.errors['blankSpace']) {
+                <mat-error>
+                  {{ t('validation.blankSpace') }}
+                </mat-error>
+              }
+              @if (filterService.searchString.errors && filterService.searchString.errors['invalidInput']) {
+                <mat-error>
+                  {{ t('validation.invalidInput') }} {{ allowedCharacters }}
+                </mat-error>
+              }
+              @if (!filterService.stringColumns || !filterService.stringColumns.length) {
+                <mat-error>
+                  {{ t('validation.empty_string_columns_array') }}
+                </mat-error>
+              }
+              @if (filterService.searchString.errors && filterService.searchString.errors['minCharNo']) {
+                <mat-error>
+                  {{ t('validation.min_char_no') }} {{ minNumberCharacters }}
+                </mat-error>
+              }
+              @if (filterService.searchString.errors && filterService.searchString.errors['maxCharNo']) {
+                <mat-error>
+                  {{ t('validation.max_char_no') }} {{ maxNumberCharacters }}
+                </mat-error>
+              }
+              @if (!searchFocused && !!searchHint) {
+                <mat-hint>{{ searchHint }}</mat-hint>
+              }
+              <button data-test="search-button" mat-icon-button matSuffix aria-label="search" (click)="triggerReloadFilter()">
+                <mat-icon data-test="search-icon" class="material-icons">search</mat-icon>
+              </button>
+            </mat-form-field>
+
+            <% if (options.componentType === 'table' && options.hasSearchBar) { %>
+              @if (hasAdvancedSearch && !isInCollapsedMenu('form-field-select')) {
+                <mat-form-field data-test="form-field-select" id="form-field-select" appearance="fill" #toolbarComp>
+                  <mat-select data-test="select" [formControl]="filterService.selectedStringColumn" placeholder="{{ t('advancedSearch') }}">
+                    <mat-option [value]="filterService.advancedSearchAllValue">{{ t('allTextFields') }}</mat-option>
+                    @for(searchField of filterService.stringColumns; track searchField) {
+                      <mat-option [value]="searchField">
+                        <span>{{ '<%= options.translationPath %>' + searchField + '.preferredName' | transloco }}</span>
+                        <span class="advanced-search-option-description">{{ '<%= options.translationPath %>' + searchField + '.description' | transloco }}</span>
+                      </mat-option>
+                    }
+                  </mat-select>
+                </mat-form-field>
+              }
+            <% } %>
+          </div>
+        }
+      <% } %>
+
+    <% if (options.componentType === 'table' && options.hasSearchBar) { %>
+      @if (hasAdvancedSearch && isInCollapsedMenu('form-field-select')) {
+        <div mat-menu-item>
+          <mat-form-field data-test="form-field-select" id="form-field-select" appearance="fill">
+            <mat-select data-test="select" [formControl]="filterService.selectedStringColumn" placeholder="{{ t('advancedSearch') }}">
+              <mat-option [value]="filterService.advancedSearchAllValue">{{ t('allTextFields') }}</mat-option>
+              @for(searchField of filterService.stringColumns; track searchField) {
+                <mat-option [value]="searchField">
+                  <span>{{ '<%= options.translationPath %>' + searchField + '.preferredName' | transloco }}</span>
+                  <span class="advanced-search-option-description">{{ '<%= options.translationPath %>' + searchField + '.description' | transloco }}</span>
+                </mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+        </div>
+      }
+    <% } %>
+
+       <% for(let property of propValues) { %>
+          <% if (options.isDateQuickFilter && property.isDate) { %>
+              <% if ((datePickerType(options.datePickers, property) === "startAndEndDatePicker") || (datePickerType(options.datePickers, property) === "startOrEndDatePicker")) { %>
+                @if (isInCollapsedMenu('start-end-<%= property.propertyName %>')) {
+                   <div mat-menu-item>
+                      <div (click)="openInDialog<%= property.propertyName %>()">Set <%= property.propertyName %></div>
+                   </div>
+                 }
+              <% } else if (datePickerType(options.datePickers, property) === "singleDatePicker") { %>
+                @if (isInCollapsedMenu('single-date-<%= property.propertyName %>')) {
+                  <div mat-menu-item>
+                    <div (click)="openInDialog<%= property.propertyName %>()">Set <%= property.propertyName %></div>
+                  </div>
+                }
+              <% } %>
+          <% } %>
+          <% if (options.isEnumQuickFilter && property.isEnum) { %>
+            @if (isInCollapsedMenu('form-field-select-<%= property.propertyName %>')) {
+              <div mat-menu-item>
+                <div (click)="openInDialog<%= property.propertyName %>()">Set <%= property.propertyName %></div>
+              </div>
+            }
+          <% } %>
+      <% } %>
+
+      <ng-content select="[toolbarCollapsedActions]"></ng-content>
+
+      @if (isInCollapsedMenu('refresh-data-button')) {
+        <div mat-menu-item [disabled]="!isToolbarActionsEnabled" (click)="triggerReloadFilter()">
+          <mat-icon data-test="refresh-data-icon-collapsed" class="material-icons">autorenew</mat-icon>
+          <span>Refresh</span>
+        </div>
+      }
+
+      @if (isInCollapsedMenu('export-data-button')) {
+        <div mat-menu-item
+             [disabled]="!isToolbarActionsEnabled"
+             (click)="triggerExportToCsv()"
+             data-test="export-data-button-<% if (options.componentType === 'table') { %>table<% } else { %>card<% } %>-collapsed">
+          <mat-icon data-test="export-data-icon-collapsed" class="material-icons">file_download</mat-icon>
+          <span>Download</span>
+        </div>
+      }
+      <% if (options.componentType === 'table' && options.hasSearchBar) { %>
+        @if (isInCollapsedMenu('open-configuration-button')) {
+          <div mat-menu-item
+               [disabled]="!isToolbarActionsEnabled"
+               (click)="openSettingsFromCollapsed()"
+          >
+            <mat-icon data-test="open-configuration-icon-collapsed" class="material-icons">settings</mat-icon>
+            <span>Settings</span>
+          </div>
+        }
+      <% } %>
+  </mat-menu>
+
+  <% for(let property of propValues) { %>
+      <% if (options.isDateQuickFilter && property.isDate) { %>
+          <% if ((datePickerType(options.datePickers, property) === "startAndEndDatePicker") || (datePickerType(options.datePickers, property) === "startOrEndDatePicker")) { %>
+                    <ng-template #<%= property.propertyName %>>
+                    <div class="padding-40" >
+                      <mat-form-field data-test="form-field-date-time" id="start-end-<%= property.propertyName %>"  appearance="fill" >
+                          <mat-label data-test="date-time-label">{{ '<%= options.versionedAccessPrefix %><%= property.propertyValue %>.preferredName' | transloco }}</mat-label>
+                          <mat-date-range-input data-test="date-range-input" [rangePicker]="<%= property.propertyName %>Picker" [formGroup]="filterService.<%= property.propertyName %>Group">
+                              <input data-test="start-date-input" matStartDate [placeholder]="t('date.from')" formControlName="fromControl"
+                                  <% if (datePickerType(options.datePickers, property) === "startOrEndDatePicker") { %>
+                                      (dateChange)="triggerReloadFilter()"
+                                  <% } %>
+                              >
+                              <input data-test="end-date-input" matEndDate [placeholder]="t('date.to')" formControlName="toControl" (dateChange)="triggerReloadFilter()">
+                          </mat-date-range-input>
+                          <mat-datepicker-toggle data-test="datepicker-toggle" matSuffix [for]="<%= property.propertyName %>Picker"></mat-datepicker-toggle>
+                              <mat-date-range-picker data-test="date-range-picker" #<%= property.propertyName %>Picker>
+                                  <mat-date-range-picker-actions data-test="date-range-picker-actions">
+                                  <button data-test="date-picker-cancel-button" mat-dialog-close mat-button matDateRangePickerCancel>{{ t('actions.cancel') }}</button>
+                                  <button data-test="date-picker-apply-button" mat-dialog-close mat-raised-button color="primary" matDateRangePickerApply>{{ t('actions.apply') }}</button>
+                              </mat-date-range-picker-actions>
+                          </mat-date-range-picker>
+                          @if (filterService.<%= property.propertyName %>Group.get('fromControl')?.hasError('matStartDateInvalid')) {
+                            <mat-error>{{ t('validation.date.fromError') }}</mat-error>
+                          }
+                          @if (filterService.<%= property.propertyName %>Group.get('toControl')?.hasError('matEndDateInvalid')) {
+                            <mat-error>{{ t('validation.date.toError') }}</mat-error>
+                          }
+                          <% if (datePickerType(options.datePickers, property) === "startAndEndDatePicker") { %>
+                            @if (filterService.<%= property.propertyName %>Group.get('fromControl')?.hasError('required')) {
+                              <mat-error>{{ t('validation.date.fromRequired') }}</mat-error>
+                            }
+                            @if (filterService.<%= property.propertyName %>Group.get('toControl')?.hasError('required')) {
+                              <mat-error>{{ t('validation.date.toRequired') }}</mat-error>
+                            }
+                          <% } %>
+                      </mat-form-field>
+                      </div>
+                    </ng-template>
+          <% } else if (datePickerType(options.datePickers, property) === "singleDatePicker") { %>
+              <ng-template #<%= property.propertyName %>>
+              <div class="padding-40" >
+              <mat-form-field data-test="form-field-date-time" id="single-date-<%= property.propertyName %>" appearance="fill"  [formGroup]="filterService.<%= property.propertyName %>Group">
+                  <mat-label data-test="date-time-label">{{ '<%= options.versionedAccessPrefix %><%= property.propertyValue %>.preferredName' | transloco }}</mat-label>
+                  <input matInput [matDatepicker]="<%= property.propertyName %>Picker" [placeholder]="t('date.from') transloco" formControlName="fromControl" (dateChange)="triggerReloadFilter()">
+                  <mat-datepicker-toggle data-test="datepicker-toggle" matIconSuffix [for]="<%= property.propertyName %>Picker"></mat-datepicker-toggle>
+                  <mat-datepicker data-test="date-range-picker" #<%= property.propertyName %>Picker>
+                      <mat-datepicker-actions data-test="date-range-picker-actions">
+                          <button data-test="date-picker-cancel-button" mat-dialog-close mat-button matDatepickerCancel>{{ t('actions.cancel') }}</button>
+                          <button data-test="date-picker-apply-button" mat-dialog-close mat-dialog-close mat-raised-button color="primary" matDatepickerApply>
+                              {{ t('actions.apply') }}
+                          </button>
+                      </mat-datepicker-actions>
+                  </mat-datepicker>
+              </mat-form-field>
+              </div>
+              </ng-template>
+          <% } %>
+      <% } %>
+      <% if (options.isEnumQuickFilter && property.isEnum) { %>
+        <ng-template #<%= property.propertyName %>>
+        <div class="padding-40" >
+          <mat-form-field data-test="form-field-select" id="form-field-select-<%= property.propertyName %>"  appearance="fill">
+              <mat-label data-test="select-label">{{ '<%= options.versionedAccessPrefix %><%= property.propertyValue %>.preferredName' | transloco }}</mat-label>
+                  <mat-select data-test="select" [(value)]="filterService.<%= property.propertyName %>Selected" #<%= property.propertyName %>Select multiple>
+                      <div class="filter-options-container">
+                      <% if (property.enumWithEntities) { %>
+                        @for(<%= property.propertyName %>Option of filterService.<%= property.propertyName %>Options; track <%= property.propertyName %>Option.value) {
+                          <mat-option data-test="select-option" [value]="<%= property.propertyName %>Option.value">
+                              {{ <%= property.propertyName %>Option.value }} - {{ <%= property.propertyName %>Option.translationKey | transloco }}
+                          </mat-option>
+                        }
+                      <% } else { %>
+                        @for(<%= property.propertyName %>Option of filterService.<%= property.propertyName %>Options; track <%= property.propertyName %>Option) {
+                          <mat-option data-test="select-option" [value]="<%= property.propertyName %>Option">
+                              {{<%= property.propertyName %>Option}}
+                          </mat-option>
+                        }
+                      <% } %>
+              </div>
+              <div data-test="filter-actions-container" class="filter-actions-container">
+
+                <button data-test="filter-cancel-button" mat-button mat-dialog-close>
+                  <span data-test="filter-cancel-text">{{ t('actions.cancel') }}</span>
+                </button>
+
+                <button
+                  data-test="filter-apply-button"
+                  mat-raised-button
+                  color="primary"
+                  class="filter-apply-btn"
+                  mat-dialog-close
+                  (click)="triggerReloadFilter()">
+                  <span data-test="filter-apply-text">{{ t('actions.apply') }}</span>
+                </button>
+              </div>
+              </mat-select>
+              </mat-form-field>
+             </div>
+            </ng-template>
+      <% } %>
+  <% } %>
+</ng-container>

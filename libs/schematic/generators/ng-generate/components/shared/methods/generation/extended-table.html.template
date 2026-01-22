@@ -1,0 +1,180 @@
+<%
+    let propertyLocaleKeyPrefix = `${options.templateHelper.getVersionedAccessPrefix(options)}${options.isAspectSelected ? options.jsonAccessPath : ''}`;
+%>
+<div class="js-sdk-component-container--inner" [hidden]="!!customTemplate && !dataSource.data.length">
+
+    <div data-test="table-container" class="mat-table-container">
+        <table data-test="table" mat-table class="full-width-table"
+            matSort
+            matSortDisableClear="true"
+            [matSortDisabled]="dragging"
+            [trackBy]="trackBy"
+            (matSortChange)="sortData()"
+            [matSortActive]="columnToSort.sortColumnName" [matSortDirection]="columnToSort.sortDirection"
+            [ngClass]="customTableClass"
+            [dataSource]="dataSource" aria-label="Elements">
+
+            <!-- Row shown when there is no matching data that will be provided to the wrapper table. -->
+            <tr data-test="no-data-table-row" class="mat-row" *matNoDataRow>
+              @if(!dataSource.data.length) {
+                <td class="mat-cell" [colSpan]="displayedColumns.length" data-test="no-data-table-cell">
+                  <span data-test="no-data-message">{{noDataMessage || 'esmf.schematic.table.noData' | transloco}}</span>
+                </td>
+              }
+            </tr>
+
+            <% if (options.addRowCheckboxes) { %>
+                <ng-container matColumnDef="checkboxes" data-test="checkboxes-container">
+                    <th mat-header-cell *matHeaderCellDef data-test="table-header-checkbox">
+                        <mat-checkbox data-test="header-checkbox" (change)="$event ? toggleSelectAll() : null" [checked]="selection.hasValue() && isAllSelected()" [indeterminate]="selection.hasValue() && !isAllSelected()"></mat-checkbox>
+                    </th>
+
+                    <td mat-cell *matCellDef="let row" data-test="table-cell-checkbox">
+                        <mat-checkbox data-test="cell-checkbox" (click)="$event.stopPropagation()" (mousedown)="$event.preventDefault()" (change)="$event ? checkboxClicked(row) : null" [checked]="selection.isSelected(row)"></mat-checkbox>
+                    </td>
+                </ng-container>
+            <% } %>
+
+            <% for(let value of options.tableColumns) { %>
+                <%
+                    let language = options.templateHelper.isMultiStringProperty(value.property) ? '[currentLanguage]' : '';
+                    let propertyName = options.templateHelper.isEnumPropertyWithEntityValues(value.property)
+                        ? value.property.name + '?.' + options.templateHelper.getEnumEntityInstancePayloadKey(value.property)
+                        : value.property.name;
+                    let cellPropertyPath = `${value.complexPrefix}${propertyName}`;
+                    let isEmptyValue = `row.${cellPropertyPath} === null || row.${cellPropertyPath} === undefined`;
+                    let propertyLocaleKeyPath = `${propertyLocaleKeyPrefix}${value.complexPrefix}${value.property.name}`;
+                    let datePipe = options.templateHelper.isDateTimeProperty(value.property) ? `| date: ${options.resolveDateTimeFormat(options, value.property)}` : '';
+                    let descriptionPipe = options.templateHelper.isEnumPropertyWithEntityValues(value.property) ? ` | esmfShowDescription:get${classify(value.property.name)}Value` : '';
+                    let cellContent = `!(${isEmptyValue}) ? (row.${cellPropertyPath}${descriptionPipe}${language}${datePipe})  : '-'`;
+                    let isLink = options.templateHelper.isLinkProperty(value.property)
+                %>
+
+                <!-- <%= cellPropertyPath %> Column -->
+                <ng-container data-test="table-column" matColumnDef="<%= cellPropertyPath %>">
+                    <th data-test="table-header" mat-header-cell *matHeaderCellDef mat-sort-header="<%= cellPropertyPath %>"
+                        <%= options.templateHelper.isNumberProperty(value.property) ? `class="table-header-number"` : '' %>
+                        [esmfResizeColumn]="true" (dragging)='dragging = $event'
+                    >
+                      <span
+                        [matTooltipDisabled]="headerTooltipsOff"
+                        [matTooltip]="t('<%= propertyLocaleKeyPath %>.description')"
+                        matTooltipPosition="above"
+                        data-test="table-header-text"
+                      >
+                        {{ t('<%= propertyLocaleKeyPath %>.preferredName') }}
+                      </span>
+                    </th>
+
+                    <td data-test="table-cell"
+                        mat-cell *matCellDef="let row"
+
+                        <% if(options.templateHelper.isNumberProperty(value.property)) { %>
+                            class="table-cell-number"
+                        <% } %>
+                    >
+
+                        <% if (isLink) { %>
+                            <esmf-table-cell-link
+                                [value]="<%= cellContent %>"
+                                [tooltipMessage]="'esmf.schematic.table.noLink' | transloco "
+                            ></esmf-table-cell-link>
+                        <% } else { %>
+                            <esmf-table-cell
+                                [value]="<%= cellContent %>"
+                                <% if(value.isEnumeration) { %>
+                                    [description]="t('<%= propertyLocaleKeyPath %>.description')"
+                                <% } %>
+                                <% if(options.hasSearchBar) { %>
+                                    [configs]="configs"
+                                    [highlightString]="highlightString"
+                                <% } %>
+                                (copyToClipboardEvent)="copyToClipboard($event)"
+                            ></esmf-table-cell>
+                        <% } %>
+                    </td>
+                </ng-container>
+            <% } %>
+
+            <% if(options.customColumns && options.customColumns.length > 0) { %>
+                <% for(let [index, columnName] of options.customColumns.entries()) { %>
+                    <%
+                      let customColumnIndex = options.tableColumns.length + index + 1;
+                      let versionPath = options.enableVersionSupport ? `.v${options.formatedAspectModelVersion}` : '';
+                      let preferredColumnKey = `${options.selectedModelTypeName.toLowerCase()}${versionPath}.customColumn.${columnName}`;
+                      let descriptionColumnKey = `${options.selectedModelTypeName.toLowerCase()}${versionPath}.${columnName}.description`;
+                    %>
+                    <!-- <%= columnName %> Column -->
+                    <ng-container data-test="custom-column-container" matColumnDef="<%= columnName %>">
+                        <th data-test="custom-column-header" mat-header-cell *matHeaderCellDef mat-sort-header
+                            [esmfResizeColumn]="true" (dragging)='dragging = $event'>
+                            <span data-test="table-header-text"
+                                  [matTooltipDisabled]="headerTooltipsOff"
+                                  [matTooltip]="t('<%= descriptionColumnKey %>')"
+                                  matTooltipPosition="above"
+                            >
+                                {{t('<%= preferredColumnKey %>') }}
+                            </span>
+                        </th>
+                        <td data-test="custom-column-cell" mat-cell *matCellDef="let row">
+                            <ng-container data-test="custom-column-container" *ngTemplateOutlet="<%= camelize(columnName) %>Template; context:{aspect:row}"></ng-container>
+                        </td>
+                    </ng-container>
+                <% } %>
+            <% } %>
+
+            <%= options.getCustomRowActions(options) %>
+
+            <ng-container data-test="columns-menu-button-header" matColumnDef="columnsMenu" stickyEnd>
+                <th style="text-align: right;justify-content: flex-end;" data-test="columns-menu-button-header" mat-header-cell *matHeaderCellDef>
+                    <button data-test="mat-table-menu-button"
+                        mat-icon-button
+                        aria-label="Menu for the table"
+                        class="mat-table-menu-button"
+                        [matMenuTriggerFor]="columnMenu"
+                        [matTooltip]="'esmf.schematic.table.openColumnsMenu' | transloco"
+                        >
+                            <mat-icon data-test="mat-table-menu-icon" class="material-icons">settings</mat-icon>
+                    </button>
+                </th>
+
+                <td data-test="columns-menu-button-cell" mat-cell *matCellDef="let row" [class.bg-transparent]="!setStickRowActions"></td>
+            </ng-container>
+
+            <tr data-test="table-header-row" mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+            <tr data-test="table-row" mat-row *matRowDef="let row; columns: displayedColumns;"
+                [class.selected-row]="selection.isSelected(row) && highlightSelectedRow" (click)="rowClicked(row, $event)"
+                (contextmenu)="rowClicked(row, $event)" (dblclick)="rowDblClicked(row, $event)"></tr>
+        </table>
+
+        <mat-menu data-test="column-menu" #columnMenu="matMenu" class="column-menu">
+            <esmf-column-menu
+            [i18nPrefix]="'<%= options.selectedModelTypeName.toLowerCase() %>'"
+            [defaultColumns]="customizableColumns" [columns]="columns" (columnsChangedEvent)="setDisplayedColumns($event)"></esmf-column-menu>
+        </mat-menu>
+
+        <% if (options.hasSearchBar) { %>
+           <mat-menu data-test="column-menu" class="column-menu">
+               <esmf-config-menu
+                   [keyLocalStorage]="<%= options.localStorageKeyConfig %>"
+                   [configs]="configs"
+                   (saveData)="setConfiguration($event)"
+                   (closeMenu)="closeConfigMenu()"
+               ></esmf-config-menu>
+           </mat-menu>
+        <% } %>
+
+    </div>
+
+    <mat-paginator data-test="paginator-table"
+                   [length]="<%= !options.enableRemoteDataHandling ? 'dataSource.length' : 'totalItems' %>"
+                   [pageIndex]="0"
+                   [pageSize]="pageSize"
+                   [pageSizeOptions]="pageSizeOptions"
+                   [selectConfig]="paginatorSelectConfig"
+                   [showFirstLastButtons]="showFirstLastButtons"
+                   (page)="pageChange()">
+    </mat-paginator>
+
+</div>
+

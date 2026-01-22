@@ -1,0 +1,36 @@
+exportToCsv() {
+    this.openExportConfirmationDialog();
+}
+
+openExportConfirmationDialog() {
+    const reduce = this.displayedColumns.filter(col => col === 'checkboxes' || col === 'columnsMenu').length;
+
+    const dialogRef = this.dialog.open(ExportConfirmationDialogComponent, {
+        data: {
+            <% if (options.enableRemoteDataHandling) { %>extendedCsvExporter: this.extendedCsvExporter,<% } %>
+            allColumns: this.columns.length,
+            displayedColumns: this.displayedColumns.length - reduce,
+            maxExportRows: this.maxExportRows,
+        },
+        maxWidth: 478,
+    });
+
+    dialogRef.afterClosed()
+        .pipe(filter(e => !!e))
+        .subscribe((event: { action: Action, exportAllPages: boolean; exportAllColumns: boolean }): void => {
+            if (event.action === Action.cancel) {
+                return;
+            }
+
+            if (event.exportAllPages && this.data.length > this.maxExportRows) {
+                this.data.length = this.maxExportRows;
+            }
+
+            <% if (options.enableRemoteDataHandling) { %>
+                const columns = event.exportAllColumns ? this.columns.map(c => c.name) : this.displayedColumns;
+                this.extendedCsvExporter?.export(columns, this.rqlString);
+            <% } else { %>
+                this.prepareCsv(this.<%= (camelize((options.enableRemoteDataHandling && options.customRemoteService ? 'custom' : '') + name)) %>Service.flatten(this.data), event.exportAllColumns, event.exportAllPages,this.paginator.pageSize);
+            <% } %>
+        });
+}

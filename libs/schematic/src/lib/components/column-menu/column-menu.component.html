@@ -1,0 +1,61 @@
+<ng-container *transloco="let t; prefix: 'esmf.schematic.columnMenu'">
+  <!-- eslint-disable-next-line @angular-eslint/template/click-events-have-key-events,@angular-eslint/template/interactive-supports-focus -->
+  <div class="selection-title" (click)="$event.stopPropagation()">{{ t('columns') }}</div>
+
+  <mat-divider></mat-divider>
+  <mat-selection-list class="selection-list" (cdkDropListDropped)="columnDrop($event)" cdkDropList
+                      data-test="column-selection-list">
+    @for (column of columnsToDisplay(); track column.name) {
+      <mat-list-option
+        [selected]="column.selected"
+        (click)="columnClick($event, column)"
+        togglePosition="before"
+        cdkDrag
+        data-test="column-list-option"
+      >
+        <div class="list-content">
+          <div class="body-container">
+            <div class="title" data-test="column-option-preferred-name">
+              {{ i18nPrefix() + column.name + '.preferredName' | transloco }}
+            </div>
+            <div class="description" data-test="column-option-description">
+              {{ i18nPrefix() + column.name + '.description' | transloco }}
+            </div>
+          </div>
+          <mat-icon class="material-icons drag-indicator-icon" data-test="drag-indicator-icon"
+                    matTooltip="Draggable row"
+          >drag_indicator
+          </mat-icon>
+        </div>
+      </mat-list-option>
+    }
+  </mat-selection-list>
+
+  <mat-divider></mat-divider>
+
+  <!-- eslint-disable-next-line @angular-eslint/template/click-events-have-key-events,@angular-eslint/template/interactive-supports-focus -->
+  <div class="menu-actions-container" (click)="stopMenuClosing($event)" data-test="column-menu-actions-container">
+    <button
+      class="column-menu-restore-btn"
+      (click)="resetToDefault($event)"
+      data-test="restore-to-defaults-button"
+      mat-stroked-button
+      color="accent"
+    >
+      <mat-icon class="material-icons" data-test="restore-to-defaults-icon">settings_backup_restore</mat-icon>
+      <span data-test="restore-to-defaults-text">{{ t('restoreDefaults') }}</span>
+    </button>
+    <span class="spacer"></span>
+    <button class="column-menu-cancel-btn" (click)="close()" data-test="column-menu-cancel-button" mat-stroked-button
+            color="accent">
+      <mat-icon class="material-icons" data-test="column-menu-cancel-icon">close</mat-icon>
+      <span data-test="column-menu-cancel-text">{{ t('cancel') }}</span>
+    </button>
+
+    <button class="column-menu-apply-btn" (click)="emitChanges()" data-test="column-menu-apply-button" mat-raised-button
+            color="primary">
+      <mat-icon class="material-icons" data-test="column-menu-apply-icon">check</mat-icon>
+      <span data-test="column-menu-apply-text">{{ t('apply') }}</span>
+    </button>
+  </div>
+</ng-container>
