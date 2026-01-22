@@ -64,7 +64,7 @@ jobs:
         run: npm version ${{ github.event.inputs.release_version }} --no-git-tag-version
 
       - name: Build Project
-        run: nx build schematic
+        run: npx nx build schematic
 
       # This should be removed as soon as we go towards nodejs package repository
       - name: Pack Project as tgz
