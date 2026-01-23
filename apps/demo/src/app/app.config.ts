@@ -4,7 +4,7 @@ import {appRoutes} from './app.routes';
 import {provideTransloco} from '@jsverse/transloco';
 import {TranslocoHttpLoader} from './transloco-http-loader.service';
 import {provideHttpClient} from '@angular/common/http';
-import {EsmfPaginatorSelectConfigProvider} from '@esmf/semantic-ui-schematic';
+import {EsmfPaginatorSelectConfigProvider} from '@esmf/semantic-ui-schematics';
 
 export const appConfig: ApplicationConfig = {
   providers: [

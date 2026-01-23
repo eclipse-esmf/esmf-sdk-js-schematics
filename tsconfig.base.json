@@ -15,7 +15,7 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@esmf/semantic-ui-schematic": ["libs/schematic/src/index.ts"]
+      "@esmf/semantic-ui-schematics": ["libs/schematic/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]
