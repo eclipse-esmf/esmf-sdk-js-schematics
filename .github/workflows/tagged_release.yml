@@ -68,7 +68,7 @@ jobs:
 
       # This should be removed as soon as we go towards nodejs package repository
       - name: Pack Project as tgz
-        run: cd dist/libs/schematic && npm pack
+        run: cd dist/libs/schematic && npm pack && mv esmf-semantic-ui-schematics-1.0.0.tgz ../../../esmf-semantic-ui-schematics-${{ github.event.inputs.release_version }}.tgz
 
       - name: "Create Github release (full)"
         if: ${{ !contains( github.event.inputs.release_version, '-rc' ) }}
