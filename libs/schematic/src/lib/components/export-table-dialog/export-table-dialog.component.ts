@@ -1,4 +1,13 @@
-import {AfterViewInit, ChangeDetectionStrategy, Component, computed, inject, signal, viewChild} from '@angular/core';
+import {
+  AfterViewInit,
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+  signal,
+  viewChild,
+  ViewEncapsulation
+} from '@angular/core';
 import {MatButton} from '@angular/material/button';
 import {MatCheckbox} from '@angular/material/checkbox';
 import {MAT_DIALOG_DATA, MatDialogActions, MatDialogClose, MatDialogContent, MatDialogRef, MatDialogTitle} from '@angular/material/dialog';
@@ -24,6 +33,8 @@ export interface ExportTableDialogComponentData {
   styleUrls: ['./export-table-dialog.component.scss'],
   imports: [MatIcon, MatDialogTitle, MatDialogClose, MatDialogContent, MatCheckbox, MatDialogActions, MatButton, TranslocoDirective],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  encapsulation: ViewEncapsulation.None,
+  host: {class: 'esmf-export-table-dialog'}
 })
 export class EsmfExportTableDialogComponent implements AfterViewInit {
   readonly dialogRef = inject<MatDialogRef<EsmfExportTableDialogComponent>>(MatDialogRef);
@@ -44,7 +55,7 @@ export class EsmfExportTableDialogComponent implements AfterViewInit {
     const isExportAllPagesChecked = this.exportAllPages().checked;
     const isExportAllColumnsChecked = this.exportAllColumns()?.checked || false;
 
-    const translationKey = this.getTranslationKey(isExportAllPagesChecked, !!isExportAllColumnsChecked, displayedColumns);
+    const translationKey = this.getTranslationKey(isExportAllPagesChecked, isExportAllColumnsChecked, displayedColumns);
     this.dialogDescription.set(this.translateService.translate(translationKey, {maxExportRows, allColumns, displayedColumns}));
   }
 
