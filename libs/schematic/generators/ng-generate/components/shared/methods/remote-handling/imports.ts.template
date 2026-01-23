@@ -1,10 +1,10 @@
 <% if (options.customRemoteService) { %>
   import {Custom<%= classify(name) %>Service} from './custom-<%= dasherize(name) %>.service';
-  import {Response} from '@esmf/semantic-ui-schematic';
+  import {Response} from '@esmf/semantic-ui-schematics';
 <% } else { %>
-  import {Response, EsmfRemoteTableService} from '@esmf/semantic-ui-schematic';
+  import {Response, EsmfRemoteTableService} from '@esmf/semantic-ui-schematics';
 <% } %>
 
 import {AbstractArrayNode, AbstractNode, And, Eq, Limit, Query, QueryStringifier, Sort} from 'rollun-ts-rql';
-import {CustomRQLFilterExtension, CustomRQLOptionExtension, ExtendedCsvExporter} from '@esmf/semantic-ui-schematic';
+import {CustomRQLFilterExtension, CustomRQLOptionExtension, ExtendedCsvExporter} from '@esmf/semantic-ui-schematics';
 import {SortOptions} from "rollun-ts-rql/dist/nodes/Sort";

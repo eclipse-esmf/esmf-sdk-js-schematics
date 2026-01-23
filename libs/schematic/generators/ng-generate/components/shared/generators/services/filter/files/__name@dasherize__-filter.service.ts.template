@@ -19,7 +19,7 @@
 
 <% if (options.hasSearchBar || options.isDateQuickFilter) { %>import { TranslocoService } from '@jsverse/transloco';<% } %>
 <% if (options.hasSearchBar || options.isEnumQuickFilter || options.isDateQuickFilter) { %>
-  import {FilterEnums, FilterType} from '@esmf/semantic-ui-schematic';
+  import {FilterEnums, FilterType} from '@esmf/semantic-ui-schematics';
 <% } %>
 
 import {AbstractControl, FormControl, ValidationErrors, ValidatorFn} from '@angular/forms';

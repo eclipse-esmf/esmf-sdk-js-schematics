@@ -33,14 +33,14 @@ import {provideTranslocoScope, TranslocoDirective, TranslocoPipe} from '@jsverse
 
 <% if (options.hasFilters || options.hasSearchBar) { %>
     import {<%= options.filterServiceName %>} from './<%= cmpFileName %>-filter.service';
-    import {EsmfChipListComponent, EsmfTableCellComponent, FilterEnums, FilterType} from '@esmf/semantic-ui-schematic';
+    import {EsmfChipListComponent, EsmfTableCellComponent, FilterEnums, FilterType} from '@esmf/semantic-ui-schematics';
 <% } %>
 
 <% if (options.addCommandBar) { %>
   <% if (!options.enableRemoteDataHandling) { %>
     import {unparse} from 'papaparse';
   <% } %>
-  import {Actions, Action, EsmfExportTableDialogComponent} from '@esmf/semantic-ui-schematic';
+  import {Actions, Action, EsmfExportTableDialogComponent} from '@esmf/semantic-ui-schematics';
 <% } %>
 
 import {MatDialog} from '@angular/material/dialog';
@@ -50,7 +50,7 @@ import {
         , <%= enumProperties %>
     <% } %>
 } from './<%= dasherize(options.aspectModelTypeName) %>.types';
-import {<%= tableDataSourceName %>, EsmfPaginatorSelectConfigInjector, EsmfLocalStorageService, EsmfShowDescriptionPipe, EsmfResizeColumnDirective, EsmfColumnMenuComponent, EsmfConfigMenuComponent, Config} from '@esmf/semantic-ui-schematic';
+import {<%= tableDataSourceName %>, EsmfPaginatorSelectConfigInjector, EsmfLocalStorageService, EsmfShowDescriptionPipe, EsmfResizeColumnDirective, EsmfColumnMenuComponent, EsmfConfigMenuComponent, Config} from '@esmf/semantic-ui-schematics';
 
 <% if (options.isDateQuickFilter) { %>
     import {DateAdapter, MAT_DATE_FORMATS, MatDateFormats} from '@angular/material/core';
@@ -79,7 +79,7 @@ import {<% if (options.enableRemoteDataHandling) { %>catchError, finalize, tap, 
 <% if (options.enableRemoteDataHandling) { %>
     <%= options.include('/remote-handling/imports.ts.template') %>
 <% } else { %>
-    import {EsmfStaticTableService} from '@esmf/semantic-ui-schematic';
+    import {EsmfStaticTableService} from '@esmf/semantic-ui-schematics';
 <% } %>
 import {MatMenu, MatMenuModule, MatMenuTrigger} from '@angular/material/menu';
 import {MatIconButton} from '@angular/material/button';

@@ -20,7 +20,7 @@ import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 <% } %>
 
 <% if (addConfigMenu) { %>
-    import {Config, EsmfConfigMenuComponent} from '@esmf/semantic-ui-schematic';
+    import {Config, EsmfConfigMenuComponent} from '@esmf/semantic-ui-schematics';
 <% } %>
 import {MatToolbar} from '@angular/material/toolbar';
 import {MatError, MatFormField, MatHint} from '@angular/material/form-field';

@@ -3,7 +3,7 @@
   var serviceName = options.enableRemoteDataHandling  ? 'EsmfRemoteTableService' : 'EsmfStaticTableService';
 %>
 import {Injectable} from '@angular/core';
-import {<%= serviceName %>} from '@esmf/semantic-ui-schematic';
+import {<%= serviceName %>} from '@esmf/semantic-ui-schematics';
 
 /**
 * Custom service which extend the original API service for fetching
