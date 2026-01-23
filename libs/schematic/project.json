@@ -16,7 +16,7 @@
     "build": {
       "executor": "@nx/angular:package",
       "outputs": ["{workspaceRoot}/dist/{projectRoot}"],
-      "dependsOn": ["build-generators"],
+      "dependsOn": ["build-generators", "build-translations"],
       "options": {
         "project": "libs/schematic/ng-package.json",
         "tsConfig": "libs/schematic/tsconfig.lib.json"
@@ -34,6 +34,13 @@
       "outputs": ["{workspaceRoot}/libs/schematic/.tmp-generators"],
       "options": {
         "command": "tsc -p libs/schematic/tsconfig.generators.json"
+      }
+    },
+    "build-translations": {
+      "executor": "nx:run-commands",
+      "outputs": ["{workspaceRoot}/libs/schematic/src/assets/i18n"],
+      "options": {
+        "command": "npm run transloco:extract-scoped-libs"
       }
     },
     "nx-release-publish": {
