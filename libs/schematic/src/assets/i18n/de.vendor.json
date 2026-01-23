@@ -1,24 +1,46 @@
 {
-  "chipList": {
+  "esmf.schematic.chipList": {
     "scroll": {
       "left": "Nach links scrollen",
       "right": "Nach rechts scrollen"
     }
   },
-  "columnMenu": {
+  "esmf.schematic.columnMenu": {
     "columns": "Spalten",
     "restoreDefaults": "Standardeinstellungen wiederherstellen",
     "cancel": "Abbrechen",
     "apply": "Anwenden"
   },
-  "configMenu": {
+  "esmf.schematic.configMenu": {
     "title": "Einstellungen",
     "highlight.name": "Hervorhebung",
     "highlight.desc": "Der Suchbegriff wird hervorgehoben",
     "cancel": "Abbrechen",
     "apply": "Anwenden"
   },
-  "table": {
+  "esmf.schematic.exportDialog": {
+    "title": "Daten exportieren",
+    "export": "Exportieren",
+    "cancel": "Abbrechen",
+    "description": {
+      "exportOnlyFirstPage": "Nur die erste Datenseite exportieren.",
+      "caseOne": "Maximal {{maxExportRows}} Zeilen aus allen {{allColumns}} Spalten exportieren.",
+      "caseTwo": {
+        "singular": "Maximal {{maxExportRows}} Zeilen aus der angezeigten {{displayedColumns}} Spalte exportieren.",
+        "plural": "Maximal {{maxExportRows}} Zeilen aus den angezeigten {{displayedColumns}} Spalten exportieren."
+      },
+      "caseThree": {
+        "singular": "Alle Daten aus der ausgewählten {{displayedColumns}} Spalte der aktuellen Seite exportieren.",
+        "plural": "Alle Daten aus den ausgewählten {{displayedColumns}} Spalten der aktuellen Seite exportieren."
+      },
+      "caseFour": "Exportiert alle Daten aus allen {{allColumns}} Spalten der aktuellen Seite.",
+      "default": "Exportiert die gesamte Datenquelle.",
+      "exportAllPages": "Exportiert maximal {{maxExportRows}} Zeilen.",
+      "exportAllColumns": "Exportiert alle Daten aus allen {{allColumns}} Spalten.",
+      "exportFirstPage": "Exportiert die erste Datenseite."
+    }
+  },
+  "esmf.schematic.table": {
     "openColumnsMenu": "Spaltenmenü öffnen",
     "noLink": "Kein Link",
     "noData": "Keine Daten",
@@ -26,7 +48,7 @@
       "title": "Aktionen"
     }
   },
-  "toolbar": {
+  "esmf.schematic.toolbar": {
     "search": "Suchen",
     "allTextFields": "Alle Textfelder",
     "advancedSearch": "Erweiterte Suche",
@@ -107,28 +129,6 @@
       "unsigned_long": "Value has to match validation rules for \"unsignedLong\" data type",
       "unsigned_short": "Value has to match validation rules for \"unsignedShort\" data type",
       "year_month_duration": "Value has to match validation rules for \"yearMonthDuration\" data type"
-    }
-  },
-  "exportDialog": {
-    "title": "Daten exportieren",
-    "export": "Exportieren",
-    "cancel": "Abbrechen",
-    "description": {
-      "exportOnlyFirstPage": "Nur die erste Datenseite exportieren.",
-      "caseOne": "Maximal {{maxExportRows}} Zeilen aus allen {{allColumns}} Spalten exportieren.",
-      "caseTwo": {
-        "singular": "Maximal {{maxExportRows}} Zeilen aus der angezeigten {{displayedColumns}} Spalte exportieren.",
-        "plural": "Maximal {{maxExportRows}} Zeilen aus den angezeigten {{displayedColumns}} Spalten exportieren."
-      },
-      "caseThree": {
-        "singular": "Alle Daten aus der ausgewählten {{displayedColumns}} Spalte der aktuellen Seite exportieren.",
-        "plural": "Alle Daten aus den ausgewählten {{displayedColumns}} Spalten der aktuellen Seite exportieren."
-      },
-      "caseFour": "Exportiert alle Daten aus allen {{allColumns}} Spalten der aktuellen Seite.",
-      "default": "Exportiert die gesamte Datenquelle.",
-      "exportAllPages": "Exportiert maximal {{maxExportRows}} Zeilen.",
-      "exportAllColumns": "Exportiert alle Daten aus allen {{allColumns}} Spalten.",
-      "exportFirstPage": "Exportiert die erste Datenseite."
     }
   }
 }

@@ -1,24 +1,46 @@
 {
-  "chipList": {
+  "esmf.schematic.chipList": {
     "scroll": {
       "left": "Scroll left",
       "right": "Scroll right"
     }
   },
-  "columnMenu": {
+  "esmf.schematic.columnMenu": {
     "columns": "Columns",
     "restoreDefaults": "Restore Defaults",
     "cancel": "Cancel",
     "apply": "Apply"
   },
-  "configMenu": {
+  "esmf.schematic.configMenu": {
     "title": "Settings",
     "highlight.name": "Highlight",
     "highlight.desc": "The search term will be highlighted",
     "cancel": "Cancel",
     "apply": "Apply"
   },
-  "table": {
+  "esmf.schematic.exportDialog": {
+    "title": "Export Data",
+    "export": "Export",
+    "cancel": "Cancel",
+    "description": {
+      "exportOnlyFirstPage": "Export only the first page of data.",
+      "caseOne": "Export the maximum of {{maxExportRows}} rows from all {{allColumns}} columns.",
+      "caseTwo": {
+        "singular": "Export the maximum of {{maxExportRows}} rows from the displayed {{displayedColumns}} column.",
+        "plural": "Export the maximum of {{maxExportRows}} rows from the displayed {{displayedColumns}} columns."
+      },
+      "caseThree": {
+        "singular": "Export all data from the selected {{displayedColumns}} column of the current page.",
+        "plural": "Export all data from the selected {{displayedColumns}} columns of the current page."
+      },
+      "caseFour": "Export all data from all {{allColumns}} columns of the current page.",
+      "default": "Export entire datasource."
+    },
+    "exportAllPages": "Export the maximum of {{maxExportRows}} rows",
+    "exportAllColumns": "Export all data from all {{allColumns}} columns",
+    "exportFirstPage": "Export the first page of data"
+  },
+  "esmf.schematic.table": {
     "openColumnsMenu": "Open columns menu",
     "noLink": "No link",
     "noData": "No data",
@@ -26,7 +48,7 @@
       "title": "Actions"
     }
   },
-  "toolbar": {
+  "esmf.schematic.toolbar": {
     "search": "Search",
     "allTextFields": "All Text Fields",
     "advancedSearch": "Advanced Search",
@@ -108,27 +130,5 @@
       "unsigned_short": "Value has to match validation rules for \"unsignedShort\" data type",
       "year_month_duration": "Value has to match validation rules for \"yearMonthDuration\" data type"
     }
-  },
-  "exportDialog": {
-    "title": "Export Data",
-    "export": "Export",
-    "cancel": "Cancel",
-    "description": {
-      "exportOnlyFirstPage": "Export only the first page of data.",
-      "caseOne": "Export the maximum of {{maxExportRows}} rows from all {{allColumns}} columns.",
-      "caseTwo": {
-        "singular": "Export the maximum of {{maxExportRows}} rows from the displayed {{displayedColumns}} column.",
-        "plural": "Export the maximum of {{maxExportRows}} rows from the displayed {{displayedColumns}} columns."
-      },
-      "caseThree": {
-        "singular": "Export all data from the selected {{displayedColumns}} column of the current page.",
-        "plural": "Export all data from the selected {{displayedColumns}} columns of the current page."
-      },
-      "caseFour": "Export all data from all {{allColumns}} columns of the current page.",
-      "default": "Export entire datasource."
-    },
-    "exportAllPages": "Export the maximum of {{maxExportRows}} rows",
-    "exportAllColumns": "Export all data from all {{allColumns}} columns",
-    "exportFirstPage": "Export the first page of data"
   }
 }
