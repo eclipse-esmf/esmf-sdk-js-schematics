@@ -1,32 +1,30 @@
-.dialog-button-container {
-  justify-content: flex-end;
-}
-
-.dialog-title {
-  justify-content: space-between;
+.esmf-export-table-dialog {
   display: flex;
-  align-items: center;
-  margin-top: 1rem;
-  margin-bottom: 1rem;
-  font-weight: bold;
-}
+  flex-direction: column;
 
-.close-dialog-icon {
-  background: none;
-  border: none;
-  font-size: 1.3rem;
-  cursor: pointer;
-  margin-left: auto;
-}
+  .dialog-title {
+    display: flex;
+    align-items: center;
+    font-weight: bold;
+    padding: 0;
 
-.dialog-description {
-  font-size: 1.2rem;
-  height: 3rem;
-  margin-right: 2rem;
-  margin-bottom: 1.5rem;
-  float: left;
-}
+    .close-dialog-icon {
+      background: none;
+      border: none;
+      cursor: pointer;
+      margin-left: auto;
+    }
+  }
 
-.checkbox-container {
-  margin: -20px 0 0.5rem -11px;
+  .dialog-description {
+    margin: 2rem 0;
+  }
+
+  .checkbox-container {
+    margin: 1rem 0;
+  }
+
+  .dialog-button-container {
+    justify-content: flex-end;
+  }
 }
