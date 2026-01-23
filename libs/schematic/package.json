@@ -1,7 +1,7 @@
 {
-  "name": "@esmf/semantic-ui-schematic",
+  "name": "semantic-ui-schematics",
   "version": "1.0.0",
-  "main": "./fesm2022/esmf-semantic-ui-schematic.mjs",
+  "main": "./fesm2022/esmf-semantic-ui-schematics.mjs",
   "schematics": "./generators/collection.json",
   "files": [
     "**"
@@ -30,32 +30,32 @@
   "sideEffects": false,
   "i18n": [
     {
-      "scope": "chipList",
+      "scope": "esmf.schematic.chipList",
       "path": "./src/lib/components/chip-list/assets/i18n",
       "strategy": "join"
     },
     {
-      "scope": "columnMenu",
+      "scope": "esmf.schematic.columnMenu",
       "path": "./src/lib/components/column-menu/assets/i18n",
       "strategy": "join"
     },
     {
-      "scope": "configMenu",
+      "scope": "esmf.schematic.configMenu",
       "path": "./src/lib/components/config-menu/assets/i18n",
       "strategy": "join"
     },
     {
-      "scope": "exportDialog",
+      "scope": "esmf.schematic.exportDialog",
       "path": "./src/lib/components/export-table-dialog/assets/i18n",
       "strategy": "join"
     },
     {
-      "scope": "table",
+      "scope": "esmf.schematic.table",
       "path": "./src/lib/components/table/assets/i18n",
       "strategy": "join"
     },
     {
-      "scope": "toolbar",
+      "scope": "esmf.schematic.toolbar",
       "path": "./src/lib/components/toolbar/assets/i18n",
       "strategy": "join"
     }
