@@ -1,5 +1,5 @@
 {
-  "name": "semantic-ui-schematics",
+  "name": "@esmf/semantic-ui-schematics",
   "version": "1.0.0",
   "main": "./fesm2022/esmf-semantic-ui-schematics.mjs",
   "schematics": "./generators/collection.json",
