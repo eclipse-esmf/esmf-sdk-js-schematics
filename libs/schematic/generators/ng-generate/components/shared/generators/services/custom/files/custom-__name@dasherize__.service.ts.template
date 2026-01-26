@@ -4,6 +4,7 @@
 %>
 import {Injectable} from '@angular/core';
 import {<%= serviceName %>} from '@esmf/semantic-ui-schematics';
+import {<%= classify(options.selectedModelTypeName) %>} from './<%= dasherize(options.aspectModelTypeName) %>.types';
 
 /**
 * Custom service which extend the original API service for fetching
@@ -16,4 +17,4 @@ import {<%= serviceName %>} from '@esmf/semantic-ui-schematics';
 * the cli parameter '--force'.
 */
 @Injectable()
-export class Custom<%= classify(options.name) %>Service<T> extends <%= serviceName %><T> {}
+export class Custom<%= classify(options.name) %>Service extends <%= serviceName %><<%= classify(options.selectedModelTypeName) %>> {}

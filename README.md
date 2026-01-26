@@ -342,7 +342,7 @@ The form schematics can be used for form generation.
 - Start the project in watch mode:
   - Build generator compilation in watch mode:
     ```bash
-    tsc -p libs/schematic/tsconfig.generators.json -- watch
+    tsc -p libs/schematic/tsconfig.generators.json --watch
     ```
   - Build the schematic library in watch mode:
     ```bash
