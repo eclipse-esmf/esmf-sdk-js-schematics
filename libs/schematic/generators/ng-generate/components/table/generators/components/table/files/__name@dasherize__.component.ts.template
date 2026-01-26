@@ -4,7 +4,7 @@
   var cmpFileName = dasherize(name);
   var hasCustomRowActions = options.customRowActions.length > 0;
   var customRowActionNames = options.customRowActions.map(action => `'${action.replace(/\.[^/.]+$/, '')}'`);
-  var tableServiceName = options.enableRemoteDataHandling ? (options.customRemoteService ? `Custom${classify(name)}Service` : 'EsmfRemoteTableService') : 'EsmfStaticTableService';
+  var tableServiceName = options.enableRemoteDataHandling ? (options.customRemoteService ? `Custom${classify(name)}Service` : 'EsmfRemoteTableService<Entity>') : 'EsmfStaticTableService<Entity>';
   var tableDataSourceName = options.enableRemoteDataHandling ? 'EsmfRemoteTableDataSource' : 'EsmfStaticTableDataSource';
 %>
 import {
@@ -153,7 +153,7 @@ type Entity = <%= classify(options.selectedModelTypeName) %>;
 })
 export class <%= classify(name) %>Component implements OnInit, AfterViewInit, AfterViewChecked, OnChanges<% if (options.hasSearchBar || options.enableRemoteDataHandling) { %>, OnDestroy<% } %> {
   <%= injections %>
-  private tableService = inject(<%= tableServiceName %><Entity>);
+  private tableService = inject(<%= tableServiceName %>);
 
     <% if (options.hasSearchBar) { %>@Input() initialSearchString = '';<% } %>
     <%= customRowActionInput %>
@@ -214,7 +214,7 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
     @Output() rowSelectionEvent = new EventEmitter<Entity[]>();
 
     <% if (hasCustomRowActions) { %>
-        @Output() customActionEvent = new EventEmitter<{action: string, data: Entity}>();
+        @Output() customActionEvent = new EventEmitter<{action: RowAction, data: Entity}>();
     <% } %>
     <% if (options.customCommandBarActions.length > 0) { %>
         @Output() customCommandBarActionEvent = new EventEmitter<any>();
@@ -279,10 +279,6 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
     <% if (options.enableRemoteDataHandling) { %>
         private requestSubscription = new Subscription();
     <% } %>
-
-    constructor(){
-      <%= registerCustomIcons %>
-    }
 
     ngOnInit(): void {
         <% if (options.hasSearchBar) { %>
@@ -483,7 +479,7 @@ export class <%= classify(name) %>Component implements OnInit, AfterViewInit, Af
     <% } %>
 
     <% if (hasCustomRowActions) { %>
-        executeCustomAction($event: MouseEvent, action: string, row: Entity): void{
+        executeCustomAction($event: MouseEvent, action: RowAction, row: Entity): void{
             if(this.customRowActionsLength <= this.visibleRowActionsIcons) {
                    $event.stopPropagation();
             }
