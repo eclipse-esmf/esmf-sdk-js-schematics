@@ -1,6 +1,6 @@
 name: js-sdk-guide
 title: JavaScript SDK
-version: master
+version: 2.10.1
 start_page: ROOT:index.adoc
 nav:
   - modules/ROOT/nav.adoc
