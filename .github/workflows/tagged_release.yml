@@ -69,6 +69,7 @@ jobs:
       # This should be removed as soon as we go towards nodejs package repository
       - name: Pack Project as tgz
         run: |
+          cp LICENSE dist/libs/schematic/LICENSE
           cd dist/libs/schematic
           sed -i 's/"version": "1.0.0"/"version": "${{ github.event.inputs.release_version }}"/' package.json
           npm pack
