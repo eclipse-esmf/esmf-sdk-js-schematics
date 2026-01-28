@@ -93,7 +93,7 @@ import {MatTooltip} from '@angular/material/tooltip';
 export const <%= tableColumnsEnumName %> = {
     <% if (options.addRowCheckboxes) { %>CHECKBOX: 'checkboxes',<% } %>
     <%= enumPropertyDefinitions %>
-    <%= enumCustomColumns %>
+    <%= customColumns %>
     <% if (hasCustomRowActions) { %>CUSTOM_ROW_ACTIONS: 'customRowActions',<% } %>
     COLUMNS_MENU: 'columnsMenu'
 } as const;

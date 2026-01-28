@@ -80,7 +80,7 @@ function applyTemplate(): Rule {
     aspectModelName: sharedOptions.aspectModel.name,
     aspectModelTypeName: sharedOptions.aspectModelTypeName,
     enumPropertyDefinitions: getEnumPropertyDefinitions(sharedOptions, sharedOptions.allProps),
-    enumCustomColumns: getEnumCustomColumns(),
+    customColumns: getCustomColumns(),
     enumProperties: getEnumProperties(sharedOptions),
     customRowActionInput: getCustomRowActionInput(),
     customColumnsInput: getCustomColumnsInput(),
@@ -92,9 +92,9 @@ function applyTemplate(): Rule {
   });
 }
 
-function getEnumCustomColumns(): string {
+function getCustomColumns(): string {
   return sharedOptions.customColumns
-    .map((value: string) => `${dasherize(value.trim()).replace(/-/g, '_').toUpperCase()} = '${value.trim()}',`)
+    .map((value: string) => `${dasherize(value.trim()).replace(/-/g, '_').toUpperCase()}: '${value.trim()}',`)
     .join('');
 }
 
