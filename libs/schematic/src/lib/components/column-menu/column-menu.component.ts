@@ -32,7 +32,7 @@ function addDotToTheEnd(prefix: string): string {
   imports: [MatSelectionList, MatDivider, MatListOption, MatButton, MatIcon, MatTooltip, DragDropModule, TranslocoDirective, TranslocoPipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
-  host: {class: 'esmf-column-menu'},
+  host: {class: 'esmf-column-menu'}
 })
 export class EsmfColumnMenuComponent {
   i18nPrefix = input.required<string, string>({transform: addDotToTheEnd});
@@ -78,7 +78,7 @@ export class EsmfColumnMenuComponent {
    */
   emitChanges(): void {
     this.closeColumnMenu = true;
-    this.columnsChangedEvent.emit(this.columns());
+    this.columnsChangedEvent.emit(this.columnsToDisplay());
   }
 
   /**
