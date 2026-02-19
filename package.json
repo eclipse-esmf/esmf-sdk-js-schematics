@@ -28,7 +28,6 @@
     "@angular/router": "20.3.16",
     "@esmf/aspect-model-loader": "https://github.com/eclipse-esmf/esmf-sdk-js-aspect-model-loader/releases/download/v2.3.3/esmf-aspect-model-loader-2.3.3.tgz",
     "@jsverse/transloco": "8.2.0",
-    "@nx/devkit": "22.0.4",
     "inquirer": "8.2.5",
     "inquirer-fuzzy-path": "2.3.0",
     "inquirer-prompt-suggest": "0.1.0",
