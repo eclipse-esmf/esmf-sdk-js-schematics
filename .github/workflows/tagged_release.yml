@@ -30,6 +30,19 @@ jobs:
           git config user.name github-actions
           git config user.email github-actions@github.com
 
+      - name: Cache node modules
+        if: github.event_name != 'workflow_dispatch'  # disable cache on release runs
+        uses: actions/cache@9255dc7a253b0ccc959486e2bca901246202afeb #v5.0.1
+        env:
+          cache-name: cache-node-modules
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+
       - name: Setup NodeJs
         uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # 6.2.0
         with:
