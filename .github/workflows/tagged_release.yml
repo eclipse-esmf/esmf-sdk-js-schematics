@@ -7,14 +7,23 @@ on:
         description: 'Version number of the release'
         required: true
 
+env:
+  RELEASE_VERSION: ${{ github.event.inputs.release_version }}
+
+permissions: {}
+
 jobs:
   gh_tagged_release:
     name: Create tagged release
     runs-on: ubuntu-latest
 
+    permissions:
+      contents: write
+      actions: read
+
     steps:
       - name: Checkout project
-        uses: actions/checkout@v3
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 #v6.0.1
 
       - name: Setup Git
         run: |
@@ -22,7 +31,7 @@ jobs:
           git config user.email github-actions@github.com
 
       - name: Cache node modules
-        uses: actions/cache@v3
+        uses: actions/cache@9255dc7a253b0ccc959486e2bca901246202afeb #v5.0.1
         env:
           cache-name: cache-node-modules
         with:
@@ -31,25 +40,25 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-${{ env.cache-name }}-
             ${{ runner.os }}-
+          lookup-only: true
 
       - name: Setup NodeJs
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # 6.2.0
         with:
-          node-version: '20'
-          cache: 'npm'
-          cache-dependency-path: '**/package-lock.json'
+            node-version: '22'
+            package-manager-cache: false
 
       - name: Set versions
         run: |
-          release_version=${{ github.event.inputs.release_version }}
+          release_version=${{ env.RELEASE_VERSION }}
           release_branch_name=${release_version%.*}.x
           echo "release_branch_name=$release_branch_name" >> $GITHUB_ENV
 
       - name: Set antora version
-        run: yq eval -i '.version = "${{ github.event.inputs.release_version }}"' documentation/js-sdk-guide/antora.yml
+        run: yq eval -i '.version = "${{ env.RELEASE_VERSION }}"' documentation/js-sdk-guide/antora.yml
 
       - name: Commit version changes and push to upstream repository
-        uses: stefanzweifel/git-auto-commit-action@v4
+        uses: stefanzweifel/git-auto-commit-action@04702edda442b2e678b25b537cec683a1493fcb9 # v7.1.0
         with:
           branch: ${{ env.release_branch_name }}
           commit_user_name: github-actions
@@ -61,7 +70,7 @@ jobs:
         run: npm ci --ignore-scripts
 
       - name: Set app version
-        run: npm version ${{ github.event.inputs.release_version }} --no-git-tag-version
+        run: npm version ${{ env.RELEASE_VERSION }} --no-git-tag-version
 
       - name: Build Project
         run: npx nx build schematic
@@ -71,34 +80,34 @@ jobs:
         run: |
           cp LICENSE dist/libs/schematic/LICENSE
           cd dist/libs/schematic
-          sed -i 's/"version": "1.0.0"/"version": "${{ github.event.inputs.release_version }}"/' package.json
+          sed -i 's/"version": "1.0.0"/"version": "${{ env.RELEASE_VERSION }}"/' package.json
           npm pack
-          mv esmf-semantic-ui-schematics-${{ github.event.inputs.release_version }}.tgz ../../../
+          mv esmf-semantic-ui-schematics-${{ env.RELEASE_VERSION }}.tgz ../../../
 
       - name: "Create Github release (full)"
-        if: ${{ !contains( github.event.inputs.release_version, '-rc' ) }}
-        uses: softprops/action-gh-release@v1
+        if: ${{ !contains( env.RELEASE_VERSION, '-rc' ) }}
+        uses: softprops/action-gh-release@de2c0eb89ae2a093876385947365aca7b0e5f844 # v0.1.15
         id: esmf_sdk_js_release
         with:
-          body: "Release version ${{ github.event.inputs.release_version }}."
-          tag_name: v${{ github.event.inputs.release_version }}
+          body: "Release version ${{ env.RELEASE_VERSION }}."
+          tag_name: v${{ env.RELEASE_VERSION }}
           target_commitish: ${{ env.release_branch_name }}
           draft: false
           prerelease: false
-          files: esmf-semantic-ui-schematics-${{ github.event.inputs.release_version }}.tgz
+          files: esmf-semantic-ui-schematics-${{ env.RELEASE_VERSION }}.tgz
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN  }}
 
       - name: "Create Github release (milestone)"
-        if: contains( github.event.inputs.release_version, '-rc' )
-        uses: softprops/action-gh-release@v1
+        if: contains( env.RELEASE_VERSION, '-rc' )
+        uses: softprops/action-gh-release@de2c0eb89ae2a093876385947365aca7b0e5f844 # v0.1.15
         id: sds_sdk_js_release
         with:
-          body: "Release version ${{ github.event.inputs.release_version }}."
-          tag_name: v${{ github.event.inputs.release_version }}
+          body: "Release version ${{ env.RELEASE_VERSION }}."
+          tag_name: v${{ env.RELEASE_VERSION }}
           target_commitish: ${{ env.release_branch_name }}
           draft: false
           prerelease: true
-          files: esmf-semantic-ui-schematics-${{ github.event.inputs.release_version }}.tgz
+          files: esmf-semantic-ui-schematics-${{ env.RELEASE_VERSION }}.tgz
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN  }}
