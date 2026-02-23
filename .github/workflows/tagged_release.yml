@@ -36,11 +36,7 @@ jobs:
           cache-name: cache-node-modules
         with:
           path: ~/.npm
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
-            ${{ runner.os }}-build-
-            ${{ runner.os }}-
+          key: npm-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
 
       - name: Setup NodeJs
         uses: actions/setup-node@395ad3262231945c25e8478fd5baf05154b1d79f # 6.1.0
